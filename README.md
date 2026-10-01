@@ -1,148 +1,114 @@
-# SwiftCampus — Nairee School Management ERP
+# SwiftCampus — Nairee International School Management ERP
 
-> **A high-performance, professional school management platform directly replicating the database schema and business workflows of [Frappe Education](https://github.com/frappe/education), wrapped in the modern, lucrative UI/UX design language of [SwipeTouch SwiftCampus](https://swipetouch.tech/pages/swiftcampus.html). Built to run natively on Windows and Android.**
+> **A role-based school management website replicating the database schema and business workflows of [Frappe Education](https://github.com/frappe/education), crafted with the lucrative UI/UX design language of [SwipeTouch SwiftCampus](https://swipetouch.tech/pages/swiftcampus.html). Built to run natively on Windows and Android.**
 
 ---
 
-## 🏛️ System Architecture
+## 🌐 Live System URLs
+
+| Component | URL | Purpose |
+| :--- | :--- | :--- |
+| **Web Portal** | [**http://localhost:5173**](http://localhost:5173) | Single Login Page & 4 Role Portals (Admin, Teacher, Student, Parent) |
+| **Backend REST API** | [**http://localhost:5000**](http://localhost:5000) | Express & SQLite Persistence Engine (Frappe DocType tables) |
+| **Android Companion** | `mobile/` (Expo v52) | React Native Android Student Pass & Schedule App |
+
+---
+
+## 🔑 Demo Login Credentials (Single Login Form)
+
+There is **only one single login form** for all users. The backend auto-detects the user's role and automatically routes them to their dedicated portal:
+
+| Role | Username | Password | User Profile | Scoped Features |
+| :--- | :--- | :--- | :--- | :--- |
+| **Admin / Principal** | `admin` | `admin123` | Dr. Marcus Vance (Principal) | Executive dashboard, account issuance (auto-links parent), teacher workload & syllabus, at-risk monitoring, announcements, CSV reports |
+| **Teacher** | `teacher_jenkins` | `teacher123` | Prof. Sarah Jenkins (Head of Math) | Class timetable, bulk attendance marking, live syllabus progress tracker, homework create & grade, exam marks entry, parent messaging |
+| **Student** | `nairee` | `student123` | Nairee Patel (Roll #101) | Digital student pass, personal timetable, homework submit modal, study notes/PDFs, report card, bus route, school calendar |
+| **Parent** | `parent_patel` | `parent123` | Rajesh Patel (Father) | **Multi-child switcher** (Nairee Patel & Rohan Patel), attendance alerts, grade trends, online fee payment with receipts, live syllabus, message teacher |
+
+*(A 1-click test credentials drawer is also available on the login page for effortless testing!)*
+
+---
+
+## 🏛️ System Architecture & Data Flow
 
 ```mermaid
 graph TD
-    subgraph Clients ["Client Applications"]
-        Web["🖥️ Web Portal (React + Vite + Tailwind CSS)<br/>Windows / Desktop / Tablets"]
-        Mobile["📱 Mobile App (React Native + Expo)<br/>Android / iOS Companion"]
+    subgraph SingleEntry ["1. Unified Authentication"]
+        Login["🔐 Single Universal Login Page<br/>(Username/ID + Password)"]
     end
 
-    subgraph ServerLayer ["Backend & Business Logic"]
-        API["⚡ Node.js & Express REST API Server (:5000)"]
-        Workflow["⚙️ Frappe Workflow Engine<br/>• Auto-Naming Series (EDU-STU-, EDU-FEE-, EDU-RES-)<br/>• Grade Scale & Percentage Calculations<br/>• Bulk Attendance Processor<br/>• Instant Fee Receipt Generator"]
+    subgraph Portals ["2. Role-Based Portals (Strict Isolation)"]
+        Admin["👑 Admin / Principal Portal"]
+        Teacher["🎓 Teacher Portal"]
+        Student["🌟 Student Portal (Personal Scoped)"]
+        Parent["👨‍👩‍👧 Parent Portal (Multi-Child Switcher)"]
     end
 
-    subgraph DatabaseLayer ["Persistence Engine"]
-        DB[("📦 SQLite Database (backend/data/frappe_education.db)<br/>Direct Frappe DocType Tables: tabStudent, tabFees, etc.")]
+    subgraph BackendEngine ["3. Express REST API & Shared Database"]
+        API["⚡ Node.js & Express API Server (:5000)"]
+        DB[("📦 SQLite Database (frappe_education.db)<br/>tabUser, tabStudent, tabParent, tabParentStudent,<br/>tabSyllabus, tabHomework, tabAnnouncement, tabFees")]
     end
 
-    Web -->|HTTP / JSON REST API| API
-    Mobile -->|HTTP / JSON REST API| API
-    API --> Workflow
-    Workflow --> DB
+    Login -->|Auto-Detect Role| Admin
+    Login -->|Auto-Detect Role| Teacher
+    Login -->|Auto-Detect Role| Student
+    Login -->|Auto-Detect Role| Parent
+
+    Admin <-->|Manage Accounts, Circulars, Fees| API
+    Teacher <-->|Mark Attendance, Grades, Syllabus| API
+    Student <-->|Submit Work, View Own Grades & Notes| API
+    Parent <-->|Pay Fees, View Child Progress, Message| API
+
+    API <--> DB
 ```
 
 ---
 
-## 🌟 Key Modules & Workflows Replicated
+## ⚡ How Everything Connects (Data Flow Rules)
 
-### 1. Student Directory & Profiles (`tabStudent`, `tabGuardian`)
-- Direct implementation of Frappe's `tabStudent` schema with auto-naming series `EDU-STU-YYYY-XXXXX`.
-- Comprehensive records including personal bio, roll numbers, blood group, contact info, and guardian parent relationships (`tabGuardian`).
-- **Interactive Student Dossier Drawer** featuring 4 detailed tabs:
-  - **Bio & Guardians**: Complete contact information, relationship types, and residential address.
-  - **Attendance History**: Cumulative attendance percentage gauge and historical daily logs.
-  - **Academic Grades**: Subject marks, percentages, letter grade badges, and faculty remarks.
-  - **Fee Ledger**: Itemized billing breakdown and verified payment status.
+The single shared SQLite database ensures that data is never duplicated and propagates across portals in real time:
 
-### 2. Frappe Bulk Attendance Tool (`tabStudentAttendance`)
-- Replicates the official Frappe bulk attendance tool interface.
-- Select any student batch and calendar date.
-- One-click **"Mark All Present"** or individual status toggling (`Present`, `Absent`, `Late`, `Excused`).
-- Submits attendance in real-time and recalculates class and student attendance percentages instantly.
-
-### 3. Subject Schedule & Timetable (`tabSubjectSchedule`, `tabCourse`, `tabProgram`)
-- Weekly academic timetable grid (Monday through Friday) mapping classrooms, time slots (08:30 – 15:30), subjects, and faculty professors.
-- Color-coded subject blocks (Advanced Mathematics, Computer Science, Physics Lab, Literature).
-- Filter by student batch or specific day of the week.
-
-### 4. Examination Gradebook & Report Cards (`tabAssessmentPlan`, `tabAssessmentResult`)
-- Examination criteria with maximum scores and syllabus weightages (`tabAssessmentPlan`).
-- Marks entry modal for teachers with auto-calculation of percentages and letter grade mapping (`A+`, `A`, `B+`, `B`, `C`, `F`).
-- Report card view featuring class rankings and faculty comments.
-
-### 5. Fees & Invoicing Workflow (`tabFees`, `tabFeeComponent`)
-- Invoices generated with itemized fee components (Tuition, Lab Fee, Library, Sports).
-- **Interactive "Pay Now" Workflow**:
-  - Select payment gateway (Credit Card / Stripe, Apple Pay, Bank Wire).
-  - Processes balance clearing, sets `outstanding_amount = 0`, switches status to `Paid`.
-  - Generates official printable payment receipts (`REC-2026-XXXXX`).
-
-### 6. Role-Based Perspective Switcher
-Switch views effortlessly using the top navigation dropdown:
-- **👑 School Admin**: Full institutional overview, financials, batch allocation, and student directory.
-- **🎓 Faculty / Teacher**: Rapid attendance marking tool and exam grade entry.
-- **🌟 Student Portal (Nairee)**: Digital student ID card, personal timetable, attendance gauge, and fee payment reminders.
+1. **Teacher marks attendance** &rarr; instantly reflected in the student's attendance percentage and in the parent's daily attendance ledger with instant absence alerts.
+2. **Teacher enters exam marks or grades homework** &rarr; automatically updates the student's report card, the parent's progress view, and rolls up into the Admin's class performance stats.
+3. **Teacher updates syllabus progress** &rarr; live progress bars in both the Student and Parent portals immediately reflect completed topics vs. remaining before exams.
+4. **Teacher assigns homework or uploads study materials** &rarr; immediately appears in the student's portal with an interactive submission modal.
+5. **Admin creates a student account** &rarr; the system auto-generates a linked Parent account, issues credentials, and creates a default fee invoice.
+6. **Parent pays fee online** &rarr; generates an official receipt (`REC-2026-XXXXX`), clears the balance, and updates the school's total collection metrics in the Admin portal.
+7. **Admin broadcasts an announcement** &rarr; instantly visible across targeted portals (all, teachers, students, or parents).
 
 ---
 
-## 📱 Android Mobile Companion App (`mobile/`)
+## 🚀 Quick Launch Guide (Windows)
 
-Built with **React Native & Expo**, the mobile application brings Nairee's student portal directly to Android phones:
-- **Holographic Digital Student ID Card**: Complete with student photo, student ID, blood group, emergency contact, and a campus access barcode mockup.
-- **Today's Class Schedule**: Real-time timeline view with classroom locations and faculty names.
-- **Attendance Donut**: Visual gauge tracking presence percentage.
-- **Mobile Fee Payments**: Push reminder for pending tuition fees with Google Pay integration simulation and instant receipt generation.
+All dependencies and runtimes are pre-installed.
 
----
-
-## 🚀 Quick Start Guide (Windows)
-
-All runtimes (Node.js, npm, Python, Git) are already configured on your machine.
-
-### Method 1: One-Click Startup (Recommended)
-Open PowerShell in the project directory and run:
+### Launch All Services in 1-Click
+Open PowerShell in the project directory and execute:
 ```powershell
 .\start-all.ps1
 ```
-This automatically launches the Backend API and Web Portal in separate PowerShell windows!
+This opens the Backend API (`:5000`) and Web Portal (`:5173`) in independent PowerShell windows.
+
+### Individual Launch Commands
+- **Backend API**:
+  ```powershell
+  cd backend
+  node src/server.js
+  ```
+- **Web App**:
+  ```powershell
+  cd web
+  npm.cmd run dev
+  ```
+- **Mobile App**:
+  ```powershell
+  cd mobile
+  npm.cmd start
+  ```
 
 ---
 
-### Method 2: Manual Component Startup
-
-#### 1. Start Backend API
-```powershell
-.\start-backend.ps1
-# Or manually:
-cd backend
-npm start
-```
-> Server runs on: `http://localhost:5000`
-
-#### 2. Start Web Portal
-```powershell
-.\start-web.ps1
-# Or manually:
-cd web
-npm run dev
-```
-> Open browser at: `http://localhost:5173`
-
-#### 3. Start Android Mobile App
-```powershell
-.\start-mobile.ps1
-# Or manually:
-cd mobile
-npx expo start
-```
-> **To test on Android:** Install the free **Expo Go** app from the Google Play Store on your Android phone, and scan the QR code displayed in the terminal!
-
----
-
-## 🔄 Re-seeding Demo Data
-To reset or re-seed the SQLite database with fresh demo data at any time:
-```powershell
-cd backend
-node src/seed.js
-```
-
----
-
-## 🐙 Connecting to GitHub
-
-To push this project to your own GitHub account:
-
-1. Create a new repository on [GitHub](https://github.com/new) (e.g. `nairee-school-project`).
-2. Run the following commands in PowerShell from the project root:
-```powershell
-git remote add origin https://github.com/<YOUR-USERNAME>/<YOUR-REPO-NAME>.git
-git branch -M main
-git push -u origin main
-```
+## 🛡️ Security & Access Control
+- **No Self-Registration**: Accounts are issued exclusively by the School Administrator.
+- **Backend Route Scoping**: Student APIs are strictly scoped to the authenticated student ID. Parent APIs are strictly scoped to verified children in `tabParentStudent`.
+- **Session Continuity**: Browser session stored in encrypted `localStorage`, with 1-click Sign Out.

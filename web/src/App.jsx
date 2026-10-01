@@ -1,97 +1,94 @@
 import React, { useState, useEffect } from 'react';
+import LoginPage from './components/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
-import Sidebar from './components/Sidebar.jsx';
-import DashboardView from './components/DashboardView.jsx';
-import StudentsView from './components/StudentsView.jsx';
-import AttendanceView from './components/AttendanceView.jsx';
-import TimetableScheduleView from './components/TimetableScheduleView.jsx';
-import GradebookView from './components/GradebookView.jsx';
-import FeesView from './components/FeesView.jsx';
+import AdminPortalView from './components/AdminPortalView.jsx';
+import TeacherPortalView from './components/TeacherPortalView.jsx';
 import StudentPortalView from './components/StudentPortalView.jsx';
+import ParentPortalView from './components/ParentPortalView.jsx';
 import { api } from './api.js';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [activeRole, setActiveRole] = useState('admin');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [stats, setStats] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('swiftcampus_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
 
-  const loadStats = () => {
-    api.getDashboardStats().then(setStats).catch(console.error);
-  };
-
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  // When role changes, set sensible default tab
-  const handleRoleChange = (newRole) => {
-    setActiveRole(newRole);
-    if (newRole === 'student') {
-      setActiveTab('portal');
-    } else if (newRole === 'faculty') {
-      setActiveTab('attendance');
-    } else {
-      setActiveTab('dashboard');
+  const handleLoginSuccess = (user, token) => {
+    setCurrentUser(user);
+    try {
+      localStorage.setItem('swiftcampus_user', JSON.stringify(user));
+      if (token) localStorage.setItem('swiftcampus_token', token);
+    } catch (e) {
+      console.error('Failed to save session:', e);
     }
   };
 
+  const handleLogout = () => {
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem('swiftcampus_user');
+      localStorage.removeItem('swiftcampus_token');
+    } catch (e) {
+      console.error('Failed to clear session:', e);
+    }
+  };
+
+  const handleSwitchUser = async (username, password) => {
+    try {
+      const data = await api.login(username, password);
+      handleLoginSuccess(data.user, data.token);
+    } catch (err) {
+      console.error('Failed to switch user:', err);
+    }
+  };
+
+  // If not logged in, show the single universal homepage & login page
+  if (!currentUser) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Once authenticated, route strictly to the user's role-dedicated portal
   return (
     <div className="min-h-screen bg-[#f4fafa] flex flex-col font-sans text-[#1e3a42]">
-      {/* Top Navigation */}
+      {/* Top Universal Navbar with Active User Profile & Sign Out */}
       <Navbar
-        activeRole={activeRole}
-        setActiveRole={handleRoleChange}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        user={currentUser}
+        onLogout={handleLogout}
+        onSwitchUser={handleSwitchUser}
       />
 
-      {/* Main Body */}
-      <div className="flex flex-1 max-w-7xl w-full mx-auto">
-        {/* Left Sidebar */}
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          activeRole={activeRole}
-        />
+      {/* Scoped Role Portal View */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
+        {currentUser.role === 'admin' && (
+          <AdminPortalView user={currentUser} />
+        )}
 
-        {/* Content View Area */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-          {activeTab === 'dashboard' && (
-            <DashboardView stats={stats} onNavigate={setActiveTab} />
-          )}
+        {currentUser.role === 'teacher' && (
+          <TeacherPortalView user={currentUser} />
+        )}
 
-          {activeTab === 'portal' && (
-            <StudentPortalView onNavigate={setActiveTab} />
-          )}
+        {currentUser.role === 'student' && (
+          <StudentPortalView user={currentUser} />
+        )}
 
-          {activeTab === 'students' && (
-            <StudentsView
-              searchQuery={searchQuery}
-              onSelectStudentPortal={() => {
-                setActiveRole('student');
-                setActiveTab('portal');
-              }}
-            />
-          )}
+        {currentUser.role === 'parent' && (
+          <ParentPortalView user={currentUser} />
+        )}
+      </main>
 
-          {activeTab === 'attendance' && (
-            <AttendanceView onAttendanceSaved={loadStats} />
-          )}
-
-          {activeTab === 'schedule' && (
-            <TimetableScheduleView />
-          )}
-
-          {activeTab === 'gradebook' && (
-            <GradebookView />
-          )}
-
-          {activeTab === 'fees' && (
-            <FeesView onPaymentCompleted={loadStats} />
-          )}
-        </main>
-      </div>
+      {/* Subtle Footer */}
+      <footer className="border-t border-[#cde8e8] py-4 px-6 text-center text-xs text-slate-500 bg-white/60">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; SwiftCampus ERP</span>
+          <span className="text-[11px] text-teal-700 font-semibold">
+            Logged in as {currentUser.full_name} ({currentUser.role.toUpperCase()})
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

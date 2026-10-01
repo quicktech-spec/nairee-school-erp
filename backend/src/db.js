@@ -235,6 +235,138 @@ export async function initDatabase() {
       amount REAL NOT NULL,
       FOREIGN KEY (parent) REFERENCES tabFees(name) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS tabParent (
+      name TEXT PRIMARY KEY,
+      parent_name TEXT NOT NULL,
+      relation TEXT DEFAULT 'Father',
+      email TEXT,
+      mobile_number TEXT,
+      occupation TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabParentStudent (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      parent TEXT NOT NULL,
+      student TEXT NOT NULL,
+      relationship TEXT DEFAULT 'Parent',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (parent) REFERENCES tabParent(name),
+      FOREIGN KEY (student) REFERENCES tabStudent(name)
+    );
+
+    CREATE TABLE IF NOT EXISTS tabUser (
+      name TEXT PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role TEXT NOT NULL,
+      full_name TEXT NOT NULL,
+      email TEXT,
+      phone TEXT,
+      linked_id TEXT,
+      status TEXT DEFAULT 'Active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabSyllabus (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      course TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      student_batch TEXT NOT NULL,
+      chapter_number INTEGER NOT NULL,
+      chapter_title TEXT NOT NULL,
+      total_topics INTEGER DEFAULT 10,
+      completed_topics INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'In Progress',
+      faculty TEXT,
+      faculty_name TEXT,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabHomework (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      course TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      student_batch TEXT NOT NULL,
+      faculty TEXT,
+      faculty_name TEXT NOT NULL,
+      due_date TEXT NOT NULL,
+      instructions TEXT,
+      max_points REAL DEFAULT 100,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabHomeworkSubmission (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      homework_id INTEGER NOT NULL,
+      student TEXT NOT NULL,
+      student_name TEXT NOT NULL,
+      submission_text TEXT,
+      submission_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      status TEXT DEFAULT 'Submitted',
+      score REAL,
+      feedback TEXT,
+      FOREIGN KEY (homework_id) REFERENCES tabHomework(id),
+      FOREIGN KEY (student) REFERENCES tabStudent(name)
+    );
+
+    CREATE TABLE IF NOT EXISTS tabStudyMaterial (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      course TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      student_batch TEXT NOT NULL,
+      material_type TEXT DEFAULT 'PDF',
+      url TEXT,
+      description TEXT,
+      uploaded_by TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabAnnouncement (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      category TEXT DEFAULT 'Circular',
+      target_role TEXT DEFAULT 'All',
+      student_batch TEXT DEFAULT 'All',
+      posted_by TEXT NOT NULL,
+      priority TEXT DEFAULT 'Normal',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS tabTransportRoute (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      student TEXT NOT NULL,
+      student_name TEXT NOT NULL,
+      route_name TEXT NOT NULL,
+      bus_number TEXT NOT NULL,
+      driver_name TEXT NOT NULL,
+      driver_phone TEXT NOT NULL,
+      pickup_location TEXT NOT NULL,
+      pickup_time TEXT NOT NULL,
+      drop_location TEXT NOT NULL,
+      drop_time TEXT NOT NULL,
+      FOREIGN KEY (student) REFERENCES tabStudent(name)
+    );
+
+    CREATE TABLE IF NOT EXISTS tabMessage (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sender_username TEXT NOT NULL,
+      sender_name TEXT NOT NULL,
+      sender_role TEXT NOT NULL,
+      recipient_username TEXT,
+      recipient_name TEXT,
+      recipient_role TEXT,
+      student_batch TEXT,
+      subject TEXT NOT NULL,
+      message TEXT NOT NULL,
+      is_read INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
   console.log('Frappe Education SQLite database schema initialized successfully.');
 }
+

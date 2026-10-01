@@ -7,6 +7,16 @@ export async function seedDatabase() {
 
   // Clear existing data cleanly
   await db.exec(`
+    DELETE FROM tabMessage;
+    DELETE FROM tabTransportRoute;
+    DELETE FROM tabAnnouncement;
+    DELETE FROM tabStudyMaterial;
+    DELETE FROM tabHomeworkSubmission;
+    DELETE FROM tabHomework;
+    DELETE FROM tabSyllabus;
+    DELETE FROM tabUser;
+    DELETE FROM tabParentStudent;
+    DELETE FROM tabParent;
     DELETE FROM tabFeeComponent;
     DELETE FROM tabFees;
     DELETE FROM tabAssessmentResult;
@@ -189,6 +199,28 @@ export async function seedDatabase() {
       state: 'IL',
       pincode: '62704',
       country: 'United States'
+    },
+    {
+      name: 'EDU-STU-2026-00007',
+      first_name: 'Rohan',
+      middle_name: 'R.',
+      last_name: 'Patel',
+      student_name: 'Rohan Patel',
+      student_email_id: 'rohan.patel@student.school.edu',
+      student_mobile_number: '+1 (555) 019-9912',
+      date_of_birth: '2011-08-14',
+      gender: 'Male',
+      blood_group: 'O+',
+      image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200',
+      joining_date: '2025-09-01',
+      student_batch: 'BATCH-10B-2026',
+      roll_no: '107',
+      status: 'Active',
+      address_line_1: '742 Evergreen Terrace',
+      city: 'Springfield',
+      state: 'IL',
+      pincode: '62704',
+      country: 'United States'
     }
   ];
 
@@ -301,7 +333,10 @@ export async function seedDatabase() {
 
     // Jordan Taylor
     { plan: 'ASM-MATH-MID', crs: 'CRS-MATH-10', stu: 'EDU-STU-2026-00004', name: 'Jordan Taylor', batch: 'BATCH-10A-2026', score: 82, max: 100, pct: 82, grade: 'B', comment: 'Good effort, review polynomial factorization.' },
-    { plan: 'ASM-CS-MID', crs: 'CRS-CS-10', stu: 'EDU-STU-2026-00004', name: 'Jordan Taylor', batch: 'BATCH-10A-2026', score: 87, max: 100, pct: 87, grade: 'B+', comment: 'Solid algorithmic implementation.' }
+    { plan: 'ASM-CS-MID', crs: 'CRS-CS-10', stu: 'EDU-STU-2026-00004', name: 'Jordan Taylor', batch: 'BATCH-10A-2026', score: 87, max: 100, pct: 87, grade: 'B+', comment: 'Solid algorithmic implementation.' },
+
+    // Rohan Patel
+    { plan: 'ASM-MATH-MID', crs: 'CRS-MATH-10', stu: 'EDU-STU-2026-00007', name: 'Rohan Patel', batch: 'BATCH-10B-2026', score: 88, max: 100, pct: 88, grade: 'B+', comment: 'Very solid work on geometric proofs.' }
   ];
 
   let resCount = 1;
@@ -429,7 +464,125 @@ export async function seedDatabase() {
     }
   }
 
-  console.log('✅ Frappe Education database successfully seeded with all DocTypes!');
+  // 11. Parents & Multi-Child Linkage
+  await db.run(`
+    INSERT INTO tabParent (name, parent_name, relation, email, mobile_number, occupation) VALUES
+    ('PAR-001', 'Rajesh Patel', 'Father', 'rajesh.patel@gmail.com', '+1 (555) 901-2234', 'Software Engineering Director'),
+    ('PAR-002', 'Vikram Sharma', 'Father', 'v.sharma@gmail.com', '+1 (555) 902-3345', 'Architectural Consultant')
+  `);
+
+  await db.run(`
+    INSERT INTO tabParentStudent (parent, student, relationship) VALUES
+    ('PAR-001', 'EDU-STU-2026-00001', 'Father'),
+    ('PAR-001', 'EDU-STU-2026-00007', 'Father'),
+    ('PAR-002', 'EDU-STU-2026-00002', 'Father')
+  `);
+
+  // 12. Authentication Users (tabUser)
+  // Demo accounts for each role:
+  // Admin: admin / admin123
+  // Teacher: teacher_jenkins / teacher123, teacher_anderson / teacher123
+  // Student: nairee / student123, aarav / student123
+  // Parent: parent_patel / parent123, parent_sharma / parent123
+  await db.run(`
+    INSERT INTO tabUser (name, username, password, role, full_name, email, phone, linked_id, status) VALUES
+    ('USR-001', 'admin', 'admin123', 'admin', 'Dr. Marcus Vance (Principal)', 'principal@school.edu', '+1 (555) 100-2000', NULL, 'Active'),
+    ('USR-002', 'teacher_jenkins', 'teacher123', 'teacher', 'Prof. Sarah Jenkins', 's.jenkins@school.edu', '+1 (555) 345-6789', 'EDU-FAC-2026-00002', 'Active'),
+    ('USR-003', 'teacher_anderson', 'teacher123', 'teacher', 'Dr. Robert Anderson', 'r.anderson@school.edu', '+1 (555) 234-5678', 'EDU-FAC-2026-00001', 'Active'),
+    ('USR-004', 'nairee', 'student123', 'student', 'Nairee Patel', 'nairee.patel@student.school.edu', '+1 (555) 019-2831', 'EDU-STU-2026-00001', 'Active'),
+    ('USR-005', 'aarav', 'student123', 'student', 'Aarav Sharma', 'aarav.sharma@student.school.edu', '+1 (555) 019-3321', 'EDU-STU-2026-00002', 'Active'),
+    ('USR-006', 'parent_patel', 'parent123', 'parent', 'Rajesh Patel', 'rajesh.patel@gmail.com', '+1 (555) 901-2234', 'PAR-001', 'Active'),
+    ('USR-007', 'parent_sharma', 'parent123', 'parent', 'Vikram Sharma', 'v.sharma@gmail.com', '+1 (555) 902-3345', 'PAR-002', 'Active')
+  `);
+
+  // 13. Syllabus Tracking
+  const syllabusItems = [
+    { course: 'CRS-MATH-10', subject: 'Mathematics', batch: 'BATCH-10A-2026', ch: 1, title: 'Unit 1: Functions, Sequences & Polynomial Limits', tot: 10, comp: 10, status: 'Completed', fac: 'EDU-FAC-2026-00002', fac_name: 'Prof. Sarah Jenkins' },
+    { course: 'CRS-MATH-10', subject: 'Mathematics', batch: 'BATCH-10A-2026', ch: 2, title: 'Unit 2: Differential Calculus & Chain Rule', tot: 12, comp: 10, status: 'In Progress', fac: 'EDU-FAC-2026-00002', fac_name: 'Prof. Sarah Jenkins' },
+    { course: 'CRS-MATH-10', subject: 'Mathematics', batch: 'BATCH-10A-2026', ch: 3, title: 'Unit 3: Integral Calculus & Area Under Curves', tot: 14, comp: 4, status: 'In Progress', fac: 'EDU-FAC-2026-00002', fac_name: 'Prof. Sarah Jenkins' },
+    { course: 'CRS-MATH-10', subject: 'Mathematics', batch: 'BATCH-10A-2026', ch: 4, title: 'Unit 4: Linear Algebra, Matrices & Determinants', tot: 10, comp: 0, status: 'Upcoming', fac: 'EDU-FAC-2026-00002', fac_name: 'Prof. Sarah Jenkins' },
+    { course: 'CRS-CS-10', subject: 'Computer Science', batch: 'BATCH-10A-2026', ch: 1, title: 'Module 1: Relational Data Models & SQL Joins', tot: 8, comp: 8, status: 'Completed', fac: 'EDU-FAC-2026-00003', fac_name: 'Ms. Elena Rostova' },
+    { course: 'CRS-CS-10', subject: 'Computer Science', batch: 'BATCH-10A-2026', ch: 2, title: 'Module 2: RESTful Web APIs, Middleware & Express', tot: 10, comp: 9, status: 'In Progress', fac: 'EDU-FAC-2026-00003', fac_name: 'Ms. Elena Rostova' },
+    { course: 'CRS-CS-10', subject: 'Computer Science', batch: 'BATCH-10A-2026', ch: 3, title: 'Module 3: React Architecture, Hooks & Global State', tot: 10, comp: 7, status: 'In Progress', fac: 'EDU-FAC-2026-00003', fac_name: 'Ms. Elena Rostova' },
+    { course: 'CRS-PHY-10', subject: 'Physics', batch: 'BATCH-10A-2026', ch: 1, title: 'Section 1: Classical Mechanics & Dynamic Motion', tot: 10, comp: 10, status: 'Completed', fac: 'EDU-FAC-2026-00001', fac_name: 'Dr. Robert Anderson' },
+    { course: 'CRS-PHY-10', subject: 'Physics', batch: 'BATCH-10A-2026', ch: 2, title: 'Section 2: Electromagnetism & Field Induction', tot: 12, comp: 8, status: 'In Progress', fac: 'EDU-FAC-2026-00001', fac_name: 'Dr. Robert Anderson' },
+    { course: 'CRS-PHY-10', subject: 'Physics', batch: 'BATCH-10A-2026', ch: 3, title: 'Section 3: Thermodynamics & Kinetic Energy', tot: 8, comp: 0, status: 'Upcoming', fac: 'EDU-FAC-2026-00001', fac_name: 'Dr. Robert Anderson' },
+    { course: 'CRS-ENG-10', subject: 'English Literature', batch: 'BATCH-10A-2026', ch: 1, title: 'Part 1: Shakespearean Dramatic Rhetoric & Sonnets', tot: 6, comp: 6, status: 'Completed', fac: 'EDU-FAC-2026-00004', fac_name: 'Mr. David Miller' },
+    { course: 'CRS-ENG-10', subject: 'English Literature', batch: 'BATCH-10A-2026', ch: 2, title: 'Part 2: Modernist Essays & Expository Composition', tot: 8, comp: 5, status: 'In Progress', fac: 'EDU-FAC-2026-00004', fac_name: 'Mr. David Miller' }
+  ];
+
+  for (const s of syllabusItems) {
+    await db.run(`
+      INSERT INTO tabSyllabus (course, subject, student_batch, chapter_number, chapter_title, total_topics, completed_topics, status, faculty, faculty_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [s.course, s.subject, s.batch, s.ch, s.title, s.tot, s.comp, s.status, s.fac, s.fac_name]);
+  }
+
+  // 14. Homework & Assignments
+  await db.run(`
+    INSERT INTO tabHomework (id, title, course, subject, student_batch, faculty, faculty_name, due_date, instructions, max_points) VALUES
+    (1, 'Calculus Problem Set #4: Derivative Applications & Tangents', 'CRS-MATH-10', 'Mathematics', 'BATCH-10A-2026', 'EDU-FAC-2026-00002', 'Prof. Sarah Jenkins', '2026-10-06', 'Solve questions 1 through 15 from Chapter 2 Review. Show all algebraic substitution steps.', 100),
+    (2, 'Fullstack React Architecture: Build Reusable Data Table', 'CRS-CS-10', 'Computer Science', 'BATCH-10A-2026', 'EDU-FAC-2026-00003', 'Ms. Elena Rostova', '2026-10-04', 'Create a responsive React table component with search filtering, sorting, and pagination props. Include test suite.', 100),
+    (3, 'Physics Lab Report: Pendulum Damping & Gravitational Constant', 'CRS-PHY-10', 'Physics', 'BATCH-10A-2026', 'EDU-FAC-2026-00001', 'Dr. Robert Anderson', '2026-10-08', 'Compile the experimental dataset from Tuesday lab, compute standard deviation and error margin.', 100)
+  `);
+
+  await db.run(`
+    INSERT INTO tabHomeworkSubmission (homework_id, student, student_name, submission_text, status, score, feedback) VALUES
+    (2, 'EDU-STU-2026-00001', 'Nairee Patel', 'Repository URL: https://github.com/nairee/react-data-table. Implemented clean custom hooks and memoized row filters with 98% Jest code coverage.', 'Graded', 98, 'Flawless component structure and documentation. Outstanding work Nairee!'),
+    (1, 'EDU-STU-2026-00001', 'Nairee Patel', 'Completed all 15 problems. Scanned derivations and algebraic steps uploaded.', 'Submitted', NULL, 'Under review by Prof. Jenkins'),
+    (2, 'EDU-STU-2026-00002', 'Aarav Sharma', 'Submitted code with pagination and multi-column sorting features.', 'Graded', 92, 'Very solid implementation, ensure cleanup in useEffect hooks.')
+  `);
+
+  // 15. Study Material / Notes
+  await db.run(`
+    INSERT INTO tabStudyMaterial (title, course, subject, student_batch, material_type, url, description, uploaded_by) VALUES
+    ('Unit 2: Differential Calculus Complete Formula Sheet & Theorems', 'CRS-MATH-10', 'Mathematics', 'BATCH-10A-2026', 'PDF', 'https://school.edu/materials/math-unit2-derivatives.pdf', 'Essential theorems, chain rule derivations, and 25 practice problems with full step-by-step solutions.', 'Prof. Sarah Jenkins'),
+    ('Clean Code in Modern Web Development & State Patterns', 'CRS-CS-10', 'Computer Science', 'BATCH-10A-2026', 'Slides', 'https://school.edu/materials/cs10-react-patterns.pdf', 'Lecture slides covering unidirectional data flow, custom hooks, and architectural scalability.', 'Ms. Elena Rostova'),
+    ('Electromagnetism Experimental Simulator & Maxwell Equations Guide', 'CRS-PHY-10', 'Physics', 'BATCH-10A-2026', 'Reference Link', 'https://school.edu/materials/physics-em-simulator.html', 'Interactive 3D magnetic field simulations and laboratory reference guidelines.', 'Dr. Robert Anderson'),
+    ('Modern Shakespearean Analysis & Rhetorical Devices', 'CRS-ENG-10', 'English Literature', 'BATCH-10A-2026', 'PDF', 'https://school.edu/materials/eng10-shakespeare-rhetoric.pdf', 'Comprehensive study notes on dramatic irony, meter, and classical soliloquies.', 'Mr. David Miller')
+  `);
+
+  // 16. Announcements
+  await db.run(`
+    INSERT INTO tabAnnouncement (title, content, category, target_role, student_batch, posted_by, priority) VALUES
+    ('Term 1 Mid-Term Examination Timetable & Guidelines', 'The official timetable for Term 1 examinations has been published. Exams commence on October 14, 2026. Hall tickets will be downloadable from student and parent portals starting October 7.', 'Exam', 'All', 'All', 'Principal Dr. Marcus Vance', 'High'),
+    ('Annual Inter-School STEM & Robotics Fair 2026', 'Nairee International School is proud to host the 2026 STEM Fair on November 5th. Project submissions open next week. All students are invited to register projects.', 'Event', 'All', 'All', 'Prof. Sarah Jenkins', 'Normal'),
+    ('Term 1 Parent-Teacher Meeting (PTM) Schedule', 'PTM for Grade 10-A and 10-B is scheduled for Saturday, October 10th from 09:00 AM to 01:30 PM. Parents can view their scheduled consultation slot in the portal.', 'PTM', 'parent', 'BATCH-10A-2026', 'Admin Office', 'High'),
+    ('Mandatory Faculty Pedagogical Council & Syllabus Alignment', 'All department heads and faculty members are requested to attend the quarterly syllabus review meeting in Boardroom A on Friday at 03:45 PM.', 'Circular', 'teacher', 'All', 'Principal Dr. Marcus Vance', 'Normal')
+  `);
+
+  // 17. Transport Routes
+  await db.run(`
+    INSERT INTO tabTransportRoute (student, student_name, route_name, bus_number, driver_name, driver_phone, pickup_location, pickup_time, drop_location, drop_time) VALUES
+    ('EDU-STU-2026-00001', 'Nairee Patel', 'Route 04 — North City Express', 'KA-04-E-8821', 'Mr. David K.', '+1 (555) 882-1920', 'Green Valley Stop (Gate 2)', '07:35 AM', 'Green Valley Stop (Gate 2)', '03:45 PM'),
+    ('EDU-STU-2026-00007', 'Rohan Patel', 'Route 04 — North City Express', 'KA-04-E-8821', 'Mr. David K.', '+1 (555) 882-1920', 'Green Valley Stop (Gate 2)', '07:35 AM', 'Green Valley Stop (Gate 2)', '03:45 PM'),
+    ('EDU-STU-2026-00002', 'Aarav Sharma', 'Route 02 — Westside Runner', 'KA-02-B-4412', 'Mr. Alan Torres', '+1 (555) 441-2980', 'West Sunset Boulevard #124', '07:45 AM', 'West Sunset Boulevard #124', '03:50 PM')
+  `);
+
+  // 18. Communication Messages
+  await db.run(`
+    INSERT INTO tabMessage (sender_username, sender_name, sender_role, recipient_username, recipient_name, recipient_role, student_batch, subject, message, is_read) VALUES
+    ('teacher_jenkins', 'Prof. Sarah Jenkins', 'teacher', 'parent_patel', 'Rajesh Patel', 'parent', 'BATCH-10A-2026', 'Commendation: Nairee’s Performance in Advanced Mathematics', 'Dear Mr. Patel, I wanted to personally congratulate you on Nairee’s exceptional performance in the Calculus unit evaluation (98%). Her problem-solving skills and discipline in class are remarkable. We are recommending her for the National STEM Olympiad.', 1),
+    ('parent_patel', 'Rajesh Patel', 'parent', 'teacher_jenkins', 'Prof. Sarah Jenkins', 'teacher', 'BATCH-10A-2026', 'Re: Commendation: Nairee’s Performance in Advanced Mathematics', 'Dear Prof. Jenkins, thank you so much for the encouraging note! Nairee enjoys your classes immensely and has already begun preparing for the Olympiad problem sets. We truly appreciate your mentorship.', 1),
+    ('admin', 'Dr. Marcus Vance', 'admin', NULL, 'All Parents', 'parent', 'BATCH-10A-2026', 'Welcome to Academic Term 1 & Digital Portal Access', 'Dear Parents and Guardians, welcome to Academic Term 1 at Nairee International School. We have enabled live attendance tracking, fee receipts, and syllabus progress directly through the SwiftCampus parent portal.', 1)
+  `);
+
+  // 19. Also add fees and attendance records for Rohan Patel (child #2 for Rajesh Patel)
+  await db.run(`
+    INSERT INTO tabFees (
+      name, student, student_name, program, student_batch, academic_year, academic_term,
+      posting_date, due_date, grand_total, outstanding_amount, status, payment_date, payment_method, receipt_no
+    ) VALUES (
+      'EDU-FEE-2026-00005', 'EDU-STU-2026-00007', 'Rohan Patel', 'PROG-HIGH-SCH', 'BATCH-10B-2026', '2026-2027', 'Term 1',
+      '2026-08-15', '2026-10-15', 1250.00, 1250.00, 'Unpaid', NULL, NULL, NULL
+    )
+  `);
+
+  await db.run(`
+    INSERT INTO tabFeeComponent (parent, fee_category, description, amount) VALUES
+    ('EDU-FEE-2026-00005', 'Tuition Fee', 'Grade 10 Academic Tuition', 1000.00),
+    ('EDU-FEE-2026-00005', 'Extracurricular & Athletics', 'Sports Equipment & Clubs', 250.00)
+  `);
 }
 
 // Run directly if invoked from CLI
