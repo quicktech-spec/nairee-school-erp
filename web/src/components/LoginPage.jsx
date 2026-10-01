@@ -14,6 +14,8 @@ import {
   School
 } from 'lucide-react';
 import { api } from '../api.js';
+import naireeLogo from '../assets/nairee-logo.png';
+import loginCartoon from '../assets/login-cartoon.png';
 
 export default function LoginPage({ onLoginSuccess }) {
   const [username, setUsername] = useState('');
@@ -105,7 +107,7 @@ export default function LoginPage({ onLoginSuccess }) {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
             <img 
-              src="/nairee-logo.png" 
+              src={naireeLogo} 
               alt="Nairee" 
               className="h-10 w-auto object-contain" 
             />
@@ -131,7 +133,7 @@ export default function LoginPage({ onLoginSuccess }) {
           {/* Left Column: Exact Cartoon Illustration from media_1790867259798.png */}
           <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col items-center justify-center bg-white border-b lg:border-b-0 lg:border-r border-slate-100">
             <img 
-              src="/login-cartoon.png" 
+              src={loginCartoon} 
               alt="Nairee School Admin Cartoon" 
               className="w-full max-w-md h-auto object-contain"
             />
@@ -144,7 +146,7 @@ export default function LoginPage({ onLoginSuccess }) {
               {/* Logo on Top & Login Title */}
               <div className="mb-6 text-center">
                 <img 
-                  src="/nairee-logo.png" 
+                  src={naireeLogo} 
                   alt="Nairee" 
                   className="h-11 mx-auto mb-3 object-contain" 
                 />

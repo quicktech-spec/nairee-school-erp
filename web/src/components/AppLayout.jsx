@@ -29,6 +29,8 @@ import {
   QrCode,
   Smartphone
 } from 'lucide-react';
+import naireeLogo from '../assets/nairee-logo.png';
+import webMobileQr from '../assets/web_mobile_qr.png';
 
 const NAV_CONFIG = {
   student: [
@@ -174,7 +176,7 @@ export default function AppLayout({
           <div className="flex items-center justify-between px-2 mb-8">
             <div className="flex items-center gap-3">
               <img
-                src="/nairee-logo.png"
+                src={naireeLogo}
                 alt="Nairee"
                 className="h-9 w-auto object-contain"
               />
@@ -466,7 +468,7 @@ export default function AppLayout({
             {/* QR Image */}
             <div className="flex flex-col items-center justify-center py-2 bg-slate-50 rounded-2xl border border-slate-200">
               <img
-                src="/web_mobile_qr.png"
+                src={webMobileQr}
                 alt="Nairee Mobile Direct QR Code"
                 className="w-56 h-56 rounded-xl shadow-md bg-white p-2"
               />
