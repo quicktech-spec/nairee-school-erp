@@ -36,12 +36,29 @@ export default function StudentPortalView({ user }) {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [selectedHw, setSelectedHw] = useState(null);
   const [submissionText, setSubmissionText] = useState('');
+  const [attachmentUrl, setAttachmentUrl] = useState('');
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
   const studentId = user?.student_id || user?.student?.name || 'EDU-STU-2026-00001';
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  const handleAttachmentUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingAttachment(true);
+      const res = await api.uploadFile(file);
+      setAttachmentUrl(res.url);
+      showToast(`Attached file "${file.name}"!`);
+    } catch (err) {
+      showToast('File upload failed: ' + err.message);
+    } finally {
+      setUploadingAttachment(false);
+    }
   };
 
   const loadStudentData = async () => {
@@ -79,18 +96,20 @@ export default function StudentPortalView({ user }) {
 
   const handleSubmitHomework = async (e) => {
     e.preventDefault();
-    if (!selectedHw || !submissionText.trim()) return;
+    if (!selectedHw || (!submissionText.trim() && !attachmentUrl)) return;
 
     try {
       await api.submitHomework({
         homework_id: selectedHw.id,
         student: studentId,
         student_name: student.student_name,
-        submission_text: submissionText
+        submission_text: submissionText,
+        attachment_url: attachmentUrl
       });
       showToast('Assignment submitted successfully! Notified your teacher for review.');
       setShowSubmitModal(false);
       setSubmissionText('');
+      setAttachmentUrl('');
       // Reload homework to update submission status
       api.getHomework({ batch: student.student_batch, student: studentId }).then(setHomeworkList);
     } catch (err) {
@@ -663,6 +682,30 @@ export default function StudentPortalView({ user }) {
                   onChange={(e) => setSubmissionText(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500 font-mono"
                 />
+              </div>
+
+              {/* Native File Upload Area for Student */}
+              <div className="border-2 border-dashed border-teal-200 hover:border-teal-400 rounded-2xl p-4 text-center bg-teal-50/50 transition-colors">
+                <input
+                  type="file"
+                  id="student-homework-file"
+                  className="hidden"
+                  onChange={handleAttachmentUpload}
+                  accept=".pdf,.doc,.docx,.zip,.py,.js,.html,.png,.jpg"
+                />
+                <label htmlFor="student-homework-file" className="cursor-pointer block">
+                  <Upload className="w-5 h-5 text-teal-600 mx-auto mb-1" />
+                  <span className="text-xs font-bold text-teal-800 block">
+                    {uploadingAttachment 
+                      ? 'Uploading file...' 
+                      : attachmentUrl 
+                        ? `Attached: ${attachmentUrl.split('/').pop()}` 
+                        : 'Attach Homework File (PDF, Code, or Document)'}
+                  </span>
+                  <span className="text-[10px] text-teal-600/80 block mt-0.5">
+                    Optional attachment up to 25MB
+                  </span>
+                </label>
               </div>
 
               <div className="flex space-x-3 pt-2">

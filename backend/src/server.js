@@ -1,15 +1,59 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { db, initDatabase } from './db.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadDir = path.join(__dirname, '..', 'uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 25 * 1024 * 1024 } // 25 MB limit
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(uploadDir));
+
+// Generic file upload endpoint
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  const fileUrl = `/uploads/${req.file.filename}`;
+  res.json({
+    url: fileUrl,
+    filename: req.file.originalname,
+    storedFilename: req.file.filename,
+    size: req.file.size,
+    mimetype: req.file.mimetype
+  });
+});
 
 // Initialize DB schema on startup
 await initDatabase();
@@ -921,18 +965,18 @@ app.get('/api/homework/:id/submissions', async (req, res) => {
 
 app.post('/api/homework/submit', async (req, res) => {
   try {
-    const { homework_id, student, student_name, submission_text } = req.body;
+    const { homework_id, student, student_name, submission_text, attachment_url } = req.body;
     const existing = await db.get('SELECT * FROM tabHomeworkSubmission WHERE homework_id = ? AND student = ?', [homework_id, student]);
     if (existing) {
       await db.run(
-        "UPDATE tabHomeworkSubmission SET submission_text = ?, submission_date = CURRENT_TIMESTAMP, status = 'Submitted' WHERE id = ?",
-        [submission_text, existing.id]
+        "UPDATE tabHomeworkSubmission SET submission_text = ?, attachment_url = COALESCE(?, attachment_url), submission_date = CURRENT_TIMESTAMP, status = 'Submitted' WHERE id = ?",
+        [submission_text, attachment_url, existing.id]
       );
     } else {
       await db.run(`
-        INSERT INTO tabHomeworkSubmission (homework_id, student, student_name, submission_text, status)
-        VALUES (?, ?, ?, ?, 'Submitted')
-      `, [homework_id, student, student_name, submission_text]);
+        INSERT INTO tabHomeworkSubmission (homework_id, student, student_name, submission_text, attachment_url, status)
+        VALUES (?, ?, ?, ?, ?, 'Submitted')
+      `, [homework_id, student, student_name, submission_text, attachment_url]);
     }
     res.json({ message: 'Homework submitted successfully' });
   } catch (err) {

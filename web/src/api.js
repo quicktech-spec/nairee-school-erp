@@ -316,6 +316,18 @@ export const api = {
     const res = await fetch(`${API_BASE}/parent/child/${studentId}/summary`);
     if (!res.ok) throw new Error('Failed to load child summary');
     return res.json();
+  },
+
+  // File Upload
+  async uploadFile(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) throw new Error('Failed to upload file');
+    return res.json();
   }
 };
 

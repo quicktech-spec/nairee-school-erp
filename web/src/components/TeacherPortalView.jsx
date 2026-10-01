@@ -41,6 +41,7 @@ export default function TeacherPortalView({ user }) {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedHomeworkForGrading, setSelectedHomeworkForGrading] = useState(null);
   const [submissionsList, setSubmissionsList] = useState([]);
+  const [uploadingMaterial, setUploadingMaterial] = useState(false);
 
   // Form states
   const [newHomework, setNewHomework] = useState({
@@ -169,6 +170,28 @@ export default function TeacherPortalView({ user }) {
       api.getHomework({ batch: selectedBatch }).then(setHomeworkList);
     } catch (err) {
       showToast(err.message || 'Failed to create homework');
+    }
+  };
+
+  // Handle Native File Upload for Study Materials
+  const handleMaterialFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingMaterial(true);
+      const res = await api.uploadFile(file);
+      const fileType = file.name.endsWith('.pdf') ? 'PDF' : (file.name.endsWith('.pptx') || file.name.endsWith('.ppt')) ? 'Slides' : 'PDF';
+      setNewMaterial(prev => ({
+        ...prev,
+        url: res.url,
+        material_type: fileType,
+        title: prev.title || file.name.replace(/\.[^/.]+$/, "")
+      }));
+      showToast(`File "${file.name}" uploaded successfully!`);
+    } catch (err) {
+      showToast('File upload failed: ' + err.message);
+    } finally {
+      setUploadingMaterial(false);
     }
   };
 
@@ -915,6 +938,30 @@ export default function TeacherPortalView({ user }) {
                   onChange={(e) => setNewMaterial({ ...newMaterial, title: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
                 />
+              </div>
+
+              {/* Native File Upload Area */}
+              <div className="border-2 border-dashed border-teal-200 hover:border-teal-400 rounded-2xl p-4 text-center bg-teal-50/50 transition-colors">
+                <input
+                  type="file"
+                  id="teacher-material-file"
+                  className="hidden"
+                  onChange={handleMaterialFileUpload}
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.zip"
+                />
+                <label htmlFor="teacher-material-file" className="cursor-pointer block">
+                  <Upload className="w-5 h-5 text-teal-600 mx-auto mb-1" />
+                  <span className="text-xs font-bold text-teal-800 block">
+                    {uploadingMaterial 
+                      ? 'Uploading file to server...' 
+                      : newMaterial.url 
+                        ? `File attached: ${newMaterial.url.split('/').pop()}` 
+                        : 'Click to select and upload document / PDF'}
+                  </span>
+                  <span className="text-[10px] text-teal-600/80 block mt-0.5">
+                    Supports PDF, Word, PowerPoint slides up to 25MB
+                  </span>
+                </label>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

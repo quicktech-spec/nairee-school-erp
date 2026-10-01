@@ -101,7 +101,7 @@ export default function AttendanceView({ onAttendanceSaved }) {
         </div>
       )}
 
-      {/* Control Bar: SwiftCampus Bulk Attendance Header */}
+      {/* Control Bar: Bulk Attendance Header */}
       <div className="bg-white p-6 rounded-2xl border border-[#cde8e8] shadow-swift-card space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>

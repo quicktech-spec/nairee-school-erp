@@ -304,6 +304,7 @@ export async function initDatabase() {
       student TEXT NOT NULL,
       student_name TEXT NOT NULL,
       submission_text TEXT,
+      attachment_url TEXT,
       submission_date DATETIME DEFAULT CURRENT_TIMESTAMP,
       status TEXT DEFAULT 'Submitted',
       score REAL,
@@ -367,6 +368,13 @@ export async function initDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  try {
+    await db.exec(`ALTER TABLE tabHomeworkSubmission ADD COLUMN attachment_url TEXT;`);
+  } catch (err) {
+    // Column already exists, safe to ignore
+  }
+
   console.log('Frappe Education SQLite database schema initialized successfully.');
 }
 

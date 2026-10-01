@@ -10,7 +10,7 @@ import { api } from './api.js';
 export default function App() {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('swiftcampus_user');
+      const saved = localStorage.getItem('nairee_user');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -20,8 +20,8 @@ export default function App() {
   const handleLoginSuccess = (user, token) => {
     setCurrentUser(user);
     try {
-      localStorage.setItem('swiftcampus_user', JSON.stringify(user));
-      if (token) localStorage.setItem('swiftcampus_token', token);
+      localStorage.setItem('nairee_user', JSON.stringify(user));
+      if (token) localStorage.setItem('nairee_token', token);
     } catch (e) {
       console.error('Failed to save session:', e);
     }
@@ -30,8 +30,8 @@ export default function App() {
   const handleLogout = () => {
     setCurrentUser(null);
     try {
-      localStorage.removeItem('swiftcampus_user');
-      localStorage.removeItem('swiftcampus_token');
+      localStorage.removeItem('nairee_user');
+      localStorage.removeItem('nairee_token');
     } catch (e) {
       console.error('Failed to clear session:', e);
     }
@@ -83,7 +83,7 @@ export default function App() {
       {/* Subtle Footer */}
       <footer className="border-t border-[#cde8e8] py-4 px-6 text-center text-xs text-slate-500 bg-white/60">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; SwiftCampus ERP</span>
+          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; Nairee ERP</span>
           <span className="text-[11px] text-teal-700 font-semibold">
             Logged in as {currentUser.full_name} ({currentUser.role.toUpperCase()})
           </span>

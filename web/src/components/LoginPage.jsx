@@ -111,7 +111,7 @@ export default function LoginPage({ onLoginSuccess }) {
               <div className="flex items-center space-x-2">
                 <span className="font-extrabold text-xl tracking-tight text-white">Nairee International School</span>
                 <span className="px-2 py-0.5 text-[11px] font-semibold tracking-wider uppercase bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
-                  SwiftCampus ERP
+                  Nairee ERP
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-medium">Unified Role-Based Education Management Platform</p>
@@ -150,7 +150,7 @@ export default function LoginPage({ onLoginSuccess }) {
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Log in with your school-issued ID and password. SwiftCampus automatically detects whether you are an 
+              Log in with your school-issued ID and password. Nairee automatically detects whether you are an 
               <span className="text-white font-semibold"> Admin</span>, 
               <span className="text-white font-semibold"> Teacher</span>, 
               <span className="text-white font-semibold"> Student</span>, or 
@@ -273,7 +273,7 @@ export default function LoginPage({ onLoginSuccess }) {
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
-                      <span>Sign In to SwiftCampus</span>
+                      <span>Sign In to Nairee Portal</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                     </>
                   )}
@@ -387,7 +387,7 @@ export default function LoginPage({ onLoginSuccess }) {
       {/* Footer */}
       <footer className="border-t border-teal-900/30 px-6 py-4 text-center text-xs text-slate-500">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; SwiftCampus Engine</span>
+          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; Nairee Engine</span>
           <div className="flex items-center space-x-4">
             <span className="hover:text-slate-400 transition-colors">Privacy Policy</span>
             <span>&bull;</span>

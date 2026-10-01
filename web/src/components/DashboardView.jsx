@@ -31,13 +31,13 @@ export default function DashboardView({ stats, onNavigate }) {
 
   return (
     <div className="space-y-8">
-      {/* ── SwiftCampus Hero Banner (Directly modeled after swipetouch.tech/pages/swiftcampus.html) ── */}
+      {/* ── Hero Banner ── */}
       <div className="relative overflow-hidden rounded-3xl bg-white border border-[#cde8e8] p-8 md:p-10 shadow-swift-card">
         {/* Subtle background gradient & dots */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-brand-100/60 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 max-w-3xl">
-          {/* SwiftCampus Pill Badge with Pulsing Dot */}
+          {/* Pill Badge with Pulsing Dot */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider mb-4">
             <span className="badge-dot"></span>
             School ERP • Flagship Campus System
@@ -49,7 +49,7 @@ export default function DashboardView({ stats, onNavigate }) {
           </h1>
 
           <p className="mt-4 text-swift-body text-sm sm:text-base leading-relaxed">
-            SwiftCampus gives principals, teachers, parents, and students a single connected platform — powered by Frappe Education workflows, built natively for Windows and Android.
+            Nairee gives principals, teachers, parents, and students a single connected platform — powered by Frappe Education workflows, built natively for Windows and Android.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -75,7 +75,7 @@ export default function DashboardView({ stats, onNavigate }) {
             </button>
           </div>
 
-          {/* SwiftCampus Hero Stats Counter Strip */}
+          {/* Nairee Hero Stats Counter Strip */}
           <div className="mt-8 pt-6 border-t border-[#cde8e8] grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-2xl sm:text-3xl font-extrabold text-brand-600">50K+</div>
@@ -97,7 +97,7 @@ export default function DashboardView({ stats, onNavigate }) {
         </div>
       </div>
 
-      {/* ── SwiftCampus Group Dashboard Section (.grp-shell style) ── */}
+      {/* ── Nairee Group Dashboard Section (.grp-shell style) ── */}
       <div className="bg-white rounded-3xl border border-[#cde8e8] overflow-hidden shadow-swift-md">
         {/* Topbar gradient */}
         <div className="bg-gradient-to-r from-swift-dark via-brand-900 to-brand-700 px-6 py-4 flex items-center justify-between text-white">
@@ -113,7 +113,7 @@ export default function DashboardView({ stats, onNavigate }) {
           </span>
         </div>
 
-        {/* SwiftCampus Integrated KPI Row (.grp-kpi-row) */}
+        {/* Nairee Integrated KPI Row (.grp-kpi-row) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-[#cde8e8] bg-white border-b border-[#cde8e8]">
           <div className="p-5 text-center">
             <p className="text-2xl font-extrabold text-brand-600">{students}</p>
@@ -189,7 +189,7 @@ export default function DashboardView({ stats, onNavigate }) {
         </div>
       </div>
 
-      {/* ── SwiftCampus 6-Card Module Grid (.module-grid & .mod style) ── */}
+      {/* ── Nairee 6-Card Module Grid (.module-grid & .mod style) ── */}
       <div>
         <div className="text-center max-w-xl mx-auto mb-6">
           <span className="badge-dot inline-block mb-1"></span>
@@ -271,7 +271,7 @@ export default function DashboardView({ stats, onNavigate }) {
         </div>
       </div>
 
-      {/* ── SwiftCampus Integrations Strip (.int-strip & .int-chip style) ── */}
+      {/* ── Nairee Integrations Strip (.int-strip & .int-chip style) ── */}
       <div className="p-6 rounded-2xl bg-white border border-[#cde8e8] text-center shadow-swift-sm">
         <p className="text-xs font-bold uppercase tracking-wider text-swift-muted">
           Platform Architecture & Standards

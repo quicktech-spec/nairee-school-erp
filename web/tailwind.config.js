@@ -20,6 +20,16 @@ export default {
           900: '#134e4a',
           950: '#042f2e',
         },
+        nairee: {
+          dark: '#0c1f2c',
+          body: '#1e3a42',
+          muted: '#52737d',
+          base: '#f4fafa',
+          soft: '#edfafa',
+          electric: '#06b6d4',
+          border: '#cde8e8',
+          borderTeal: 'rgba(20, 184, 166, 0.22)',
+        },
         swift: {
           dark: '#0c1f2c',
           body: '#1e3a42',
@@ -43,6 +53,11 @@ export default {
         sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
+        'nairee-sm': '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
+        'nairee-md': '0 4px 16px rgba(0,0,0,0.08)',
+        'nairee-lg': '0 8px 32px rgba(0,0,0,0.10)',
+        'nairee-teal': '0 8px 32px rgba(20,184,166,0.20)',
+        'nairee-card': '0 2px 12px rgba(12,31,44,0.07)',
         'swift-sm': '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
         'swift-md': '0 4px 16px rgba(0,0,0,0.08)',
         'swift-lg': '0 8px 32px rgba(0,0,0,0.10)',

@@ -1,6 +1,6 @@
-# SwiftCampus — Nairee International School Management ERP
+# Nairee — School Management ERP
 
-> **A role-based school management website replicating the database schema and business workflows of [Frappe Education](https://github.com/frappe/education), crafted with the lucrative UI/UX design language of [SwipeTouch SwiftCampus](https://swipetouch.tech/pages/swiftcampus.html). Built to run natively on Windows and Android.**
+> **A role-based school management platform replicating the database schema and business workflows of Frappe Education. Built to run natively on Windows and Android.**
 
 ---
 

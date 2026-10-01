@@ -39,7 +39,7 @@ export default function TimetableScheduleView() {
 
   return (
     <div className="space-y-6">
-      {/* SwiftCampus Timetable Header & Control Bar */}
+      {/* Nairee Timetable Header & Control Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#cde8e8] shadow-swift-card">
         <div>
           <div className="flex items-center gap-2">
@@ -88,7 +88,7 @@ export default function TimetableScheduleView() {
         </div>
       </div>
 
-      {/* SwiftCampus AI Optimization Suggestion Box (.ai-suggestion style) */}
+      {/* Nairee AI Optimization Suggestion Box (.ai-suggestion style) */}
       <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 via-emerald-50 to-[#f0fdfa] border border-brand-200 shadow-swift-sm flex items-start gap-3 text-xs text-swift-body">
         <div className="p-2 rounded-xl bg-brand-600 text-white shrink-0 mt-0.5 shadow-swift-sm">
           <Zap className="w-4 h-4 text-swift-electric" />
@@ -108,7 +108,7 @@ export default function TimetableScheduleView() {
         </div>
       </div>
 
-      {/* SwiftCampus Timetable Shell (.tt-shell & cards) */}
+      {/* Nairee Timetable Shell (.tt-shell & cards) */}
       {loading ? (
         <div className="p-12 text-center text-swift-muted text-xs bg-white rounded-2xl border border-[#cde8e8]">
           Loading timetable grid...
@@ -147,7 +147,7 @@ export default function TimetableScheduleView() {
                       </div>
                     ) : (
                       daySlots.map((slot) => {
-                        // SwiftCampus pastel slot chip styling
+                        // Nairee pastel slot chip styling
                         let badgeBg = 'bg-teal-50 text-teal-800 border-teal-200';
                         if (slot.subject.includes('Math')) badgeBg = 'bg-indigo-50 text-indigo-800 border-indigo-200';
                         if (slot.subject.includes('Computer')) badgeBg = 'bg-sky-50 text-sky-800 border-sky-200';

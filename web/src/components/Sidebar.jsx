@@ -28,7 +28,7 @@ export default function Sidebar({ activeTab, setActiveTab, activeRole }) {
   return (
     <aside className="w-64 bg-white border-r border-[#cde8e8] p-4 flex flex-col justify-between shrink-0 min-h-[calc(100vh-65px)]">
       <div className="space-y-6">
-        {/* SwiftCampus Institute Pill */}
+        {/* Nairee Institute Pill */}
         <div className="px-3.5 py-3 rounded-2xl bg-[#edfafa] border border-[#cde8e8] flex items-center gap-3">
           <div className="p-2 rounded-xl bg-brand-600 text-white shadow-swift-sm">
             <School className="w-4 h-4" />
@@ -82,7 +82,7 @@ export default function Sidebar({ activeTab, setActiveTab, activeRole }) {
       <div className="pt-4 border-t border-[#cde8e8] text-[11px] px-3 space-y-1">
         <div className="flex items-center gap-1.5 text-brand-700 font-bold text-xs">
           <Cpu className="w-3.5 h-3.5 text-swift-electric" />
-          <span>SwiftCampus ERP Engine</span>
+          <span>Nairee ERP Engine</span>
         </div>
         <p className="text-swift-muted text-[10px]">Frappe DocType Schema • SQLite Core</p>
         <div className="pt-2 flex items-center gap-1.5 text-emerald-600 font-semibold text-[10px]">

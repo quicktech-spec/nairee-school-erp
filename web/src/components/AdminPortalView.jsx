@@ -166,7 +166,7 @@ export default function AdminPortalView({ user }) {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `SwiftCampus_${type}_report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `Nairee_${type}_report_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

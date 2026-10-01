@@ -43,7 +43,7 @@ export default function Navbar({ user, onLogout, onSwitchUser }) {
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
-                SwiftCampus ERP
+                Nairee ERP
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-medium">Single Shared Database &bull; Connected Portals</p>
