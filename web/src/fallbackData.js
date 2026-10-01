@@ -1,3 +1,99 @@
+// Fallback in-memory database store for static GitHub Pages / Netlify hosting
+export const INITIAL_DB_STORE = {
+  tabStudent: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'first_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'last_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'student_email_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'student_mobile_number', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'roll_number', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'attendance_percentage', type: 'FLOAT', pk: 0 },
+      { name: 'fee_status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { name: 'EDU-STU-2026-00001', first_name: 'Nairee', last_name: 'Patel', student_email_id: 'syalfreelance@gmail.com', student_mobile_number: '+91 98765 00001', batch_id: 'BATCH-10A-2026', roll_number: '10A-01', attendance_percentage: 97.5, fee_status: 'Paid' },
+      { name: 'EDU-STU-2026-00002', first_name: 'Aarav', last_name: 'Sharma', student_email_id: 'aarav.sharma@example.com', student_mobile_number: '+91 98765 00002', batch_id: 'BATCH-10A-2026', roll_number: '10A-02', attendance_percentage: 94.0, fee_status: 'Paid' },
+      { name: 'EDU-STU-2026-00003', first_name: 'Diya', last_name: 'Gupta', student_email_id: 'diya.gupta@example.com', student_mobile_number: '+91 98765 00003', batch_id: 'BATCH-10A-2026', roll_number: '10A-03', attendance_percentage: 98.2, fee_status: 'Pending' },
+      { name: 'EDU-STU-2026-00004', first_name: 'Rohan', last_name: 'Mehta', student_email_id: 'rohan.mehta@example.com', student_mobile_number: '+91 98765 00004', batch_id: 'BATCH-10A-2026', roll_number: '10A-04', attendance_percentage: 91.5, fee_status: 'Paid' },
+      { name: 'EDU-STU-2026-00005', first_name: 'Ananya', last_name: 'Iyer', student_email_id: 'ananya.iyer@example.com', student_mobile_number: '+91 98765 00005', batch_id: 'BATCH-10A-2026', roll_number: '10A-05', attendance_percentage: 99.0, fee_status: 'Paid' },
+      { name: 'EDU-STU-2026-00006', first_name: 'Kabir', last_name: 'Singh', student_email_id: 'kabir.singh@example.com', student_mobile_number: '+91 98765 00006', batch_id: 'BATCH-10B-2026', roll_number: '10B-01', attendance_percentage: 93.4, fee_status: 'Pending' }
+    ]
+  },
+  tabCourse: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'course_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'course_code', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'default_instructor', type: 'VARCHAR(255)', pk: 0 }
+    ],
+    rows: [
+      { name: 'CRS-MATH-10', course_name: 'Advanced Mathematics', course_code: 'MATH-101', department: 'Mathematics & Science', default_instructor: 'Prof. Sarah Jenkins' },
+      { name: 'CRS-PHYS-10', course_name: 'Physics & Lab Dynamics', course_code: 'PHYS-102', department: 'Physics & STEM', default_instructor: 'Dr. Marcus Vance' },
+      { name: 'CRS-CHEM-10', course_name: 'Organic & Applied Chemistry', course_code: 'CHEM-103', department: 'Chemistry & Bio', default_instructor: 'Dr. Marcus Vance' },
+      { name: 'CRS-COMP-10', course_name: 'Computer Science & AI Basics', course_code: 'CS-104', department: 'Computer Science', default_instructor: 'Prof. Sarah Jenkins' }
+    ]
+  },
+  tabStudentBatch: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'batch_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'grade_level', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'section', type: 'VARCHAR(10)', pk: 0 },
+      { name: 'class_teacher', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'room_no', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { name: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', grade_level: 'Grade 10', section: 'A', class_teacher: 'Prof. Sarah Jenkins', room_no: 'Room 204' },
+      { name: 'BATCH-10B-2026', batch_name: 'Grade 10 - Section B', grade_level: 'Grade 10', section: 'B', class_teacher: 'Dr. Marcus Vance', room_no: 'Room 205' }
+    ]
+  },
+  tabFaculty: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'mobile_number', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'workload_hours', type: 'INT', pk: 0 }
+    ],
+    rows: [
+      { name: 'FAC-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', email: 'sjenkins@nairee.edu', mobile_number: '+91 98765 43211', workload_hours: 24 },
+      { name: 'FAC-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', email: 'admin@nairee.edu', mobile_number: '+91 98765 43210', workload_hours: 18 }
+    ]
+  },
+  tabFeeSchedule: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'due_date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { name: 'FEE-2026-001', student_id: 'EDU-STU-2026-00001', fee_title: 'Term 1 Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid' },
+      { name: 'FEE-2026-002', student_id: 'EDU-STU-2026-00001', fee_title: 'Science Lab & STEM Materials Fee', amount: 8500, due_date: '2026-10-25', status: 'Pending' }
+    ]
+  },
+  tabStudentAttendance: {
+    columns: [
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'attendance_date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 }
+    ],
+    rows: [
+      { name: 'ATT-001', student_id: 'EDU-STU-2026-00001', attendance_date: '2026-10-01', status: 'Present', batch_id: 'BATCH-10A-2026' },
+      { name: 'ATT-002', student_id: 'EDU-STU-2026-00002', attendance_date: '2026-10-01', status: 'Present', batch_id: 'BATCH-10A-2026' },
+      { name: 'ATT-003', student_id: 'EDU-STU-2026-00003', attendance_date: '2026-10-01', status: 'Absent', batch_id: 'BATCH-10A-2026' }
+    ]
+  }
+};
+
 // Fallback data for static deployments (GitHub Pages, Netlify standalone)
 export const FALLBACK_DATA = {
   users: [
@@ -17,7 +113,9 @@ export const FALLBACK_DATA = {
   students: [
     { id: 'EDU-STU-2026-00001', full_name: 'Nairee Patel', roll_number: '10A-01', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'syalfreelance@gmail.com', phone: '+91 98765 00001', attendance_percentage: 97.5, fee_status: 'Paid', balance_due: 0 },
     { id: 'EDU-STU-2026-00002', full_name: 'Aarav Sharma', roll_number: '10A-02', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'aarav.sharma@example.com', phone: '+91 98765 00002', attendance_percentage: 94.0, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU-STU-2026-00003', full_name: 'Diya Gupta', roll_number: '10A-03', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'diya.gupta@example.com', phone: '+91 98765 00003', attendance_percentage: 98.2, fee_status: 'Pending', balance_due: 12500 }
+    { id: 'EDU-STU-2026-00003', full_name: 'Diya Gupta', roll_number: '10A-03', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'diya.gupta@example.com', phone: '+91 98765 00003', attendance_percentage: 98.2, fee_status: 'Pending', balance_due: 12500 },
+    { id: 'EDU-STU-2026-00004', full_name: 'Rohan Mehta', roll_number: '10A-04', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'rohan.mehta@example.com', phone: '+91 98765 00004', attendance_percentage: 91.5, fee_status: 'Paid', balance_due: 0 },
+    { id: 'EDU-STU-2026-00005', full_name: 'Ananya Iyer', roll_number: '10A-05', batch_id: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', attendance_percentage: 99.0, fee_status: 'Paid', balance_due: 0 }
   ],
   batches: [
     { id: 'BATCH-10A-2026', name: 'Grade 10 - Section A', grade: '10', section: 'A', room: 'Room 204' },
