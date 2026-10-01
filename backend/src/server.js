@@ -125,7 +125,18 @@ app.get('/api/students', async (req, res) => {
   try {
     const { batch, search } = req.query;
     let query = `
-      SELECT s.*, b.batch_name, p.program_name
+      SELECT s.*, b.batch_name, p.program_name,
+        COALESCE(
+          (SELECT g.guardian_name FROM tabGuardian g WHERE g.student = s.name LIMIT 1),
+          (SELECT par.parent_name FROM tabParentStudent ps JOIN tabParent par ON ps.parent = par.name WHERE ps.student = s.name LIMIT 1),
+          'Guardian'
+        ) as guardian_name,
+        COALESCE(
+          (SELECT g.mobile_number FROM tabGuardian g WHERE g.student = s.name AND g.mobile_number IS NOT NULL LIMIT 1),
+          (SELECT par.mobile_number FROM tabParentStudent ps JOIN tabParent par ON ps.parent = par.name WHERE ps.student = s.name LIMIT 1),
+          s.student_mobile_number,
+          '+1 (555) 019-2831'
+        ) as guardian_mobile
       FROM tabStudent s
       LEFT JOIN tabStudentBatch b ON s.student_batch = b.name
       LEFT JOIN tabProgram p ON b.program = p.name
@@ -836,8 +847,27 @@ app.get('/api/admin/student-performance', async (req, res) => {
       if (avgGrade < 65) riskReasons.push(`Academic Concern (${avgGrade}%)`);
       if (feeDues > 1000) riskReasons.push(`Outstanding Dues ($${feeDues})`);
 
+      const guardian = await db.get(`
+        SELECT g.guardian_name, g.mobile_number, g.email_address
+        FROM tabGuardian g
+        WHERE g.student = ?
+        LIMIT 1
+      `, [s.name]);
+      const parentRow = await db.get(`
+        SELECT par.parent_name, par.mobile_number, par.email
+        FROM tabParentStudent ps
+        JOIN tabParent par ON ps.parent = par.name
+        WHERE ps.student = ?
+        LIMIT 1
+      `, [s.name]);
+
+      const guardian_name = guardian?.guardian_name || parentRow?.parent_name || 'Parent/Guardian';
+      const guardian_mobile = guardian?.mobile_number || parentRow?.mobile_number || '+1 (555) 901-2234';
+
       enriched.push({
         ...s,
+        guardian_name,
+        guardian_mobile,
         attendancePct,
         avgGrade,
         feeDues,

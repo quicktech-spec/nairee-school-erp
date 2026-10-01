@@ -20,7 +20,11 @@ import {
   Shield,
   Layers,
   Sparkles,
-  Printer
+  Printer,
+  MessageSquare,
+  Copy,
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { api } from '../api.js';
 
@@ -66,6 +70,29 @@ export default function AdminPortalView({ user }) {
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  // Admin WhatsApp Communication State
+  const [adminWhatsAppModal, setAdminWhatsAppModal] = useState(null);
+  const [copiedAdminWhatsApp, setCopiedAdminWhatsApp] = useState(false);
+
+  const cleanPhone = (p) => (p || '').replace(/\D/g, '');
+
+  const openWhatsAppAlert = (student, type) => {
+    const phone = student.guardian_mobile || '+1 (555) 901-2234';
+    let defaultMsg = '';
+    if (type === 'risk') {
+      defaultMsg = `Dear Parent/Guardian of *${student.student_name}*,\n\nThis is an official communication from the Office of the Principal at Nairee International School.\n\nOur academic tracking system has flagged that ${student.student_name} currently has an attendance rate of ${student.attendancePct}% and an average grade of ${student.avgGrade}%.\n\nWe kindly request a Parent-Teacher conference with the Principal and class counselor. Please contact the school office at +1 (555) 234-5678 to schedule a convenient time.\n\nBest regards,\nOffice of Administration\nNairee International School`;
+    } else {
+      defaultMsg = `Dear Parent/Guardian of *${student.student_name}*,\n\nGreetings from Nairee International School Accounts Office.\n\nThis is a friendly reminder that an outstanding tuition fee balance of *$${student.feeDues || 1450}* remains due for Term 1. Please remit the pending balance via the Parent Portal online payment gateway or at the school fee desk by this Friday.\n\nFor fee receipt or queries, reply to this message or contact accounts@nairee.edu.\n\nThank you,\nFinance Department\nNairee International School`;
+    }
+
+    setAdminWhatsAppModal({
+      type,
+      student,
+      phone,
+      message: defaultMsg
+    });
   };
 
   const loadAllData = async () => {
@@ -692,12 +719,22 @@ export default function AdminPortalView({ user }) {
                         )}
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => handleSendReminder(s.student_name, s.feeDues)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white text-slate-700 text-[11px] font-semibold transition-colors"
-                        >
-                          Notify Parent
-                        </button>
+                        <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => openWhatsAppAlert(s, s.isAtRisk ? 'risk' : 'fee')}
+                            className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold flex items-center space-x-1 shadow-sm transition-all"
+                            title="Instant WhatsApp Parent Alert"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </button>
+                          <button
+                            onClick={() => handleSendReminder(s.student_name, s.feeDues)}
+                            className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white text-slate-700 text-[11px] font-semibold transition-colors"
+                          >
+                            SMS
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -768,6 +805,84 @@ export default function AdminPortalView({ user }) {
                   <div className="text-[11px] text-slate-400">Invoices issued</div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Instant WhatsApp Fee Recovery Roster */}
+          <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-slate-800 text-sm flex items-center space-x-2">
+                  <MessageSquare className="w-4 h-4 text-emerald-600" />
+                  <span>Pending Dues &amp; Direct WhatsApp Recovery</span>
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Send 1-click personalized fee reminders directly to parent WhatsApp numbers
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                WhatsApp Enabled
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-600">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
+                  <tr>
+                    <th className="py-3 px-4">Student</th>
+                    <th className="py-3 px-4">Class</th>
+                    <th className="py-3 px-4">Guardian Contact</th>
+                    <th className="py-3 px-4">Outstanding Due</th>
+                    <th className="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {studentPerf.filter(s => (s.feeDues || 0) > 0).length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="py-6 text-center text-xs text-slate-400">
+                        No outstanding dues found across current batches.
+                      </td>
+                    </tr>
+                  ) : (
+                    studentPerf.filter(s => (s.feeDues || 0) > 0).map((s) => (
+                      <tr key={s.name} className="hover:bg-teal-50/30 transition-colors">
+                        <td className="py-3 px-4 flex items-center space-x-3">
+                          <img
+                            src={s.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                            alt={s.student_name}
+                            className="w-8 h-8 rounded-full object-cover border border-slate-200"
+                          />
+                          <div>
+                            <div className="font-bold text-slate-800">{s.student_name}</div>
+                            <div className="text-[10px] text-slate-400">Roll #{s.roll_no}</div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 font-semibold text-slate-700">
+                          {s.batch_name || s.student_batch}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="font-semibold text-slate-800">{s.guardian_name || 'Parent'}</div>
+                          <div className="text-[11px] text-teal-600 font-mono">{s.guardian_mobile || '+1 (555) 901-2234'}</div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                            ${s.feeDues}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <button
+                            onClick={() => openWhatsAppAlert(s, 'fee')}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center space-x-1.5 shadow-sm transition-all"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            <span>WhatsApp Reminder</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -1218,6 +1333,103 @@ export default function AdminPortalView({ user }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN WHATSAPP DISPATCH MODAL */}
+      {adminWhatsAppModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-teal-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">
+                    {adminWhatsAppModal.type === 'risk' ? 'Official Academic & Attendance Alert' : 'Tuition Fee Due Notice'}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Direct WhatsApp dispatch to student guardian
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setAdminWhatsAppModal(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Recipient Card */}
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <img
+                  src={adminWhatsAppModal.student.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                  alt={adminWhatsAppModal.student.student_name}
+                  className="w-10 h-10 rounded-full object-cover border border-white shadow-sm"
+                />
+                <div>
+                  <div className="font-bold text-slate-800 text-xs">
+                    {adminWhatsAppModal.student.student_name}
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Guardian: <strong className="text-slate-700">{adminWhatsAppModal.student.guardian_name || 'Parent'}</strong>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">WhatsApp Number</span>
+                <span className="text-xs font-mono font-bold text-emerald-600">
+                  {adminWhatsAppModal.phone}
+                </span>
+              </div>
+            </div>
+
+            {/* Editable WhatsApp Text Preview */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-700 block">
+                Message Content (Pre-formatted with school signature)
+              </label>
+              <textarea
+                rows={7}
+                value={adminWhatsAppModal.message}
+                onChange={(e) => setAdminWhatsAppModal({ ...adminWhatsAppModal, message: e.target.value })}
+                className="w-full p-3 rounded-2xl border border-slate-200 text-xs font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(adminWhatsAppModal.message);
+                  setCopiedAdminWhatsApp(true);
+                  setTimeout(() => setCopiedAdminWhatsApp(false), 2000);
+                }}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copiedAdminWhatsApp ? 'Copied to Clipboard!' : 'Copy Text'}</span>
+              </button>
+
+              <a
+                href={`https://wa.me/${cleanPhone(adminWhatsAppModal.phone)}?text=${encodeURIComponent(adminWhatsAppModal.message)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  showToast('Opening WhatsApp...');
+                  setTimeout(() => setAdminWhatsAppModal(null), 1000);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 flex items-center justify-center space-x-1.5 transition-all text-center"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open in WhatsApp</span>
+              </a>
+            </div>
           </div>
         </div>
       )}

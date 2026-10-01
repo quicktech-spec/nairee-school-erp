@@ -16,7 +16,10 @@ import {
   ChevronRight,
   Sparkles,
   Users,
-  AlertCircle
+  AlertCircle,
+  MessageCircle,
+  Copy,
+  Check
 } from 'lucide-react';
 import { api } from '../api.js';
 
@@ -42,6 +45,10 @@ export default function TeacherPortalView({ user }) {
   const [selectedHomeworkForGrading, setSelectedHomeworkForGrading] = useState(null);
   const [submissionsList, setSubmissionsList] = useState([]);
   const [uploadingMaterial, setUploadingMaterial] = useState(false);
+  const [whatsAppModalStudent, setWhatsAppModalStudent] = useState(null);
+  const [whatsAppTemplate, setWhatsAppTemplate] = useState('absent');
+  const [copiedText, setCopiedText] = useState(false);
+  const [showBulkWhatsAppModal, setShowBulkWhatsAppModal] = useState(false);
 
   // Form states
   const [newHomework, setNewHomework] = useState({
@@ -272,6 +279,24 @@ export default function TeacherPortalView({ user }) {
     }
   };
 
+  const cleanPhone = (phone) => {
+    if (!phone) return '15559012234';
+    const digits = phone.replace(/\D/g, '');
+    return digits.length >= 10 ? digits : '15559012234';
+  };
+
+  const getWhatsAppMessage = (student, templateKey) => {
+    const sName = student?.student_name || 'Student';
+    const gName = student?.guardian_name || 'Parent';
+    if (templateKey === 'late') {
+      return `⏰ Nairee International School: Dear ${gName}, your ward ${sName} arrived LATE to morning lectures today (${attendanceDate}). Please ensure on-time arrival for tomorrow's 08:30 AM assembly.`;
+    }
+    if (templateKey === 'sick') {
+      return `🩺 Nairee International School: Dear ${gName}, we noted ${sName} is absent today due to illness. We wish them a speedy recovery! Please let us know if any lecture materials should be sent over.`;
+    }
+    return `🚨 Official Attendance Notice: Dear ${gName}, your ward ${sName} was recorded ABSENT today (${attendanceDate}) for Grade 10-A at Nairee International School. Please reply with the reason for absence or call our office at +1 (555) 019-2000.`;
+  };
+
   return (
     <div className="space-y-6">
       {/* Toast Alert */}
@@ -468,7 +493,7 @@ export default function TeacherPortalView({ user }) {
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => {
@@ -477,15 +502,27 @@ export default function TeacherPortalView({ user }) {
                   setAttendanceRecords(allPres);
                   showToast('Set all students to Present');
                 }}
-                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer transition-colors"
               >
                 Mark All Present
               </button>
 
+              {/* Bulk WhatsApp Button */}
+              {Object.values(attendanceRecords).filter(st => st === 'Absent').length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowBulkWhatsAppModal(true)}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/30 flex items-center space-x-1.5 transition-all cursor-pointer animate-pulse"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>WhatsApp Absentees ({Object.values(attendanceRecords).filter(st => st === 'Absent').length})</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={handleSaveAttendance}
-                className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center space-x-1.5"
+                className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center space-x-1.5 cursor-pointer transition-all"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Save & Sync Attendance</span>
@@ -551,14 +588,17 @@ export default function TeacherPortalView({ user }) {
                         </td>
                         <td className="py-3 px-4 text-right text-[11px] font-medium">
                           {currentStatus === 'Absent' ? (
-                            <a
-                              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Dear Parent, your ward ${s.student_name} was marked ABSENT today (${attendanceDate}) at Nairee International School. Please contact the school office if this was in error.`)}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold shadow-sm transition-all"
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setWhatsAppModalStudent(s);
+                                setCopiedText(false);
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow-sm shadow-emerald-600/30 transition-all cursor-pointer"
                             >
-                              <span>💬 WhatsApp Parent</span>
-                            </a>
+                              <MessageCircle className="w-3.5 h-3.5" />
+                              <span>WhatsApp Parent</span>
+                            </button>
                           ) : (
                             <span className="text-teal-600">Syncs to Student & Parent</span>
                           )}
@@ -1183,6 +1223,188 @@ export default function TeacherPortalView({ user }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* INDIVIDUAL WHATSAPP MODAL */}
+      {whatsAppModalStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-emerald-100">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-base">WhatsApp Parent Notification</h3>
+                  <p className="text-xs text-slate-500">
+                    Direct notification to <span className="font-bold text-slate-700">{whatsAppModalStudent.guardian_name || 'Guardian'}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWhatsAppModalStudent(null)}
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Student & Phone Badge */}
+            <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src={whatsAppModalStudent.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                  alt={whatsAppModalStudent.student_name}
+                  className="w-10 h-10 rounded-xl object-cover border border-emerald-200"
+                />
+                <div>
+                  <p className="text-xs font-extrabold text-slate-800">{whatsAppModalStudent.student_name}</p>
+                  <p className="text-[11px] text-slate-500">Roll #{whatsAppModalStudent.roll_no} &bull; {whatsAppModalStudent.batch_name || selectedBatch}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">Guardian Phone</span>
+                <span className="font-mono text-xs font-black text-emerald-700">
+                  {whatsAppModalStudent.guardian_mobile || whatsAppModalStudent.student_mobile_number || '+1 (555) 901-2234'}
+                </span>
+              </div>
+            </div>
+
+            {/* Template Selector Pills */}
+            <div className="mt-4">
+              <label className="block text-xs font-bold text-slate-700 mb-2">Select Message Template:</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'absent', label: '🚨 Absence' },
+                  { id: 'late', label: '⏰ Late Arrival' },
+                  { id: 'sick', label: '🩺 Medical Leave' }
+                ].map((tpl) => (
+                  <button
+                    key={tpl.id}
+                    type="button"
+                    onClick={() => { setWhatsAppTemplate(tpl.id); setCopiedText(false); }}
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold text-center transition-all cursor-pointer ${
+                      whatsAppTemplate === tpl.id
+                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {tpl.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Message Preview Box */}
+            <div className="mt-4">
+              <label className="block text-xs font-bold text-slate-700 mb-1">Message Preview:</label>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed font-sans min-h-[90px]">
+                {getWhatsAppMessage(whatsAppModalStudent, whatsAppTemplate)}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const text = getWhatsAppMessage(whatsAppModalStudent, whatsAppTemplate);
+                  navigator.clipboard.writeText(text);
+                  setCopiedText(true);
+                  showToast('Copied message text to clipboard!');
+                  setTimeout(() => setCopiedText(false), 3000);
+                }}
+                className="py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                {copiedText ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                <span>{copiedText ? 'Copied!' : 'Copy Text'}</span>
+              </button>
+
+              <a
+                href={`https://wa.me/${cleanPhone(whatsAppModalStudent.guardian_mobile || whatsAppModalStudent.student_mobile_number)}?text=${encodeURIComponent(getWhatsAppMessage(whatsAppModalStudent, whatsAppTemplate))}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setWhatsAppModalStudent(null)}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Open WhatsApp Direct &rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BULK WHATSAPP ABSENTEES DRAWER */}
+      {showBulkWhatsAppModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 flex flex-col max-h-[85vh]">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-base">Bulk Absentees WhatsApp Dispatcher</h3>
+                  <p className="text-xs text-slate-500">
+                    {students.filter(s => attendanceRecords[s.name] === 'Absent').length} student(s) marked absent today ({attendanceDate})
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBulkWhatsAppModal(false)}
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="overflow-y-auto divide-y divide-slate-100 my-4 flex-1 pr-1">
+              {students.filter(s => attendanceRecords[s.name] === 'Absent').map((st) => {
+                const phone = st.guardian_mobile || st.student_mobile_number || '+1 (555) 901-2234';
+                const msg = getWhatsAppMessage(st, 'absent');
+                return (
+                  <div key={st.name} className="py-3.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={st.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                        alt={st.student_name}
+                        className="w-10 h-10 rounded-xl object-cover border border-slate-200"
+                      />
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">{st.student_name}</p>
+                        <p className="text-[11px] text-slate-500">
+                          Guardian: <span className="font-semibold text-slate-700">{st.guardian_name || 'Parent'}</span> &bull; {phone}
+                        </p>
+                      </div>
+                    </div>
+
+                    <a
+                      href={`https://wa.me/${cleanPhone(phone)}?text=${encodeURIComponent(msg)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/30 transition-all cursor-pointer shrink-0"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      <span>Send WhatsApp</span>
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowBulkWhatsAppModal(false)}
+                className="py-2.5 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+              >
+                Close Dispatcher
+              </button>
+            </div>
           </div>
         </div>
       )}

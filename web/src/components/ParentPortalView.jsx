@@ -626,17 +626,28 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-between text-xs">
+            <div className="p-4 rounded-xl bg-teal-50 border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div>
                 <span className="text-slate-500">Assigned Driver: <strong>{childSummary?.transport?.driver_name || 'Mr. David K.'}</strong></span>
                 <div className="text-slate-700 mt-0.5">Emergency Contact: <strong>{childSummary?.transport?.driver_phone || '+1 (555) 882-1920'}</strong></div>
               </div>
-              <a
-                href={`tel:${childSummary?.transport?.driver_phone || '+15558821920'}`}
-                className="px-3 py-1.5 rounded-lg bg-teal-500 text-white font-bold text-xs"
-              >
-                Call Driver
-              </a>
+              <div className="flex items-center space-x-2">
+                <a
+                  href={`https://wa.me/${(childSummary?.transport?.driver_phone || '15558821920').replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${childSummary?.transport?.driver_name || 'Driver'}, this is ${user?.full_name || 'Parent'} (Parent of ${activeChild?.student_name || 'Nairee'}). Regarding Bus ${childSummary?.transport?.bus_number || 'Route 04'}.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-sm transition-all"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>WhatsApp Driver</span>
+                </a>
+                <a
+                  href={`tel:${childSummary?.transport?.driver_phone || '+15558821920'}`}
+                  className="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition-colors"
+                >
+                  Call
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -645,18 +656,29 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
       {/* TAB 8: COMMUNICATION */}
       {activeTab === 'communication' && (
         <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex items-center justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h3 className="font-bold text-slate-800 text-sm">Parent-Teacher Communication</h3>
               <p className="text-xs text-slate-500">Direct message exchange with subject faculty & administration</p>
             </div>
-            <button
-              onClick={() => setShowMessageModal(true)}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/20 flex items-center space-x-1.5"
-            >
-              <Send className="w-4 h-4" />
-              <span>Message Teacher</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <a
+                href={`https://wa.me/15552345678?text=${encodeURIComponent(`Hello Prof. Sarah Jenkins, this is ${user?.full_name || 'Rajesh Patel'} (Parent of ${activeChild?.student_name || 'Nairee Patel'}). I would like to inquire about my child's coursework and progress.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 flex items-center space-x-1.5 transition-all"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>WhatsApp Teacher</span>
+              </a>
+              <button
+                onClick={() => setShowMessageModal(true)}
+                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/20 flex items-center space-x-1.5"
+              >
+                <Send className="w-4 h-4" />
+                <span>Message Portal</span>
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">
