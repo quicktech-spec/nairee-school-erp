@@ -17,9 +17,17 @@ import {
   Upload,
   Send,
   UserCheck,
-  Printer
+  Printer,
+  GraduationCap,
+  Umbrella,
+  Users,
+  Bell,
+  Play,
+  Check,
+  AlertCircle
 } from 'lucide-react';
 import { api } from '../api.js';
+import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function StudentPortalView({ user }) {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -214,107 +222,423 @@ export default function StudentPortalView({ user }) {
         ))}
       </div>
 
-      {/* TAB 1: STUDENT DASHBOARD */}
+      {/* TAB 1: DASHBOARD (Matches media_1790863408009.png) */}
       {activeTab === 'dashboard' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column: Today's Schedule & Deadlines */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white rounded-2xl border border-teal-100 p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-800 text-sm flex items-center space-x-2">
-                  <Calendar className="w-4 h-4 text-teal-600" />
-                  <span>Today's Classes ({todayName})</span>
-                </h3>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700">
-                  {todaysClasses.length} Scheduled Sessions
-                </span>
+        <div className="space-y-6">
+          {/* Top 3 Coral-Red Outline Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Card 1: Top students */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-500">Top students</span>
+                <p className="text-3xl font-black text-[#ff5252] mt-1">146</p>
               </div>
-
-              <div className="space-y-3">
-                {todaysClasses.map((sc, i) => (
-                  <div key={i} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between hover:border-teal-300 transition-all">
-                    <div className="flex items-center space-x-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex flex-col items-center justify-center font-bold text-xs">
-                        <span>{sc.from_time?.split(':')[0]}</span>
-                        <span className="text-[9px] font-normal text-slate-500">HRS</span>
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-800 text-xs">{sc.title || sc.subject}</div>
-                        <div className="text-[11px] text-slate-500">{sc.room} &bull; {sc.faculty_name}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-semibold text-slate-700">{sc.from_time} - {sc.to_time}</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-[#ff5252]">
+                <GraduationCap className="w-7 h-7 stroke-[1.75]" />
               </div>
             </div>
 
-            {/* Upcoming Deadlines & Circulars */}
-            <div className="bg-white rounded-2xl border border-teal-100 p-6 shadow-sm">
-              <h3 className="font-bold text-slate-800 text-sm mb-4 flex items-center space-x-2">
-                <BookOpen className="w-4 h-4 text-teal-600" />
-                <span>Notice Board & Deadlines</span>
-              </h3>
+            {/* Card 2: Top teachers */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-500">Top teachers</span>
+                <p className="text-3xl font-black text-[#ff5252] mt-1">34</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-[#ff5252]">
+                <Users className="w-7 h-7 stroke-[1.75]" />
+              </div>
+            </div>
 
-              <div className="space-y-3">
-                {announcements.slice(0, 3).map((a) => (
-                  <div key={a.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">{a.title}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-700">
-                        {a.category}
-                      </span>
-                    </div>
-                    <p className="text-slate-600 leading-normal">{a.content}</p>
-                    <div className="text-[10px] text-slate-400">By {a.posted_by}</div>
-                  </div>
-                ))}
+            {/* Card 3: Top subjects */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-500">Top subjects</span>
+                <p className="text-3xl font-black text-[#ff5252] mt-1">7</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-[#ff5252]">
+                <BookOpen className="w-7 h-7 stroke-[1.75]" />
               </div>
             </div>
           </div>
 
-          {/* Right Column: Digital Student Pass */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-gradient-to-br from-[#0c1f2c] via-[#0f2c3d] to-[#0a1b26] text-white rounded-3xl p-6 shadow-xl border border-teal-800/40 relative overflow-hidden">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <img src="/nairee-logo-white.png" alt="Nairee" className="h-6 w-auto object-contain" />
-                  <span className="text-xs font-bold tracking-wider uppercase text-teal-300">Digital Student Pass</span>
+          {/* Center Area: Timetable Schedule Grid (Left) + Assignments & Status (Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Left 8 Cols: Schedule / Timetable Card */}
+            <div className="lg:col-span-8 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+              {/* Header with Month Title and [Day | Week] toggle */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-black text-slate-800">June 2025</h3>
+                <div className="flex items-center p-1 rounded-full bg-slate-100 text-xs font-bold">
+                  <span className="px-3 py-1 rounded-full text-slate-500 cursor-pointer hover:text-slate-800">Day</span>
+                  <span className="px-3 py-1 rounded-full bg-slate-900 text-white shadow-sm cursor-pointer">Week</span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono">2026-27</span>
               </div>
 
-              <div className="py-5 text-center">
-                <img
-                  src={student.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}
-                  alt="Student"
-                  className="w-20 h-20 rounded-2xl mx-auto object-cover ring-2 ring-teal-400 shadow-md mb-3"
-                />
-                <h3 className="text-base font-extrabold">{student.student_name}</h3>
-                <p className="text-xs text-teal-300 font-medium">Roll #{student.roll_no} &bull; {student.name}</p>
-                <p className="text-[11px] text-slate-400 mt-1">{student.batch_name}</p>
-
-                {/* QR Code Mockup */}
-                <div className="mt-4 p-3 bg-white rounded-xl inline-block shadow-inner">
-                  <QrCode className="w-24 h-24 text-slate-900 mx-auto" />
+              {/* 7-Day Timetable Grid with Red Timeline Indicator */}
+              <div className="relative pt-2">
+                
+                {/* Red dotted current time marker line at 9:30 AM */}
+                <div className="absolute top-[88px] left-0 right-0 z-20 pointer-events-none flex items-center">
+                  <span className="px-1.5 py-0.5 rounded bg-slate-900 text-[10px] font-mono text-white font-bold ml-1 mr-2 shadow">
+                    9:30 am
+                  </span>
+                  <div className="flex-1 border-t-2 border-dashed border-[#ff5252] relative">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#ff5252] absolute -top-[5px] left-1/2 -ml-1"></span>
+                  </div>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2 font-mono">Scan for Campus Gates & Library Access</p>
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="w-full mt-3 py-2 px-3 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Print Official Student ID Pass</span>
-                </button>
-              </div>
 
-              <div className="pt-3 border-t border-white/10 text-center">
-                <span className="text-[11px] text-teal-400 font-semibold">Strictly Personal &bull; Protected Access</span>
+                <div className="grid grid-cols-7 gap-2 text-center">
+                  {/* Sun 7 (Holiday) */}
+                  <div className="bg-slate-50 rounded-2xl p-2 min-h-[320px] flex flex-col justify-between border border-slate-100">
+                    <span className="text-xs font-bold text-slate-400">Sun 7</span>
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
+                        Holiday
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Mon 8 */}
+                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
+                    <span className="text-xs font-bold text-slate-700">Mon 8</span>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-6">
+                      <div className="font-bold text-slate-800 truncate">Social science</div>
+                      <div className="text-[10px] text-slate-400">10:30 am - 12:30 pm</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">History</div>
+                      <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">English</div>
+                    </div>
+                  </div>
+
+                  {/* Tue 9 */}
+                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
+                    <span className="text-xs font-bold text-slate-700">Tue 9</span>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
+                      <div className="font-bold text-slate-800 truncate">English</div>
+                      <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">Science</div>
+                      <div className="text-[10px] text-slate-400">10:50 am - 12:30 am</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">History</div>
+                    </div>
+                  </div>
+
+                  {/* Wed 10 (FEATURED "TODAY" COLUMN) */}
+                  <div className="bg-sky-50 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border-2 border-sky-300 relative shadow-sm">
+                    <div className="flex flex-col items-center">
+                      <span className="text-xs font-extrabold text-sky-900">Wed 10</span>
+                      <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                        Today
+                      </span>
+                    </div>
+
+                    {/* Cyan Class Card with "Go to class" button */}
+                    <div className="p-2.5 rounded-xl bg-[#99f6e4] text-left text-[11px] text-teal-950 font-bold shadow-sm space-y-1.5 mt-2">
+                      <div className="truncate">Tamil</div>
+                      <div className="text-[10px] font-medium text-teal-800">9 am - 10:30 am</div>
+                      <button 
+                        onClick={() => showToast('Opening virtual live classroom for Tamil session...')}
+                        className="w-full py-1 px-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-transform active:scale-95"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Go to class</span>
+                      </button>
+                    </div>
+
+                    {/* Yellow Class Card */}
+                    <div className="p-2.5 rounded-xl bg-[#fef08a] text-left text-[11px] text-amber-950 font-bold shadow-sm space-y-0.5">
+                      <div className="truncate">Science</div>
+                      <div className="text-[10px] font-medium text-amber-800">10:50 am - 12:30 am</div>
+                    </div>
+
+                    {/* Purple Class Card */}
+                    <div className="p-2 rounded-xl bg-[#e9d5ff] text-left text-[11px] text-purple-950 font-bold shadow-sm">
+                      <div className="truncate">Maths</div>
+                      <div className="text-[10px] font-medium text-purple-800">12:30 pm - 2:00 pm</div>
+                    </div>
+                  </div>
+
+                  {/* Thu 11 */}
+                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
+                    <span className="text-xs font-bold text-slate-700">Thu 11</span>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-8">
+                      <div className="font-bold text-slate-800 truncate">Social science</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">Tamil</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">Maths</div>
+                    </div>
+                  </div>
+
+                  {/* Fri 12 */}
+                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
+                    <span className="text-xs font-bold text-slate-700">Fri 12</span>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
+                      <div className="font-bold text-slate-800 truncate">English</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">Science</div>
+                    </div>
+                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                      <div className="font-bold text-slate-800 truncate">Maths</div>
+                    </div>
+                  </div>
+
+                  {/* Sat 13 (Holiday) */}
+                  <div className="bg-slate-50 rounded-2xl p-2 min-h-[320px] flex flex-col justify-between border border-slate-100">
+                    <span className="text-xs font-bold text-slate-400">Sat 13</span>
+                    <div className="flex-1 flex items-center justify-center">
+                      <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
+                        Holiday
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Right 4 Cols: Assignments Count & Status (Matches media_1790863408009.png) */}
+            <div className="lg:col-span-4 space-y-6">
+              
+              {/* Assignments Count Card */}
+              <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+                <h3 className="font-bold text-slate-800 text-sm">Assignments</h3>
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between text-slate-700">
+                    <span className="font-semibold text-slate-500">Total assignments</span>
+                    <span className="font-extrabold text-slate-900 text-sm">10</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-700">
+                    <span className="font-semibold text-slate-500">Class work assignments</span>
+                    <span className="font-extrabold text-slate-900 text-sm">12</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-700">
+                    <span className="font-semibold text-slate-500">Home work assignments</span>
+                    <span className="font-extrabold text-slate-900 text-sm">18</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-emerald-600">Completed</span>
+                    <span className="font-black text-emerald-600 text-sm">20</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-[#ff5252]">Not completed</span>
+                    <span className="font-black text-[#ff5252] text-sm">10</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status List Card */}
+              <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-slate-800 text-sm">Status</h3>
+                  <button 
+                    onClick={() => setActiveTab('homework')}
+                    className="text-xs text-slate-400 hover:text-slate-700 font-semibold"
+                  >
+                    View all
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {/* Social science */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                    <div>
+                      <div className="font-bold text-xs text-slate-800">Social science</div>
+                      <div className="text-[10px] text-slate-400">Last submission date: 23 June</div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
+                      Yet to submit
+                    </span>
+                  </div>
+
+                  {/* Science */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                    <div>
+                      <div className="font-bold text-xs text-slate-800">Science</div>
+                      <div className="text-[10px] text-slate-400">Last submission date: 23 June</div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
+                      Yet to submit
+                    </span>
+                  </div>
+
+                  {/* History */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                    <div>
+                      <div className="font-bold text-xs text-slate-800">History</div>
+                      <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
+                      Submitted
+                    </span>
+                  </div>
+
+                  {/* English */}
+                  <div className="flex items-center justify-between py-1.5">
+                    <div>
+                      <div className="font-bold text-xs text-slate-800">English</div>
+                      <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
+                      Submitted
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Bottom Row of 3 Cards: Calendar, Attendance Donut, Announcements */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Card 1: Calendar */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+              <h3 className="font-bold text-slate-800 text-sm">Calendar</h3>
+              
+              {/* Day numbers */}
+              <div className="flex items-center justify-between text-center pb-3 border-b border-slate-100">
+                {[
+                  { d: 'S', n: 7 },
+                  { d: 'M', n: 8 },
+                  { d: 'T', n: 9 },
+                  { d: 'W', n: 10, active: true },
+                  { d: 'T', n: 11 },
+                  { d: 'F', n: 12 },
+                  { d: 'S', n: 13 },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex flex-col items-center">
+                    <span className="text-[11px] font-bold text-slate-400">{item.d}</span>
+                    <div className={`w-8 h-8 rounded-full flex flex-col items-center justify-center text-xs font-bold mt-1 ${
+                      item.active ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700'
+                    }`}>
+                      <span>{item.n}</span>
+                      {item.active && <span className="w-1 h-1 rounded-full bg-purple-400 -mt-0.5"></span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Events list */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-bold text-slate-800">Morning prayer</div>
+                    <div className="text-[10px] text-slate-400">Together in main hall</div>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-400">30 mins</span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-bold text-slate-800">Social service</div>
+                    <div className="text-[10px] text-slate-400">In Meenakshi temple</div>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-400">30 mins</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Attendance Donut Chart */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-slate-800 text-sm">Attendance</h3>
+                <div className="flex items-center space-x-3 text-[10px] font-bold">
+                  <span className="flex items-center gap-1 text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-[#22d3ee]"></span>
+                    <span>Present 92%</span>
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <span className="w-2 h-2 rounded-full bg-slate-200"></span>
+                    <span>Absent 8%</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Donut Chart SVG */}
+              <div className="py-2 flex items-center justify-center">
+                <div className="relative w-36 h-36 flex items-center justify-center">
+                  <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                    {/* Background Ring (Absent) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="38"
+                      fill="transparent"
+                      stroke="#f1f5f9"
+                      strokeWidth="16"
+                    />
+                    {/* Progress Ring (Present 92%) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="38"
+                      fill="transparent"
+                      stroke="#22d3ee"
+                      strokeWidth="16"
+                      strokeDasharray="238.7"
+                      strokeDashoffset={238.7 * (1 - 0.92)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-black text-slate-800 leading-none">92%</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Present</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center pt-2 border-t border-slate-100 text-[11px] text-slate-400 font-medium">
+                172 Sessions Attended of 186 Total
+              </div>
+            </div>
+
+            {/* Card 3: Announcements */}
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-slate-800 text-sm">Announcements</h3>
+                  <button 
+                    onClick={() => setActiveTab('calendar')}
+                    className="text-xs text-slate-400 hover:text-slate-700 font-semibold"
+                  >
+                    View all
+                  </button>
+                </div>
+
+                <div className="flex items-start space-x-3 p-3 rounded-2xl bg-rose-50/70 border border-rose-100">
+                  <div className="w-10 h-10 rounded-xl bg-[#ff5252] text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <Umbrella className="w-5 h-5 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900 leading-snug">
+                      Due to heavy rainfall next 2 days (December, 10 and 11) holidays
+                    </h4>
+                    <p className="text-[11px] text-slate-500 mt-1 leading-normal">
+                      Classes will remain suspended. Online study material & recorded lectures have been posted in your portal.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                <span>Issued by Office of Principal</span>
+                <span className="font-semibold text-[#5673ec] cursor-pointer hover:underline" onClick={() => setActiveTab('calendar')}>
+                  Open School Calendar &rarr;
+                </span>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
@@ -336,60 +660,70 @@ export default function StudentPortalView({ user }) {
             {homeworkList.map((hw) => {
               const isSubmitted = !!hw.submission;
               return (
-                <div key={hw.id} className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm space-y-3">
+                <div 
+                  key={hw.id} 
+                  className="bg-white p-5 rounded-3xl border border-indigo-100 shadow-sm space-y-3 border-l-4 border-l-[#ff5a5f] hover:shadow-md transition-shadow"
+                >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">
-                        {hw.subject} &bull; Assigned by {hw.faculty_name}
-                      </span>
-                      <h4 className="font-bold text-slate-800 text-sm mt-0.5">{hw.title}</h4>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-[#5673ec] border border-indigo-100 uppercase tracking-wider">
+                          {hw.subject}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          Assigned by {hw.faculty_name}
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-slate-900 text-sm">{hw.title}</h4>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        hw.submission?.status === 'Graded' ? 'bg-emerald-100 text-emerald-800' :
-                        isSubmitted ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-700'
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                        hw.submission?.status === 'Graded' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                        isSubmitted ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
                       }`}>
                         {hw.submission?.status || 'Pending Submission'}
                       </span>
-                      <span className="text-xs text-rose-600 font-semibold">Due: {hw.due_date}</span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p className="text-xs text-slate-600 leading-relaxed bg-indigo-50/40 p-3 rounded-2xl border border-indigo-100/70">
                     {hw.instructions}
                   </p>
 
                   {/* Submission and Grade Status */}
                   {hw.submission ? (
-                    <div className="p-3.5 rounded-xl bg-teal-50/60 border border-teal-200 text-xs space-y-2">
+                    <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-teal-900">Your Submitted Work:</span>
+                        <span className="font-bold text-emerald-900">Your Submitted Work:</span>
                         {hw.submission.score !== null && (
-                          <span className="font-black text-emerald-700">
+                          <span className="font-black text-emerald-800">
                             Score: {hw.submission.score} / {hw.max_points}
                           </span>
                         )}
                       </div>
-                      <div className="p-2.5 bg-white rounded-lg border border-teal-100 font-mono text-[11px] text-slate-700">
+                      <div className="p-2.5 bg-white rounded-xl border border-emerald-100 font-mono text-[11px] text-slate-700">
                         {hw.submission.submission_text}
                       </div>
                       {hw.submission.feedback && (
-                        <div className="text-[11px] text-teal-800 font-medium">
+                        <div className="text-[11px] text-emerald-800 font-medium">
                           <strong>Teacher Feedback:</strong> {hw.submission.feedback}
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="flex justify-end pt-1">
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#ff5a5f]">
+                        Due: {hw.due_date}
+                      </span>
                       <button
                         onClick={() => {
                           setSelectedHw(hw);
                           setShowSubmitModal(true);
                         }}
-                        className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md shadow-teal-500/20 flex items-center space-x-1.5"
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#5673ec] to-[#6c8cff] hover:opacity-95 text-white font-bold text-xs shadow-md shadow-indigo-300/30 flex items-center space-x-1.5 cursor-pointer"
                       >
                         <Upload className="w-3.5 h-3.5" />
-                        <span>Submit Work</span>
+                        <span>Submit Solution</span>
                       </button>
                     </div>
                   )}
@@ -637,50 +971,9 @@ export default function StudentPortalView({ user }) {
         </div>
       )}
 
-      {/* TAB 8: SCHOOL CALENDAR */}
+      {/* TAB 8: SCHOOL CALENDAR (ON / OFF TRACKER) */}
       {activeTab === 'calendar' && (
-        <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm">Academic Calendar & Upcoming Events</h3>
-              <p className="text-xs text-slate-500">Term 1 holidays, examination milestones, and school exhibitions</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-white border border-teal-100 shadow-sm space-y-2 text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
-                Exam Schedule
-              </span>
-              <h4 className="font-bold text-slate-800 text-sm">Mid-Term Theoretical Examinations</h4>
-              <p className="text-slate-600">October 14 &ndash; October 22, 2026. Hall tickets available in portal.</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white border border-teal-100 shadow-sm space-y-2 text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 font-bold text-[10px]">
-                School Exhibition
-              </span>
-              <h4 className="font-bold text-slate-800 text-sm">Annual STEM & Robotics Exhibition 2026</h4>
-              <p className="text-slate-600">November 5, 2026. Project registration open until October 25.</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white border border-teal-100 shadow-sm space-y-2 text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">
-                Parent-Teacher Conference
-              </span>
-              <h4 className="font-bold text-slate-800 text-sm">Grade 10 Parent-Teacher Meeting (PTM)</h4>
-              <p className="text-slate-600">October 10, 2026 (09:00 AM &ndash; 01:30 PM).</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white border border-teal-100 shadow-sm space-y-2 text-xs">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                Holiday Notice
-              </span>
-              <h4 className="font-bold text-slate-800 text-sm">Fall Semester Mid-Term Recess</h4>
-              <p className="text-slate-600">October 26 &ndash; October 30, 2026. School re-opens November 2.</p>
-            </div>
-          </div>
-        </div>
+        <SchoolCalendarView />
       )}
 
       {/* SUBMIT HOMEWORK MODAL */}

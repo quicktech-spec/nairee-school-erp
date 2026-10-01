@@ -41,23 +41,23 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0c1f2c]/95 backdrop-blur-md border-b border-teal-900/50 px-6 py-3 text-white shadow-lg">
+    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#5673ec] via-[#6c8cff] to-[#5673ec] backdrop-blur-md border-b border-indigo-300/40 px-6 py-3 text-white shadow-md">
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
         {/* Left: Branding with Official Nairee Logo */}
         <div className="flex items-center gap-3">
           <img 
             src="/nairee-logo-white.png" 
             alt="Nairee" 
-            className="h-8 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity" 
+            className="h-8 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity drop-shadow-sm" 
           />
-          <div className="hidden sm:block pl-3 border-l border-teal-800/60">
+          <div className="hidden sm:block pl-3 border-l border-white/25">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
                 ERP
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Single Shared Database &bull; Connected Portals</p>
+            <p className="text-[11px] text-indigo-100 font-medium">Single Shared Database &bull; Connected Portals</p>
           </div>
         </div>
 
@@ -65,26 +65,26 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
         <div className="flex items-center gap-3">
           <button
             onClick={onOpenPalette}
-            className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-xs text-slate-300 transition-all cursor-pointer shadow-sm group"
+            className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white transition-all cursor-pointer shadow-sm group"
           >
-            <Search className="w-3.5 h-3.5 text-teal-400 group-hover:scale-110 transition-transform" />
-            <span className="text-slate-400 group-hover:text-slate-200">Search commands...</span>
-            <kbd className="text-[10px] font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">Ctrl K</kbd>
+            <Search className="w-3.5 h-3.5 text-indigo-100 group-hover:scale-110 transition-transform" />
+            <span className="text-indigo-100 group-hover:text-white">Search commands...</span>
+            <kbd className="text-[10px] font-mono bg-black/20 px-1.5 py-0.5 rounded border border-white/20 text-indigo-100">Ctrl K</kbd>
           </button>
 
           {/* Active User Info Card */}
-          <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+          <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-white/15 border border-white/25 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-white text-[#5673ec] flex items-center justify-center font-extrabold text-xs shadow-sm">
               {user?.full_name?.charAt(0) || 'U'}
             </div>
             <div className="text-left hidden sm:block">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold text-white truncate max-w-[140px]">{user?.full_name}</span>
-                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${badge.bg}`}>
+                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border shadow-xs ${badge.bg}`}>
                   {badge.label}
                 </span>
               </div>
-              <p className="text-[10px] text-teal-300 font-mono">@{user?.username}</p>
+              <p className="text-[10px] text-indigo-100 font-mono">@{user?.username}</p>
             </div>
           </div>
 
@@ -93,26 +93,26 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
             <button
               onClick={() => setIsRoleDropdownOpen(prev => !prev)}
               title="Test another role directly"
-              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
                 isRoleDropdownOpen 
-                  ? 'bg-teal-500/20 border-teal-500 text-teal-300 shadow-sm' 
-                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                  ? 'bg-white text-[#5673ec] border-white shadow-md' 
+                  : 'bg-white/15 hover:bg-white/25 border-white/25 text-white'
               }`}
             >
-              <ArrowRightLeft className="w-3.5 h-3.5 text-teal-400" />
+              <ArrowRightLeft className={`w-3.5 h-3.5 ${isRoleDropdownOpen ? 'text-[#5673ec]' : 'text-indigo-100'}`} />
               <span className="hidden md:inline">Switch Role</span>
-              <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180 text-teal-400' : ''}`} />
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180 text-[#5673ec]' : 'text-indigo-100'}`} />
             </button>
 
             {/* Quick Demo Accounts Menu */}
             {isRoleDropdownOpen && (
               <div className="absolute right-0 top-full pt-1.5 w-64 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="bg-[#122837] rounded-2xl shadow-2xl border border-teal-800/80 p-2 text-white">
-                  <div className="px-3 py-1.5 border-b border-slate-700/60 flex items-center justify-between">
+                <div className="bg-white rounded-2xl shadow-2xl border border-indigo-100 p-2 text-slate-800">
+                  <div className="px-3 py-1.5 border-b border-indigo-50 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       Instant Role Switch
                     </span>
-                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300">
+                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600">
                       Testing
                     </span>
                   </div>
@@ -133,15 +133,15 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
                           }}
                           className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                             isActive 
-                              ? 'bg-teal-500/20 text-teal-200 border border-teal-500/40' 
-                              : 'text-slate-300 hover:bg-slate-800/90 hover:text-white'
+                              ? 'bg-indigo-50 text-[#5673ec] border border-indigo-200' 
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                           }`}
                         >
                           <div>
                             <div className="flex items-center gap-1.5">
                               <span className="font-bold">{item.name}</span>
                               {isActive && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#5673ec] animate-pulse"></span>
                               )}
                             </div>
                             <span className="text-[10px] text-slate-400 font-normal">{item.label}</span>
@@ -161,7 +161,7 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
           {/* Logout Button */}
           <button
             onClick={onLogout}
-            className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-all"
+            className="p-2 rounded-xl bg-white/15 hover:bg-rose-500 border border-white/25 text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
             title="Sign out of current account"
           >
             <LogOut className="w-4 h-4" />

@@ -26,9 +26,12 @@ const CANDIDATE_URLS = [
 
 export default function App() {
   const [activeRole, setActiveRole] = useState('student'); // 'student', 'parent', 'teacher', 'admin'
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('homework');
   const [apiUrl, setApiUrl] = useState(CANDIDATE_URLS[0]);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connected', 'offline', 'connecting'
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState(11);
+  const [calendarMonth, setCalendarMonth] = useState('October 2025');
 
   // Student State
   const [student, setStudent] = useState(null);
@@ -229,27 +232,27 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#0C1F2C" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EBF1FE" />
 
-      {/* Top Header Bar */}
+      {/* Top Compact Brand & Sync Strip */}
       <View style={styles.topHeader}>
         <View style={styles.headerBranding}>
           <Image 
-            source={require('./assets/nairee-logo-white.png')} 
+            source={require('./assets/nairee-logo.png')} 
             style={{ width: 85, height: 28, resizeMode: 'contain' }} 
           />
-          <View style={{ marginLeft: 8, paddingLeft: 8, borderLeftWidth: 1, borderLeftColor: 'rgba(20, 184, 166, 0.3)' }}>
+          <View style={{ marginLeft: 8, paddingLeft: 8, borderLeftWidth: 1, borderLeftColor: '#DBEAFE' }}>
             <Text style={styles.schoolName}>Nairee</Text>
-            <Text style={styles.schoolSubtitle}>Connected Mobile Companion • Android</Text>
+            <Text style={styles.schoolSubtitle}>Connected Mobile Companion</Text>
           </View>
         </View>
 
         <TouchableOpacity onPress={() => { testConnection().then(loadData); }} style={styles.refreshButton}>
-          <Ionicons name="refresh" size={18} color="#94A3B8" />
+          <Ionicons name="refresh" size={18} color="#64748B" />
         </TouchableOpacity>
       </View>
 
-      {/* Server Connectivity & Multi-Role Selector Strip */}
+      {/* Connectivity & Role Selector */}
       <View style={styles.connectivityStrip}>
         <View style={styles.connPill}>
           <View style={[styles.statusDot, connectionStatus === 'connected' ? styles.dotGreen : styles.dotAmber]} />
@@ -260,7 +263,6 @@ export default function App() {
           </Text>
         </View>
 
-        {/* 4-Role Switcher */}
         <View style={styles.rolePickerRow}>
           {[
             { id: 'student', label: 'Student', icon: 'person' },
@@ -270,7 +272,7 @@ export default function App() {
           ].map(r => (
             <TouchableOpacity
               key={r.id}
-              onPress={() => { setActiveRole(r.id); setActiveTab('home'); }}
+              onPress={() => { setActiveRole(r.id); setActiveTab(r.id === 'student' ? 'homework' : 'home'); }}
               style={[styles.roleChip, activeRole === r.id && styles.roleChipActive]}
             >
               <Ionicons 
@@ -286,6 +288,42 @@ export default function App() {
         </View>
       </View>
 
+      {/* EXACT UI DESIGN PILL HEADER (From Screenshot) */}
+      <View style={styles.designHeaderPill}>
+        <TouchableOpacity 
+          style={styles.headerSquircleBtn}
+          onPress={() => {
+            if (activeRole === 'student' && activeTab !== 'homework') {
+              setActiveTab('homework');
+            } else {
+              Alert.alert('Nairee App', 'You are on the primary screen.');
+            }
+          }}
+        >
+          <Ionicons name="arrow-back" size={18} color="#1E293B" />
+        </TouchableOpacity>
+
+        <View style={styles.headerCenterCol}>
+          <Text style={styles.headerPillTitle}>
+            {activeRole === 'student'
+              ? (activeTab === 'homework' ? 'Homework' : activeTab === 'timetable' ? 'Time Table' : activeTab === 'video' ? 'Video' : 'Student Pass')
+              : activeRole === 'parent' ? 'Parent Portal'
+              : activeRole === 'teacher' ? 'Faculty Portal' : 'Admin Panel'}
+          </Text>
+          <Text style={styles.headerPillSubtitle}>
+            {student?.student_name || 'Emma Roberts'}-{student?.batch_name || 'Grade 7 B'}
+          </Text>
+        </View>
+
+        <TouchableOpacity 
+          style={styles.headerSquircleBtn}
+          onPress={() => Alert.alert('School Notifications', '🔔 All academic notifications live.\n• New Homework assigned in English & Math\n• Mid-term timetable released')}
+        >
+          <Ionicons name="notifications-outline" size={18} color="#1E293B" />
+          <View style={styles.notificationRedDot} />
+        </TouchableOpacity>
+      </View>
+
       {/* Main Content Area */}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
@@ -294,24 +332,343 @@ export default function App() {
         {/* ======================================================== */}
         {activeRole === 'student' && (
           <View style={styles.tabContent}>
-            {/* SUB-TAB NAV FOR STUDENT */}
+            {/* SUB-TAB NAV FOR STUDENT (Matching the design screens) */}
             <View style={styles.subTabNav}>
-              {['home', 'timetable', 'grades', 'fees'].map((tab) => (
+              {[
+                { id: 'homework', label: 'Homework' },
+                { id: 'timetable', label: 'Time Table' },
+                { id: 'video', label: 'Video' },
+                { id: 'pass', label: 'Report & Pass' }
+              ].map((t) => (
                 <TouchableOpacity
-                  key={tab}
-                  onPress={() => setActiveTab(tab)}
-                  style={[styles.subTabBtn, activeTab === tab && styles.subTabBtnActive]}
+                  key={t.id}
+                  onPress={() => setActiveTab(t.id)}
+                  style={[styles.subTabBtn, activeTab === t.id && styles.subTabBtnActive]}
                 >
-                  <Text style={[styles.subTabBtnText, activeTab === tab && styles.subTabBtnTextActive]}>
-                    {tab === 'home' ? 'Digital ID' : tab === 'timetable' ? 'Classes' : tab === 'grades' ? 'Report Card' : 'Fees'}
+                  <Text style={[styles.subTabBtnText, activeTab === t.id && styles.subTabBtnTextActive]}>
+                    {t.label}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {/* STUDENT HOME: DIGITAL ID PASS */}
-            {activeTab === 'home' && (
+            {/* SCREEN 1: HOMEWORK SCREEN (Matches Image Screen 1) */}
+            {activeTab === 'homework' && (
+              <View style={styles.tabContent}>
+                {/* Calendar Card */}
+                <View style={styles.calendarCard}>
+                  <View style={styles.calendarHeaderRow}>
+                    <Text style={styles.calendarMonthTitle}>{calendarMonth}</Text>
+                    <View style={styles.calendarNavBtns}>
+                      <TouchableOpacity 
+                        style={styles.calendarNavBtn}
+                        onPress={() => Alert.alert('Calendar', 'Showing previous month')}
+                      >
+                        <Ionicons name="chevron-back" size={16} color="#64748B" />
+                      </TouchableOpacity>
+                      <TouchableOpacity 
+                        style={styles.calendarNavBtn}
+                        onPress={() => Alert.alert('Calendar', 'Showing next month')}
+                      >
+                        <Ionicons name="chevron-forward" size={16} color="#64748B" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Day Names Row */}
+                  <View style={styles.weekdayRow}>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, i) => (
+                      <Text key={i} style={styles.weekdayText}>{d}</Text>
+                    ))}
+                  </View>
+
+                  {/* Calendar Numbers Grid (October 2025 starts Wednesday) */}
+                  <View style={styles.calendarGrid}>
+                    <View style={styles.emptyDayCell} />
+                    <View style={styles.emptyDayCell} />
+                    <View style={styles.emptyDayCell} />
+
+                    {Array.from({ length: 31 }).map((_, i) => {
+                      const day = i + 1;
+                      const hasAlert = day === 1 || day === 11 || day === 14;
+                      const isSelected = selectedCalendarDate === day;
+
+                      return (
+                        <TouchableOpacity
+                          key={day}
+                          onPress={() => setSelectedCalendarDate(day)}
+                          style={[
+                            styles.dayCell,
+                            isSelected && !hasAlert && styles.dayCellSelected
+                          ]}
+                        >
+                          {hasAlert ? (
+                            <View style={styles.redBadgeCircle}>
+                              <Text style={styles.redBadgeText}>{day}</Text>
+                            </View>
+                          ) : (
+                            <Text style={[styles.dayCellText, isSelected && styles.dayCellTextSelected]}>
+                              {day}
+                            </Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+
+                {/* Upcoming Homework Section */}
+                <Text style={styles.upcomingHeading}>Upcoming Homework</Text>
+
+                {/* Homework Cards */}
+                {[
+                  {
+                    id: 'hw-1',
+                    title: 'English - Write a paragraph on Healthy Food',
+                    instructions: 'Submit on next Monday along with worksheet.',
+                    due: '11 Oct 2025',
+                    tag: 'English'
+                  },
+                  {
+                    id: 'hw-2',
+                    title: 'Math-Solve Exercise 6.1 on Fractions',
+                    instructions: 'Questions 1 to 7 in notebook.',
+                    due: '11 Oct 2025',
+                    tag: 'Mathematics'
+                  },
+                  {
+                    id: 'hw-3',
+                    title: 'Science-Prepare for Term Test',
+                    instructions: 'Revise Chapter 4 Laws of Motion and complete numericals.',
+                    due: '14 Oct 2025',
+                    tag: 'Science'
+                  },
+                  ...homeworkList.filter(h => !h.title?.includes('Healthy Food') && !h.title?.includes('Exercise 6.1')).map(h => ({
+                    id: h.id,
+                    title: `${h.subject} - ${h.title}`,
+                    instructions: h.instructions,
+                    due: h.due_date,
+                    tag: h.subject
+                  }))
+                ].map((hw, idx) => (
+                  <TouchableOpacity 
+                    key={hw.id || idx} 
+                    style={styles.homeworkCard}
+                    onPress={() => Alert.alert(hw.title, `${hw.instructions}\n\nDue Date: ${hw.due}\n\nStatus: Pending Student Submission`)}
+                  >
+                    <Text style={styles.hwTitleText}>{hw.title}</Text>
+                    <Text style={styles.hwDescText}>{hw.instructions}</Text>
+                    <View style={styles.hwDivider} />
+                    <Text style={styles.hwDueText}>{hw.due}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {/* SCREEN 2: TIME TABLE SCREEN (Matches Image Screen 2) */}
+            {activeTab === 'timetable' && (
+              <View style={styles.tabContent}>
+                <Text style={styles.teamHeading}>Team</Text>
+
+                {[
+                  { date: '12 Oct 2025, Saturday', subject: 'Science', time: '8:30 AM-11:30 AM', icon: 'flask-outline' },
+                  { date: '14 Oct 2025, Monday', subject: 'Mathematics', time: '8:30 AM-11:30 AM', icon: 'calculator-outline' },
+                  { date: '16 Oct 2025, Wednesday', subject: 'Hindi / Hygiene', time: '8:30 AM-11:30 AM', icon: 'language-outline' },
+                  { date: '17 Oct 2025, Thursday', subject: 'GK/Moral Science', time: '8:30 AM-11:30 AM', icon: 'compass-outline' },
+                  { date: '19 Oct 2025, Saturday', subject: 'Social Science', time: '8:30 AM-11:30 AM', icon: 'earth-outline' },
+                  { date: '21 Oct 2025, Monday', subject: 'Special English', time: '8:30 AM-11:30 AM', icon: 'book-outline' },
+                ].map((item, idx) => (
+                  <View key={idx} style={styles.timetableCard}>
+                    <Text style={styles.ttDateHeader}>{item.date}</Text>
+                    <View style={styles.ttDivider} />
+                    <View style={styles.ttSubjectRow}>
+                      <View style={styles.ttIconBox}>
+                        <Ionicons name={item.icon} size={20} color="#5673EC" />
+                      </View>
+                      <View style={styles.ttInfoCol}>
+                        <Text style={styles.ttSubjectText}>{item.subject}</Text>
+                        <Text style={styles.ttTimeText}>{item.time}</Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* SCREEN 3: VIDEO SCREEN (Matches Image Screen 3) */}
+            {activeTab === 'video' && (
+              <View style={styles.tabContent}>
+                {/* Search Bar */}
+                <View style={styles.searchBarContainer}>
+                  <Ionicons name="search-outline" size={18} color="#94A3B8" style={{ marginRight: 8 }} />
+                  <TextInput
+                    placeholder="Search here..."
+                    placeholderTextColor="#94A3B8"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    style={styles.searchInputText}
+                  />
+                </View>
+
+                {/* All Video Header */}
+                <View style={styles.videoSectionHeader}>
+                  <Text style={styles.allVideoTitle}>All Video</Text>
+                  <Text style={styles.videoCountText}>6 Videos</Text>
+                </View>
+
+                {/* Video Cards List */}
+                {[
+                  {
+                    id: 'v1',
+                    title: 'Children Day Celebration 2025',
+                    duration: '5:24',
+                    date: '14 September 2025',
+                    views: '234',
+                    thumbnail: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?w=600'
+                  },
+                  {
+                    id: 'v2',
+                    title: 'Memorable Moments at School',
+                    duration: '8:20',
+                    date: '9 April 2025',
+                    views: '500',
+                    thumbnail: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600'
+                  },
+                  {
+                    id: 'v3',
+                    title: 'Fun & Learning Moments',
+                    duration: '4:00',
+                    date: '12 May 2025',
+                    views: '310',
+                    thumbnail: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600'
+                  },
+                  {
+                    id: 'v4',
+                    title: 'Annual STEM & Robotics Exhibition',
+                    duration: '6:45',
+                    date: '18 June 2025',
+                    views: '420',
+                    thumbnail: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600'
+                  },
+                  {
+                    id: 'v5',
+                    title: 'Mathematics: Fractions & Algebra Masterclass',
+                    duration: '12:15',
+                    date: '2 August 2025',
+                    views: '580',
+                    thumbnail: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600'
+                  },
+                  {
+                    id: 'v6',
+                    title: 'Physics: Laws of Motion & Friction Lab',
+                    duration: '14:30',
+                    date: '10 October 2025',
+                    views: '650',
+                    thumbnail: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600'
+                  }
+                ].filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase())).map((video) => (
+                  <View key={video.id} style={styles.videoCard}>
+                    <TouchableOpacity 
+                      activeOpacity={0.9} 
+                      style={styles.videoThumbnailBox}
+                      onPress={() => Alert.alert('Playing Lecture Video', `Now streaming: ${video.title} (${video.duration})\nRecorded by Nairee Faculty`)}
+                    >
+                      <Image source={{ uri: video.thumbnail }} style={styles.videoImage} />
+                      
+                      {/* Play Button Overlay */}
+                      <View style={styles.playButtonCircle}>
+                        <Ionicons name="play" size={22} color="#1E293B" style={{ marginLeft: 3 }} />
+                      </View>
+
+                      {/* Duration Badge */}
+                      <View style={styles.durationBadge}>
+                        <Text style={styles.durationText}>{video.duration}</Text>
+                      </View>
+
+                      {/* Three dots menu */}
+                      <TouchableOpacity 
+                        style={styles.videoMenuBtn}
+                        onPress={() => Alert.alert('Video Options', 'Options: Download offline, Add to playlist, Share with classmates')}
+                      >
+                        <Ionicons name="ellipsis-vertical" size={16} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+
+                    {/* Title & Info */}
+                    <Text style={styles.videoTitleText}>{video.title}</Text>
+                    <View style={styles.videoMetaRow}>
+                      <Ionicons name="calendar-outline" size={12} color="#94A3B8" />
+                      <Text style={styles.videoMetaText}>{video.date}</Text>
+                      <Text style={styles.videoMetaDot}>•</Text>
+                      <Ionicons name="eye-outline" size={12} color="#94A3B8" />
+                      <Text style={styles.videoMetaText}>{video.views} views</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* SCREEN 4: DIGITAL ID PASS & REPORT CARD & FEES */}
+            {activeTab === 'pass' && (
               <>
+                {/* 1. OFFICIAL ACADEMIC REPORT CARD (Matches media_1790863523168.png) */}
+                <View style={styles.reportCardContainer}>
+                  {/* Circular Silver Medal */}
+                  <View style={styles.medalWrapper}>
+                    <View style={styles.medalCircle}>
+                      <Text style={styles.medalPercentage}>85%</Text>
+                      <Text style={styles.medalGrade}>GRADE A</Text>
+                      <View style={styles.starBadge}>
+                        <Ionicons name="star" size={12} color="#FFFFFF" />
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={styles.reportCardHeader}>
+                    <Text style={styles.studentComplimentText}>You are Excellent,</Text>
+                    <Text style={styles.studentNameTitle}>
+                      {(student?.student_name || 'Emma Roberts').toUpperCase()} !!
+                    </Text>
+                  </View>
+
+                  {/* Marks Table */}
+                  <View style={styles.marksTable}>
+                    {[
+                      { subject: 'English', max: 100, score: 74, grade: 'B' },
+                      { subject: 'Hindi', max: 100, score: 87, grade: 'B' },
+                      { subject: 'Science', max: 100, score: 74, grade: 'B' },
+                      { subject: 'Math', max: 100, score: 87, grade: 'B' },
+                      { subject: 'Social Study', max: 100, score: 89, grade: 'B' },
+                      { subject: 'Drawing', max: 100, score: 78, grade: 'B' },
+                      { subject: 'Computer', max: 100, score: 96, grade: 'A' },
+                    ].map((row, idx) => (
+                      <View 
+                        key={idx} 
+                        style={[
+                          styles.marksRow, 
+                          idx % 2 === 1 && { backgroundColor: '#F8FAFC' }
+                        ]}
+                      >
+                        <Text style={styles.marksSubjectText}>{row.subject}</Text>
+                        <Text style={styles.marksMaxText}>{row.max}</Text>
+                        <View style={styles.marksScoreBox}>
+                          <Text style={styles.marksScoreText}>{row.score} - {row.grade}</Text>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+
+                  {/* Download PDF Button */}
+                  <TouchableOpacity
+                    style={styles.downloadPdfBtn}
+                    onPress={() => Alert.alert('Report Card PDF', `Term 1 Official Transcript downloaded for ${student?.student_name || 'Emma Roberts'}.`)}
+                  >
+                    <Ionicons name="document-text-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                    <Text style={styles.downloadPdfBtnText}>DOWNLOAD PDF</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* 2. OFFICIAL STUDENT PASS */}
                 <View style={styles.idCard}>
                   <View style={styles.idCardHeader}>
                     <View style={styles.idCardTitleGroup}>
@@ -330,9 +687,9 @@ export default function App() {
                       style={styles.studentAvatar}
                     />
                     <View style={styles.studentInfoCol}>
-                      <Text style={styles.studentNameText}>{student?.student_name || 'Nairee Patel'}</Text>
+                      <Text style={styles.studentNameText}>{student?.student_name || 'Emma Roberts'}</Text>
                       <Text style={styles.docIdText}>{student?.name || 'EDU-STU-2026-00001'}</Text>
-                      <Text style={styles.batchText}>Roll #{student?.roll_no || '101'} • {student?.batch_name || 'Grade 10-A (Honors)'}</Text>
+                      <Text style={styles.batchText}>Roll #{student?.roll_no || '101'} • {student?.batch_name || 'Grade 7 B'}</Text>
                     </View>
                   </View>
 
@@ -365,7 +722,7 @@ export default function App() {
                 {/* Quick Metrics Bar */}
                 <View style={styles.kpiRow}>
                   <View style={styles.kpiCard}>
-                    <Ionicons name="checkmark-circle" size={24} color="#0D9488" />
+                    <Ionicons name="checkmark-circle" size={24} color="#5673EC" />
                     <Text style={styles.kpiValue}>{student?.attendance?.percentage || 98}%</Text>
                     <Text style={styles.kpiLabel}>Attendance</Text>
                   </View>
@@ -375,130 +732,29 @@ export default function App() {
                     <Text style={styles.kpiLabel}>Honors Stream</Text>
                   </View>
                   <View style={styles.kpiCard}>
-                    <Ionicons name="book" size={24} color="#06B6D4" />
+                    <Ionicons name="book" size={24} color="#10B981" />
                     <Text style={styles.kpiValue}>4 Exams</Text>
                     <Text style={styles.kpiLabel}>A+ Distinction</Text>
                   </View>
                 </View>
 
-                {/* Next Lecture Banner */}
-                <View style={styles.nextClassCard}>
-                  <View style={styles.nextClassTop}>
-                    <Text style={styles.nextClassTag}>NEXT LECTURE</Text>
-                    <Text style={styles.nextClassTime}>08:30 AM - 10:00 AM</Text>
+                {/* Fees Quick Card */}
+                <View style={styles.feeCard}>
+                  <View style={styles.feeHeader}>
+                    <View>
+                      <Text style={styles.feeInvoiceNo}>EDU-FEE-2026-00001</Text>
+                      <Text style={styles.feeTerm}>Term 1 Academic Tuition</Text>
+                    </View>
+                    <View style={[styles.statusBadge, styles.statusPaid]}>
+                      <Text style={[styles.statusText, styles.textPaid]}>PAID</Text>
+                    </View>
                   </View>
-                  <Text style={styles.nextClassSubject}>Calculus & Advanced Mathematics</Text>
-                  <Text style={styles.nextClassRoom}>Room 204 • Prof. Sarah Jenkins</Text>
+                  <View style={styles.feeDetails}>
+                    <Text style={styles.feeTotal}>Total: $1,450</Text>
+                    <Text style={[styles.feeOutstanding, styles.greenText]}>Outstanding: $0</Text>
+                  </View>
                 </View>
               </>
-            )}
-
-            {/* STUDENT TIMETABLE */}
-            {activeTab === 'timetable' && (
-              <View style={styles.tabContent}>
-                <Text style={styles.sectionHeading}>Today's Schedule</Text>
-                {(schedule.length > 0 ? schedule : [
-                  { subject: 'Mathematics', title: 'Calculus & Functions', from_time: '08:30:00', to_time: '10:00:00', room: 'Room 204', faculty_name: 'Prof. Sarah Jenkins', color: '#0D9488' },
-                  { subject: 'Computer Science', title: 'Fullstack App Architectures', from_time: '10:15:00', to_time: '11:45:00', room: 'Lab B', faculty_name: 'Ms. Elena Rostova', color: '#06B6D4' },
-                  { subject: 'Physics', title: 'Electromagnetism Lab', from_time: '12:30:00', to_time: '14:00:00', room: 'Lab 1', faculty_name: 'Dr. Robert Anderson', color: '#10B981' }
-                ]).map((item, index) => (
-                  <View key={index} style={[styles.scheduleCard, { borderLeftColor: item.color || '#0D9488' }]}>
-                    <View style={styles.scheduleRow}>
-                      <Text style={styles.scheduleSubject}>{item.subject}</Text>
-                      <View style={styles.timeBadge}>
-                        <Ionicons name="time-outline" size={12} color="#64748B" />
-                        <Text style={styles.timeText}>{item.from_time.slice(0, 5)} - {item.to_time.slice(0, 5)}</Text>
-                      </View>
-                    </View>
-                    <Text style={styles.scheduleTitle}>{item.title}</Text>
-                    <View style={styles.scheduleMeta}>
-                      <Text style={styles.metaRoom}>📍 {item.room}</Text>
-                      <Text style={styles.metaFaculty}>👤 {item.faculty_name}</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {/* STUDENT REPORT CARD */}
-            {activeTab === 'grades' && (
-              <View style={styles.tabContent}>
-                <Text style={styles.sectionHeading}>Term 1 Examination Results</Text>
-                {(student?.assessments || [
-                  { assessment_name: 'Calculus Midterm', score: 98, maximum_score: 100, grade: 'A+' },
-                  { assessment_name: 'Web & Mobile Dev Project', score: 100, maximum_score: 100, grade: 'A+' },
-                  { assessment_name: 'Physics Dynamics Lab', score: 94, maximum_score: 100, grade: 'A' },
-                  { assessment_name: 'World Literature Essay', score: 92, maximum_score: 100, grade: 'A' }
-                ]).map((a, index) => (
-                  <View key={index} style={styles.gradeCard}>
-                    <View style={styles.gradeHeader}>
-                      <Text style={styles.gradeCourse}>{a.assessment_name || a.course}</Text>
-                      <View style={styles.gradePill}>
-                        <Text style={styles.gradeLetter}>{a.grade}</Text>
-                      </View>
-                    </View>
-                    <View style={styles.scoreRow}>
-                      <Text style={styles.scoreLabel}>Marks Scored:</Text>
-                      <Text style={styles.scoreValue}>{a.score} / {a.maximum_score}</Text>
-                    </View>
-                    <View style={styles.progressBarBg}>
-                      <View style={[styles.progressBarFill, { width: `${(a.score / a.maximum_score) * 100}%` }]} />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {/* STUDENT FEES */}
-            {activeTab === 'fees' && (
-              <View style={styles.tabContent}>
-                <Text style={styles.sectionHeading}>Tuition & Fee Statements</Text>
-                {(fees.length > 0 ? fees : [
-                  { name: 'EDU-FEE-2026-00001', academic_term: 'Term 1', grand_total: 1450, outstanding_amount: 0, status: 'Paid', receipt_no: 'REC-2026-90412' },
-                  { name: 'EDU-FEE-2026-00002', academic_term: 'Term 2', grand_total: 1450, outstanding_amount: 1450, status: 'Unpaid', receipt_no: null }
-                ]).map((fee, index) => (
-                  <View key={index} style={styles.feeCard}>
-                    <View style={styles.feeHeader}>
-                      <View>
-                        <Text style={styles.feeInvoiceNo}>{fee.name}</Text>
-                        <Text style={styles.feeTerm}>{fee.academic_term} Tuition</Text>
-                      </View>
-                      <View style={[styles.statusBadge, fee.status === 'Paid' ? styles.statusPaid : styles.statusUnpaid]}>
-                        <Text style={[styles.statusText, fee.status === 'Paid' ? styles.textPaid : styles.textUnpaid]}>
-                          {fee.status}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.feeDetails}>
-                      <Text style={styles.feeTotal}>Total: ${fee.grand_total}</Text>
-                      <Text style={[styles.feeOutstanding, fee.outstanding_amount > 0 ? styles.redText : styles.greenText]}>
-                        Due: ${fee.outstanding_amount}
-                      </Text>
-                    </View>
-
-                    {fee.status !== 'Paid' && (
-                      <TouchableOpacity
-                        style={styles.payButton}
-                        onPress={() => handlePayFee(fee)}
-                        disabled={paying}
-                      >
-                        <Ionicons name="card" size={16} color="#fff" />
-                        <Text style={styles.payButtonText}>
-                          {paying ? 'Processing...' : `Pay $${fee.outstanding_amount} via Google Pay`}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    {fee.status === 'Paid' && (
-                      <View style={styles.receiptBox}>
-                        <Ionicons name="receipt-outline" size={16} color="#059669" />
-                        <Text style={styles.receiptText}>Receipt: {fee.receipt_no || 'REC-2026-90412'}</Text>
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </View>
             )}
           </View>
         )}
@@ -777,17 +1033,17 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0C1F2C',
+    backgroundColor: '#EBF1FE',
   },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#0C1F2C',
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#1E3A42',
+    borderBottomColor: '#DBEAFE',
   },
   headerBranding: {
     flexDirection: 'row',
@@ -798,31 +1054,31 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#0D9488',
+    backgroundColor: '#5673EC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   schoolName: {
-    color: '#FFFFFF',
+    color: '#1E293B',
     fontSize: 16,
     fontWeight: '800',
   },
   schoolSubtitle: {
-    color: '#94A3B8',
+    color: '#64748B',
     fontSize: 10,
     fontWeight: '500',
   },
   refreshButton: {
     padding: 8,
     borderRadius: 10,
-    backgroundColor: '#1E3A42',
+    backgroundColor: '#EEF3FD',
   },
   connectivityStrip: {
-    backgroundColor: '#132836',
+    backgroundColor: '#F8FAFF',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#1E3A42',
+    borderBottomColor: '#DBEAFE',
     gap: 8,
   },
   connPill: {
@@ -842,7 +1098,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F59E0B',
   },
   connText: {
-    color: '#CBD5E1',
+    color: '#64748B',
     fontSize: 11,
     fontWeight: '600',
   },
@@ -857,22 +1113,80 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
-    backgroundColor: '#1E3A42',
+    backgroundColor: '#EEF3FD',
   },
   roleChipActive: {
-    backgroundColor: '#0D9488',
+    backgroundColor: '#5673EC',
   },
   roleChipText: {
-    color: '#94A3B8',
+    color: '#64748B',
     fontSize: 11,
     fontWeight: '700',
   },
   roleChipTextActive: {
     color: '#FFFFFF',
   },
+  
+  // EXACT DESIGN PILL HEADER (From Screenshot)
+  designHeaderPill: {
+    backgroundColor: '#748FFC',
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginHorizontal: 16,
+    marginTop: 10,
+    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#5673EC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  headerSquircleBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  headerCenterCol: {
+    alignItems: 'center',
+  },
+  headerPillTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
+  headerPillSubtitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#E0E7FF',
+    marginTop: 1,
+  },
+  notificationRedDot: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#FF5A5F',
+  },
+
   scrollContent: {
     padding: 16,
-    backgroundColor: '#F4FAFA',
+    backgroundColor: '#EBF1FE',
     minHeight: '100%',
     paddingBottom: 60,
   },
@@ -881,29 +1195,348 @@ const styles = StyleSheet.create({
   },
   subTabNav: {
     flexDirection: 'row',
-    backgroundColor: '#EDFAFA',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 4,
     borderWidth: 1,
-    borderColor: '#CDE8E8',
+    borderColor: '#DBEAFE',
     marginBottom: 4,
   },
   subTabBtn: {
     flex: 1,
     paddingVertical: 8,
     alignItems: 'center',
-    borderRadius: 8,
+    borderRadius: 12,
   },
   subTabBtnActive: {
-    backgroundColor: '#0D9488',
+    backgroundColor: '#5673EC',
   },
   subTabBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#52737D',
+    color: '#64748B',
   },
   subTabBtnTextActive: {
     color: '#FFFFFF',
+    fontWeight: '800',
+  },
+
+  // SCREEN 1: CALENDAR & HOMEWORK STYLES
+  calendarCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  calendarHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  calendarMonthTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  calendarNavBtns: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  calendarNavBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    backgroundColor: '#EEF3FD',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  weekdayRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  weekdayText: {
+    width: (width - 72) / 7,
+    textAlign: 'center',
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94A3B8',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  emptyDayCell: {
+    width: (width - 72) / 7,
+    height: 38,
+  },
+  dayCell: {
+    width: (width - 72) / 7,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayCellSelected: {
+    backgroundColor: '#EEF3FD',
+    borderRadius: 12,
+  },
+  dayCellText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  dayCellTextSelected: {
+    color: '#5673EC',
+    fontWeight: '800',
+  },
+  redBadgeCircle: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#FF5A5F',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  redBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  upcomingHeading: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  homeworkCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF5A5F',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+    marginBottom: 10,
+  },
+  hwTitleText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  hwDescText: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 4,
+    lineHeight: 16,
+  },
+  hwDivider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+    marginVertical: 10,
+  },
+  hwDueText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FF5A5F',
+  },
+
+  // SCREEN 2: TIMETABLE STYLES
+  teamHeading: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 4,
+  },
+  timetableCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  ttDateHeader: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#5673EC',
+    marginBottom: 8,
+  },
+  ttDivider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+    marginBottom: 10,
+  },
+  ttSubjectRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ttIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#EEF3FD',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+  },
+  ttInfoCol: {
+    flex: 1,
+  },
+  ttSubjectText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  ttTimeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FF5A5F',
+    marginTop: 2,
+  },
+
+  // SCREEN 3: VIDEO STYLES
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+    marginBottom: 8,
+  },
+  searchInputText: {
+    flex: 1,
+    fontSize: 13,
+    color: '#1E293B',
+    padding: 0,
+  },
+  videoSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6,
+    marginBottom: 4,
+  },
+  allVideoTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  videoCountText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#5673EC',
+  },
+  videoCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 12,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  videoThumbnailBox: {
+    width: '100%',
+    height: 180,
+    borderRadius: 14,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#EEF3FD',
+  },
+  videoImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  playButtonCircle: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -24,
+    marginLeft: -24,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  durationBadge: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  durationText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  videoMenuBtn: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoTitleText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginTop: 10,
+  },
+  videoMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 4,
+  },
+  videoMetaText: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '600',
+  },
+  videoMetaDot: {
+    fontSize: 11,
+    color: '#CBD5E1',
   },
   sectionHeading: {
     fontSize: 16,
@@ -1633,5 +2266,142 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#0C1F2C',
     fontWeight: '600',
+  },
+
+  // REPORT CARD STYLES (From media_1790863523168.png)
+  reportCardContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#5673EC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    alignItems: 'center',
+  },
+  medalWrapper: {
+    marginTop: -4,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  medalCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 6,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+    position: 'relative',
+  },
+  medalPercentage: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#1E293B',
+  },
+  medalGrade: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.5,
+    marginTop: 1,
+  },
+  starBadge: {
+    position: 'absolute',
+    bottom: -6,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F59E0B',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  reportCardHeader: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  studentComplimentText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  studentNameTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#0F172A',
+    letterSpacing: 0.5,
+    marginTop: 2,
+  },
+  marksTable: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginBottom: 16,
+  },
+  marksRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  marksSubjectText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+    flex: 1,
+  },
+  marksMaxText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#94A3B8',
+    width: 50,
+    textAlign: 'center',
+  },
+  marksScoreBox: {
+    width: 70,
+    alignItems: 'flex-end',
+  },
+  marksScoreText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  downloadPdfBtn: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3B82F6',
+    borderRadius: 20,
+    paddingVertical: 14,
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  downloadPdfBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
 });

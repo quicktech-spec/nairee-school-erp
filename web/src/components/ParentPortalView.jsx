@@ -21,6 +21,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { api } from '../api.js';
+import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function ParentPortalView({ user, onPaymentCompleted }) {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -185,6 +186,7 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
       <div className="flex border-b border-teal-900/40 overflow-x-auto gap-2 pb-2">
         {[
           { id: 'dashboard', label: 'Child Snapshot' },
+          { id: 'calendar', label: 'School ON / OFF Calendar' },
           { id: 'progress', label: `Academic Grades (${childSummary?.results?.length || 0} Results)` },
           { id: 'attendance', label: `Attendance Tracking (${childSummary?.attendance?.percentage || 100}%)` },
           { id: 'fees', label: 'Fees & Online Payment' },
@@ -700,6 +702,11 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* TAB: SCHOOL CALENDAR (ON / OFF TRACKER) */}
+      {activeTab === 'calendar' && (
+        <SchoolCalendarView />
       )}
 
       {/* ONLINE PAYMENT MODAL */}

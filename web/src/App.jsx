@@ -55,7 +55,7 @@ export default function App() {
 
   // Once authenticated, route strictly to the user's role-dedicated portal
   return (
-    <div className="min-h-screen bg-[#f4fafa] flex flex-col font-sans text-[#1e3a42]">
+    <div className="min-h-screen bg-[#ebf1fe] flex flex-col font-sans text-[#1e293b]">
       {/* Top Universal Navbar with Active User Profile & Sign Out */}
       <Navbar
         user={currentUser}
@@ -96,7 +96,7 @@ export default function App() {
       </main>
 
       {/* Subtle Footer */}
-      <footer className="border-t border-[#cde8e8] py-4 px-6 text-center text-xs text-slate-500 bg-white/60">
+      <footer className="border-t border-[#dbeafe] py-4 px-6 text-center text-xs text-slate-500 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>&copy; {new Date().getFullYear()} Nairee &bull; School ERP</span>
           <span className="text-[11px] text-teal-700 font-semibold">

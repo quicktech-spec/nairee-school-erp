@@ -22,6 +22,7 @@ import {
   Check
 } from 'lucide-react';
 import { api } from '../api.js';
+import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function TeacherPortalView({ user }) {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -165,15 +166,26 @@ export default function TeacherPortalView({ user }) {
 
   // Submit Homework
   const handleCreateHomework = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (!newHomework.title.trim()) {
+      showToast('Please enter a homework title');
+      return;
+    }
     try {
       await api.createHomework({
         ...newHomework,
+        student_batch: newHomework.student_batch || selectedBatch,
         faculty: user?.faculty_id || 'EDU-FAC-2026-00002',
         faculty_name: user?.full_name || 'Prof. Sarah Jenkins'
       });
-      showToast('Homework assigned! Students can now submit solutions via their portal.');
+      showToast('Homework assigned! Students and parents have been notified.');
       setShowHomeworkModal(false);
+      setNewHomework(prev => ({
+        ...prev,
+        title: '',
+        instructions: '',
+        due_date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0]
+      }));
       api.getHomework({ batch: selectedBatch }).then(setHomeworkList);
     } catch (err) {
       showToast(err.message || 'Failed to create homework');
@@ -352,6 +364,7 @@ export default function TeacherPortalView({ user }) {
           { id: 'attendance', label: 'Mark Attendance' },
           { id: 'syllabus', label: `Live Syllabus Tracker (${syllabusList.length} Units)` },
           { id: 'homework', label: `Homework & Grading (${homeworkList.length})` },
+          { id: 'calendar', label: 'School ON / OFF Calendar' },
           { id: 'materials', label: `Study Notes & PDFs (${studyMaterials.length})` },
           { id: 'messages', label: `Parent Messages (${messages.length})` }
         ].map((tab) => (
@@ -700,50 +713,201 @@ export default function TeacherPortalView({ user }) {
 
       {/* TAB 4: HOMEWORK & ASSIGNMENTS */}
       {activeTab === 'homework' && (
-        <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm">Class Homework & Submissions</h3>
-              <p className="text-xs text-slate-500">Create assignments, inspect student solutions, and enter grades/feedback</p>
-            </div>
-            <button
-              onClick={() => setShowHomeworkModal(true)}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/20 flex items-center space-x-1.5"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Assign Homework</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {homeworkList.map((hw) => (
-              <div key={hw.id} className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm space-y-3 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
-                      {hw.subject} &bull; Max {hw.max_points} Pts
-                    </span>
-                    <span className="text-[11px] font-semibold text-rose-600">
-                      Due: {hw.due_date}
-                    </span>
-                  </div>
-                  <h4 className="font-bold text-slate-800 text-sm mt-1">{hw.title}</h4>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">{hw.instructions}</p>
+        <div className="space-y-6">
+          {/* DEDICATED TEACHER HOMEWORK CREATOR CARD */}
+          <div className="bg-white rounded-3xl p-6 border border-indigo-100 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-50 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-[#5673ec] flex items-center justify-center font-bold">
+                  <BookOpen className="w-5 h-5 text-[#5673ec]" />
                 </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500">
-                    {hw.submissionCount || 1} Student Submission(s)
-                  </span>
-                  <button
-                    onClick={() => handleViewSubmissions(hw)}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-teal-500 hover:text-white text-slate-700 font-bold text-xs transition-colors"
-                  >
-                    Inspect & Grade
-                  </button>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-sm">Create & Assign New Homework</h3>
+                  <p className="text-xs text-slate-500">Post assignments, questions, and due dates directly to your students</p>
                 </div>
               </div>
-            ))}
+              <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-indigo-50 text-[#5673ec] border border-indigo-100 self-start sm:self-auto">
+                Selected Class: {selectedBatch}
+              </span>
+            </div>
+
+            <form onSubmit={handleCreateHomework} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Target Class / Batch</label>
+                  <select
+                    value={newHomework.student_batch}
+                    onChange={(e) => setNewHomework({ ...newHomework, student_batch: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#5673ec]"
+                  >
+                    {batches.map(b => (
+                      <option key={b.name} value={b.name}>{b.batch_name || b.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Subject</label>
+                  <select
+                    value={newHomework.subject}
+                    onChange={(e) => setNewHomework({ ...newHomework, subject: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#5673ec]"
+                  >
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science (Physics / Chem)</option>
+                    <option value="English">English Literature</option>
+                    <option value="Hindi / Hygiene">Hindi / Hygiene</option>
+                    <option value="Social Science">Social Science</option>
+                    <option value="GK/Moral Science">GK / Moral Science</option>
+                    <option value="Computer Science">Computer Science</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Submission Due Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={newHomework.due_date}
+                    onChange={(e) => setNewHomework({ ...newHomework, due_date: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-[#5673ec]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div className="sm:col-span-3">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Homework Title</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. English - Write a paragraph on Healthy Food, or Math - Solve Exercise 6.1 on Fractions"
+                    value={newHomework.title}
+                    onChange={(e) => setNewHomework({ ...newHomework, title: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#5673ec]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Max Score</label>
+                  <input
+                    type="number"
+                    min="5"
+                    max="100"
+                    value={newHomework.max_points}
+                    onChange={(e) => setNewHomework({ ...newHomework, max_points: Number(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs text-slate-800 font-semibold focus:ring-2 focus:ring-[#5673ec]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Detailed Instructions / Questions for Students</label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="Provide complete homework tasks, questions to solve, or reading material guidelines..."
+                  value={newHomework.instructions}
+                  onChange={(e) => setNewHomework({ ...newHomework, instructions: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-indigo-50/40 border border-indigo-200 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#5673ec]"
+                />
+              </div>
+
+              {/* Quick Preset Buttons & Submit */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] text-slate-400 font-medium">Quick Presets:</span>
+                  <button
+                    type="button"
+                    onClick={() => setNewHomework(prev => ({
+                      ...prev,
+                      title: 'English - Write a paragraph on Healthy Food',
+                      subject: 'English',
+                      instructions: 'Submit on next Monday along with worksheet. Minimum 150 words highlighting nutritious diet.'
+                    }))}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#5673ec] text-[11px] font-semibold transition-colors cursor-pointer"
+                  >
+                    English Essay
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewHomework(prev => ({
+                      ...prev,
+                      title: 'Math - Solve Exercise 6.1 on Fractions',
+                      subject: 'Mathematics',
+                      instructions: 'Questions 1 to 7 in notebook with neat step-by-step simplification.'
+                    }))}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#5673ec] text-[11px] font-semibold transition-colors cursor-pointer"
+                  >
+                    Math Fractions
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewHomework(prev => ({
+                      ...prev,
+                      title: 'Science - Prepare for Term Test',
+                      subject: 'Science',
+                      instructions: 'Revise Chapter 4 Laws of Motion and complete numericals 1 through 10.'
+                    }))}
+                    className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#5673ec] text-[11px] font-semibold transition-colors cursor-pointer"
+                  >
+                    Science Motion
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5673ec] via-[#6c8cff] to-[#5673ec] hover:from-[#4b66df] hover:to-[#5c7ef0] text-white font-bold text-xs shadow-md shadow-indigo-300/40 flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Assign Homework Now</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* ACTIVE HOMEWORK LIST (Styled matching the UI Screenshot) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-extrabold text-slate-900 text-sm">Upcoming & Assigned Homework</h4>
+                <p className="text-xs text-slate-500">Live assignments currently visible to students and parents</p>
+              </div>
+              <span className="text-xs font-bold text-[#5673ec]">
+                {homeworkList.length} Total Assignments
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {homeworkList.map((hw) => (
+                <div 
+                  key={hw.id} 
+                  className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-3 flex flex-col justify-between border-l-4 border-l-[#ff5a5f] hover:shadow-md transition-shadow"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-[#5673ec] border border-indigo-100">
+                        {hw.subject} &bull; Max {hw.max_points || 100} Pts
+                      </span>
+                      <span className="text-xs font-bold text-[#ff5a5f]">
+                        Due: {hw.due_date}
+                      </span>
+                    </div>
+                    <h4 className="font-extrabold text-slate-900 text-sm mt-1">{hw.title}</h4>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">{hw.instructions}</p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-500">
+                      {hw.submissionCount || 1} Student Submission(s)
+                    </span>
+                    <button
+                      onClick={() => handleViewSubmissions(hw)}
+                      className="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-[#5673ec] hover:text-white text-[#5673ec] font-bold text-xs transition-colors cursor-pointer"
+                    >
+                      Inspect & Grade Submissions
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Submissions Review Drawer */}
@@ -908,6 +1072,11 @@ export default function TeacherPortalView({ user }) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* TAB: SCHOOL CALENDAR */}
+      {activeTab === 'calendar' && (
+        <SchoolCalendarView />
       )}
 
       {/* CREATE HOMEWORK MODAL */}
