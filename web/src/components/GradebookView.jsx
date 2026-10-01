@@ -1,0 +1,323 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Award, 
+  BookOpen, 
+  Search, 
+  Plus, 
+  CheckCircle, 
+  X, 
+  TrendingUp, 
+  UserCheck 
+} from 'lucide-react';
+import { api } from '../api.js';
+
+export default function GradebookView() {
+  const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState('');
+  const [results, setResults] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddGradeModal, setShowAddGradeModal] = useState(false);
+
+  // Form for entering grades
+  const [gradeForm, setGradeForm] = useState({
+    assessment_plan: '',
+    course: '',
+    student: '',
+    score: 95,
+    maximum_score: 100,
+    comment: ''
+  });
+
+  useEffect(() => {
+    Promise.all([
+      api.getAssessmentPlans(),
+      api.getStudents('BATCH-10A-2026'),
+      api.getCourses()
+    ]).then(([plansData, studentsData, coursesData]) => {
+      setPlans(plansData);
+      setStudents(studentsData);
+      setCourses(coursesData);
+      if (plansData.length > 0) {
+        setSelectedPlan(plansData[0].name);
+        setGradeForm(prev => ({
+          ...prev,
+          assessment_plan: plansData[0].name,
+          course: plansData[0].course,
+          student: studentsData[0]?.name || ''
+        }));
+      }
+    }).catch(console.error);
+  }, []);
+
+  const loadResults = async () => {
+    try {
+      setLoading(true);
+      const data = await api.getAssessmentResults({ plan: selectedPlan });
+      setResults(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedPlan) {
+      loadResults();
+    }
+  }, [selectedPlan]);
+
+  const handleSubmitGrade = async (e) => {
+    e.preventDefault();
+    try {
+      const studentObj = students.find(s => s.name === gradeForm.student);
+      await api.submitGrade({
+        ...gradeForm,
+        student_name: studentObj ? studentObj.student_name : '',
+        student_batch: 'BATCH-10A-2026'
+      });
+      setShowAddGradeModal(false);
+      loadResults();
+    } catch (err) {
+      alert('Error submitting grade: ' + err.message);
+    }
+  };
+
+  const currentPlan = plans.find(p => p.name === selectedPlan);
+
+  return (
+    <div className="space-y-6">
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-slate-900">Gradebook & Examination Results</h2>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+              tabAssessmentResult
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Standard Frappe evaluation scale, weightage criteria, and auto-letter grading
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Assessment Plan Selector */}
+          <select
+            value={selectedPlan}
+            onChange={(e) => {
+              setSelectedPlan(e.target.value);
+              const p = plans.find(x => x.name === e.target.value);
+              if (p) setGradeForm(f => ({ ...f, assessment_plan: p.name, course: p.course }));
+            }}
+            className="text-xs font-bold px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+          >
+            {plans.map((p) => (
+              <option key={p.name} value={p.name}>
+                {p.assessment_name} ({p.subject})
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => setShowAddGradeModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            Enter Marks
+          </button>
+        </div>
+      </div>
+
+      {/* Plan Details Card */}
+      {currentPlan && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-100 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-brand-600 text-white shadow-sm">
+              <Award className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-sm text-slate-900">{currentPlan.assessment_name}</h3>
+              <p className="text-xs text-slate-500">
+                Course: {currentPlan.course_name} • Group: {currentPlan.assessment_group}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 text-xs font-bold text-slate-700">
+            <div>
+              <span className="text-slate-400 block text-[10px] uppercase">Max Marks</span>
+              <span className="text-slate-900 font-extrabold text-sm">{currentPlan.maximum_score}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 block text-[10px] uppercase">Weightage</span>
+              <span className="text-brand-600 font-extrabold text-sm">{currentPlan.weightage}%</span>
+            </div>
+            <div>
+              <span className="text-slate-400 block text-[10px] uppercase">Session</span>
+              <span className="text-slate-900">{currentPlan.academic_year}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Results Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center text-slate-500 text-xs">Loading grade records...</div>
+        ) : results.length === 0 ? (
+          <div className="p-12 text-center text-slate-500 text-xs">No marks recorded yet for this examination.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Student</th>
+                  <th className="py-3.5 px-4">DocType Serial</th>
+                  <th className="py-3.5 px-4">Score</th>
+                  <th className="py-3.5 px-4">Percentage</th>
+                  <th className="py-3.5 px-4">Letter Grade</th>
+                  <th className="py-3.5 px-4">Faculty Comment</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+                {results.map((r) => (
+                  <tr key={r.name} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3.5 px-4">
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                        {r.student_name}
+                        {r.student_name.includes('Nairee') && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">
+                            ★ Top Scorer
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-[11px] font-mono text-slate-400">{r.student}</p>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <code className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                        {r.name}
+                      </code>
+                    </td>
+                    <td className="py-3.5 px-4 font-extrabold text-slate-900">
+                      {r.score} <span className="text-slate-400 font-normal">/ {r.maximum_score}</span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-brand-600 h-1.5 rounded-full"
+                            style={{ width: `${r.percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="font-bold text-slate-800">{r.percentage}%</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-md ${
+                        r.grade === 'A+' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                        r.grade === 'A' ? 'bg-sky-100 text-sky-800 border border-sky-300' :
+                        r.grade === 'B+' ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' :
+                        'bg-slate-100 text-slate-800'
+                      }`}>
+                        {r.grade}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-600 italic">
+                      "{r.comment || 'Satisfactory'}"
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ENTER GRADE MODAL */}
+      {showAddGradeModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand-900 text-white flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold">Enter Assessment Score</h3>
+                <p className="text-xs text-slate-300">Auto-computes percentage & Frappe letter grade</p>
+              </div>
+              <button onClick={() => setShowAddGradeModal(false)} className="text-white/80 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitGrade} className="p-6 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Student</label>
+                <select
+                  value={gradeForm.student}
+                  onChange={(e) => setGradeForm({ ...gradeForm, student: e.target.value })}
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                >
+                  {students.map((s) => (
+                    <option key={s.name} value={s.name}>{s.student_name} (#{s.roll_no})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Marks Scored</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    required
+                    value={gradeForm.score}
+                    onChange={(e) => setGradeForm({ ...gradeForm, score: Number(e.target.value) })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none font-bold text-base"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Max Marks</label>
+                  <input
+                    type="number"
+                    readOnly
+                    value={gradeForm.maximum_score}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Faculty Remarks</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Excellent conceptual grasp"
+                  value={gradeForm.comment}
+                  onChange={(e) => setGradeForm({ ...gradeForm, comment: e.target.value })}
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddGradeModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-md shadow-brand-500/20"
+                >
+                  Save Grade
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

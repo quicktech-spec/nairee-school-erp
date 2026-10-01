@@ -1,0 +1,584 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  Search, 
+  UserPlus, 
+  Filter, 
+  X, 
+  Check, 
+  Calendar, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Award, 
+  Receipt, 
+  Clock,
+  Sparkles
+} from 'lucide-react';
+import { api } from '../api.js';
+
+export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
+  const [students, setStudents] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [selectedBatch, setSelectedBatch] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [activeModalTab, setActiveModalTab] = useState('profile');
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Form state for new student
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    student_email_id: '',
+    student_mobile_number: '',
+    date_of_birth: '2010-05-15',
+    gender: 'Female',
+    blood_group: 'O+',
+    student_batch: 'BATCH-10A-2026',
+    address_line_1: '',
+    city: 'Springfield',
+    pincode: '62704'
+  });
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [studentsData, batchesData] = await Promise.all([
+        api.getStudents(selectedBatch === 'all' ? '' : selectedBatch, searchQuery),
+        api.getBatches()
+      ]);
+      setStudents(studentsData);
+      setBatches(batchesData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [selectedBatch, searchQuery]);
+
+  const handleOpenDetail = async (student) => {
+    setSelectedStudent(student);
+    setDetailLoading(true);
+    setActiveModalTab('profile');
+    try {
+      const details = await api.getStudentDetail(student.name);
+      setStudentDetails(details);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleCreateStudent = async (e) => {
+    e.preventDefault();
+    try {
+      await api.createStudent(formData);
+      setShowAddModal(false);
+      setFormData({
+        first_name: '',
+        last_name: '',
+        student_email_id: '',
+        student_mobile_number: '',
+        date_of_birth: '2010-05-15',
+        gender: 'Female',
+        blood_group: 'O+',
+        student_batch: 'BATCH-10A-2026',
+        address_line_1: '',
+        city: 'Springfield',
+        pincode: '62704'
+      });
+      loadData();
+    } catch (err) {
+      alert('Error creating student: ' + err.message);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header & Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-slate-900">Student Directory</h2>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200">
+              tabStudent ({students.length})
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Complete biographical, enrollment, and guardian records
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Batch Selector */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-slate-400" />
+            <select
+              value={selectedBatch}
+              onChange={(e) => setSelectedBatch(e.target.value)}
+              className="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+            >
+              <option value="all">All Batches</option>
+              {batches.map((b) => (
+                <option key={b.name} value={b.name}>
+                  {b.batch_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* New Student Button */}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all cursor-pointer"
+          >
+            <UserPlus className="w-4 h-4" />
+            Register Student
+          </button>
+        </div>
+      </div>
+
+      {/* Students Table */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center text-slate-500 text-xs">Loading student records...</div>
+        ) : students.length === 0 ? (
+          <div className="p-12 text-center text-slate-500 text-xs">No students found matching your criteria.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-4">Student</th>
+                  <th className="py-3.5 px-4">DocType ID</th>
+                  <th className="py-3.5 px-4">Batch / Class</th>
+                  <th className="py-3.5 px-4">Roll No</th>
+                  <th className="py-3.5 px-4">Contact</th>
+                  <th className="py-3.5 px-4">Blood Group</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+                {students.map((s) => (
+                  <tr
+                    key={s.name}
+                    className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                    onClick={() => handleOpenDetail(s)}
+                  >
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={s.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
+                          alt={s.student_name}
+                          className="w-9 h-9 rounded-xl object-cover ring-1 ring-slate-200"
+                        />
+                        <div>
+                          <p className="font-bold text-slate-900 group-hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                            {s.student_name}
+                            {s.student_name.includes('Nairee') && (
+                              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                                Featured
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-[11px] text-slate-400">{s.student_email_id}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <code className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                        {s.name}
+                      </code>
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-slate-800">
+                      {s.batch_name || s.student_batch}
+                    </td>
+                    <td className="py-3.5 px-4 font-bold text-slate-900">
+                      #{s.roll_no}
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-500">
+                      {s.student_mobile_number || 'N/A'}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
+                        {s.blood_group}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenDetail(s);
+                        }}
+                        className="px-3 py-1 text-xs font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg transition-all"
+                      >
+                        View Profile
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* STUDENT DETAIL MODAL / DRAWER */}
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-6 bg-gradient-to-r from-slate-900 via-brand-950 to-indigo-950 text-white flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <img
+                  src={selectedStudent.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200'}
+                  alt={selectedStudent.student_name}
+                  className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/30"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-extrabold">{selectedStudent.student_name}</h3>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/20 text-white">
+                      {selectedStudent.name}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Roll #{selectedStudent.roll_no} • {selectedStudent.batch_name || selectedStudent.student_batch}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Tabs */}
+            <div className="flex border-b border-slate-200 bg-slate-50/80 px-6 gap-2">
+              {[
+                { id: 'profile', label: 'Bio & Guardians', icon: Users },
+                { id: 'attendance', label: 'Attendance History', icon: Clock },
+                { id: 'grades', label: 'Academic Grades', icon: Award },
+                { id: 'fees', label: 'Fee Invoices', icon: Receipt },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeModalTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveModalTab(tab.id)}
+                    className={`flex items-center gap-2 py-3 px-3 text-xs font-bold border-b-2 transition-all cursor-pointer ${
+                      isActive
+                        ? 'border-brand-600 text-brand-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto flex-1">
+              {detailLoading ? (
+                <div className="p-12 text-center text-slate-500 text-xs">Loading complete student dossier...</div>
+              ) : studentDetails ? (
+                <div>
+                  {/* TAB 1: PROFILE & GUARDIANS */}
+                  {activeModalTab === 'profile' && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Date of Birth</p>
+                          <p className="text-xs font-bold text-slate-800 mt-1">{studentDetails.date_of_birth}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Gender</p>
+                          <p className="text-xs font-bold text-slate-800 mt-1">{studentDetails.gender}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Blood Group</p>
+                          <p className="text-xs font-bold text-rose-600 mt-1">{studentDetails.blood_group}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Email Address</p>
+                          <p className="text-xs font-bold text-slate-800 mt-1">{studentDetails.student_email_id}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Mobile Phone</p>
+                          <p className="text-xs font-bold text-slate-800 mt-1">{studentDetails.student_mobile_number}</p>
+                        </div>
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <p className="text-[10px] uppercase font-bold text-slate-400">Admission Date</p>
+                          <p className="text-xs font-bold text-slate-800 mt-1">{studentDetails.joining_date}</p>
+                        </div>
+                      </div>
+
+                      {/* Guardians */}
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-900 mb-3 flex items-center gap-2">
+                          <Users className="w-4 h-4 text-brand-600" />
+                          Guardians & Parent Information (tabGuardian)
+                        </h4>
+                        {studentDetails.guardians?.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {studentDetails.guardians.map((g) => (
+                              <div key={g.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                                <div className="flex items-center justify-between">
+                                  <p className="text-xs font-bold text-slate-900">{g.guardian_name}</p>
+                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700">
+                                    {g.relation}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 mt-1">{g.email_address}</p>
+                                <p className="text-[11px] text-slate-500">{g.mobile_number}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-400">No guardian contacts recorded.</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 2: ATTENDANCE */}
+                  {activeModalTab === 'attendance' && (
+                    <div className="space-y-4">
+                      <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-bold text-emerald-900">Attendance Summary</p>
+                          <p className="text-xs text-emerald-700 mt-0.5">
+                            {studentDetails.attendance?.presentDays} days present out of {studentDetails.attendance?.totalDays} school days
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-extrabold text-emerald-800">
+                            {studentDetails.attendance?.percentage}%
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {studentDetails.attendance?.records?.map((r) => (
+                          <div key={r.name} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                            <div>
+                              <p className="font-bold text-slate-800">{r.date}</p>
+                              <p className="text-[11px] text-slate-400">{r.subject || 'Full-Day Session'}</p>
+                            </div>
+                            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                              r.status === 'Present' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                            }`}>
+                              {r.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 3: GRADES */}
+                  {activeModalTab === 'grades' && (
+                    <div className="space-y-3">
+                      {studentDetails.assessments?.length > 0 ? (
+                        studentDetails.assessments.map((res) => (
+                          <div key={res.name} className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                            <div>
+                              <p className="font-bold text-slate-900">{res.assessment_name || res.course}</p>
+                              <p className="text-[11px] text-slate-400 font-medium">{res.comment}</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm font-extrabold text-slate-900">
+                                {res.score} / {res.maximum_score}
+                              </span>
+                              <span className="ml-2 font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-800 text-[11px]">
+                                {res.grade}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-slate-400 p-4">No examination records found for this student.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* TAB 4: FEES */}
+                  {activeModalTab === 'fees' && (
+                    <div className="space-y-4">
+                      {studentDetails.fees?.map((fee) => (
+                        <div key={fee.name} className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="font-mono text-[10px] font-bold text-slate-500">{fee.name}</span>
+                              <h5 className="font-bold text-xs text-slate-900 mt-0.5">{fee.academic_term} Tuition & Campus Fees</h5>
+                            </div>
+                            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                              fee.status === 'Paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {fee.status}
+                            </span>
+                          </div>
+
+                          <div className="mt-3 pt-3 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                            <span className="text-slate-500">Total: ${fee.grand_total}</span>
+                            <span className="font-extrabold text-slate-900">
+                              Outstanding: ${fee.outstanding_amount}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* NEW STUDENT REGISTRATION MODAL */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand-900 text-white flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold">Register New Student</h3>
+                <p className="text-xs text-slate-300">Creates new record with Frappe EDU-STU auto-series</p>
+              </div>
+              <button onClick={() => setShowAddModal(false)} className="text-white/80 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateStudent} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">First Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    placeholder="e.g. Liam"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    placeholder="e.g. Vance"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Email ID</label>
+                  <input
+                    type="email"
+                    value={formData.student_email_id}
+                    onChange={(e) => setFormData({ ...formData, student_email_id: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    placeholder="student@school.edu"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Mobile</label>
+                  <input
+                    type="text"
+                    value={formData.student_mobile_number}
+                    onChange={(e) => setFormData({ ...formData, student_mobile_number: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    placeholder="+1 (555) 019-..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Batch</label>
+                  <select
+                    value={formData.student_batch}
+                    onChange={(e) => setFormData({ ...formData, student_batch: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  >
+                    {batches.map((b) => (
+                      <option key={b.name} value={b.name}>{b.batch_name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Gender</label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  >
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Non-Binary">Non-Binary</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Blood Group</label>
+                  <select
+                    value={formData.blood_group}
+                    onChange={(e) => setFormData({ ...formData, blood_group: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  >
+                    <option value="O+">O+</option>
+                    <option value="A+">A+</option>
+                    <option value="B+">B+</option>
+                    <option value="AB+">AB+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-md shadow-brand-500/20"
+                >
+                  Save & Generate ID
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

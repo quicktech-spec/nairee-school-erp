@@ -1,0 +1,32 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production builds
+web/dist/
+dist/
+build/
+
+# Expo & Mobile
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Environment & local settings
+.env
+.env.local
+.env.*.local
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# SQLite databases (data directory can be tracked or kept)
+backend/data/*.db-journal
