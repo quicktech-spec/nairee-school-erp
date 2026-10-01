@@ -24,13 +24,16 @@ import {
   Bell,
   Play,
   Check,
-  AlertCircle
+  AlertCircle,
+  LayoutDashboard
 } from 'lucide-react';
 import { api } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 
-export default function StudentPortalView({ user }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
+export default function StudentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
+  const [internalTab, setInternalTab] = useState('dashboard');
+  const activeTab = propTab !== undefined ? propTab : internalTab;
+  const setActiveTab = propSetTab || setInternalTab;
   const [student, setStudent] = useState(null);
   const [schedule, setSchedule] = useState([]);
   const [syllabus, setSyllabus] = useState([]);
@@ -40,6 +43,21 @@ export default function StudentPortalView({ user }) {
   const [transport, setTransport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Real-Time Timetable States
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [viewMode, setViewMode] = useState('week'); // 'day' | 'week'
+  const [selectedDayIndex, setSelectedDayIndex] = useState(new Date().getDay()); // 0 = Sun, 1 = Mon, ...
+  const [showLiveClassModal, setShowLiveClassModal] = useState(false);
+  const [activeLiveClass, setActiveLiveClass] = useState(null);
+
+  // 1-second real-time timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Submit Homework Modal
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -196,32 +214,6 @@ export default function StudentPortalView({ user }) {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-teal-900/40 overflow-x-auto gap-2 pb-2">
-        {[
-          { id: 'dashboard', label: 'Student Dashboard' },
-          { id: 'homework', label: `Homework & Submit (${homeworkList.length})` },
-          { id: 'materials', label: `Study Notes & PDFs (${materials.length})` },
-          { id: 'results', label: `Grades & Report Card (${student.assessments?.length || 0})` },
-          { id: 'timetable', label: 'Full Weekly Timetable' },
-          { id: 'syllabus', label: 'Live Syllabus Progress' },
-          { id: 'transport', label: 'Bus Route & Timings' },
-          { id: 'calendar', label: 'School Calendar' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-teal-500 text-white shadow-md shadow-teal-500/25'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       {/* TAB 1: DASHBOARD (Matches media_1790863408009.png) */}
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
@@ -268,143 +260,453 @@ export default function StudentPortalView({ user }) {
             <div className="lg:col-span-8 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
               {/* Header with Month Title and [Day | Week] toggle */}
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-slate-800">June 2025</h3>
-                <div className="flex items-center p-1 rounded-full bg-slate-100 text-xs font-bold">
-                  <span className="px-3 py-1 rounded-full text-slate-500 cursor-pointer hover:text-slate-800">Day</span>
-                  <span className="px-3 py-1 rounded-full bg-slate-900 text-white shadow-sm cursor-pointer">Week</span>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-black text-slate-800">
+                    {currentTime.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </h3>
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Live Academic Clock
+                  </span>
+                </div>
+
+                {/* Day / Week Interactive Switcher */}
+                <div className="flex items-center p-1 rounded-full bg-slate-100 text-xs font-bold shadow-inner">
+                  <button
+                    onClick={() => setViewMode('day')}
+                    className={`px-3.5 py-1 rounded-full transition-all cursor-pointer ${
+                      viewMode === 'day'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Day
+                  </button>
+                  <button
+                    onClick={() => setViewMode('week')}
+                    className={`px-3.5 py-1 rounded-full transition-all cursor-pointer ${
+                      viewMode === 'week'
+                        ? 'bg-slate-900 text-white shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Week
+                  </button>
                 </div>
               </div>
 
-              {/* 7-Day Timetable Grid with Red Timeline Indicator */}
-              <div className="relative pt-2">
-                
-                {/* Red dotted current time marker line at 9:30 AM */}
-                <div className="absolute top-[88px] left-0 right-0 z-20 pointer-events-none flex items-center">
-                  <span className="px-1.5 py-0.5 rounded bg-slate-900 text-[10px] font-mono text-white font-bold ml-1 mr-2 shadow">
-                    9:30 am
-                  </span>
-                  <div className="flex-1 border-t-2 border-dashed border-[#ff5252] relative">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#ff5252] absolute -top-[5px] left-1/2 -ml-1"></span>
+              {/* ────────────────── 1. WEEK VIEW ────────────────── */}
+              {viewMode === 'week' && (
+                <div className="relative pt-2 select-none">
+                  
+                  {/* Real-Time Moving Red Dotted Timeline Indicator */}
+                  {(() => {
+                    const hours = currentTime.getHours();
+                    const minutes = currentTime.getMinutes();
+                    const seconds = currentTime.getSeconds();
+                    const totalMins = hours * 60 + minutes + seconds / 60;
+                    
+                    // School timeline window: 8:30 AM (510 min) to 3:30 PM (930 min)
+                    const startMins = 8.5 * 60; // 510
+                    const endMins = 15.5 * 60;  // 930
+                    const span = endMins - startMins; // 420 mins
+                    
+                    let percent = ((totalMins - startMins) / span) * 100;
+                    if (percent < 8) percent = 8;
+                    if (percent > 92) percent = 92;
+
+                    const formattedTime = currentTime.toLocaleTimeString([], {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      second: '2-digit',
+                      hour12: true
+                    });
+
+                    // Active column index (0 = Sun, 1 = Mon ... 6 = Sat)
+                    const activeDayIdx = currentTime.getDay();
+
+                    return (
+                      <div 
+                        className="absolute left-0 right-0 z-20 pointer-events-none flex items-center transition-all duration-1000 ease-linear"
+                        style={{ top: `${percent}%` }}
+                      >
+                        {/* Live Running Time Pill */}
+                        <div className="px-2 py-0.5 rounded-lg bg-slate-950 text-[10px] font-mono text-white font-black ml-0.5 mr-1.5 shadow-lg border border-slate-700 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                          <span>{formattedTime}</span>
+                        </div>
+
+                        {/* Red Dashed Moving Line with Glowing Marker */}
+                        <div className="flex-1 border-t-2 border-dashed border-[#ff5252] relative">
+                          <span 
+                            className="w-3.5 h-3.5 rounded-full bg-[#ff5252] border-2 border-white shadow-md absolute -top-[7px] -ml-1.5 animate-pulse"
+                            style={{ 
+                              left: `${(activeDayIdx / 7) * 100 + 7}%` 
+                            }}
+                          ></span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* 7-Day Timetable Grid */}
+                  <div className="grid grid-cols-7 gap-2 text-center">
+                    
+                    {/* Sun (Holiday) */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col justify-between border ${
+                      currentTime.getDay() === 0
+                        ? 'bg-sky-50 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xs font-bold text-slate-400">Sun 7</span>
+                        {currentTime.getDay() === 0 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 flex items-center justify-center">
+                        <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
+                          Holiday
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Mon 8 */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col space-y-2 border ${
+                      currentTime.getDay() === 1
+                        ? 'bg-sky-50/80 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50/60 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className={`text-xs font-bold ${currentTime.getDay() === 1 ? 'text-sky-900 font-black' : 'text-slate-700'}`}>
+                          Mon 8
+                        </span>
+                        {currentTime.getDay() === 1 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
+                        <div className="font-bold text-slate-800 truncate">Social science</div>
+                        <div className="text-[10px] text-slate-400">10:30 am - 12:30 pm</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">History</div>
+                        <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">English</div>
+                      </div>
+                    </div>
+
+                    {/* Tue 9 */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col space-y-2 border ${
+                      currentTime.getDay() === 2
+                        ? 'bg-sky-50/80 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50/60 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className={`text-xs font-bold ${currentTime.getDay() === 2 ? 'text-sky-900 font-black' : 'text-slate-700'}`}>
+                          Tue 9
+                        </span>
+                        {currentTime.getDay() === 2 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-2">
+                        <div className="font-bold text-slate-800 truncate">English</div>
+                        <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">Science</div>
+                        <div className="text-[10px] text-slate-400">10:50 am - 12:30 pm</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">History</div>
+                      </div>
+                    </div>
+
+                    {/* Wed 10 (TODAY COLUMN - Matches media_1790870123637.png) */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col space-y-2 border-2 ${
+                      currentTime.getDay() === 3 || currentTime.getDay() >= 3
+                        ? 'bg-sky-50 border-sky-300 shadow-sm'
+                        : 'bg-slate-50/60 border-slate-100'
+                    } relative`}>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xs font-extrabold text-sky-900">Wed 10</span>
+                        <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                          Today
+                        </span>
+                      </div>
+
+                      {/* Cyan Class Card with "Go to class" button */}
+                      <div className="p-2.5 rounded-xl bg-[#99f6e4] text-left text-[11px] text-teal-950 font-bold shadow-sm space-y-1.5 mt-1 border border-teal-300">
+                        <div className="truncate">Tamil</div>
+                        <div className="text-[10px] font-medium text-teal-800">9 am - 10:30 am</div>
+                        <button 
+                          onClick={() => {
+                            setActiveLiveClass({
+                              subject: 'Tamil Literature & Grammar',
+                              period: 'Period 1 (09:00 AM - 10:30 AM)',
+                              teacher: 'Mrs. Lakshmi Raman',
+                              room: 'Language Room 102',
+                              topic: 'Unit 3: Classical Tamil Poetry and Versification'
+                            });
+                            setShowLiveClassModal(true);
+                          }}
+                          className="w-full py-1 px-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-transform active:scale-95 shadow-sm"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span>Go to class</span>
+                        </button>
+                      </div>
+
+                      {/* Yellow Class Card */}
+                      <div className="p-2.5 rounded-xl bg-[#fef08a] text-left text-[11px] text-amber-950 font-bold shadow-sm space-y-0.5 border border-amber-300">
+                        <div className="truncate">Science</div>
+                        <div className="text-[10px] font-medium text-amber-800">10:50 am - 12:30 pm</div>
+                      </div>
+
+                      {/* Purple Class Card */}
+                      <div className="p-2 rounded-xl bg-[#e9d5ff] text-left text-[11px] text-purple-950 font-bold shadow-sm border border-purple-300">
+                        <div className="truncate">Maths</div>
+                        <div className="text-[10px] font-medium text-purple-800">12:30 pm - 2:00 pm</div>
+                      </div>
+                    </div>
+
+                    {/* Thu 11 */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col space-y-2 border ${
+                      currentTime.getDay() === 4
+                        ? 'bg-sky-50/80 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50/60 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className={`text-xs font-bold ${currentTime.getDay() === 4 ? 'text-sky-900 font-black' : 'text-slate-700'}`}>
+                          Thu 11
+                        </span>
+                        {currentTime.getDay() === 4 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-8">
+                        <div className="font-bold text-slate-800 truncate">Social science</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">Tamil</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">Maths</div>
+                      </div>
+                    </div>
+
+                    {/* Fri 12 */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col space-y-2 border ${
+                      currentTime.getDay() === 5
+                        ? 'bg-sky-50/80 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50/60 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className={`text-xs font-bold ${currentTime.getDay() === 5 ? 'text-sky-900 font-black' : 'text-slate-700'}`}>
+                          Fri 12
+                        </span>
+                        {currentTime.getDay() === 5 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
+                        <div className="font-bold text-slate-800 truncate">English</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">Science</div>
+                      </div>
+                      <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
+                        <div className="font-bold text-slate-800 truncate">Maths</div>
+                      </div>
+                    </div>
+
+                    {/* Sat 13 (Holiday) */}
+                    <div className={`rounded-2xl p-2 min-h-[340px] flex flex-col justify-between border ${
+                      currentTime.getDay() === 6
+                        ? 'bg-sky-50 border-2 border-sky-300 shadow-sm'
+                        : 'bg-slate-50 border-slate-100'
+                    }`}>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xs font-bold text-slate-400">Sat 13</span>
+                        {currentTime.getDay() === 6 && (
+                          <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
+                            Today
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 flex items-center justify-center">
+                        <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
+                          Holiday
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="grid grid-cols-7 gap-2 text-center">
-                  {/* Sun 7 (Holiday) */}
-                  <div className="bg-slate-50 rounded-2xl p-2 min-h-[320px] flex flex-col justify-between border border-slate-100">
-                    <span className="text-xs font-bold text-slate-400">Sun 7</span>
-                    <div className="flex-1 flex items-center justify-center">
-                      <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
-                        Holiday
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Mon 8 */}
-                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
-                    <span className="text-xs font-bold text-slate-700">Mon 8</span>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-6">
-                      <div className="font-bold text-slate-800 truncate">Social science</div>
-                      <div className="text-[10px] text-slate-400">10:30 am - 12:30 pm</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">History</div>
-                      <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">English</div>
-                    </div>
-                  </div>
-
-                  {/* Tue 9 */}
-                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
-                    <span className="text-xs font-bold text-slate-700">Tue 9</span>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
-                      <div className="font-bold text-slate-800 truncate">English</div>
-                      <div className="text-[10px] text-slate-400">9 am - 10:30 am</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">Science</div>
-                      <div className="text-[10px] text-slate-400">10:50 am - 12:30 am</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">History</div>
-                    </div>
-                  </div>
-
-                  {/* Wed 10 (FEATURED "TODAY" COLUMN) */}
-                  <div className="bg-sky-50 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border-2 border-sky-300 relative shadow-sm">
-                    <div className="flex flex-col items-center">
-                      <span className="text-xs font-extrabold text-sky-900">Wed 10</span>
-                      <span className="px-2 py-0.5 mt-0.5 rounded-full bg-slate-900 text-white text-[9px] font-bold">
-                        Today
-                      </span>
-                    </div>
-
-                    {/* Cyan Class Card with "Go to class" button */}
-                    <div className="p-2.5 rounded-xl bg-[#99f6e4] text-left text-[11px] text-teal-950 font-bold shadow-sm space-y-1.5 mt-2">
-                      <div className="truncate">Tamil</div>
-                      <div className="text-[10px] font-medium text-teal-800">9 am - 10:30 am</div>
-                      <button 
-                        onClick={() => showToast('Opening virtual live classroom for Tamil session...')}
-                        className="w-full py-1 px-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-transform active:scale-95"
+              {/* ────────────────── 2. DAY VIEW (Detailed Single-Day Agenda) ────────────────── */}
+              {viewMode === 'day' && (
+                <div className="space-y-4 pt-2">
+                  {/* Day Navigation Bar */}
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setSelectedDayIndex((prev) => (prev > 0 ? prev - 1 : 6))}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 font-bold text-sm shadow-xs cursor-pointer"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span>Go to class</span>
+                        &larr;
+                      </button>
+                      <span className="text-sm font-black text-slate-800 px-2">
+                        {['Sunday (Holiday)', 'Monday', 'Tuesday', 'Wednesday (Today)', 'Thursday', 'Friday', 'Saturday (Holiday)'][selectedDayIndex]}
+                      </span>
+                      <button
+                        onClick={() => setSelectedDayIndex((prev) => (prev < 6 ? prev + 1 : 0))}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 font-bold text-sm shadow-xs cursor-pointer"
+                      >
+                        &rarr;
                       </button>
                     </div>
 
-                    {/* Yellow Class Card */}
-                    <div className="p-2.5 rounded-xl bg-[#fef08a] text-left text-[11px] text-amber-950 font-bold shadow-sm space-y-0.5">
-                      <div className="truncate">Science</div>
-                      <div className="text-[10px] font-medium text-amber-800">10:50 am - 12:30 am</div>
-                    </div>
-
-                    {/* Purple Class Card */}
-                    <div className="p-2 rounded-xl bg-[#e9d5ff] text-left text-[11px] text-purple-950 font-bold shadow-sm">
-                      <div className="truncate">Maths</div>
-                      <div className="text-[10px] font-medium text-purple-800">12:30 pm - 2:00 pm</div>
-                    </div>
+                    <button
+                      onClick={() => setSelectedDayIndex(currentTime.getDay())}
+                      className="px-3 py-1 rounded-xl bg-[#00a884] text-white text-xs font-bold hover:bg-[#009172] shadow-xs cursor-pointer"
+                    >
+                      Jump to Today
+                    </button>
                   </div>
 
-                  {/* Thu 11 */}
-                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
-                    <span className="text-xs font-bold text-slate-700">Thu 11</span>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-8">
-                      <div className="font-bold text-slate-800 truncate">Social science</div>
+                  {/* Single Day Detailed Timeline with Real-Time Marker */}
+                  <div className="relative pl-16 space-y-3 py-2 min-h-[380px]">
+                    {/* Time Ruler (Hours on Left) */}
+                    <div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between text-[11px] font-mono text-slate-400 py-1 select-none border-r border-slate-100">
+                      <span>09:00</span>
+                      <span>10:30</span>
+                      <span>11:00</span>
+                      <span>12:30</span>
+                      <span>14:00</span>
+                      <span>15:30</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">Tamil</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">Maths</div>
-                    </div>
-                  </div>
 
-                  {/* Fri 12 */}
-                  <div className="bg-slate-50/60 rounded-2xl p-2 min-h-[320px] flex flex-col space-y-2 border border-slate-100">
-                    <span className="text-xs font-bold text-slate-700">Fri 12</span>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold mt-4">
-                      <div className="font-bold text-slate-800 truncate">English</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">Science</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-100 text-left text-[11px] text-slate-600 font-semibold">
-                      <div className="font-bold text-slate-800 truncate">Maths</div>
-                    </div>
-                  </div>
+                    {/* Real-time Moving Time Bar in Day View */}
+                    {selectedDayIndex === currentTime.getDay() && (
+                      <div 
+                        className="absolute left-14 right-0 z-20 pointer-events-none flex items-center transition-all duration-1000"
+                        style={{ 
+                          top: `${(() => {
+                            const hours = currentTime.getHours();
+                            const minutes = currentTime.getMinutes();
+                            const total = hours * 60 + minutes;
+                            const start = 9 * 60;
+                            const end = 15.5 * 60;
+                            let p = ((total - start) / (end - start)) * 100;
+                            return Math.max(5, Math.min(95, p));
+                          })()}%` 
+                        }}
+                      >
+                        <div className="px-2 py-0.5 rounded bg-rose-600 text-white font-mono text-[10px] font-black shadow-md flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                          <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                        </div>
+                        <div className="flex-1 border-t-2 border-dashed border-rose-500"></div>
+                      </div>
+                    )}
 
-                  {/* Sat 13 (Holiday) */}
-                  <div className="bg-slate-50 rounded-2xl p-2 min-h-[320px] flex flex-col justify-between border border-slate-100">
-                    <span className="text-xs font-bold text-slate-400">Sat 13</span>
-                    <div className="flex-1 flex items-center justify-center">
-                      <span className="text-slate-300 font-bold uppercase tracking-widest text-xs -rotate-90">
-                        Holiday
-                      </span>
-                    </div>
+                    {/* Day Schedule Cards */}
+                    {selectedDayIndex === 0 || selectedDayIndex === 6 ? (
+                      <div className="p-8 text-center rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+                        <span className="text-3xl">🏖️</span>
+                        <h4 className="font-bold text-slate-700 text-sm">Weekend Academic Holiday</h4>
+                        <p className="text-xs text-slate-400">No scheduled periods today. Enjoy your rest or review study materials!</p>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Period 1 */}
+                        <div className="p-4 rounded-2xl bg-[#99f6e4]/40 border-2 border-teal-300 shadow-sm flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-bold">
+                                09:00 AM - 10:30 AM
+                              </span>
+                              <span className="text-xs font-bold text-teal-900">Period 1</span>
+                            </div>
+                            <h4 className="font-black text-slate-900 text-sm mt-1">Tamil Literature & Grammar</h4>
+                            <p className="text-xs text-slate-500">Mrs. Lakshmi Raman • Language Room 102</p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setActiveLiveClass({
+                                subject: 'Tamil Literature & Grammar',
+                                period: 'Period 1 (09:00 AM - 10:30 AM)',
+                                teacher: 'Mrs. Lakshmi Raman',
+                                room: 'Language Room 102',
+                                topic: 'Unit 3: Classical Tamil Poetry and Versification'
+                              });
+                              setShowLiveClassModal(true);
+                            }}
+                            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
+                          >
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Join Live Class</span>
+                          </button>
+                        </div>
+
+                        {/* Recess Break */}
+                        <div className="py-2 px-4 rounded-xl bg-amber-50/60 border border-amber-200 text-center text-xs font-semibold text-amber-800">
+                          ☕ Morning Recess & Refreshment (10:30 AM - 10:50 AM)
+                        </div>
+
+                        {/* Period 2 */}
+                        <div className="p-4 rounded-2xl bg-[#fef08a]/40 border border-amber-300 shadow-sm flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                                10:50 AM - 12:30 PM
+                              </span>
+                              <span className="text-xs font-bold text-amber-900">Period 2</span>
+                            </div>
+                            <h4 className="font-black text-slate-900 text-sm mt-1">General Science & Chemistry Lab</h4>
+                            <p className="text-xs text-slate-500">Dr. Alan Grant • Chemistry Lab 3</p>
+                          </div>
+                          <span className="text-xs font-bold px-3 py-1 rounded-lg bg-amber-100 text-amber-800">
+                            Upcoming
+                          </span>
+                        </div>
+
+                        {/* Period 3 */}
+                        <div className="p-4 rounded-2xl bg-[#e9d5ff]/40 border border-purple-300 shadow-sm flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold">
+                                12:30 PM - 02:00 PM
+                              </span>
+                              <span className="text-xs font-bold text-purple-900">Period 3</span>
+                            </div>
+                            <h4 className="font-black text-slate-900 text-sm mt-1">Mathematics & Calculus</h4>
+                            <p className="text-xs text-slate-500">Prof. Sarah Jenkins • Room 101</p>
+                          </div>
+                          <span className="text-xs font-bold px-3 py-1 rounded-lg bg-purple-100 text-purple-800">
+                            Upcoming
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
+
             </div>
 
             {/* Right 4 Cols: Assignments Count & Status (Matches media_1790863408009.png) */}
@@ -1040,6 +1342,79 @@ export default function StudentPortalView({ user }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Live Virtual Classroom Modal */}
+      {showLiveClassModal && activeLiveClass && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowLiveClassModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn"
+        >
+          <div className="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-700 space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold">
+                  <Play className="w-5 h-5 fill-teal-400 text-teal-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 text-[10px] font-bold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                      LIVE CLASSROOM
+                    </span>
+                    <span className="text-xs text-slate-400">{activeLiveClass.period}</span>
+                  </div>
+                  <h3 className="font-extrabold text-white text-base mt-0.5">{activeLiveClass.subject}</h3>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowLiveClassModal(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Video / Blackboard Feed Area */}
+            <div className="relative rounded-2xl bg-slate-950 border border-slate-800 h-64 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none"></div>
+              
+              {/* Animated Audio/Video Waves */}
+              <div className="w-16 h-16 rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center mb-3">
+                <Users className="w-8 h-8 text-teal-400" />
+              </div>
+
+              <h4 className="font-bold text-white text-sm z-10">{activeLiveClass.teacher} is presenting</h4>
+              <p className="text-xs text-slate-400 max-w-md mt-1 z-10">
+                "{activeLiveClass.topic}"
+              </p>
+
+              <div className="mt-4 flex items-center gap-2 z-10">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5" />
+                  Attendance Logged: Present
+                </span>
+                <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-mono">
+                  34 Students Online
+                </span>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex items-center justify-between pt-2 text-xs">
+              <span className="text-slate-400 font-mono">
+                Room: {activeLiveClass.room}
+              </span>
+              <button
+                onClick={() => setShowLiveClassModal(false)}
+                className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black shadow-lg shadow-teal-500/20 cursor-pointer"
+              >
+                Leave Classroom
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -109,14 +109,6 @@ export default function LoginPage({ onLoginSuccess }) {
               alt="Nairee" 
               className="h-10 w-auto object-contain" 
             />
-            <div className="hidden sm:block pl-3 border-l border-indigo-200">
-              <div className="flex items-center space-x-2">
-                <span className="px-2 py-0.5 text-[11px] font-semibold tracking-wider uppercase bg-indigo-50 text-[#5673ec] rounded-full border border-indigo-200">
-                  ERP
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 font-medium">Unified Role-Based Education Management Platform</p>
-            </div>
           </div>
 
           <div className="hidden sm:flex items-center space-x-6 text-xs text-slate-500">
@@ -132,119 +124,36 @@ export default function LoginPage({ onLoginSuccess }) {
         </div>
       </header>
 
-      {/* Main Login Area - Matches media_1790863645921.png */}
+      {/* Main Login Area - Matches media_1790867259798.png */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
         <div className="max-w-5xl w-full bg-white rounded-3xl shadow-2xl shadow-indigo-100/70 border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-center">
           
-          {/* Left Column: Vector Illustration (Matches media_1790863645921.png) */}
-          <div className="lg:col-span-6 p-6 sm:p-10 flex flex-col items-center justify-center bg-gradient-to-b from-[#f8fafc] to-[#ffffff] border-b lg:border-b-0 lg:border-r border-slate-100">
-            <svg 
-              viewBox="0 0 500 420" 
-              className="w-full max-w-md h-auto"
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Soft Background Clouds */}
-              <path d="M70 200 C70 170 110 150 140 170 C160 140 210 140 230 170 C260 150 300 170 300 200 Z" fill="#ebf2fd" />
-              <path d="M120 170 C120 130 170 110 200 130 C220 90 290 90 320 130 C350 110 390 130 390 170 Z" fill="#f0f5fe" opacity="0.8" />
-              
-              {/* Ground Platform */}
-              <rect x="20" y="380" width="460" height="12" rx="6" fill="#0f172a" />
-
-              {/* Desk Frame */}
-              {/* Legs */}
-              <line x1="75" y1="260" x2="60" y2="380" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
-              <line x1="170" y1="260" x2="160" y2="380" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
-              <line x1="330" y1="260" x2="340" y2="380" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
-              <line x1="425" y1="260" x2="440" y2="380" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
-              {/* Desk Top */}
-              <rect x="50" y="250" width="400" height="10" rx="4" fill="#0f172a" />
-
-              {/* Desk Chair */}
-              <rect x="180" y="260" width="60" height="12" rx="4" fill="#ff5a5f" />
-              <rect x="195" y="272" width="30" height="8" rx="2" fill="#e0484d" />
-              <line x1="210" y1="280" x2="210" y2="380" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
-
-              {/* Character (Sitting at Desk) */}
-              {/* Legs in Navy Trousers */}
-              <path d="M200 270 L200 320 L270 320 L270 375 L285 375 L285 310 L215 310 L215 270 Z" fill="#1e293b" />
-              {/* Shoes */}
-              <rect x="260" y="370" width="36" height="12" rx="6" fill="#ff5a5f" />
-              <rect x="260" y="378" width="36" height="4" rx="2" fill="#ffffff" />
-
-              {/* Torso & Suit */}
-              <path d="M190 190 C180 230 185 270 195 275 L255 275 C265 270 270 230 260 190 Z" fill="#1e293b" />
-              {/* White Shirt Collar */}
-              <polygon points="215,190 235,190 225,215" fill="#ffffff" />
-              {/* Red Necktie */}
-              <polygon points="222,205 228,205 231,250 225,260 219,250" fill="#ff5a5f" />
-
-              {/* Left Arm on Laptop */}
-              <path d="M255 210 Q285 240 270 255" stroke="#1e293b" strokeWidth="18" strokeLinecap="round" />
-              <circle cx="270" cy="255" r="7" fill="#fed7aa" />
-
-              {/* Head & Face */}
-              <circle cx="225" cy="160" r="28" fill="#fed7aa" />
-              {/* Hair */}
-              <path d="M198 155 C198 135 220 130 245 135 C255 145 255 160 252 165 C248 152 238 148 220 150 C205 152 200 160 198 155 Z" fill="#472f1f" />
-              {/* Happy Eyes & Smile */}
-              <circle cx="218" cy="160" r="2.5" fill="#1e293b" />
-              <circle cx="236" cy="160" r="2.5" fill="#1e293b" />
-              <path d="M222 170 Q227 175 232 170" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
-
-              {/* Laptop on Desk */}
-              <rect x="250" y="244" width="70" height="6" rx="2" fill="#334155" />
-              <path d="M260 244 L280 195 L345 195 L330 244 Z" fill="#1e293b" />
-              <path d="M263 242 L282 198 L342 198 L327 242 Z" fill="#38bdf8" />
-
-              {/* Speech Bubble */}
-              <rect x="235" y="80" width="60" height="38" rx="8" fill="#ff5a5f" />
-              <polygon points="245,118 245,128 255,118" fill="#ff5a5f" />
-              <circle cx="253" cy="99" r="3.5" fill="#ffffff" />
-              <circle cx="265" cy="99" r="3.5" fill="#ffffff" />
-              <circle cx="277" cy="99" r="3.5" fill="#ffffff" />
-
-              {/* Desk Lamp */}
-              <line x1="370" y1="250" x2="370" y2="195" stroke="#94a3b8" strokeWidth="4" />
-              <polygon points="370,170 350,205 390,205" fill="#ffffff" stroke="#cbd5e1" strokeWidth="3" />
-              <line x1="370" y1="205" x2="370" y2="215" stroke="#cbd5e1" strokeWidth="3" />
-
-              {/* Stack of Books (Left) */}
-              <rect x="70" y="240" width="60" height="10" rx="2" fill="#ff5a5f" />
-              <rect x="75" y="230" width="50" height="10" rx="2" fill="#3b82f6" />
-              <rect x="72" y="222" width="55" height="8" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-
-              {/* Potted Plant (Right) */}
-              <path d="M395 250 L402 232 L428 232 L435 250 Z" fill="#0f172a" />
-              <path d="M410 232 C405 210 395 200 395 190 C405 195 412 210 412 232 Z" fill="#ff5a5f" />
-              <path d="M418 232 C418 205 425 195 435 185 C432 200 426 215 422 232 Z" fill="#ff5a5f" />
-              <path d="M415 232 C415 210 412 195 415 180 C420 195 420 210 417 232 Z" fill="#e0484d" />
-            </svg>
-            <div className="mt-4 text-center">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Nairee Education Platform
-              </span>
-              <p className="text-[11px] text-slate-400 mt-0.5">Admin &bull; Teacher &bull; Student &bull; Parent</p>
-            </div>
+          {/* Left Column: Exact Cartoon Illustration from media_1790867259798.png */}
+          <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col items-center justify-center bg-white border-b lg:border-b-0 lg:border-r border-slate-100">
+            <img 
+              src="/login-cartoon.png" 
+              alt="Nairee School Admin Cartoon" 
+              className="w-full max-w-md h-auto object-contain"
+            />
           </div>
 
-          {/* Right Column: Sleek Login Card (Matches media_1790863645921.png) */}
+          {/* Right Column: Sleek Login Card (Matches media_1790867259798.png) */}
           <div className="lg:col-span-6 p-6 sm:p-10 md:p-12">
             <div className="max-w-md mx-auto">
               
-              <div className="mb-8 text-center">
+              {/* Logo on Top & Login Title */}
+              <div className="mb-6 text-center">
                 <img 
                   src="/nairee-logo.png" 
                   alt="Nairee" 
-                  className="h-10 mx-auto mb-3 object-contain" 
+                  className="h-11 mx-auto mb-3 object-contain" 
                 />
-                <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Login</h2>
-                <p className="text-xs text-slate-500 mt-1">Sign in with your school-issued ID</p>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Login</h2>
               </div>
 
               {/* Error Notice */}
               {errorMessage && (
-                <div className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2">
+                <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2">
                   <span className="text-rose-500 font-bold">&bull;</span>
                   <span>{errorMessage}</span>
                 </div>
@@ -259,11 +168,11 @@ export default function LoginPage({ onLoginSuccess }) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="school"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-100/90 border border-slate-200/80 text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-11"
+                    className="w-full px-5 py-3.5 rounded-xl bg-[#f2f4f7] border border-transparent text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-12 font-medium"
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-700">
-                    <User className="w-5 h-5 fill-slate-700 text-slate-700" />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-800">
+                    <User className="w-5 h-5 fill-slate-800 text-slate-800" />
                   </div>
                 </div>
 
@@ -275,13 +184,13 @@ export default function LoginPage({ onLoginSuccess }) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-100/90 border border-slate-200/80 text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-11"
+                      className="w-full px-5 py-3.5 rounded-xl bg-[#f2f4f7] border border-transparent text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-12 font-medium"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-700 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -290,18 +199,18 @@ export default function LoginPage({ onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setShowForgotModal(true)}
-                      className="text-xs text-[#3b82f6] hover:underline font-medium"
+                      className="text-xs text-[#3b82f6] hover:underline font-semibold"
                     >
                       Forgot Password?
                     </button>
                   </div>
                 </div>
 
-                {/* Big Blue Login Pill Button */}
+                {/* Large Blue Pill Button */}
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-2 py-3.5 px-6 rounded-2xl bg-[#4f8df9] hover:bg-[#3b82f6] text-white font-bold text-sm shadow-md shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full mt-4 py-3.5 px-6 rounded-full bg-[#4f8df9] hover:bg-[#3b82f6] text-white font-bold text-sm shadow-md shadow-blue-500/25 flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50 tracking-wide"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -312,12 +221,12 @@ export default function LoginPage({ onLoginSuccess }) {
 
                 {/* Don't have account footer link */}
                 <div className="text-center pt-2">
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-600 font-medium">
                     Don't have account? Let's{' '}
                     <button
                       type="button"
                       onClick={() => setErrorMessage('Student & Parent accounts are issued by the School Admissions Office.')}
-                      className="text-[#3b82f6] hover:underline font-semibold"
+                      className="text-[#3b82f6] hover:underline font-bold"
                     >
                       Get Started For Free
                     </button>

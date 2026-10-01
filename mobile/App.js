@@ -11,7 +11,8 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  TextInput
+  TextInput,
+  Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -25,8 +26,15 @@ const CANDIDATE_URLS = [
 ];
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [startingMode, setStartingMode] = useState('signin'); // 'splash' | 'signin'
   const [activeRole, setActiveRole] = useState('student'); // 'student', 'parent', 'teacher', 'admin'
   const [activeTab, setActiveTab] = useState('homework');
+  const [showMenuDrawer, setShowMenuDrawer] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('syalfreelance@gmail.com');
+  const [loginPassword, setLoginPassword] = useState('student123');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
   const [apiUrl, setApiUrl] = useState(CANDIDATE_URLS[0]);
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connected', 'offline', 'connecting'
   const [searchQuery, setSearchQuery] = useState('');
@@ -230,6 +238,219 @@ export default function App() {
     }
   };
 
+  const handlePerformLogin = async () => {
+    setLoggingIn(true);
+    try {
+      if (connectionStatus === 'connected' && apiUrl) {
+        const res = await fetch(`${apiUrl}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: loginEmail, password: loginPassword })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            setActiveRole(data.user.role || 'student');
+            if (data.user.student) {
+              setStudent(data.user.student);
+            }
+          }
+          setIsLoggedIn(true);
+          Alert.alert('Welcome to Nairee!', `Signed in as ${data.user?.full_name || 'Student'}.`);
+          loadData();
+          return;
+        }
+      }
+      setIsLoggedIn(true);
+      Alert.alert('Welcome to Nairee!', `Signed in as ${student?.student_name || 'Nairee Patel'}.`);
+      loadData();
+    } catch (err) {
+      setIsLoggedIn(true);
+      Alert.alert('Welcome to Nairee!', `Signed in as ${student?.student_name || 'Nairee Patel'} (Offline Mode).`);
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
+  // =========================================================================
+  // 1. STARTING PART OF APP (Matches media_1790867221846.png)
+  // =========================================================================
+  if (!isLoggedIn) {
+    return (
+      <SafeAreaView style={styles.startingRoot}>
+        <StatusBar barStyle="light-content" backgroundColor="#3B65BF" />
+
+        {/* Top Segment Mode Toggle Pill */}
+        <View style={styles.startingSegmentBar}>
+          <TouchableOpacity 
+            onPress={() => setStartingMode('splash')}
+            style={[styles.startingSegmentBtn, startingMode === 'splash' && styles.startingSegmentBtnActive]}
+          >
+            <Ionicons name="rocket" size={13} color={startingMode === 'splash' ? '#1E293B' : '#E0E7FF'} />
+            <Text style={[styles.startingSegmentText, startingMode === 'splash' && styles.startingSegmentTextActive]}>
+              1. Splash Screen
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => setStartingMode('signin')}
+            style={[styles.startingSegmentBtn, startingMode === 'signin' && styles.startingSegmentBtnActive]}
+          >
+            <Ionicons name="log-in" size={13} color={startingMode === 'signin' ? '#1E293B' : '#E0E7FF'} />
+            <Text style={[styles.startingSegmentText, startingMode === 'signin' && styles.startingSegmentTextActive]}>
+              2. Sign In Screen
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* SCREEN 1: SPLASH SCREEN (Left Screen of media_1790867221846.png) */}
+        {startingMode === 'splash' && (
+          <View style={styles.splashContainer}>
+            {/* Top Logo Area */}
+            <View style={styles.splashLogoBox}>
+              <View style={styles.splashNaireeTag}>
+                <Image 
+                  source={require('./assets/nairee-logo-white.png')} 
+                  style={{ width: 140, height: 42, resizeMode: 'contain' }} 
+                />
+              </View>
+            </View>
+
+            {/* Space Rocket Boy Illustration */}
+            <View style={styles.splashRocketBox}>
+              <Image 
+                source={require('./assets/boy-rocket-splash.png')} 
+                style={styles.splashRocketImage} 
+                resizeMode="contain" 
+              />
+            </View>
+
+            {/* Bottom Proceed Action Button */}
+            <View style={styles.splashBottomAction}>
+              <TouchableOpacity 
+                style={styles.splashProceedBtn}
+                onPress={() => setStartingMode('signin')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.splashProceedBtnText}>PROCEED TO SIGN IN</Text>
+                <Ionicons name="arrow-forward" size={16} color="#3B65BF" style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* SCREEN 2: SIGN IN SCREEN (Right Screen of media_1790867221846.png) */}
+        {startingMode === 'signin' && (
+          <ScrollView contentContainerStyle={styles.signInScroll} bounces={false} showsVerticalScrollIndicator={false}>
+            {/* Top Space Sky with Boy on Pencil Rocket */}
+            <View style={styles.signInHeaderArea}>
+              <Image 
+                source={require('./assets/boy-rocket-header.png')} 
+                style={styles.signInHeaderImage} 
+                resizeMode="cover" 
+              />
+            </View>
+
+            {/* Bottom White Rounded Sheet */}
+            <View style={styles.signInCardSheet}>
+              {/* Header Title */}
+              <Text style={styles.signInCardTitle}>Hi Student</Text>
+              <Text style={styles.signInCardSubtitle}>Sign in to continue</Text>
+
+              {/* Form Input 1: Mobile Number/Email */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputFieldLabel}>Mobile Number/Email</Text>
+                <TextInput
+                  style={styles.underlineInput}
+                  value={loginEmail}
+                  onChangeText={setLoginEmail}
+                  placeholder="syalfreelance@gmail.com"
+                  placeholderTextColor="#94A3B8"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              {/* Form Input 2: Password */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputFieldLabel}>Password</Text>
+                <View style={styles.passwordUnderlineBox}>
+                  <TextInput
+                    style={styles.passwordTextInput}
+                    value={loginPassword}
+                    onChangeText={setLoginPassword}
+                    placeholder="••••••••"
+                    placeholderTextColor="#94A3B8"
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity 
+                    onPress={() => setShowPassword(!showPassword)} 
+                    style={styles.passwordEyeBtn}
+                  >
+                    <Ionicons 
+                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                      size={18} 
+                      color="#94A3B8" 
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Sign In Pill Button */}
+              <TouchableOpacity 
+                style={styles.mainSignInBtn}
+                onPress={handlePerformLogin}
+                disabled={loggingIn}
+                activeOpacity={0.85}
+              >
+                {loggingIn ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" style={{ marginRight: 6 }} />
+                ) : null}
+                <Text style={styles.mainSignInBtnText}>{loggingIn ? 'SIGNING IN...' : 'SIGN IN'}</Text>
+                {!loggingIn && <Ionicons name="arrow-forward" size={18} color="#FFFFFF" style={{ marginLeft: 8 }} />}
+              </TouchableOpacity>
+
+              {/* Forgot Password Link */}
+              <TouchableOpacity 
+                onPress={() => Alert.alert('Forgot Password', 'Please contact the school administrative desk at admin@nairee.edu to reset your password.')}
+                style={styles.forgotPassBtn}
+              >
+                <Text style={styles.forgotPassText}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+              {/* Quick 1-Click Role Switcher */}
+              <View style={styles.startingQuickRolesBox}>
+                <Text style={styles.startingQuickRolesTitle}>OR 1-CLICK INSTANT DEMO LOGIN:</Text>
+                <View style={styles.startingQuickRolesRow}>
+                  {[
+                    { id: 'student', label: '🎓 Student', tab: 'homework' },
+                    { id: 'parent', label: '👨‍👩‍👦 Parent', tab: 'home' },
+                    { id: 'teacher', label: '👩‍🏫 Teacher', tab: 'home' },
+                    { id: 'admin', label: '🛡️ Admin', tab: 'home' },
+                  ].map(r => (
+                    <TouchableOpacity
+                      key={r.id}
+                      style={styles.quickRoleChip}
+                      onPress={() => {
+                        setActiveRole(r.id);
+                        setActiveTab(r.tab);
+                        setIsLoggedIn(true);
+                      }}
+                    >
+                      <Text style={styles.quickRoleChipText}>{r.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        )}
+      </SafeAreaView>
+    );
+  }
+
+  // =========================================================================
+  // 2. MAIN AUTHENTICATED APP EXPERIENCE
+  // =========================================================================
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#EBF1FE" />
@@ -247,9 +468,18 @@ export default function App() {
           </View>
         </View>
 
-        <TouchableOpacity onPress={() => { testConnection().then(loadData); }} style={styles.refreshButton}>
-          <Ionicons name="refresh" size={18} color="#64748B" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <TouchableOpacity 
+            onPress={() => setIsLoggedIn(false)} 
+            style={[styles.refreshButton, { backgroundColor: '#FEE2E2' }]}
+            title="Log Out & Return to Starting Interface"
+          >
+            <Ionicons name="log-out-outline" size={18} color="#DC2626" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { testConnection().then(loadData); }} style={styles.refreshButton}>
+            <Ionicons name="refresh" size={18} color="#64748B" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Connectivity & Role Selector */}
@@ -290,23 +520,21 @@ export default function App() {
 
       {/* EXACT UI DESIGN PILL HEADER (From Screenshot) */}
       <View style={styles.designHeaderPill}>
+        {/* 3-Dash Circular Hamburger Button (media_1790863264206.png) */}
         <TouchableOpacity 
-          style={styles.headerSquircleBtn}
-          onPress={() => {
-            if (activeRole === 'student' && activeTab !== 'homework') {
-              setActiveTab('homework');
-            } else {
-              Alert.alert('Nairee App', 'You are on the primary screen.');
-            }
-          }}
+          style={styles.threeDashBtn}
+          onPress={() => setShowMenuDrawer(true)}
+          activeOpacity={0.8}
         >
-          <Ionicons name="arrow-back" size={18} color="#1E293B" />
+          <View style={styles.dashLine} />
+          <View style={styles.dashLine} />
+          <View style={styles.dashLine} />
         </TouchableOpacity>
 
         <View style={styles.headerCenterCol}>
           <Text style={styles.headerPillTitle}>
             {activeRole === 'student'
-              ? (activeTab === 'homework' ? 'Homework' : activeTab === 'timetable' ? 'Time Table' : activeTab === 'video' ? 'Video' : 'Student Pass')
+              ? (activeTab === 'homework' ? 'Homework' : activeTab === 'timetable' ? 'Time Table' : activeTab === 'video' ? 'Video' : activeTab === 'calendar' ? 'Calendar' : 'Student Pass')
               : activeRole === 'parent' ? 'Parent Portal'
               : activeRole === 'teacher' ? 'Faculty Portal' : 'Admin Panel'}
           </Text>
@@ -323,6 +551,175 @@ export default function App() {
           <View style={styles.notificationRedDot} />
         </TouchableOpacity>
       </View>
+
+      {/* LEFT-SIDE NAVIGATION DRAWER (Toggled by 3-dash symbol) */}
+      <Modal
+        visible={showMenuDrawer}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowMenuDrawer(false)}
+      >
+        <View style={styles.drawerOverlay}>
+          <TouchableOpacity 
+            style={styles.drawerBackdropDismiss} 
+            activeOpacity={1} 
+            onPress={() => setShowMenuDrawer(false)} 
+          />
+          <View style={styles.drawerContainer}>
+            {/* Drawer Header */}
+            <View style={styles.drawerHeader}>
+              <View style={styles.drawerLogoRow}>
+                <View style={styles.threeDashBtnSmall}>
+                  <View style={styles.miniDashLine} />
+                  <View style={styles.miniDashLine} />
+                  <View style={styles.miniDashLine} />
+                </View>
+                <Text style={styles.drawerTitle}>Navigation Options</Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowMenuDrawer(false)} style={styles.drawerCloseBtn}>
+                <Ionicons name="close" size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Active Indicator Banner */}
+            <View style={styles.drawerActiveBanner}>
+              <Text style={styles.drawerActiveText}>
+                Active Option: {activeTab.toUpperCase()}
+              </Text>
+            </View>
+
+            {/* Options on the Left */}
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+              {activeRole === 'student' && (
+                <View style={styles.drawerOptionsList}>
+                  {[
+                    { id: 'homework', label: 'Homework & Submit', icon: 'document-text-outline' },
+                    { id: 'timetable', label: 'Full Weekly Timetable', icon: 'calendar-outline' },
+                    { id: 'video', label: 'Study Videos & Lectures', icon: 'play-circle-outline' },
+                    { id: 'pass', label: 'Grades & Report Card', icon: 'ribbon-outline' },
+                    { id: 'calendar', label: 'School Calendar (On / Off)', icon: 'calendar' },
+                  ].map(opt => {
+                    const isSelected = activeTab === opt.id;
+                    return (
+                      <TouchableOpacity
+                        key={opt.id}
+                        style={[styles.drawerItem, isSelected && styles.drawerItemActive]}
+                        onPress={() => {
+                          setActiveTab(opt.id);
+                          setShowMenuDrawer(false);
+                        }}
+                      >
+                        <Ionicons 
+                          name={opt.icon} 
+                          size={18} 
+                          color={isSelected ? '#FFFFFF' : '#00A884'} 
+                        />
+                        <Text style={[styles.drawerItemText, isSelected && styles.drawerItemTextActive]}>
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
+              {activeRole === 'parent' && (
+                <View style={styles.drawerOptionsList}>
+                  {[
+                    { id: 'home', label: 'Child Performance', icon: 'person-outline' },
+                    { id: 'calendar', label: 'School ON / OFF Calendar', icon: 'calendar-outline' },
+                    { id: 'attendance', label: 'Attendance Tracking', icon: 'checkmark-circle-outline' },
+                    { id: 'fees', label: 'Fees & Online Pay', icon: 'card-outline' },
+                  ].map(opt => {
+                    const isSelected = activeTab === opt.id;
+                    return (
+                      <TouchableOpacity
+                        key={opt.id}
+                        style={[styles.drawerItem, isSelected && styles.drawerItemActive]}
+                        onPress={() => {
+                          setActiveTab(opt.id);
+                          setShowMenuDrawer(false);
+                        }}
+                      >
+                        <Ionicons 
+                          name={opt.icon} 
+                          size={18} 
+                          color={isSelected ? '#FFFFFF' : '#00A884'} 
+                        />
+                        <Text style={[styles.drawerItemText, isSelected && styles.drawerItemTextActive]}>
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
+              {activeRole === 'teacher' && (
+                <View style={styles.drawerOptionsList}>
+                  {[
+                    { id: 'home', label: 'Class Attendance', icon: 'checkbox-outline' },
+                    { id: 'homework', label: 'Homework Manager', icon: 'book-outline' },
+                    { id: 'calendar', label: 'School Calendar', icon: 'calendar-outline' },
+                    { id: 'syllabus', label: 'Syllabus Progression', icon: 'bar-chart-outline' },
+                  ].map(opt => {
+                    const isSelected = activeTab === opt.id;
+                    return (
+                      <TouchableOpacity
+                        key={opt.id}
+                        style={[styles.drawerItem, isSelected && styles.drawerItemActive]}
+                        onPress={() => {
+                          setActiveTab(opt.id);
+                          setShowMenuDrawer(false);
+                        }}
+                      >
+                        <Ionicons 
+                          name={opt.icon} 
+                          size={18} 
+                          color={isSelected ? '#FFFFFF' : '#00A884'} 
+                        />
+                        <Text style={[styles.drawerItemText, isSelected && styles.drawerItemTextActive]}>
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
+              {activeRole === 'admin' && (
+                <View style={styles.drawerOptionsList}>
+                  {[
+                    { id: 'home', label: 'Executive Dashboard', icon: 'stats-chart-outline' },
+                    { id: 'calendar', label: 'School Calendar', icon: 'calendar-outline' },
+                  ].map(opt => {
+                    const isSelected = activeTab === opt.id;
+                    return (
+                      <TouchableOpacity
+                        key={opt.id}
+                        style={[styles.drawerItem, isSelected && styles.drawerItemActive]}
+                        onPress={() => {
+                          setActiveTab(opt.id);
+                          setShowMenuDrawer(false);
+                        }}
+                      >
+                        <Ionicons 
+                          name={opt.icon} 
+                          size={18} 
+                          color={isSelected ? '#FFFFFF' : '#00A884'} 
+                        />
+                        <Text style={[styles.drawerItemText, isSelected && styles.drawerItemTextActive]}>
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
       {/* Main Content Area */}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -1024,7 +1421,6 @@ export default function App() {
             </View>
           </View>
         )}
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -2403,5 +2799,378 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: 0.5,
+  },
+  threeDashBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#D7DFE9',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 3.5,
+  },
+  dashLine: {
+    width: 18,
+    height: 2.5,
+    backgroundColor: '#111827',
+    borderRadius: 2,
+  },
+  threeDashBtnSmall: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#D7DFE9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2.5,
+  },
+  miniDashLine: {
+    width: 14,
+    height: 2,
+    backgroundColor: '#111827',
+    borderRadius: 1,
+  },
+  drawerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    flexDirection: 'row',
+  },
+  drawerBackdropDismiss: {
+    flex: 1,
+  },
+  drawerContainer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: width * 0.78,
+    maxWidth: 320,
+    backgroundColor: '#FFFFFF',
+    padding: 18,
+    paddingTop: 45,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  drawerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  drawerLogoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  drawerTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  drawerCloseBtn: {
+    padding: 4,
+  },
+  drawerActiveBanner: {
+    marginVertical: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#F0FDF4',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+  },
+  drawerActiveText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#00A884',
+  },
+  drawerOptionsList: {
+    gap: 8,
+    paddingTop: 4,
+  },
+  drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  drawerItemActive: {
+    backgroundColor: '#00A884',
+    borderColor: '#00A884',
+    shadowColor: '#00A884',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  drawerItemText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  drawerItemTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // =========================================================================
+  // STARTING INTERFACE STYLES (Exact match for media_1790867221846.png)
+  // =========================================================================
+  startingRoot: {
+    flex: 1,
+    backgroundColor: '#3B65BF',
+  },
+  startingSegmentBar: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(15, 23, 42, 0.25)',
+    borderRadius: 20,
+    padding: 3,
+    marginHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  startingSegmentBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 7,
+    borderRadius: 16,
+    gap: 5,
+  },
+  startingSegmentBtnActive: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  startingSegmentText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#E0E7FF',
+  },
+  startingSegmentTextActive: {
+    color: '#1E293B',
+  },
+
+  // SCREEN 1: SPLASH SCREEN
+  splashContainer: {
+    flex: 1,
+    backgroundColor: '#3B65BF',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  splashLogoBox: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  splashErpSubtitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+    textAlign: 'center',
+  },
+  splashErpTitle: {
+    fontSize: 34,
+    fontWeight: '900',
+    fontStyle: 'italic',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+    textAlign: 'center',
+    lineHeight: 36,
+  },
+  splashNaireeTag: {
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  splashRocketBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  splashRocketImage: {
+    width: width - 40,
+    height: 300,
+  },
+  splashBottomAction: {
+    paddingBottom: 16,
+  },
+  splashProceedBtn: {
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  splashProceedBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#3B65BF',
+    letterSpacing: 0.5,
+  },
+
+  // SCREEN 2: SIGN IN SCREEN
+  signInScroll: {
+    backgroundColor: '#3B65BF',
+    flexGrow: 1,
+  },
+  signInHeaderArea: {
+    width: '100%',
+    height: 200,
+    overflow: 'hidden',
+  },
+  signInHeaderImage: {
+    width: '100%',
+    height: '100%',
+  },
+  signInCardSheet: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    paddingHorizontal: 24,
+    paddingTop: 30,
+    paddingBottom: 40,
+    marginTop: -20,
+    flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  signInCardTitle: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1E293B',
+    letterSpacing: -0.5,
+  },
+  signInCardSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#64748B',
+    marginTop: 4,
+    marginBottom: 24,
+  },
+  inputGroup: {
+    marginBottom: 18,
+  },
+  inputFieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
+    marginBottom: 6,
+  },
+  underlineInput: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E293B',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    paddingVertical: 8,
+    paddingHorizontal: 0,
+  },
+  passwordUnderlineBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  passwordTextInput: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1E293B',
+    paddingVertical: 8,
+    paddingHorizontal: 0,
+  },
+  passwordEyeBtn: {
+    padding: 6,
+  },
+  mainSignInBtn: {
+    backgroundColor: '#3B65BF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 16,
+    marginTop: 12,
+    shadowColor: '#3B65BF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  mainSignInBtnText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.8,
+  },
+  forgotPassBtn: {
+    alignSelf: 'flex-end',
+    marginTop: 14,
+  },
+  forgotPassText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#1E293B',
+  },
+  startingQuickRolesBox: {
+    marginTop: 30,
+    paddingTop: 18,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  startingQuickRolesTitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#94A3B8',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  startingQuickRolesRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  quickRoleChip: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 12,
+  },
+  quickRoleChipText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#334155',
   },
 });

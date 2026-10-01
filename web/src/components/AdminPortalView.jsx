@@ -24,12 +24,16 @@ import {
   MessageSquare,
   Copy,
   ExternalLink,
-  X
+  X,
+  Umbrella
 } from 'lucide-react';
 import { api } from '../api.js';
 
-export default function AdminPortalView({ user }) {
-  const [activeTab, setActiveTab] = useState('overview');
+export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
+  const [internalTab, setInternalTab] = useState('overview');
+  const activeTabRaw = propTab !== undefined ? propTab : internalTab;
+  const activeTab = activeTabRaw === 'dashboard' ? 'overview' : activeTabRaw;
+  const setActiveTab = propSetTab || setInternalTab;
   const [stats, setStats] = useState(null);
   const [usersList, setUsersList] = useState([]);
   const [teacherPerf, setTeacherPerf] = useState([]);
@@ -221,64 +225,7 @@ export default function AdminPortalView({ user }) {
         </div>
       )}
 
-      {/* Admin Portal Header Banner */}
-      <div className="bg-gradient-to-r from-[#0c1f2c] via-[#102d3e] to-[#0c1f2c] rounded-2xl p-6 border border-teal-800/40 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-teal-400 mb-1">
-            <Shield className="w-4 h-4" />
-            <span className="uppercase tracking-wider">Executive Administration &bull; Principal Portal</span>
-          </div>
-          <h1 className="text-2xl font-black tracking-tight text-white">
-            Welcome, {user?.full_name || 'Principal Dr. Marcus Vance'}
-          </h1>
-          <p className="text-xs text-slate-300 mt-1">
-            Complete institutional oversight, automated account issuance, faculty metrics & school-wide performance.
-          </p>
-        </div>
 
-        <div className="flex items-center space-x-3 flex-wrap gap-2">
-          <button
-            onClick={() => setShowCreateAccountModal(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white rounded-xl text-xs font-bold shadow-md shadow-teal-500/20 flex items-center space-x-1.5 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create Account</span>
-          </button>
-
-          <button
-            onClick={() => setShowPostNoticeModal(true)}
-            className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
-          >
-            <Send className="w-4 h-4 text-cyan-400" />
-            <span>Post Circular</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation Pills */}
-      <div className="flex border-b border-teal-900/40 overflow-x-auto gap-2 pb-2">
-        {[
-          { id: 'overview', label: 'Executive Dashboard' },
-          { id: 'accounts', label: `Accounts & Logins (${usersList.length})` },
-          { id: 'teachers', label: `Teacher Workload & Syllabus (${teacherPerf.length})` },
-          { id: 'students', label: `Student Performance & At-Risk (${atRiskStudents.length} Flagged)` },
-          { id: 'fees', label: 'Fee Governance' },
-          { id: 'announcements', label: `Announcements (${announcements.length})` },
-          { id: 'reports', label: 'Exportable Reports' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-teal-500 text-white shadow-md shadow-teal-500/25'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
       {/* TAB 1: OVERVIEW */}
       {activeTab === 'overview' && (

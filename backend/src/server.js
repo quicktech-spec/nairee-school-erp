@@ -1208,6 +1208,128 @@ app.get('/api/parent/child/:studentId/summary', async (req, res) => {
   }
 });
 
+// -------------------------------------------------------------
+// LIVE DATABASE STUDIO & MANAGEMENT (Localhost Database Editor)
+// -------------------------------------------------------------
+app.get('/api/database/tables', async (req, res) => {
+  try {
+    const tableRows = await db.all("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+    const tables = [];
+    for (const row of tableRows) {
+      const countRes = await db.get(`SELECT COUNT(*) as count FROM ${row.name}`);
+      const pragma = await db.all(`PRAGMA table_info(${row.name});`);
+      tables.push({
+        name: row.name,
+        count: countRes ? countRes.count : 0,
+        columns: pragma.map(p => ({
+          cid: p.cid,
+          name: p.name,
+          type: p.type,
+          notnull: p.notnull,
+          dflt_value: p.dflt_value,
+          pk: p.pk
+        }))
+      });
+    }
+    res.json({ tables });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/database/table/:tableName', async (req, res) => {
+  const { tableName } = req.params;
+  const limit = parseInt(req.query.limit) || 100;
+  const offset = parseInt(req.query.offset) || 0;
+  const search = req.query.search || '';
+  try {
+    const pragma = await db.all(`PRAGMA table_info(${tableName});`);
+    let sql = `SELECT * FROM ${tableName}`;
+    let params = [];
+    if (search && pragma.length > 0) {
+      const stringCols = pragma.filter(p => !p.type || p.type.includes('CHAR') || p.type.includes('TEXT') || p.type.includes('VARCHAR'));
+      if (stringCols.length > 0) {
+        const whereClause = stringCols.map(c => `${c.name} LIKE ?`).join(' OR ');
+        sql += ` WHERE ${whereClause}`;
+        params = stringCols.map(() => `%${search}%`);
+      }
+    }
+    sql += ` LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+    const rows = await db.all(sql, params);
+    const totalCount = await db.get(`SELECT COUNT(*) as count FROM ${tableName}`);
+    res.json({ rows, total: totalCount ? totalCount.count : rows.length, columns: pragma });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/database/query', async (req, res) => {
+  const { sql } = req.body;
+  if (!sql) return res.status(400).json({ error: 'SQL query required' });
+  try {
+    const trimmed = sql.trim();
+    if (trimmed.toUpperCase().startsWith('SELECT') || trimmed.toUpperCase().startsWith('PRAGMA')) {
+      const rows = await db.all(sql);
+      res.json({ success: true, type: 'SELECT', rows, count: rows.length });
+    } else {
+      const result = await db.run(sql);
+      res.json({ success: true, type: 'MUTATION', changes: result.changes, lastID: result.lastID });
+    }
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/database/table/:tableName/row', async (req, res) => {
+  const { tableName } = req.params;
+  const rowData = req.body;
+  try {
+    const keys = Object.keys(rowData);
+    const values = Object.values(rowData);
+    const placeholders = keys.map(() => '?').join(', ');
+    const sql = `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${placeholders})`;
+    const result = await db.run(sql, values);
+    res.json({ success: true, lastID: result.lastID, changes: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/database/table/:tableName/row', async (req, res) => {
+  const { tableName } = req.params;
+  const { primaryKey, primaryValue, data } = req.body;
+  if (!primaryKey || primaryValue === undefined || !data) {
+    return res.status(400).json({ error: 'primaryKey, primaryValue, and data required' });
+  }
+  try {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const sql = `UPDATE ${tableName} SET ${setClause} WHERE ${primaryKey} = ?`;
+    values.push(primaryValue);
+    const result = await db.run(sql, values);
+    res.json({ success: true, changes: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/database/table/:tableName/row', async (req, res) => {
+  const { tableName } = req.params;
+  const { primaryKey, primaryValue } = req.body;
+  if (!primaryKey || primaryValue === undefined) {
+    return res.status(400).json({ error: 'primaryKey and primaryValue required' });
+  }
+  try {
+    const sql = `DELETE FROM ${tableName} WHERE ${primaryKey} = ?`;
+    const result = await db.run(sql, [primaryValue]);
+    res.json({ success: true, changes: result.changes });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Serve static production frontend if built (single-port unified cloud deployment)
 const clientDist = path.resolve(__dirname, '../../web/dist');
 if (fs.existsSync(clientDist)) {

@@ -18,13 +18,18 @@ import {
   Send,
   ExternalLink,
   ShieldCheck,
-  Receipt
+  Receipt,
+  LayoutDashboard
 } from 'lucide-react';
 import { api } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 
-export default function ParentPortalView({ user, onPaymentCompleted }) {
-  const [activeTab, setActiveTab] = useState('dashboard');
+export default function ParentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab, onPaymentCompleted }) {
+  const [internalTab, setInternalTab] = useState('dashboard');
+  const activeTab = propTab !== undefined ? propTab : internalTab;
+  const setActiveTab = propSetTab || setInternalTab;
+  const isWrappedInLayout = propTab !== undefined;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [children, setChildren] = useState(user?.children || []);
   const [selectedChildId, setSelectedChildId] = useState(
     user?.children && user.children.length > 0 ? user.children[0].name : 'EDU-STU-2026-00001'
@@ -182,32 +187,135 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-teal-900/40 overflow-x-auto gap-2 pb-2">
-        {[
-          { id: 'dashboard', label: 'Child Snapshot' },
-          { id: 'calendar', label: 'School ON / OFF Calendar' },
-          { id: 'progress', label: `Academic Grades (${childSummary?.results?.length || 0} Results)` },
-          { id: 'attendance', label: `Attendance Tracking (${childSummary?.attendance?.percentage || 100}%)` },
-          { id: 'fees', label: 'Fees & Online Payment' },
-          { id: 'syllabus', label: 'Live Syllabus Progress' },
-          { id: 'timetable', label: 'Class Schedule & School Timing' },
-          { id: 'transport', label: 'School Bus & Route' },
-          { id: 'communication', label: `Teacher Messages (${messages.length})` }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-teal-500 text-white shadow-md shadow-teal-500/25'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Top 3-Dash Control Bar (Matches media_1790863264206.png & media_1790863217016.png - only when not wrapped in AppLayout) */}
+      {!isWrappedInLayout && (
+        <div className="bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-200/90 shadow-sm flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            {/* THE 3 DASH SYMBOL (from media_1790863264206.png) */}
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(prev => !prev)}
+              aria-label="Toggle navigation options"
+              className="w-11 h-11 rounded-full bg-[#d7dfe9] hover:bg-[#cbd5e1] flex flex-col items-center justify-center gap-[4px] shadow-sm transition-all cursor-pointer active:scale-95 border border-slate-300 flex-shrink-0"
+              title={isSidebarOpen ? "Collapse Left Menu" : "Show Left Menu"}
+            >
+              <span className="w-5 h-[3px] bg-[#111827] rounded-full"></span>
+              <span className="w-5 h-[3px] bg-[#111827] rounded-full"></span>
+              <span className="w-5 h-[3px] bg-[#111827] rounded-full"></span>
+            </button>
+
+            {/* Active Selected Option Indicator */}
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline">
+                Active Option:
+              </span>
+              <div className="px-4 py-2 rounded-2xl bg-[#00a884] text-white text-xs font-bold shadow-md shadow-[#00a884]/25 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                <span>
+                  {[
+                    { id: 'dashboard', label: 'Child Snapshot' },
+                    { id: 'calendar', label: 'School ON / OFF Calendar' },
+                    { id: 'progress', label: `Academic Grades (${childSummary?.results?.length || 0})` },
+                    { id: 'attendance', label: `Attendance Tracking (${childSummary?.attendance?.percentage || 100}%)` },
+                    { id: 'fees', label: 'Fees & Online Payment' },
+                    { id: 'syllabus', label: 'Live Syllabus Progress' },
+                    { id: 'timetable', label: 'Class Schedule & School Timing' },
+                    { id: 'transport', label: 'School Bus & Route' },
+                    { id: 'communication', label: `Teacher Messages (${messages.length})` }
+                  ].find(t => t.id === activeTab)?.label || 'Child Snapshot'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Helper Badge */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-400 hidden md:inline">Click ☰ to toggle options on left</span>
+            <span className="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-mono font-bold text-[11px]">
+              {activeChild.student_name}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Split Layout: Left-Side Navigation Options + Right-Side Main Screen Data */}
+      <div className={`flex flex-col ${!isWrappedInLayout ? 'lg:flex-row' : ''} gap-6 items-start`}>
+        {/* LEFT SIDE NAVIGATION MENU (Visible when 3-dash clicked / active) */}
+        {!isWrappedInLayout && isSidebarOpen && (
+          <aside className="w-full lg:w-72 flex-shrink-0 bg-white rounded-3xl p-4 border border-slate-200/90 shadow-md space-y-2 sticky top-20 z-10 transition-all animate-fadeIn">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100 mb-1">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-[#d7dfe9] flex flex-col items-center justify-center gap-[2px]">
+                  <span className="w-3 h-[2px] bg-[#111827] rounded-full"></span>
+                  <span className="w-3 h-[2px] bg-[#111827] rounded-full"></span>
+                  <span className="w-3 h-[2px] bg-[#111827] rounded-full"></span>
+                </div>
+                <span className="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider">Parent Options</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-xs text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer"
+                title="Collapse Menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            <nav className="space-y-1.5">
+              {[
+                { id: 'dashboard', label: 'Child Snapshot', icon: LayoutDashboard },
+                { id: 'calendar', label: 'School Calendar', icon: Calendar },
+                { id: 'progress', label: 'Academic Grades', icon: GraduationCap, count: childSummary?.results?.length || 0 },
+                { id: 'attendance', label: 'Attendance Tracking', icon: UserCheck, count: `${childSummary?.attendance?.percentage || 100}%` },
+                { id: 'fees', label: 'Fees & Payment', icon: CreditCard },
+                { id: 'syllabus', label: 'Live Syllabus Progress', icon: CheckCircle2 },
+                { id: 'timetable', label: 'Class Schedule', icon: Clock },
+                { id: 'transport', label: 'School Bus & Route', icon: Bus },
+                { id: 'communication', label: 'Teacher Messages', icon: MessageSquare, count: messages.length }
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      if (window.innerWidth < 1024) {
+                        setIsSidebarOpen(false);
+                      }
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-left ${
+                      isActive
+                        ? 'bg-[#00a884] text-white shadow-md shadow-[#00a884]/30'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <span className="truncate">{tab.label}</span>
+                    </div>
+                    {tab.count !== undefined && (
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          isActive 
+                            ? 'bg-white/25 text-white' 
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+        )}
+
+        {/* RIGHT SIDE MAIN SCREEN (Displays data for the selected option) */}
+        <div className="flex-1 w-full min-w-0 space-y-6">
 
       {/* TAB 1: CHILD SNAPSHOT */}
       {activeTab === 'dashboard' && (
@@ -708,6 +816,9 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
       {activeTab === 'calendar' && (
         <SchoolCalendarView />
       )}
+
+        </div>
+      </div>
 
       {/* ONLINE PAYMENT MODAL */}
       {showPaymentModal && selectedFee && (
