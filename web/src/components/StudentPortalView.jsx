@@ -16,7 +16,8 @@ import {
   ExternalLink,
   Upload,
   Send,
-  UserCheck
+  UserCheck,
+  Printer
 } from 'lucide-react';
 import { api } from '../api.js';
 
@@ -302,6 +303,14 @@ export default function StudentPortalView({ user }) {
                   <QrCode className="w-24 h-24 text-slate-900 mx-auto" />
                 </div>
                 <p className="text-[10px] text-slate-400 mt-2 font-mono">Scan for Campus Gates & Library Access</p>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="w-full mt-3 py-2 px-3 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print Official Student ID Pass</span>
+                </button>
               </div>
 
               <div className="pt-3 border-t border-white/10 text-center">
@@ -444,9 +453,19 @@ export default function StudentPortalView({ user }) {
               <h3 className="font-bold text-slate-800 text-sm">Official Academic Report Card</h3>
               <p className="text-xs text-slate-500">Evaluated marks, percentiles, and comments from faculty</p>
             </div>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">
-              GPA Distinction
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5 text-teal-600" />
+                <span>Print Official Report Card</span>
+              </button>
+              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800">
+                GPA Distinction
+              </span>
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden">

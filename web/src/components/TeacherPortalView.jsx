@@ -549,8 +549,19 @@ export default function TeacherPortalView({ user }) {
                             ))}
                           </div>
                         </td>
-                        <td className="py-3 px-4 text-right text-[11px] text-teal-600 font-medium">
-                          Syncs to Student & Parent
+                        <td className="py-3 px-4 text-right text-[11px] font-medium">
+                          {currentStatus === 'Absent' ? (
+                            <a
+                              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Dear Parent, your ward ${s.student_name} was marked ABSENT today (${attendanceDate}) at Nairee International School. Please contact the school office if this was in error.`)}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[10px] font-bold shadow-sm transition-all"
+                            >
+                              <span>💬 WhatsApp Parent</span>
+                            </a>
+                          ) : (
+                            <span className="text-teal-600">Syncs to Student & Parent</span>
+                          )}
                         </td>
                       </tr>
                     );
@@ -616,6 +627,14 @@ export default function TeacherPortalView({ user }) {
                       Topics Taught: <strong>{item.completed_topics}</strong> of <strong>{item.total_topics}</strong> total
                     </span>
                     <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleUpdateSyllabus(item, item.total_topics)}
+                        disabled={item.completed_topics >= item.total_topics}
+                        title="Mark all topics in chapter completed"
+                        className="px-2 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-[10px] border border-teal-200 disabled:opacity-40 transition-colors"
+                      >
+                        ✓ Finish Chapter
+                      </button>
                       <button
                         onClick={() => handleUpdateSyllabus(item, item.completed_topics - 1)}
                         disabled={item.completed_topics <= 0}

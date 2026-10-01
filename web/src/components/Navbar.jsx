@@ -10,7 +10,7 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 
-export default function Navbar({ user, onLogout, onSwitchUser }) {
+export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) {
   const getRoleBadge = (role) => {
     switch (role) {
       case 'admin':
@@ -50,8 +50,17 @@ export default function Navbar({ user, onLogout, onSwitchUser }) {
           </div>
         </div>
 
-        {/* Right: User Profile Pill & Quick Switch / Logout */}
+        {/* Middle / Right: Quick Command Palette Trigger */}
         <div className="flex items-center gap-3">
+          <button
+            onClick={onOpenPalette}
+            className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 text-xs text-slate-300 transition-all cursor-pointer shadow-sm group"
+          >
+            <Search className="w-3.5 h-3.5 text-teal-400 group-hover:scale-110 transition-transform" />
+            <span className="text-slate-400 group-hover:text-slate-200">Search commands...</span>
+            <kbd className="text-[10px] font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 text-slate-400">Ctrl K</kbd>
+          </button>
+
           {/* Active User Info Card */}
           <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">

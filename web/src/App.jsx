@@ -5,9 +5,11 @@ import AdminPortalView from './components/AdminPortalView.jsx';
 import TeacherPortalView from './components/TeacherPortalView.jsx';
 import StudentPortalView from './components/StudentPortalView.jsx';
 import ParentPortalView from './components/ParentPortalView.jsx';
+import CommandPaletteModal from './components/CommandPaletteModal.jsx';
 import { api } from './api.js';
 
 export default function App() {
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('nairee_user');
@@ -59,6 +61,19 @@ export default function App() {
         user={currentUser}
         onLogout={handleLogout}
         onSwitchUser={handleSwitchUser}
+        onOpenPalette={() => setIsPaletteOpen(true)}
+      />
+
+      {/* Global Command Palette (Ctrl+K) */}
+      <CommandPaletteModal
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        onNavigate={(tab) => {
+          // If in admin portal or generic navigation, trigger custom event or scroll
+          window.dispatchEvent(new CustomEvent('nairee_navigate', { detail: tab }));
+        }}
+        onSwitchUser={handleSwitchUser}
+        currentRole={currentUser.role}
       />
 
       {/* Scoped Role Portal View */}
