@@ -280,9 +280,7 @@ export default function StudentPortalView({ user }) {
             <div className="bg-gradient-to-br from-[#0c1f2c] via-[#0f2c3d] to-[#0a1b26] text-white rounded-3xl p-6 shadow-xl border border-teal-800/40 relative overflow-hidden">
               <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-teal-500 flex items-center justify-center text-white">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
+                  <img src="/nairee-logo-white.png" alt="Nairee" className="h-6 w-auto object-contain" />
                   <span className="text-xs font-bold tracking-wider uppercase text-teal-300">Digital Student Pass</span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-mono">2026-27</span>
@@ -448,10 +446,13 @@ export default function StudentPortalView({ user }) {
       {/* TAB 4: GRADES & REPORT CARD */}
       {activeTab === 'results' && (
         <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm">Official Academic Report Card</h3>
-              <p className="text-xs text-slate-500">Evaluated marks, percentiles, and comments from faculty</p>
+          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <img src="/nairee-logo.png" alt="Nairee" className="h-8 w-auto object-contain" />
+              <div>
+                <h3 className="font-bold text-slate-800 text-sm">Official Academic Report Card</h3>
+                <p className="text-xs text-slate-500">Evaluated marks, percentiles, and comments from faculty</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <button

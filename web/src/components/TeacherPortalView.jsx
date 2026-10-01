@@ -289,12 +289,12 @@ export default function TeacherPortalView({ user }) {
     const sName = student?.student_name || 'Student';
     const gName = student?.guardian_name || 'Parent';
     if (templateKey === 'late') {
-      return `⏰ Nairee International School: Dear ${gName}, your ward ${sName} arrived LATE to morning lectures today (${attendanceDate}). Please ensure on-time arrival for tomorrow's 08:30 AM assembly.`;
+      return `⏰ Nairee: Dear ${gName}, your ward ${sName} arrived LATE to morning lectures today (${attendanceDate}). Please ensure on-time arrival for tomorrow's 08:30 AM assembly.`;
     }
     if (templateKey === 'sick') {
-      return `🩺 Nairee International School: Dear ${gName}, we noted ${sName} is absent today due to illness. We wish them a speedy recovery! Please let us know if any lecture materials should be sent over.`;
+      return `🩺 Nairee: Dear ${gName}, we noted ${sName} is absent today due to illness. We wish them a speedy recovery! Please let us know if any lecture materials should be sent over.`;
     }
-    return `🚨 Official Attendance Notice: Dear ${gName}, your ward ${sName} was recorded ABSENT today (${attendanceDate}) for Grade 10-A at Nairee International School. Please reply with the reason for absence or call our office at +1 (555) 019-2000.`;
+    return `🚨 Official Attendance Notice: Dear ${gName}, your ward ${sName} was recorded ABSENT today (${attendanceDate}) for Grade 10-A at Nairee. Please reply with the reason for absence or call our office at +1 (555) 019-2000.`;
   };
 
   return (

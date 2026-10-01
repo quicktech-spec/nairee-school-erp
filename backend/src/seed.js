@@ -546,7 +546,7 @@ export async function seedDatabase() {
   await db.run(`
     INSERT INTO tabAnnouncement (title, content, category, target_role, student_batch, posted_by, priority) VALUES
     ('Term 1 Mid-Term Examination Timetable & Guidelines', 'The official timetable for Term 1 examinations has been published. Exams commence on October 14, 2026. Hall tickets will be downloadable from student and parent portals starting October 7.', 'Exam', 'All', 'All', 'Principal Dr. Marcus Vance', 'High'),
-    ('Annual Inter-School STEM & Robotics Fair 2026', 'Nairee International School is proud to host the 2026 STEM Fair on November 5th. Project submissions open next week. All students are invited to register projects.', 'Event', 'All', 'All', 'Prof. Sarah Jenkins', 'Normal'),
+    ('Annual Inter-School STEM & Robotics Fair 2026', 'Nairee is proud to host the 2026 STEM Fair on November 5th. Project submissions open next week. All students are invited to register projects.', 'Event', 'All', 'All', 'Prof. Sarah Jenkins', 'Normal'),
     ('Term 1 Parent-Teacher Meeting (PTM) Schedule', 'PTM for Grade 10-A and 10-B is scheduled for Saturday, October 10th from 09:00 AM to 01:30 PM. Parents can view their scheduled consultation slot in the portal.', 'PTM', 'parent', 'BATCH-10A-2026', 'Admin Office', 'High'),
     ('Mandatory Faculty Pedagogical Council & Syllabus Alignment', 'All department heads and faculty members are requested to attend the quarterly syllabus review meeting in Boardroom A on Friday at 03:45 PM.', 'Circular', 'teacher', 'All', 'Principal Dr. Marcus Vance', 'Normal')
   `);
@@ -564,7 +564,7 @@ export async function seedDatabase() {
     INSERT INTO tabMessage (sender_username, sender_name, sender_role, recipient_username, recipient_name, recipient_role, student_batch, subject, message, is_read) VALUES
     ('teacher_jenkins', 'Prof. Sarah Jenkins', 'teacher', 'parent_patel', 'Rajesh Patel', 'parent', 'BATCH-10A-2026', 'Commendation: Nairee’s Performance in Advanced Mathematics', 'Dear Mr. Patel, I wanted to personally congratulate you on Nairee’s exceptional performance in the Calculus unit evaluation (98%). Her problem-solving skills and discipline in class are remarkable. We are recommending her for the National STEM Olympiad.', 1),
     ('parent_patel', 'Rajesh Patel', 'parent', 'teacher_jenkins', 'Prof. Sarah Jenkins', 'teacher', 'BATCH-10A-2026', 'Re: Commendation: Nairee’s Performance in Advanced Mathematics', 'Dear Prof. Jenkins, thank you so much for the encouraging note! Nairee enjoys your classes immensely and has already begun preparing for the Olympiad problem sets. We truly appreciate your mentorship.', 1),
-    ('admin', 'Dr. Marcus Vance', 'admin', NULL, 'All Parents', 'parent', 'BATCH-10A-2026', 'Welcome to Academic Term 1 & Digital Portal Access', 'Dear Parents and Guardians, welcome to Academic Term 1 at Nairee International School. We have enabled live attendance tracking, fee receipts, and syllabus progress directly through the Nairee parent portal.', 1)
+    ('admin', 'Dr. Marcus Vance', 'admin', NULL, 'All Parents', 'parent', 'BATCH-10A-2026', 'Welcome to Academic Term 1 & Digital Portal Access', 'Dear Parents and Guardians, welcome to Academic Term 1 at Nairee. We have enabled live attendance tracking, fee receipts, and syllabus progress directly through the Nairee parent portal.', 1)
   `);
 
   // 19. Also add fees and attendance records for Rohan Patel (child #2 for Rajesh Patel)

@@ -104,14 +104,15 @@ export default function LoginPage({ onLoginSuccess }) {
       <header className="border-b border-teal-900/40 bg-[#0c1f2c]/80 backdrop-blur-md px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-teal-500/20 text-white">
-              <School className="w-6 h-6" />
-            </div>
-            <div>
+            <img 
+              src="/nairee-logo-white.png" 
+              alt="Nairee" 
+              className="h-10 w-auto object-contain" 
+            />
+            <div className="hidden sm:block pl-3 border-l border-teal-800/60">
               <div className="flex items-center space-x-2">
-                <span className="font-extrabold text-xl tracking-tight text-white">Nairee International School</span>
                 <span className="px-2 py-0.5 text-[11px] font-semibold tracking-wider uppercase bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
-                  Nairee ERP
+                  ERP
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-medium">Unified Role-Based Education Management Platform</p>
@@ -180,9 +181,11 @@ export default function LoginPage({ onLoginSuccess }) {
             <div className="bg-[#122837]/90 border border-teal-800/50 shadow-2xl shadow-black/50 rounded-2xl p-6 sm:p-8 backdrop-blur-xl relative">
               
               <div className="mb-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-tr from-teal-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/30">
-                  <Lock className="w-6 h-6" />
-                </div>
+                <img 
+                  src="/nairee-logo-white.png" 
+                  alt="Nairee" 
+                  className="h-10 mx-auto mb-3 object-contain" 
+                />
                 <h2 className="text-xl font-bold text-white tracking-tight">Account Sign In</h2>
                 <p className="text-xs text-slate-400 mt-1">Enter your school-issued Username or ID</p>
               </div>
@@ -387,7 +390,7 @@ export default function LoginPage({ onLoginSuccess }) {
       {/* Footer */}
       <footer className="border-t border-teal-900/30 px-6 py-4 text-center text-xs text-slate-500">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>&copy; {new Date().getFullYear()} Nairee International School &bull; Nairee Engine</span>
+          <span>&copy; {new Date().getFullYear()} Nairee &bull; School ERP</span>
           <div className="flex items-center space-x-4">
             <span className="hover:text-slate-400 transition-colors">Privacy Policy</span>
             <span>&bull;</span>

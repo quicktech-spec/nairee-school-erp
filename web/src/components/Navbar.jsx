@@ -31,19 +31,18 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
   return (
     <header className="sticky top-0 z-40 bg-[#0c1f2c]/95 backdrop-blur-md border-b border-teal-900/50 px-6 py-3 text-white shadow-lg">
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-        {/* Left: Branding */}
+        {/* Left: Branding with Official Nairee Logo */}
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-teal-500 via-teal-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-teal-500/20 text-white">
-            <School className="w-5 h-5" />
-          </div>
-          <div>
+          <img 
+            src="/nairee-logo-white.png" 
+            alt="Nairee" 
+            className="h-8 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity" 
+          />
+          <div className="hidden sm:block pl-3 border-l border-teal-800/60">
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg tracking-tight text-white">
-                Nairee <span className="text-teal-400">International</span>
-              </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30">
                 <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
-                Nairee ERP
+                ERP
               </span>
             </div>
             <p className="text-[11px] text-slate-400 font-medium">Single Shared Database &bull; Connected Portals</p>

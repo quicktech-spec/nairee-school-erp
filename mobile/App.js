@@ -234,11 +234,12 @@ export default function App() {
       {/* Top Header Bar */}
       <View style={styles.topHeader}>
         <View style={styles.headerBranding}>
-          <View style={styles.logoBadge}>
-            <Ionicons name="school" size={20} color="#fff" />
-          </View>
-          <View>
-            <Text style={styles.schoolName}>Nairee School ERP</Text>
+          <Image 
+            source={require('./assets/nairee-logo-white.png')} 
+            style={{ width: 85, height: 28, resizeMode: 'contain' }} 
+          />
+          <View style={{ marginLeft: 8, paddingLeft: 8, borderLeftWidth: 1, borderLeftColor: 'rgba(20, 184, 166, 0.3)' }}>
+            <Text style={styles.schoolName}>Nairee</Text>
             <Text style={styles.schoolSubtitle}>Connected Mobile Companion • Android</Text>
           </View>
         </View>
@@ -722,7 +723,7 @@ export default function App() {
           <View style={styles.tabContent}>
             <View style={styles.adminBanner}>
               <Text style={styles.adminTitle}>Principal / Administrator Portal</Text>
-              <Text style={styles.adminSubtitle}>Nairee International School Operations</Text>
+              <Text style={styles.adminSubtitle}>Nairee Operations</Text>
             </View>
 
             {/* STATS TILES */}

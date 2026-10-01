@@ -283,12 +283,10 @@ export default function FeesView({ onPaymentCompleted }) {
           <div className="bg-white rounded-3xl shadow-2xl border border-[#cde8e8] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-6 bg-swift-dark text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-brand-600 text-white">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
+                <img src="/nairee-logo-white.png" alt="Nairee" className="h-6 w-auto object-contain" />
                 <div>
                   <h3 className="text-base font-extrabold">Official Payment Receipt</h3>
-                  <p className="text-xs text-brand-200">Nairee International School Accounts</p>
+                  <p className="text-xs text-teal-200">Nairee Accounts Office</p>
                 </div>
               </div>
               <button onClick={() => setReceiptModal(null)} className="text-white/80 hover:text-white cursor-pointer">
