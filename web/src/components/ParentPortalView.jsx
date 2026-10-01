@@ -704,7 +704,10 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
 
       {/* ONLINE PAYMENT MODAL */}
       {showPaymentModal && selectedFee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowPaymentModal(false); setPaymentSuccess(null); } }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-1">Online Fee Payment Portal</h3>
             <p className="text-xs text-slate-500 mb-4">
@@ -792,7 +795,10 @@ export default function ParentPortalView({ user, onPaymentCompleted }) {
 
       {/* MESSAGE TEACHER MODAL */}
       {showMessageModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowMessageModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-4">Message Class Faculty</h3>
             <form onSubmit={handleSendMessageToTeacher} className="space-y-4">

@@ -1001,7 +1001,10 @@ export default function AdminPortalView({ user }) {
 
       {/* CREATE ACCOUNT MODAL */}
       {showCreateAccountModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowCreateAccountModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2.5">
@@ -1228,7 +1231,10 @@ export default function AdminPortalView({ user }) {
 
       {/* POST ANNOUNCEMENT MODAL */}
       {showPostNoticeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowPostNoticeModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2.5">
@@ -1339,7 +1345,10 @@ export default function AdminPortalView({ user }) {
 
       {/* ADMIN WHATSAPP DISPATCH MODAL */}
       {adminWhatsAppModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setAdminWhatsAppModal(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-teal-100 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center space-x-2.5">

@@ -912,7 +912,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* CREATE HOMEWORK MODAL */}
       {showHomeworkModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowHomeworkModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-4">Assign New Homework</h3>
             <form onSubmit={handleCreateHomework} className="space-y-4">
@@ -983,7 +986,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* UPLOAD STUDY MATERIAL MODAL */}
       {showMaterialModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowMaterialModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-4">Upload Study Material</h3>
             <form onSubmit={handleUploadMaterial} className="space-y-4">
@@ -1081,7 +1087,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* ENTER TEST MARKS MODAL */}
       {showGradeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowGradeModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-1">Enter Examination Marks</h3>
             <p className="text-xs text-slate-500 mb-4">
@@ -1164,7 +1173,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* MESSAGE PARENT MODAL */}
       {showMessageModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowMessageModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-4">Direct Message to Parent</h3>
             <form onSubmit={handleSendMessage} className="space-y-4">
@@ -1229,7 +1241,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* INDIVIDUAL WHATSAPP MODAL */}
       {whatsAppModalStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setWhatsAppModalStudent(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-emerald-100">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -1340,7 +1355,10 @@ export default function TeacherPortalView({ user }) {
 
       {/* BULK WHATSAPP ABSENTEES DRAWER */}
       {showBulkWhatsAppModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowBulkWhatsAppModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 flex flex-col max-h-[85vh]">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">

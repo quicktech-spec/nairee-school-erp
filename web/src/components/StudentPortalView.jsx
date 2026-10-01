@@ -685,7 +685,10 @@ export default function StudentPortalView({ user }) {
 
       {/* SUBMIT HOMEWORK MODAL */}
       {showSubmitModal && selectedHw && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowSubmitModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100">
             <h3 className="font-bold text-slate-800 text-base mb-1">Submit Assignment</h3>
             <p className="text-xs text-slate-500 mb-4">{selectedHw.title}</p>

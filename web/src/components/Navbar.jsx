@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   School, 
   Search, 
@@ -27,6 +27,18 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
   };
 
   const badge = getRoleBadge(user?.role);
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsRoleDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 bg-[#0c1f2c]/95 backdrop-blur-md border-b border-teal-900/50 px-6 py-3 text-white shadow-lg">
@@ -77,39 +89,73 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
           </div>
 
           {/* Switch Role Quick Drawer for Testing */}
-          <div className="relative group">
+          <div className="relative" ref={dropdownRef}>
             <button
+              onClick={() => setIsRoleDropdownOpen(prev => !prev)}
               title="Test another role directly"
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition-all"
+              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                isRoleDropdownOpen 
+                  ? 'bg-teal-500/20 border-teal-500 text-teal-300 shadow-sm' 
+                  : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+              }`}
             >
               <ArrowRightLeft className="w-3.5 h-3.5 text-teal-400" />
               <span className="hidden md:inline">Switch Role</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180 text-teal-400' : ''}`} />
             </button>
 
             {/* Quick Demo Accounts Menu */}
-            <div className="absolute right-0 mt-2 w-56 bg-[#122837] rounded-2xl shadow-2xl border border-teal-800/60 py-2 hidden group-hover:block z-50">
-              <div className="px-3.5 py-1.5 border-b border-slate-700/60 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Instant Role Switching (Testing)
+            {isRoleDropdownOpen && (
+              <div className="absolute right-0 top-full pt-1.5 w-64 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="bg-[#122837] rounded-2xl shadow-2xl border border-teal-800/80 p-2 text-white">
+                  <div className="px-3 py-1.5 border-b border-slate-700/60 flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Instant Role Switch
+                    </span>
+                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300">
+                      Testing
+                    </span>
+                  </div>
+                  <div className="p-1 space-y-1 mt-1">
+                    {[
+                      { role: 'admin', label: 'Admin (Dr. Vance)', name: 'Dr. Marcus Vance', user: 'admin', pass: 'admin123', badgeBg: 'bg-purple-100 text-purple-700' },
+                      { role: 'teacher', label: 'Teacher (Prof. Jenkins)', name: 'Prof. Sarah Jenkins', user: 'teacher_jenkins', pass: 'teacher123', badgeBg: 'bg-blue-100 text-blue-700' },
+                      { role: 'student', label: 'Student (Nairee Patel)', name: 'Nairee Patel', user: 'nairee', pass: 'student123', badgeBg: 'bg-emerald-100 text-emerald-700' },
+                      { role: 'parent', label: 'Parent (Rajesh Patel)', name: 'Rajesh Patel', user: 'parent_patel', pass: 'parent123', badgeBg: 'bg-amber-100 text-amber-700' }
+                    ].map((item) => {
+                      const isActive = user?.username === item.user;
+                      return (
+                        <button
+                          key={item.role}
+                          onClick={() => {
+                            onSwitchUser(item.user, item.pass);
+                            setIsRoleDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                            isActive 
+                              ? 'bg-teal-500/20 text-teal-200 border border-teal-500/40' 
+                              : 'text-slate-300 hover:bg-slate-800/90 hover:text-white'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold">{item.name}</span>
+                              {isActive && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-normal">{item.label}</span>
+                          </div>
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${item.badgeBg}`}>
+                            {item.role}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-              <div className="p-1 space-y-1">
-                {[
-                  { role: 'admin', label: 'Admin (Dr. Vance)', user: 'admin', pass: 'admin123' },
-                  { role: 'teacher', label: 'Teacher (Prof. Jenkins)', user: 'teacher_jenkins', pass: 'teacher123' },
-                  { role: 'student', label: 'Student (Nairee Patel)', user: 'nairee', pass: 'student123' },
-                  { role: 'parent', label: 'Parent (Rajesh Patel)', user: 'parent_patel', pass: 'parent123' }
-                ].map((item) => (
-                  <button
-                    key={item.role}
-                    onClick={() => onSwitchUser(item.user, item.pass)}
-                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white flex items-center justify-between"
-                  >
-                    <span>{item.label}</span>
-                    <span className="text-[10px] text-teal-400">&rarr;</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Logout Button */}
