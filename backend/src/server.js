@@ -1178,8 +1178,20 @@ app.get('/api/parent/child/:studentId/summary', async (req, res) => {
   }
 });
 
+// Serve static production frontend if built (single-port unified cloud deployment)
+const clientDist = path.resolve(__dirname, '../../web/dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
+
 // Start Express Server
 app.listen(PORT, () => {
-  console.log(`🚀 Frappe Education Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Nairee School ERP running on http://localhost:${PORT}`);
 });
 
