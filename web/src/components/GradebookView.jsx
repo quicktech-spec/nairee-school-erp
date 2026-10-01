@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Award, 
-  BookOpen, 
-  Search, 
   Plus, 
-  CheckCircle, 
   X, 
   TrendingUp, 
-  UserCheck 
+  CheckCircle2,
+  BookOpen
 } from 'lucide-react';
 import { api } from '../api.js';
 
@@ -20,7 +18,6 @@ export default function GradebookView() {
   const [loading, setLoading] = useState(true);
   const [showAddGradeModal, setShowAddGradeModal] = useState(false);
 
-  // Form for entering grades
   const [gradeForm, setGradeForm] = useState({
     assessment_plan: '',
     course: '',
@@ -90,21 +87,21 @@ export default function GradebookView() {
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#cde8e8] shadow-swift-card">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-extrabold text-slate-900">Gradebook & Examination Results</h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+            <h2 className="text-xl font-extrabold text-swift-dark">Examinations & Gradebook</h2>
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+              <span className="badge-dot !bg-emerald-500"></span>
               tabAssessmentResult
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Standard Frappe evaluation scale, weightage criteria, and auto-letter grading
+          <p className="text-xs text-swift-muted mt-1">
+            Standard evaluation scales, course weightages, and auto-letter grading
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Assessment Plan Selector */}
           <select
             value={selectedPlan}
             onChange={(e) => {
@@ -112,7 +109,7 @@ export default function GradebookView() {
               const p = plans.find(x => x.name === e.target.value);
               if (p) setGradeForm(f => ({ ...f, assessment_plan: p.name, course: p.course }));
             }}
-            className="text-xs font-bold px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+            className="text-xs font-bold px-3 py-2 rounded-xl bg-[#edfafa] border border-[#cde8e8] text-swift-dark focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
           >
             {plans.map((p) => (
               <option key={p.name} value={p.name}>
@@ -123,7 +120,7 @@ export default function GradebookView() {
 
           <button
             onClick={() => setShowAddGradeModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-swift-teal transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Enter Marks
@@ -133,47 +130,47 @@ export default function GradebookView() {
 
       {/* Plan Details Card */}
       {currentPlan && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-100 flex flex-wrap items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-[#edfafa] border border-[#cde8e8] flex flex-wrap items-center justify-between gap-4 shadow-swift-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-brand-600 text-white shadow-sm">
+            <div className="p-2.5 rounded-xl bg-brand-600 text-white shadow-swift-sm">
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-sm text-slate-900">{currentPlan.assessment_name}</h3>
-              <p className="text-xs text-slate-500">
+              <h3 className="font-extrabold text-sm text-swift-dark">{currentPlan.assessment_name}</h3>
+              <p className="text-xs text-swift-muted">
                 Course: {currentPlan.course_name} • Group: {currentPlan.assessment_group}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-bold text-slate-700">
+          <div className="flex items-center gap-6 text-xs font-bold text-swift-body">
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase">Max Marks</span>
-              <span className="text-slate-900 font-extrabold text-sm">{currentPlan.maximum_score}</span>
+              <span className="text-swift-muted block text-[10px] uppercase">Max Marks</span>
+              <span className="text-swift-dark font-extrabold text-sm">{currentPlan.maximum_score}</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase">Weightage</span>
+              <span className="text-swift-muted block text-[10px] uppercase">Weightage</span>
               <span className="text-brand-600 font-extrabold text-sm">{currentPlan.weightage}%</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px] uppercase">Session</span>
-              <span className="text-slate-900">{currentPlan.academic_year}</span>
+              <span className="text-swift-muted block text-[10px] uppercase">Session</span>
+              <span className="text-swift-dark">{currentPlan.academic_year}</span>
             </div>
           </div>
         </div>
       )}
 
       {/* Results Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#cde8e8] shadow-swift-card overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-slate-500 text-xs">Loading grade records...</div>
+          <div className="p-12 text-center text-swift-muted text-xs">Loading grade records...</div>
         ) : results.length === 0 ? (
-          <div className="p-12 text-center text-slate-500 text-xs">No marks recorded yet for this examination.</div>
+          <div className="p-12 text-center text-swift-muted text-xs">No marks recorded yet for this examination.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-[#edfafa]/80 border-b border-[#cde8e8] text-[11px] font-bold text-swift-muted uppercase tracking-wider">
                   <th className="py-3.5 px-4">Student</th>
                   <th className="py-3.5 px-4">DocType Serial</th>
                   <th className="py-3.5 px-4">Score</th>
@@ -182,11 +179,11 @@ export default function GradebookView() {
                   <th className="py-3.5 px-4">Faculty Comment</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+              <tbody className="divide-y divide-slate-100 text-xs text-swift-body">
                 {results.map((r) => (
-                  <tr key={r.name} className="hover:bg-slate-50/60 transition-colors">
+                  <tr key={r.name} className="hover:bg-[#edfafa]/50 transition-colors">
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                      <p className="font-bold text-swift-dark flex items-center gap-1.5">
                         {r.student_name}
                         {r.student_name.includes('Nairee') && (
                           <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">
@@ -194,38 +191,38 @@ export default function GradebookView() {
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] font-mono text-slate-400">{r.student}</p>
+                      <p className="text-[11px] font-mono text-swift-muted">{r.student}</p>
                     </td>
                     <td className="py-3.5 px-4">
-                      <code className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                      <code className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-[#edfafa] text-brand-700 border border-[#cde8e8]">
                         {r.name}
                       </code>
                     </td>
-                    <td className="py-3.5 px-4 font-extrabold text-slate-900">
-                      {r.score} <span className="text-slate-400 font-normal">/ {r.maximum_score}</span>
+                    <td className="py-3.5 px-4 font-extrabold text-swift-dark">
+                      {r.score} <span className="text-swift-muted font-normal">/ {r.maximum_score}</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-16 bg-[#edfafa] rounded-full h-1.5 overflow-hidden border border-[#cde8e8]">
                           <div
-                            className="bg-brand-600 h-1.5 rounded-full"
+                            className="bg-brand-500 h-1.5 rounded-full"
                             style={{ width: `${r.percentage}%` }}
                           ></div>
                         </div>
-                        <span className="font-bold text-slate-800">{r.percentage}%</span>
+                        <span className="font-bold text-swift-dark">{r.percentage}%</span>
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
                       <span className={`text-xs font-extrabold px-2.5 py-0.5 rounded-md ${
                         r.grade === 'A+' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                        r.grade === 'A' ? 'bg-sky-100 text-sky-800 border border-sky-300' :
+                        r.grade === 'A' ? 'bg-teal-100 text-teal-800 border border-teal-300' :
                         r.grade === 'B+' ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' :
                         'bg-slate-100 text-slate-800'
                       }`}>
                         {r.grade}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600 italic">
+                    <td className="py-3.5 px-4 text-swift-muted italic">
                       "{r.comment || 'Satisfactory'}"
                     </td>
                   </tr>
@@ -238,25 +235,25 @@ export default function GradebookView() {
 
       {/* ENTER GRADE MODAL */}
       {showAddGradeModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 bg-brand-900 text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-swift-dark/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-[#cde8e8] w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-gradient-to-r from-swift-dark to-brand-800 text-white flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold">Enter Assessment Score</h3>
-                <p className="text-xs text-slate-300">Auto-computes percentage & Frappe letter grade</p>
+                <p className="text-xs text-brand-100">Auto-computes percentage & Frappe letter grade</p>
               </div>
-              <button onClick={() => setShowAddGradeModal(false)} className="text-white/80 hover:text-white">
+              <button onClick={() => setShowAddGradeModal(false)} className="text-white/80 hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmitGrade} className="p-6 space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Student</label>
+                <label className="text-xs font-bold text-swift-dark block mb-1">Student</label>
                 <select
                   value={gradeForm.student}
                   onChange={(e) => setGradeForm({ ...gradeForm, student: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 >
                   {students.map((s) => (
                     <option key={s.name} value={s.name}>{s.student_name} (#{s.roll_no})</option>
@@ -266,7 +263,7 @@ export default function GradebookView() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Marks Scored</label>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Marks Scored</label>
                   <input
                     type="number"
                     min="0"
@@ -274,42 +271,42 @@ export default function GradebookView() {
                     required
                     value={gradeForm.score}
                     onChange={(e) => setGradeForm({ ...gradeForm, score: Number(e.target.value) })}
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none font-bold text-base"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none font-bold text-base"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Max Marks</label>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Max Marks</label>
                   <input
                     type="number"
                     readOnly
                     value={gradeForm.maximum_score}
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 font-bold"
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-slate-100 text-swift-muted font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Faculty Remarks</label>
+                <label className="text-xs font-bold text-swift-dark block mb-1">Faculty Remarks</label>
                 <input
                   type="text"
                   placeholder="e.g. Excellent conceptual grasp"
                   value={gradeForm.comment}
                   onChange={(e) => setGradeForm({ ...gradeForm, comment: e.target.value })}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#cde8e8]">
                 <button
                   type="button"
                   onClick={() => setShowAddGradeModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-swift-muted hover:bg-[#edfafa] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-md shadow-brand-500/20"
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-swift-teal cursor-pointer"
                 >
                   Save Grade
                 </button>

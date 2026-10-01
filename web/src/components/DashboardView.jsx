@@ -9,9 +9,13 @@ import {
   Clock, 
   CheckSquare, 
   Award, 
-  TrendingUp,
+  Sparkles,
+  UserPlus,
+  ShieldCheck,
+  Smartphone,
   CreditCard,
-  UserPlus
+  Layers,
+  Cpu
 } from 'lucide-react';
 
 export default function DashboardView({ stats, onNavigate }) {
@@ -26,221 +30,270 @@ export default function DashboardView({ stats, onNavigate }) {
   const { students = 0, batches = 0, faculty = 0, courses = 0, attendanceRate = 0, finance = {}, recentAssessments = [], recentAttendance = [] } = stats;
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-900 p-8 text-white shadow-xl">
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-200 text-xs font-semibold mb-3">
-            <span className="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
-            Academic Term 2026-2027 Active
+    <div className="space-y-8">
+      {/* ── SwiftCampus Hero Banner (Directly modeled after swipetouch.tech/pages/swiftcampus.html) ── */}
+      <div className="relative overflow-hidden rounded-3xl bg-white border border-[#cde8e8] p-8 md:p-10 shadow-swift-card">
+        {/* Subtle background gradient & dots */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-brand-100/60 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="relative z-10 max-w-3xl">
+          {/* SwiftCampus Pill Badge with Pulsing Dot */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider mb-4">
+            <span className="badge-dot"></span>
+            School ERP • Flagship Campus System
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">
-            Nairee International School
+
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-swift-dark leading-tight">
+            Run your entire school<br />
+            from <span className="text-brand-600">one dashboard.</span>
           </h1>
-          <p className="mt-2 text-slate-300 text-sm leading-relaxed">
-            Welcome to the centralized Frappe Education Management System. Seamlessly orchestrating student records, timetable schedules, attendance, assessments, and fee management across Windows & Android.
+
+          <p className="mt-4 text-swift-body text-sm sm:text-base leading-relaxed">
+            SwiftCampus gives principals, teachers, parents, and students a single connected platform — powered by Frappe Education workflows, built natively for Windows and Android.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               onClick={() => onNavigate('attendance')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-bold text-xs shadow-lg shadow-brand-500/30 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-swift-teal transition-all cursor-pointer"
             >
-              <CheckSquare className="w-4 h-4" />
-              Open Attendance Tool
+              <span>Take Daily Attendance →</span>
             </button>
             <button
               onClick={() => onNavigate('students')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs backdrop-blur-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#edfafa] hover:bg-[#d5f5f5] border border-[#cde8e8] text-swift-dark font-bold text-xs transition-all cursor-pointer"
             >
-              <UserPlus className="w-4 h-4" />
-              Browse Students Directory
+              <Users className="w-4 h-4 text-brand-600" />
+              <span>Student Directory</span>
             </button>
             <button
               onClick={() => onNavigate('portal')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 font-bold text-xs backdrop-blur-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-50 to-swift-soft border border-brand-300 text-brand-800 font-extrabold text-xs transition-all cursor-pointer hover:shadow-swift-sm"
             >
-              <Award className="w-4 h-4 text-amber-400" />
-              Nairee's Student Portal
+              <Sparkles className="w-4 h-4 text-brand-600" />
+              <span>Nairee's Portal View</span>
             </button>
           </div>
-        </div>
 
-        {/* Decorative background glow */}
-        <div className="absolute right-0 bottom-0 translate-x-12 translate-y-12 w-96 h-96 rounded-full bg-brand-500/20 blur-3xl pointer-events-none"></div>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Card 1: Students */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Students</span>
-            <div className="p-2.5 rounded-xl bg-indigo-50 text-brand-600">
-              <Users className="w-5 h-5" />
+          {/* SwiftCampus Hero Stats Counter Strip */}
+          <div className="mt-8 pt-6 border-t border-[#cde8e8] grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-brand-600">50K+</div>
+              <div className="text-xs text-swift-muted font-medium mt-0.5">Students Managed</div>
             </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">{students}</h3>
-            <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-              <span>{batches} Active Batches</span>
-              <span className="font-semibold text-emerald-600">100% Enrolled</span>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-swift-dark">100%</div>
+              <div className="text-xs text-swift-muted font-medium mt-0.5">Frappe Workflows</div>
             </div>
-          </div>
-        </div>
-
-        {/* Card 2: Attendance */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Attendance Rate</span>
-            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-              <CheckCircle2 className="w-5 h-5" />
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-swift-dark">{attendanceRate}%</div>
+              <div className="text-xs text-swift-muted font-medium mt-0.5">Average Attendance</div>
             </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">{attendanceRate}%</h3>
-            <div className="mt-2 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-emerald-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${attendanceRate}%` }}
-              ></div>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-500 text-right">Across all classes</p>
-          </div>
-        </div>
-
-        {/* Card 3: Fee Collections */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fee Collection</span>
-            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
-              <DollarSign className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              ${(finance.totalCollected || 0).toLocaleString()}
-            </h3>
-            <div className="mt-2 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-amber-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${finance.collectionRate || 0}%` }}
-              ></div>
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Billed: ${(finance.totalBilled || 0).toLocaleString()}</span>
-              <span className="font-semibold text-amber-600">{finance.collectionRate || 0}% Paid</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Faculty & Academics */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Academic Staff</span>
-            <div className="p-2.5 rounded-xl bg-sky-50 text-sky-600">
-              <BookOpen className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-3xl font-extrabold text-slate-900 tracking-tight">{faculty}</h3>
-            <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
-              <span>{courses} Taught Courses</span>
-              <span className="font-semibold text-sky-600">Active</span>
+            <div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-swift-dark">99.9%</div>
+              <div className="text-xs text-swift-muted font-medium mt-0.5">Real-time Uptime</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Two-Column Activity & Timetable Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Recent Exam & Assessment Submissions */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
+      {/* ── SwiftCampus Group Dashboard Section (.grp-shell style) ── */}
+      <div className="bg-white rounded-3xl border border-[#cde8e8] overflow-hidden shadow-swift-md">
+        {/* Topbar gradient */}
+        <div className="bg-gradient-to-r from-swift-dark via-brand-900 to-brand-700 px-6 py-4 flex items-center justify-between text-white">
+          <div className="flex items-center gap-2.5">
+            <Layers className="w-5 h-5 text-swift-electric" />
             <div>
-              <h3 className="font-bold text-base text-slate-900">Recent Assessments & Marks</h3>
-              <p className="text-xs text-slate-500">Latest examination grades from tabAssessmentResult</p>
+              <h3 className="text-sm font-bold text-white leading-none">Campus Multi-Batch Academic Monitor</h3>
+              <p className="text-[11px] text-brand-200 mt-1">Live metrics across Grade 10-A, 10-B, and 11-A</p>
             </div>
-            <button
-              onClick={() => onNavigate('gradebook')}
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 cursor-pointer"
-            >
-              Gradebook <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
           </div>
+          <span className="text-[11px] font-mono font-bold bg-white/10 px-3 py-1 rounded-full border border-white/15">
+            Frappe DocType: tabStudentBatch
+          </span>
+        </div>
 
-          <div className="space-y-3">
-            {recentAssessments.map((res, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center font-extrabold text-sm">
-                    {res.grade}
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{res.student_name}</h4>
-                    <p className="text-[11px] text-slate-500 font-medium">{res.course}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-extrabold text-slate-900">
-                    {res.score} / {res.maximum_score}
-                  </span>
-                  <p className="text-[10px] text-slate-400">{Math.round((res.score / res.maximum_score) * 100)}% Score</p>
-                </div>
-              </div>
-            ))}
+        {/* SwiftCampus Integrated KPI Row (.grp-kpi-row) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-[#cde8e8] bg-white border-b border-[#cde8e8]">
+          <div className="p-5 text-center">
+            <p className="text-2xl font-extrabold text-brand-600">{students}</p>
+            <p className="text-xs text-swift-muted font-semibold mt-1">Enrolled Students</p>
+          </div>
+          <div className="p-5 text-center">
+            <p className="text-2xl font-extrabold text-brand-600">{attendanceRate}%</p>
+            <p className="text-xs text-swift-muted font-semibold mt-1">Daily Attendance</p>
+          </div>
+          <div className="p-5 text-center">
+            <p className="text-2xl font-extrabold text-brand-600">${(finance.totalCollected || 0).toLocaleString()}</p>
+            <p className="text-xs text-swift-muted font-semibold mt-1">Fees Collected ({finance.collectionRate || 0}%)</p>
+          </div>
+          <div className="p-5 text-center">
+            <p className="text-2xl font-extrabold text-brand-600">{faculty}</p>
+            <p className="text-xs text-swift-muted font-semibold mt-1">Academic Professors</p>
           </div>
         </div>
 
-        {/* Right Column: Attendance Records Snapshot */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-base text-slate-900">Recent Attendance Logs</h3>
-              <p className="text-xs text-slate-500">Live records from tabStudentAttendance</p>
+        {/* Batch Progress Cards (.branch-cards style) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 bg-[#edfafa]/50">
+          {/* Grade 10-A Honors */}
+          <div className="p-4 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-swift-dark">Grade 10-A (Honors) • STEM</span>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                98% Attendance
+              </span>
             </div>
-            <button
-              onClick={() => onNavigate('attendance')}
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 cursor-pointer"
-            >
-              Attendance Tool <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-[11px] text-swift-muted">
+                <span className="w-16">Attendance</span>
+                <div className="flex-1 h-2 bg-[#edfafa] rounded-full overflow-hidden border border-[#cde8e8]">
+                  <div className="h-full bg-brand-500 rounded-full" style={{ width: '98%' }}></div>
+                </div>
+                <span className="font-bold text-swift-dark">98%</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-swift-muted">
+                <span className="w-16">Academics</span>
+                <div className="flex-1 h-2 bg-[#edfafa] rounded-full overflow-hidden border border-[#cde8e8]">
+                  <div className="h-full bg-swift-electric rounded-full" style={{ width: '94%' }}></div>
+                </div>
+                <span className="font-bold text-swift-dark">94%</span>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {recentAttendance.map((att, i) => (
+          {/* Grade 10-B Standard */}
+          <div className="p-4 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-swift-dark">Grade 10-B (Standard) • High School</span>
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-100 text-brand-800">
+                85% Attendance
+              </span>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-[11px] text-swift-muted">
+                <span className="w-16">Attendance</span>
+                <div className="flex-1 h-2 bg-[#edfafa] rounded-full overflow-hidden border border-[#cde8e8]">
+                  <div className="h-full bg-brand-500 rounded-full" style={{ width: '85%' }}></div>
+                </div>
+                <span className="font-bold text-swift-dark">85%</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-swift-muted">
+                <span className="w-16">Academics</span>
+                <div className="flex-1 h-2 bg-[#edfafa] rounded-full overflow-hidden border border-[#cde8e8]">
+                  <div className="h-full bg-swift-electric rounded-full" style={{ width: '88%' }}></div>
+                </div>
+                <span className="font-bold text-swift-dark">88%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SwiftCampus 6-Card Module Grid (.module-grid & .mod style) ── */}
+      <div>
+        <div className="text-center max-w-xl mx-auto mb-6">
+          <span className="badge-dot inline-block mb-1"></span>
+          <h2 className="text-2xl font-extrabold text-swift-dark">Comprehensive School Modules</h2>
+          <p className="text-xs text-swift-muted mt-1">Everything needed to run the institution smoothly</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {[
+            {
+              tab: 'students',
+              title: 'Admissions & Students',
+              desc: 'Complete student lifecycle with Frappe DocType schema, guardian linking, and bio records.',
+              icon: Users,
+              color: '#0d9488'
+            },
+            {
+              tab: 'attendance',
+              title: 'Attendance Automation',
+              desc: 'Rapid bulk attendance tool with one-click marking, absence SMS triggers, and percentage counters.',
+              icon: CheckSquare,
+              color: '#10b981'
+            },
+            {
+              tab: 'schedule',
+              title: 'AI Timetable Scheduling',
+              desc: 'Smart weekly classroom and teacher matrix avoiding time slot and laboratory conflicts.',
+              icon: Calendar,
+              color: '#06b6d4'
+            },
+            {
+              tab: 'gradebook',
+              title: 'Examinations & Report Cards',
+              desc: 'Exam weightage plans, score recording, automated GPA calculation, and distinction rankings.',
+              icon: Award,
+              color: '#f59e0b'
+            },
+            {
+              tab: 'fees',
+              title: 'Fee Management & Collections',
+              desc: 'Itemized fee components, payment gateway receipts, and automated outstanding balance tracking.',
+              icon: CreditCard,
+              color: '#4f46e5'
+            },
+            {
+              tab: 'portal',
+              title: 'Student & Parent Companion',
+              desc: 'Personalized digital student ID pass, daily schedule timeline, and mobile payment actions.',
+              icon: Smartphone,
+              color: '#0d9488'
+            }
+          ].map((mod, i) => {
+            const Icon = mod.icon;
+            return (
               <div
                 key={i}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-100 transition-all"
+                onClick={() => onNavigate(mod.tab)}
+                className="p-6 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-card hover:border-brand-400 hover:-translate-y-1 hover:shadow-swift-teal transition-all cursor-pointer group"
               >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-slate-200/70 text-slate-700">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{att.student_name}</h4>
-                    <p className="text-[11px] text-slate-500">Date: {att.date}</p>
-                  </div>
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 shadow-swift-sm"
+                  style={{ backgroundColor: mod.color }}
+                >
+                  <Icon className="w-5 h-5" />
                 </div>
-                <div>
-                  <span
-                    className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
-                      att.status === 'Present'
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                        : att.status === 'Late'
-                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                        : 'bg-rose-100 text-rose-800 border border-rose-200'
-                    }`}
-                  >
-                    {att.status}
-                  </span>
+                <h4 className="font-bold text-sm text-swift-dark group-hover:text-brand-600 transition-colors">
+                  {mod.title}
+                </h4>
+                <p className="text-xs text-swift-muted mt-2 leading-relaxed">
+                  {mod.desc}
+                </p>
+                <div className="mt-4 flex items-center gap-1 text-xs font-bold text-brand-600 group-hover:translate-x-1 transition-transform">
+                  <span>Open Module</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── SwiftCampus Integrations Strip (.int-strip & .int-chip style) ── */}
+      <div className="p-6 rounded-2xl bg-white border border-[#cde8e8] text-center shadow-swift-sm">
+        <p className="text-xs font-bold uppercase tracking-wider text-swift-muted">
+          Platform Architecture & Standards
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2.5 mt-4">
+          {[
+            'Frappe DocType Engine',
+            'SQLite Embedded Storage',
+            'React Native Android App',
+            'Stripe & Card Payments',
+            'Bulk Attendance Tool',
+            'Automated Grade Reports',
+            'Full Windows Native Support'
+          ].map((chip, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#edfafa] border border-[#cde8e8] text-xs font-semibold text-swift-body hover:bg-brand-50 transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+              <span>{chip}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

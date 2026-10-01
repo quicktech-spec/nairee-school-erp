@@ -37,7 +37,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f4fafa] flex flex-col font-sans text-[#1e3a42]">
       {/* Top Navigation */}
       <Navbar
         activeRole={activeRole}
