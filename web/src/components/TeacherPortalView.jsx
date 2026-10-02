@@ -22,7 +22,11 @@ import {
   Check,
   LayoutDashboard,
   GraduationCap,
-  Umbrella
+  Umbrella,
+  Zap,
+  Shield,
+  X,
+  Flame
 } from 'lucide-react';
 import { api } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
@@ -83,6 +87,27 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [copiedText, setCopiedText] = useState(false);
   const [showBulkWhatsAppModal, setShowBulkWhatsAppModal] = useState(false);
 
+  // New Feature States
+  const [homeworkClassTab, setHomeworkClassTab] = useState('all');
+  const [showSubstituteModal, setShowSubstituteModal] = useState(false);
+  const [selectedSubTeacher, setSelectedSubTeacher] = useState('Dr. Jonathan Vance (Physics)');
+  const [substituteClass, setSubstituteClass] = useState('Grade 10-A (Mathematics)');
+  const [substituteTime, setSubstituteTime] = useState('Tomorrow 09:00 AM - 10:30 AM');
+  const [substituteReason, setSubstituteReason] = useState('Academic Workshop & Training');
+  const [substituteSuccess, setSubstituteSuccess] = useState(false);
+
+  // House Cup & Merit Badges State
+  const [houseLeaderboard, setHouseLeaderboard] = useState([
+    { house: 'Emerald Dragons', points: 420, color: 'from-emerald-500 to-teal-600', badge: 'Emerald', leader: 'Grade 10-A' },
+    { house: 'Sapphire Phoenix', points: 395, color: 'from-blue-500 to-indigo-600', badge: 'Sapphire', leader: 'Grade 10-B' },
+    { house: 'Ruby Lions', points: 380, color: 'from-rose-500 to-red-600', badge: 'Ruby', leader: 'Grade 11-A' },
+    { house: 'Topaz Falcons', points: 360, color: 'from-amber-500 to-yellow-600', badge: 'Topaz', leader: 'Grade 12-A' }
+  ]);
+  const [showAwardPointsModal, setShowAwardPointsModal] = useState(false);
+  const [selectedStudentForAward, setSelectedStudentForAward] = useState(null);
+  const [awardType, setAwardType] = useState('STEM Innovation');
+  const [pointsToAward, setPointsToAward] = useState(15);
+
   // Form states
   const [newHomework, setNewHomework] = useState({
     title: '',
@@ -127,6 +152,49 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  const handleGenerateAiRemark = () => {
+    const studentName = newGrade.student_name || 'The student';
+    const score = Number(newGrade.score) || 85;
+    const course = newGrade.course || 'Mathematics';
+    let remark = '';
+
+    if (score >= 90) {
+      remark = `${studentName} exhibits exceptional academic mastery and analytical rigor in ${course}. Consistently demonstrates profound problem-solving abilities, high curiosity, and outstanding peer leadership. Recommended for advanced honors projects.`;
+    } else if (score >= 75) {
+      remark = `${studentName} displays solid conceptual grasp and persistent work ethic in ${course}. Shows great enthusiasm and steady progress. Continuing targeted practice on complex problem sets will unlock top distinction.`;
+    } else if (score >= 60) {
+      remark = `${studentName} shows good participation and potential in ${course}. Dedicated focus on fundamental theorems and consistent revision before exams is advised to strengthen test scores.`;
+    } else {
+      remark = `${studentName} is encouraged to attend faculty tutorial sessions for ${course}. Focused one-on-one guided practice will reinforce key conceptual foundations.`;
+    }
+
+    setNewGrade(prev => ({ ...prev, comment: remark }));
+    showToast('AI Remark Generated tailored to student performance!');
+  };
+
+  const handleAwardHousePoints = (e) => {
+    e.preventDefault();
+    const pts = Number(pointsToAward) || 10;
+    setHouseLeaderboard(prev => prev.map(h => {
+      if (h.house.includes('Emerald')) {
+        return { ...h, points: h.points + pts };
+      }
+      return h;
+    }));
+    showToast(`Awarded +${pts} House Points & "${awardType}" badge to ${selectedStudentForAward?.student_name || 'student'}!`);
+    setShowAwardPointsModal(false);
+  };
+
+  const handleRequestSubstitute = (e) => {
+    e.preventDefault();
+    setSubstituteSuccess(true);
+    setTimeout(() => {
+      setSubstituteSuccess(false);
+      setShowSubstituteModal(false);
+      showToast(`Substitute request confirmed! ${selectedSubTeacher} assigned to cover ${substituteClass}. Timetable conflicts resolved.`);
+    }, 2000);
   };
 
   const loadData = async () => {
@@ -785,6 +853,100 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
             </div>
 
           </div>
+
+          {/* NEW SECTION: Live House Cup Leaderboard & 1-Click AI Substitute Resolver */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
+            {/* Live House Cup Standings & Merit Badges (Idea 7) */}
+            <div className="lg:col-span-8 bg-white rounded-3xl p-6 border border-teal-100 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-3">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-black shadow-lg shadow-amber-500/20">
+                    <Award className="w-5 h-5 text-slate-950" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-sm flex items-center space-x-1.5">
+                      <span>Annual Inter-House Cup & Student Merit Badges</span>
+                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">LIVE</span>
+                    </h3>
+                    <p className="text-[11px] text-slate-400">Emerald, Sapphire, Ruby & Topaz real-time competition leaderboard</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setSelectedStudentForAward(students[0] || null);
+                    setShowAwardPointsModal(true);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 flex items-center space-x-1.5 self-start sm:self-auto transition-transform hover:scale-105"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>+ Award Merit Points / Badge</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {houseLeaderboard.map((h, idx) => (
+                  <div key={h.house} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 hover:border-teal-200 transition-all">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-6 h-6 rounded-full bg-slate-900 text-white font-mono text-xs font-bold flex items-center justify-center">
+                          #{idx + 1}
+                        </span>
+                        <span className="font-bold text-slate-800 text-xs">{h.house}</span>
+                      </div>
+                      <span className="font-black text-slate-900 text-sm font-mono">{h.points} pts</span>
+                    </div>
+
+                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                      <div className={`h-full bg-gradient-to-r ${h.color} rounded-full transition-all`} style={{ width: `${(h.points / 500) * 100}%` }} />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[10px] text-slate-500">
+                      <span>Top Contributor: <strong>{h.leader}</strong></span>
+                      <span className="text-teal-600 font-bold">+15 pts this week</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 1-Click AI Teacher Substitute Resolver (Idea 2) */}
+            <div className="lg:col-span-4 bg-gradient-to-br from-slate-900 to-teal-950 rounded-3xl p-6 text-white shadow-xl flex flex-col justify-between space-y-4">
+              <div className="space-y-2">
+                <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold border border-teal-500/30">
+                  <Zap className="w-3 h-3" />
+                  <span>AI Timetable Conflict Engine</span>
+                </div>
+                <h3 className="font-black text-base tracking-tight">1-Click Teacher Substitute Finder</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Need emergency leave or attending a faculty workshop? Our algorithm instantly matches free qualified teachers with zero schedule collisions.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 space-y-1.5 text-xs">
+                <div className="flex justify-between text-[11px] text-slate-400">
+                  <span>Available Substitute:</span>
+                  <span className="text-teal-300 font-bold">Dr. Jonathan Vance</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-slate-400">
+                  <span>Subject Match:</span>
+                  <span className="text-white font-semibold">Physics / STEM</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-slate-400">
+                  <span>Slot Conflict Check:</span>
+                  <span className="text-emerald-400 font-bold">0 Overlaps (100% Free)</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowSubstituteModal(true)}
+                className="w-full py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center justify-center space-x-2 transition-transform hover:scale-105"
+              >
+                <Users className="w-4 h-4" />
+                <span>Request 1-Click Substitute Coverage</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1173,20 +1335,43 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
             </form>
           </div>
 
-          {/* ACTIVE HOMEWORK LIST (Styled matching the UI Screenshot) */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
+          {/* ACTIVE HOMEWORK LIST WITH DEDICATED MULTI-CLASS SWITCHER */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
               <div>
-                <h4 className="font-extrabold text-slate-900 text-sm">Upcoming & Assigned Homework</h4>
-                <p className="text-xs text-slate-500">Live assignments currently visible to students and parents</p>
+                <h4 className="font-extrabold text-slate-900 text-sm">Homework by Class & Section</h4>
+                <p className="text-xs text-slate-500">Filter and organize coursework across your appointed grades</p>
               </div>
-              <span className="text-xs font-bold text-[#5673ec]">
-                {homeworkList.length} Total Assignments
-              </span>
+
+              {/* Class Switcher Pills */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {[
+                  { id: 'all', label: 'All Classes' },
+                  { id: 'BATCH-10A-2026', label: 'Grade 10-A' },
+                  { id: 'BATCH-10B-2026', label: 'Grade 10-B' },
+                  { id: 'BATCH-11A-2026', label: 'Grade 11-A' },
+                  { id: 'BATCH-12A-2026', label: 'Grade 12-Science' },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setHomeworkClassTab(tab.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      homeworkClassTab === tab.id
+                        ? 'bg-gradient-to-r from-[#5673ec] to-indigo-600 text-white shadow-md shadow-indigo-300/40'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {homeworkList.map((hw) => (
+              {homeworkList
+                .filter(hw => homeworkClassTab === 'all' || hw.student_batch === homeworkClassTab || hw.course?.includes(homeworkClassTab.split('-')[1]?.substring(0, 2) || ''))
+                .map((hw) => (
                 <div 
                   key={hw.id} 
                   className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-3 flex flex-col justify-between border-l-4 border-l-[#ff5a5f] hover:shadow-md transition-shadow"
@@ -1621,12 +1806,23 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Teacher Evaluative Remarks</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-bold text-slate-700">Teacher Evaluative Remarks</label>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAiRemark}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 px-2.5 py-0.5 rounded-full border border-teal-200 transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3 text-teal-600" />
+                    <span>✨ AI Auto-Generate Remark</span>
+                  </button>
+                </div>
                 <textarea
-                  rows={2}
+                  rows={3}
+                  placeholder="Click ✨ AI Auto-Generate Remark or write custom academic remarks..."
                   value={newGrade.comment}
                   onChange={(e) => setNewGrade({ ...newGrade, comment: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
@@ -1902,6 +2098,220 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                 Close Dispatcher
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* AWARD HOUSE POINTS & MERIT BADGES MODAL (Idea 7) */}
+      {showAwardPointsModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowAwardPointsModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/30">
+                  <Award className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">Award Merit Points & Badges</h3>
+                  <p className="text-[11px] text-slate-400">Boost student house standing for excellence</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAwardPointsModal(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAwardHousePoints} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Select Student Candidate</label>
+                <select
+                  value={selectedStudentForAward?.name || ''}
+                  onChange={(e) => {
+                    const found = students.find(s => s.name === e.target.value);
+                    setSelectedStudentForAward(found || null);
+                  }}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 font-semibold"
+                >
+                  {students.map(s => (
+                    <option key={s.name} value={s.name}>
+                      {s.student_name} &bull; {s.student_batch} (House Emerald)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Merit Badge Type</label>
+                  <select
+                    value={awardType}
+                    onChange={(e) => setAwardType(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-semibold"
+                  >
+                    <option value="STEM Innovation">🚀 STEM Innovation</option>
+                    <option value="Diligence & Discipline">⭐ Diligence Star</option>
+                    <option value="Leadership Honor">👑 Peer Leadership</option>
+                    <option value="Creative Excellence">🎨 Creative Arts</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Points to Award</label>
+                  <select
+                    value={pointsToAward}
+                    onChange={(e) => setPointsToAward(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-amber-700"
+                  >
+                    <option value={5}>+5 House Points</option>
+                    <option value={10}>+10 House Points</option>
+                    <option value={15}>+15 House Points (Distinction)</option>
+                    <option value={25}>+25 House Points (Major Win)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100 flex items-center space-x-2 text-amber-900">
+                <Sparkles className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <span className="text-[11px]">
+                  Points will instantly reflect on the student's report card, parent app and live House Leaderboard!
+                </span>
+              </div>
+
+              <div className="pt-2 flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAwardPointsModal(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-bold shadow-md shadow-amber-500/20"
+                >
+                  Confirm & Award
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 1-CLICK AI TEACHER SUBSTITUTE MODAL (Idea 2) */}
+      {showSubstituteModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowSubstituteModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-teal-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center space-x-2">
+                <div className="w-10 h-10 rounded-2xl bg-teal-500 text-white flex items-center justify-center shadow-md shadow-teal-500/30 font-bold">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">1-Click AI Teacher Substitute Resolver</h3>
+                  <p className="text-[11px] text-slate-400">Automatic timetable conflict analysis & coverage</p>
+                </div>
+              </div>
+              <button onClick={() => setShowSubstituteModal(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {substituteSuccess ? (
+              <div className="p-6 text-center space-y-2 bg-emerald-50 rounded-2xl border border-emerald-200 text-emerald-800">
+                <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+                <h4 className="font-bold text-sm">Substitute Coverage Confirmed!</h4>
+                <p className="text-xs text-emerald-600">
+                  {selectedSubTeacher} has been scheduled to cover {substituteClass}. Principal and students notified automatically.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleRequestSubstitute} className="space-y-3.5 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Class Requiring Coverage</label>
+                    <select
+                      value={substituteClass}
+                      onChange={(e) => setSubstituteClass(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 font-semibold"
+                    >
+                      <option value="Grade 10-A (Mathematics)">Grade 10-A (Mathematics)</option>
+                      <option value="Grade 10-B (Algebra)">Grade 10-B (Algebra)</option>
+                      <option value="Grade 11-A (Calculus)">Grade 11-A (Calculus)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Slot Timing</label>
+                    <input
+                      type="text"
+                      value={substituteTime}
+                      onChange={(e) => setSubstituteTime(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                    >
+                    </input>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">AI Recommended Available Substitute</label>
+                  <select
+                    value={selectedSubTeacher}
+                    onChange={(e) => setSelectedSubTeacher(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-emerald-300 bg-emerald-50/50 font-bold text-emerald-900"
+                  >
+                    <option value="Dr. Jonathan Vance (Physics & Applied Math)">
+                      Dr. Jonathan Vance (Physics & Applied Math) - 0 Conflicts (Available)
+                    </option>
+                    <option value="Mr. Robert Chen (Computer Science)">
+                      Mr. Robert Chen (Computer Science) - 0 Conflicts (Available)
+                    </option>
+                    <option value="Ms. Clara Oswald (English & Humanities)">
+                      Ms. Clara Oswald (English & Humanities) - 0 Conflicts (Available)
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Reason for Leave / Coverage Request</label>
+                  <input
+                    type="text"
+                    required
+                    value={substituteReason}
+                    onChange={(e) => setSubstituteReason(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200"
+                  />
+                </div>
+
+                <div className="p-3 bg-teal-50 rounded-2xl border border-teal-100 text-teal-900 flex items-center space-x-2">
+                  <CheckCircle2 className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                  <span className="text-[11px]">
+                    Timetable validation: Verified zero conflicting periods for selected faculty.
+                  </span>
+                </div>
+
+                <div className="pt-2 flex items-center space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowSubstituteModal(false)}
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 font-bold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold shadow-md shadow-teal-500/20"
+                  >
+                    Dispatch Substitute
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

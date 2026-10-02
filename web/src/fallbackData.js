@@ -173,3 +173,25 @@ export const FALLBACK_DATA = {
     { id: 'MSG-01', sender: 'Prof. Sarah Jenkins', content: 'Great effort on the recent Mathematics assignment test!', timestamp: '10:30 AM' }
   ]
 };
+
+export const FALLBACK_STUDENTS = [
+  { name: 'EDU-STU-2026-00001', student_name: 'Nairee Patel', roll_no: '101', student_batch: 'Grade 10-A', guardian_name: 'Mr. Rajesh Patel', guardian_mobile: '+1 (555) 901-2234', attendancePct: 98, avgGrade: 96, feeDues: 0 },
+  { name: 'EDU-STU-2026-00002', student_name: 'Aarav Sharma', roll_no: '102', student_batch: 'Grade 10-A', guardian_name: 'Mrs. Sunita Sharma', guardian_mobile: '+1 (555) 901-2235', attendancePct: 94, avgGrade: 88, feeDues: 0 },
+  { name: 'EDU-STU-2026-00003', student_name: 'Diya Gupta', roll_no: '103', student_batch: 'Grade 10-A', guardian_name: 'Mr. Vikram Gupta', guardian_mobile: '+1 (555) 901-2236', attendancePct: 99, avgGrade: 92, feeDues: 450 },
+  { name: 'EDU-STU-2026-00004', student_name: 'Rohan Mehta', roll_no: '104', student_batch: 'Grade 10-A', guardian_name: 'Mr. Sanjay Mehta', guardian_mobile: '+1 (555) 901-2237', attendancePct: 91, avgGrade: 84, feeDues: 0 },
+  { name: 'EDU-STU-2026-00005', student_name: 'Ananya Iyer', roll_no: '105', student_batch: 'Grade 10-A', guardian_name: 'Mrs. Meenakshi Iyer', guardian_mobile: '+1 (555) 901-2238', attendancePct: 97, avgGrade: 95, feeDues: 0 },
+  { name: 'EDU-STU-2026-00006', student_name: 'Kabir Singh', roll_no: '106', student_batch: 'Grade 10-B', guardian_name: 'Mr. Jaswinder Singh', guardian_mobile: '+1 (555) 901-2239', attendancePct: 89, avgGrade: 78, feeDues: 800 }
+];
+
+export const FALLBACK_FACULTY = [
+  { name: 'FAC-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', designation: 'Senior Faculty Lead', email: 'sjenkins@nairee.edu', salary: 68000 },
+  { name: 'FAC-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', designation: 'Head of STEM Academics', email: 'admin@nairee.edu', salary: 75000 },
+  { name: 'FAC-003', full_name: 'Mr. Robert Chen', department: 'Computer Science', designation: 'AI Systems Instructor', email: 'rchen@nairee.edu', salary: 64000 },
+  { name: 'FAC-004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', designation: 'Literature Lead', email: 'coswald@nairee.edu', salary: 60000 }
+];
+
+export const FALLBACK_BATCHES = [
+  { name: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', grade_level: 'Grade 10', section: 'A', class_teacher: 'Prof. Sarah Jenkins', room_no: 'Room 204' },
+  { name: 'BATCH-10B-2026', batch_name: 'Grade 10 - Section B', grade_level: 'Grade 10', section: 'B', class_teacher: 'Dr. Marcus Vance', room_no: 'Room 205' },
+  { name: 'BATCH-11A-2026', batch_name: 'Grade 11 - Section A', grade_level: 'Grade 11', section: 'A', class_teacher: 'Mr. Robert Chen', room_no: 'Room 301' }
+];

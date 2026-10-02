@@ -29,6 +29,10 @@ import {
 } from 'lucide-react';
 import { api } from '../api.js';
 import ClassStaffManagerView from './ClassStaffManagerView.jsx';
+import FinancialPnLView from './FinancialPnLView.jsx';
+import TransferCertificateView from './TransferCertificateView.jsx';
+import InventoryAssetsView from './InventoryAssetsView.jsx';
+import AlumniNetworkView from './AlumniNetworkView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const [internalTab, setInternalTab] = useState('overview');
@@ -229,6 +233,26 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
       {/* DEDICATED CLASS, ROSTER & SALARY MANAGER TAB */}
       {activeTab === 'class_manager' && (
         <ClassStaffManagerView />
+      )}
+
+      {/* EXECUTIVE FINANCIAL P&L & PROFIT ANALYTICS TAB */}
+      {activeTab === 'financial_pl' && (
+        <FinancialPnLView />
+      )}
+
+      {/* TRANSFER CERTIFICATE (TC) GENERATOR TAB */}
+      {activeTab === 'tc_generator' && (
+        <TransferCertificateView />
+      )}
+
+      {/* SCHOOL INVENTORY & LAB ASSET TRACKER TAB */}
+      {activeTab === 'inventory_mgmt' && (
+        <InventoryAssetsView />
+      )}
+
+      {/* ALUMNI CAREER & MENTORSHIP HUB TAB */}
+      {activeTab === 'alumni_mgmt' && (
+        <AlumniNetworkView />
       )}
 
       {/* TAB 1: OVERVIEW */}

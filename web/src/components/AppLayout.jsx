@@ -28,7 +28,10 @@ import {
   Database,
   QrCode,
   Smartphone,
-  School
+  School,
+  TrendingUp,
+  Package,
+  Briefcase
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
@@ -47,15 +50,19 @@ const NAV_CONFIG = {
   teacher: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'attendance', label: 'Attendance', icon: UserCheck },
-    { id: 'homework', label: 'Assignment', icon: BookOpen },
+    { id: 'homework', label: 'Multi-Class HW', icon: BookOpen },
     { id: 'syllabus', label: 'Syllabus', icon: CheckCircle2 },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'materials', label: 'Study Notes', icon: FileText },
-    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'messages', label: 'Parent Chat', icon: MessageSquare },
   ],
   admin: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'financial_pl', label: 'Executive P&L Analytics', icon: TrendingUp },
+    { id: 'tc_generator', label: 'TC & Diploma Generator', icon: Award },
     { id: 'class_manager', label: 'Class & Staff Manager', icon: School },
+    { id: 'inventory_mgmt', label: 'Lab & Asset Tracker', icon: Package },
+    { id: 'alumni_mgmt', label: 'Alumni Mentorship Hub', icon: Briefcase },
     { id: 'database', label: 'Live Database Studio', icon: Database },
     { id: 'accounts', label: 'Accounts & Logins', icon: Users },
     { id: 'teachers', label: 'Teacher Workload', icon: BookOpen },

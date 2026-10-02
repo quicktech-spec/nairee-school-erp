@@ -19,7 +19,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Receipt,
-  LayoutDashboard
+  LayoutDashboard,
+  Award
 } from 'lucide-react';
 import { api } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
@@ -477,6 +478,47 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">
               GPA Distinction
             </span>
+          </div>
+
+          {/* Student Merit Badges & House Standing (Idea 7) */}
+          <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center font-bold shadow-lg shadow-amber-400/20">
+                  <Award className="w-5 h-5 text-slate-950" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-white">Student House Standing & Earned Merit Badges</h4>
+                  <p className="text-[11px] text-teal-300">House: Emerald Dragons &bull; 420 Total Points (Rank #1)</p>
+                </div>
+              </div>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                +45 Pts Earned
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-center space-y-1">
+                <span className="text-xl">🚀</span>
+                <div className="font-bold text-xs text-white">STEM Innovator</div>
+                <div className="text-[10px] text-teal-300 font-semibold">+15 House Pts</div>
+              </div>
+              <div className="p-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-center space-y-1">
+                <span className="text-xl">⭐</span>
+                <div className="font-bold text-xs text-white">Diligence Star</div>
+                <div className="text-[10px] text-teal-300 font-semibold">+10 House Pts</div>
+              </div>
+              <div className="p-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-center space-y-1">
+                <span className="text-xl">👑</span>
+                <div className="font-bold text-xs text-white">Peer Leadership</div>
+                <div className="text-[10px] text-teal-300 font-semibold">+10 House Pts</div>
+              </div>
+              <div className="p-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 text-center space-y-1">
+                <span className="text-xl">🎨</span>
+                <div className="font-bold text-xs text-white">Creative Arts</div>
+                <div className="text-[10px] text-teal-300 font-semibold">+10 House Pts</div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden">
