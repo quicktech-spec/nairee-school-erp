@@ -42,6 +42,33 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [selectedBatch, setSelectedBatch] = useState('BATCH-10A-2026');
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [toastMessage, setToastMessage] = useState('');
+  const [punchStatus, setPunchStatus] = useState(() => {
+    try { return localStorage.getItem('nairee_teacher_punch') || 'in'; } catch { return 'in'; }
+  });
+  const [punchTime, setPunchTime] = useState(() => {
+    try { return localStorage.getItem('nairee_teacher_punch_time') || '08:15 AM'; } catch { return '08:15 AM'; }
+  });
+
+  const handlePunchToggle = () => {
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (punchStatus === 'in') {
+      setPunchStatus('out');
+      setPunchTime(timeStr);
+      try {
+        localStorage.setItem('nairee_teacher_punch', 'out');
+        localStorage.setItem('nairee_teacher_punch_time', timeStr);
+      } catch {}
+      showToast(`Punched Out at ${timeStr}. Shift recorded to Principal overview.`);
+    } else {
+      setPunchStatus('in');
+      setPunchTime(timeStr);
+      try {
+        localStorage.setItem('nairee_teacher_punch', 'in');
+        localStorage.setItem('nairee_teacher_punch_time', timeStr);
+      } catch {}
+      showToast(`Punched In at ${timeStr} (On Duty). Shift recorded to Principal overview.`);
+    }
+  };
 
   // Modals & Drawers
   const [showHomeworkModal, setShowHomeworkModal] = useState(false);
@@ -327,6 +354,42 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
       {/* TAB 1: TEACHER DASHBOARD (Matches media_1790863408009.png) */}
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
+          {/* Faculty Attendance Punch-In Quick Action Card */}
+          <div className="bg-gradient-to-r from-emerald-500 via-teal-600 to-[#00a884] rounded-3xl p-5 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white flex-shrink-0">
+                <Clock className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-white">
+                    Faculty Biometric & Attendance
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    punchStatus === 'in' ? 'bg-emerald-300 text-emerald-950' : 'bg-rose-200 text-rose-950'
+                  }`}>
+                    {punchStatus === 'in' ? '● Punched In (On Duty)' : '○ Punched Out (Off Duty)'}
+                  </span>
+                </div>
+                <h4 className="text-sm sm:text-base font-bold text-white mt-0.5">
+                  {punchStatus === 'in' ? `You are checked in today since ${punchTime}` : `Shift ended at ${punchTime}`}
+                </h4>
+              </div>
+            </div>
+
+            <button
+              onClick={handlePunchToggle}
+              className={`px-5 py-2.5 rounded-2xl font-bold text-xs shadow-md transition-all cursor-pointer flex items-center gap-2 ${
+                punchStatus === 'in'
+                  ? 'bg-white text-rose-700 hover:bg-rose-50'
+                  : 'bg-white text-emerald-800 hover:bg-emerald-50'
+              }`}
+            >
+              <UserCheck className="w-4 h-4" />
+              <span>{punchStatus === 'in' ? 'Punch Out Shift' : 'Punch In Attendance'}</span>
+            </button>
+          </div>
+
           {/* Top 3 Coral-Red Outline Metric Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* Card 1: Total students */}
