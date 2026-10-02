@@ -69,10 +69,11 @@ export default function DatabaseStudioView() {
     }
 
     // Fallback tables
-    const fallbackList = Object.keys(dbStore).map(name => ({
+    const currentDb = { ...INITIAL_DB_STORE };
+    const fallbackList = Object.keys(currentDb).map(name => ({
       name,
       type: 'table',
-      count: (dbStore[name]?.rows || []).length
+      count: (currentDb[name]?.rows || []).length
     }));
     setTables(fallbackList);
     if (!selectedTable && fallbackList.length > 0) {
@@ -98,7 +99,7 @@ export default function DatabaseStudioView() {
     }
 
     // Fallback table data from in-memory DB store
-    const localTbl = dbStore[tName] || { columns: [], rows: [] };
+    const localTbl = INITIAL_DB_STORE[tName] || dbStore[tName] || { columns: [], rows: [] };
     let filteredRows = [...(localTbl.rows || [])];
     if (search) {
       const q = search.toLowerCase();

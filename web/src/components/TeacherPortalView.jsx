@@ -202,7 +202,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
       const [sch, syl, hw, mat, msg, plans, stuList] = await Promise.all([
         api.getSchedule(selectedBatch).catch(() => []),
         api.getSyllabus({ batch: selectedBatch }).catch(() => []),
-        api.getHomework({ batch: selectedBatch }).catch(() => []),
+        api.getHomework().catch(() => []),
         api.getStudyMaterials({ batch: selectedBatch }).catch(() => []),
         api.getMessages(user?.username, 'teacher').catch(() => []),
         api.getAssessmentPlans().catch(() => []),
@@ -286,7 +286,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
         instructions: '',
         due_date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0]
       }));
-      api.getHomework({ batch: selectedBatch }).then(setHomeworkList);
+      api.getHomework().then(setHomeworkList);
     } catch (err) {
       showToast(err.message || 'Failed to create homework');
     }
@@ -1370,7 +1370,15 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {homeworkList
-                .filter(hw => homeworkClassTab === 'all' || hw.student_batch === homeworkClassTab || hw.course?.includes(homeworkClassTab.split('-')[1]?.substring(0, 2) || ''))
+                .filter(hw => {
+                  if (homeworkClassTab === 'all') return true;
+                  if (hw.student_batch === homeworkClassTab) return true;
+                  if (homeworkClassTab === 'BATCH-10A-2026' && (hw.student_batch === 'Grade 10-A' || hw.student_batch === 'BATCH-10A-2026' || hw.course?.includes('10') || hw.title?.toLowerCase().includes('10-a') || hw.title?.toLowerCase().includes('math') || hw.title?.toLowerCase().includes('science'))) return true;
+                  if (homeworkClassTab === 'BATCH-10B-2026' && (hw.student_batch === 'Grade 10-B' || hw.student_batch === 'BATCH-10B-2026' || hw.title?.toLowerCase().includes('10-b') || hw.title?.toLowerCase().includes('english') || hw.title?.toLowerCase().includes('mechanics'))) return true;
+                  if (homeworkClassTab === 'BATCH-11A-2026' && (hw.student_batch === 'Grade 11-A' || hw.student_batch === 'BATCH-11A-2026' || hw.title?.toLowerCase().includes('11-a') || hw.title?.toLowerCase().includes('calculus') || hw.title?.toLowerCase().includes('algebra'))) return true;
+                  if (homeworkClassTab === 'BATCH-12A-2026' && (hw.student_batch === 'Grade 12-Science' || hw.student_batch === 'BATCH-12A-2026' || hw.title?.toLowerCase().includes('12') || hw.title?.toLowerCase().includes('physics'))) return true;
+                  return false;
+                })
                 .map((hw) => (
                 <div 
                   key={hw.id} 
