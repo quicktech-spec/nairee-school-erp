@@ -28,6 +28,7 @@ import {
   Umbrella
 } from 'lucide-react';
 import { api } from '../api.js';
+import ClassStaffManagerView from './ClassStaffManagerView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const [internalTab, setInternalTab] = useState('overview');
@@ -225,7 +226,10 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
         </div>
       )}
 
-
+      {/* DEDICATED CLASS, ROSTER & SALARY MANAGER TAB */}
+      {activeTab === 'class_manager' && (
+        <ClassStaffManagerView />
+      )}
 
       {/* TAB 1: OVERVIEW */}
       {activeTab === 'overview' && (

@@ -27,7 +27,8 @@ import {
   Sparkles,
   Database,
   QrCode,
-  Smartphone
+  Smartphone,
+  School
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
@@ -54,6 +55,7 @@ const NAV_CONFIG = {
   ],
   admin: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'class_manager', label: 'Class & Staff Manager', icon: School },
     { id: 'database', label: 'Live Database Studio', icon: Database },
     { id: 'accounts', label: 'Accounts & Logins', icon: Users },
     { id: 'teachers', label: 'Teacher Workload', icon: BookOpen },
