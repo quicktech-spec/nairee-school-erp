@@ -265,19 +265,21 @@ export default function AppLayout({
 
           {/* Right: DB Studio + Search + Notification Bell + Profile Capsule */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Quick Live Database Studio Button */}
-            <button
-              onClick={() => setActiveTab('database')}
-              className={`px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'database'
-                  ? 'bg-[#00a884] text-white border-[#00a884] shadow-sm'
-                  : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-xs'
-              }`}
-              title="Open Live Localhost Database Editor"
-            >
-              <Database className="w-3.5 h-3.5 text-teal-600" />
-              <span className="hidden md:inline">DB Studio</span>
-            </button>
+            {/* Quick Live Database Studio Button (ADMIN ONLY) */}
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => setActiveTab('database')}
+                className={`px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === 'database'
+                    ? 'bg-[#00a884] text-white border-[#00a884] shadow-sm'
+                    : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-xs'
+                }`}
+                title="Open Live Localhost Database Editor"
+              >
+                <Database className="w-3.5 h-3.5 text-teal-600" />
+                <span className="hidden md:inline">DB Studio</span>
+              </button>
+            )}
 
             {/* Mobile App Scan QR Button */}
             <button

@@ -372,6 +372,19 @@ export const api = {
         mobile_number: data.phone || '+1 (555) 901-2234',
         workload_hours: 20
       });
+      if (INITIAL_DB_STORE.tabTeacher) {
+        INITIAL_DB_STORE.tabTeacher.rows.push({
+          teacher_id: `TEA-00${INITIAL_DB_STORE.tabTeacher.rows.length + 1}`,
+          full_name: data.full_name,
+          department: data.department || 'Mathematics & Science',
+          designation: data.designation || 'Faculty Lead',
+          email: data.email,
+          phone: data.phone || '+1 (555) 901-2234',
+          assigned_classes: data.batch || 'Grade 10-A',
+          monthly_salary: 5800,
+          status: 'Active'
+        });
+      }
       try {
         localStorage.setItem('nairee_faculty', JSON.stringify(FALLBACK_DATA.faculty));
       } catch {}

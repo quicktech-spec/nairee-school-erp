@@ -50,6 +50,25 @@ export const INITIAL_DB_STORE = {
       { name: 'BATCH-10B-2026', batch_name: 'Grade 10 - Section B', grade_level: 'Grade 10', section: 'B', class_teacher: 'Dr. Marcus Vance', room_no: 'Room 205' }
     ]
   },
+  tabTeacher: {
+    columns: [
+      { name: 'teacher_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'designation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'assigned_classes', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'monthly_salary', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { teacher_id: 'TEA-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', designation: 'Senior Faculty Lead', email: 'sjenkins@nairee.edu', phone: '+1 (555) 234-5671', assigned_classes: 'Grade 10-A, Grade 11-A', monthly_salary: 5600, status: 'Active' },
+      { teacher_id: 'TEA-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', designation: 'Head of STEM Academics', email: 'admin@nairee.edu', phone: '+1 (555) 234-5672', assigned_classes: 'Grade 10-B, Grade 12-A', monthly_salary: 6250, status: 'Active' },
+      { teacher_id: 'TEA-003', full_name: 'Mr. Robert Chen', department: 'Computer Science', designation: 'AI Systems Instructor', email: 'rchen@nairee.edu', phone: '+1 (555) 234-5673', assigned_classes: 'Grade 10-A, Grade 10-B', monthly_salary: 5300, status: 'Active' },
+      { teacher_id: 'TEA-004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', designation: 'Literature Lead', email: 'coswald@nairee.edu', phone: '+1 (555) 234-5674', assigned_classes: 'Grade 10-A, Grade 11-A', monthly_salary: 5000, status: 'Active' }
+    ]
+  },
   tabFaculty: {
     columns: [
       { name: 'name', type: 'VARCHAR(255)', pk: 1 },
@@ -61,7 +80,9 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { name: 'FAC-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', email: 'sjenkins@nairee.edu', mobile_number: '+91 98765 43211', workload_hours: 24 },
-      { name: 'FAC-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', email: 'admin@nairee.edu', mobile_number: '+91 98765 43210', workload_hours: 18 }
+      { name: 'FAC-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', email: 'admin@nairee.edu', mobile_number: '+91 98765 43210', workload_hours: 18 },
+      { name: 'FAC-003', full_name: 'Mr. Robert Chen', department: 'Computer Science', email: 'rchen@nairee.edu', mobile_number: '+91 98765 43212', workload_hours: 20 },
+      { name: 'FAC-004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', email: 'coswald@nairee.edu', mobile_number: '+91 98765 43213', workload_hours: 18 }
     ]
   },
   tabFeeSchedule: {
