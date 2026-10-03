@@ -6,12 +6,12 @@ import {
   Plus, 
   Trash2, 
   Edit3, 
-  Play, 
   RefreshCw, 
   Check, 
   AlertCircle, 
   CheckCircle2, 
-  Code, 
+  FileSpreadsheet,
+  Download,
   FileText, 
   Layers, 
   X,
@@ -19,6 +19,7 @@ import {
   ChevronRight,
   HardDrive
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
@@ -29,13 +30,7 @@ export default function DatabaseStudioView() {
   const [tableData, setTableData] = useState({ rows: [], total: 0, columns: [] });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeMode, setActiveMode] = useState('browser'); // 'browser' or 'sql'
-  
-  // Custom SQL State
-  const [sqlQuery, setSqlQuery] = useState("SELECT * FROM \"Student List\" LIMIT 10;");
-  const [sqlResult, setSqlResult] = useState(null);
-  const [sqlRunning, setSqlRunning] = useState(false);
-  const [sqlError, setSqlError] = useState('');
+  const [exportingExcel, setExportingExcel] = useState(false);
 
   // In-memory fallback DB storage state
   const [dbStore, setDbStore] = useState(INITIAL_DB_STORE);
@@ -132,56 +127,84 @@ export default function DatabaseStudioView() {
     loadTableData(selectedTable, searchQuery);
   };
 
-  const handleExecuteSql = async () => {
-    if (!sqlQuery.trim()) return;
-    setSqlRunning(true);
-    setSqlError('');
-    setSqlResult(null);
+  // Convert & Export entire School Records to an Excel Spreadsheet (.xlsx)
+  const handleExportAllToExcel = async () => {
     try {
-      const res = await fetch(`${API_BASE}/database/query`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sql: sqlQuery })
-      });
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
-        const data = await res.json();
-        if (data.success) {
-          setSqlResult(data);
-          showToast(data.type === 'SELECT' ? `Fetched ${data.count} rows` : `Mutation applied (${data.changes} changes)`);
-          loadTables();
-          loadTableData(selectedTable);
-          setSqlRunning(false);
-          return;
+      setExportingExcel(true);
+      showToast('Compiling all School Records into Excel...');
+
+      const wb = XLSX.utils.book_new();
+
+      const tableNames = tables.length > 0 
+        ? tables.map(t => t.name) 
+        : Object.keys(INITIAL_DB_STORE).filter(k => !k.startsWith('tab'));
+
+      let exportedSheetsCount = 0;
+      let totalRecordsCount = 0;
+
+      for (const tName of tableNames) {
+        let rows = [];
+
+        try {
+          const res = await fetch(`${API_BASE}/database/table/${tName}?limit=2000`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.rows && data.rows.length > 0) {
+              rows = data.rows;
+            }
+          }
+        } catch (e) {
+          // Local fallback
+        }
+
+        if (rows.length === 0) {
+          const localTbl = dbStore[tName] || INITIAL_DB_STORE[tName];
+          rows = localTbl?.rows || [];
+        }
+
+        // Clean sheet name: Excel allows max 31 chars and no []*/\?:
+        let safeSheetName = tName.replace(/[\\/?*:[\]]/g, '').slice(0, 31);
+        if (!safeSheetName) safeSheetName = `Sheet_${exportedSheetsCount + 1}`;
+
+        if (rows.length > 0) {
+          const ws = XLSX.utils.json_to_sheet(rows);
+          XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
+          exportedSheetsCount++;
+          totalRecordsCount += rows.length;
         } else {
-          setSqlError(data.error || 'SQL Execution failed');
-          setSqlRunning(false);
-          return;
+          const localTbl = dbStore[tName] || INITIAL_DB_STORE[tName] || { columns: [] };
+          const emptyRow = {};
+          (localTbl.columns || []).forEach(c => { emptyRow[c.name] = ''; });
+          const ws = XLSX.utils.json_to_sheet([emptyRow]);
+          XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
+          exportedSheetsCount++;
         }
       }
+
+      const dateStr = new Date().toISOString().split('T')[0];
+      const filename = `Nairee_School_Records_${dateStr}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      setExportingExcel(false);
+      showToast(`📊 Successfully downloaded ${totalRecordsCount} records across ${exportedSheetsCount} tables to ${filename}!`);
     } catch (err) {
-      console.warn('SQL execution using local simulator');
+      console.error('Error generating Excel:', err);
+      setExportingExcel(false);
+      showToast('❌ Error generating Excel file: ' + err.message);
     }
+  };
 
-    // Client-side local SQL Simulator
+  const handleExportCurrentTable = () => {
     try {
-      const q = sqlQuery.trim();
-      const match = q.match(/FROM\s+([a-zA-Z0-9_]+)/i);
-      const targetTbl = match ? match[1] : selectedTable;
-      const localTbl = dbStore[targetTbl] || dbStore.tabStudent;
-
-      setSqlResult({
-        success: true,
-        type: 'SELECT',
-        columns: (localTbl.columns || []).map(c => c.name),
-        rows: localTbl.rows || [],
-        count: (localTbl.rows || []).length
-      });
-      showToast(`Fetched ${(localTbl.rows || []).length} rows (Local Studio)`);
-    } catch (e) {
-      setSqlError('Local Query Parser Error: ' + e.message);
-    } finally {
-      setSqlRunning(false);
+      const rows = tableData.rows.length > 0 ? tableData.rows : [{}];
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      const safeSheetName = selectedTable.replace(/[\\/?*:[\]]/g, '').slice(0, 31);
+      XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
+      const filename = `${selectedTable.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      showToast(`📊 Exported ${tableData.rows.length} rows from "${selectedTable}" to Excel!`);
+    } catch (err) {
+      showToast('❌ Failed to export table: ' + err.message);
     }
   };
 
@@ -261,7 +284,8 @@ export default function DatabaseStudioView() {
   const handleDeleteRow = async (row) => {
     const pkCol = tableData.columns.find(c => c.pk === 1) || tableData.columns.find(c => c.name === 'name' || c.name === 'id') || tableData.columns[0];
     const pkVal = row[pkCol.name];
-    if (!window.confirm(`Are you sure you want to delete row where ${pkCol.name} = "${pkVal}"?`)) {
+    
+    if (!window.confirm(`Are you sure you want to delete row with ${pkCol.name}="${pkVal}" from ${selectedTable}?`)) {
       return;
     }
 
@@ -282,7 +306,7 @@ export default function DatabaseStudioView() {
         return;
       }
     } catch (err) {
-      console.warn('Deleting row from local DB store');
+      console.warn('Deleting row from local in-memory DB store');
     }
 
     // Fallback local delete
@@ -295,6 +319,29 @@ export default function DatabaseStudioView() {
       }
     }));
     showToast(`Row deleted from ${selectedTable}!`);
+  };
+
+  // Lookup maps for clean foreign keys
+  const studentMap = {
+    'STU 001': 'Devon Patel',
+    'STU 002': 'Aarav Sharma',
+    'STU 003': 'Diya Gupta',
+    'STU 004': 'Rohan Mehta',
+    'STU 005': 'Ananya Iyer',
+    'STU 006': 'Kabir Singh'
+  };
+
+  const teacherMap = {
+    'TEA 001': 'Prof. Sarah Jenkins',
+    'TEA 002': 'Dr. Evelyn Reed',
+    'TEA 003': 'Mr. Robert Chen',
+    'TEA 004': 'Ms. Clara Oswald'
+  };
+
+  const classMap = {
+    'CLS 10A': 'Class 10A (Room 204)',
+    'CLS 10B': 'Class 10B (Room 205)',
+    'CLS 11A': 'Class 11A (Room 301)'
   };
 
   return (
@@ -315,400 +362,261 @@ export default function DatabaseStudioView() {
           </h1>
         </div>
 
-        {/* Mode Toggle Pills: Table Browser vs SQL Runner */}
-        <div className="flex items-center gap-2 bg-slate-800/90 p-1.5 rounded-2xl border border-teal-500/30">
+        {/* Excel Sheet Download Option */}
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setActiveMode('browser')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeMode === 'browser' ? 'bg-[#00a884] text-white shadow-md' : 'text-slate-300 hover:text-white'
-            }`}
+            onClick={handleExportAllToExcel}
+            disabled={exportingExcel}
+            className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-900/40 flex items-center gap-2.5 transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-400/40 disabled:opacity-50"
+            title="Convert and download entire School Records data into a multi-sheet Excel spreadsheet"
           >
-            <Table className="w-4 h-4" />
-            <span>Table Browser</span>
-          </button>
-          <button
-            onClick={() => setActiveMode('sql')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeMode === 'sql' ? 'bg-[#00a884] text-white shadow-md' : 'text-slate-300 hover:text-white'
-            }`}
-          >
-            <Code className="w-4 h-4" />
-            <span>Custom SQL Terminal</span>
+            <FileSpreadsheet className="w-4 h-4 text-white" />
+            <span>{exportingExcel ? 'Converting to Excel...' : 'Download Excel Sheet'}</span>
+            <Download className="w-3.5 h-3.5 text-emerald-200" />
           </button>
         </div>
       </div>
 
-      {/* MODE 1: TABLE BROWSER & LIVE EDITOR */}
-      {activeMode === 'browser' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Left: Tables Inventory List */}
-          <div className="lg:col-span-3 bg-white rounded-3xl p-4 border border-slate-200/80 shadow-sm space-y-3">
-            <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100">
-              <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
-                Database Tables ({tables.length})
-              </span>
-              <button 
-                onClick={loadTables} 
-                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
-                title="Refresh Table List"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="space-y-1 max-h-[600px] overflow-y-auto pr-1">
-              {tables.map(t => {
-                const isSelected = selectedTable === t.name;
-                return (
-                  <button
-                    key={t.name}
-                    onClick={() => {
-                      setSelectedTable(t.name);
-                      setSearchQuery('');
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer text-left ${
-                      isSelected 
-                        ? 'bg-[#00a884] text-white shadow-md shadow-[#00a884]/20' 
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      <Table className={`w-3.5 h-3.5 flex-shrink-0 ${isSelected ? 'text-white' : 'text-teal-600'}`} />
-                      <span className="truncate">{t.name}</span>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
-                    }`}>
-                      {t.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right: Active Table Data Grid & Controls */}
-          <div className="lg:col-span-9 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
-            
-            {/* Table Header Controls */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
-              <div>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>{selectedTable}</span>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                    {tableData.total} Records
-                  </span>
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Click Edit on any row to modify its values, or Add Row to insert new data into SQLite.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {/* Search in Table */}
-                <form onSubmit={handleSearchSubmit} className="relative flex-1 sm:w-64">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search in table..."
-                    className="w-full pl-9 pr-3 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                </form>
-
-                {/* Add Row Button */}
-                <button
-                  onClick={() => {
-                    const initial = {};
-                    tableData.columns.forEach(c => { initial[c.name] = ''; });
-                    setFormData(initial);
-                    setIsCreatingRow(true);
-                  }}
-                  className="px-3.5 py-2 rounded-2xl bg-[#00a884] hover:bg-[#009172] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#00a884]/20 cursor-pointer flex-shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Row</span>
-                </button>
-
-                {/* Reload Button */}
-                <button
-                  onClick={() => loadTableData(selectedTable, searchQuery)}
-                  className="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer flex-shrink-0"
-                  title="Reload Table Data"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Data Table */}
-            {loading ? (
-              <div className="py-20 text-center">
-                <div className="w-8 h-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                <p className="text-xs text-slate-400 font-medium">Loading table rows from SQLite database...</p>
-              </div>
-            ) : tableData.rows.length === 0 ? (
-              <div className="py-16 text-center text-slate-400 space-y-2">
-                <AlertCircle className="w-8 h-8 mx-auto text-slate-300" />
-                <p className="text-xs font-bold">No records found in {selectedTable}</p>
-                <p className="text-[11px]">Click "Add Row" to insert the first record.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
-                    <tr>
-                      <th className="py-3 px-3 w-20 text-center">Actions</th>
-                      {tableData.columns.map(col => (
-                        <th key={col.name} className="py-3 px-3 whitespace-nowrap">
-                          <div className="flex items-center gap-1">
-                            <span>{col.name}</span>
-                            {col.pk === 1 && <span className="text-[9px] text-amber-500 font-bold font-mono">🔑</span>}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                    {tableData.rows.map((row, idx) => (
-                      <tr key={idx} className="hover:bg-teal-50/30 transition-colors">
-                        <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              onClick={() => {
-                                setEditingRow(row);
-                                setFormData({ ...row });
-                              }}
-                              className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 cursor-pointer"
-                              title="Edit Row"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteRow(row)}
-                              className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 cursor-pointer"
-                              title="Delete Row"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                        {tableData.columns.map(col => {
-                          const val = row[col.name];
-                          
-                          // Helper dictionary to resolve foreign keys to human names
-                          const studentMap = {
-                            'STU-001': 'Devon Patel',
-                            'STU-002': 'Aarav Sharma',
-                            'STU-003': 'Diya Gupta',
-                            'STU-004': 'Rohan Mehta',
-                            'STU-005': 'Ananya Iyer',
-                            'STU-006': 'Kabir Singh',
-                            'EDU-STU-2026-00001': 'Nairee Patel'
-                          };
-                          const teacherMap = {
-                            'TEA-001': 'Prof. Sarah Jenkins',
-                            'TEA-002': 'Dr. Evelyn Reed',
-                            'TEA-003': 'Mr. Robert Chen',
-                            'TEA-004': 'Ms. Clara Oswald'
-                          };
-                          const classMap = {
-                            'CLS-10A': 'Class 10-A',
-                            'CLS-10B': 'Class 10-B',
-                            'CLS-11A': 'Class 11-A',
-                            'BATCH-10A-2026': 'Class 10-A'
-                          };
-
-                          if (val === null || val === undefined) {
-                            return (
-                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                                <span className="text-slate-300 italic font-mono text-[10px]">NULL</span>
-                              </td>
-                            );
-                          }
-
-                          // Status badges
-                          if (col.name === 'status' || col.name === 'fee_status') {
-                            const isPaidOrPresent = val === 'Paid' || val === 'Present' || val === 'Active';
-                            return (
-                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                  isPaidOrPresent 
-                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
-                                    : 'bg-amber-100 text-amber-800 border border-amber-300'
-                                }`}>
-                                  {String(val)}
-                                </span>
-                              </td>
-                            );
-                          }
-
-                          // Foreign key badge for student
-                          if ((col.name === 'student' || col.name === 'child' || col.name === 'student_id') && studentMap[val]) {
-                            return (
-                              <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
-                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 font-bold">
-                                  <span className="font-mono text-teal-600">{val}</span>
-                                  <span className="text-slate-700 font-semibold">• {studentMap[val]}</span>
-                                </span>
-                              </td>
-                            );
-                          }
-
-                          // Foreign key badge for teacher
-                          if ((col.name === 'teacher' || col.name === 'class_teacher' || col.name === 'assigned_by') && teacherMap[val]) {
-                            return (
-                              <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
-                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold">
-                                  <span className="font-mono text-indigo-600">{val}</span>
-                                  <span className="text-slate-700 font-semibold">• {teacherMap[val]}</span>
-                                </span>
-                              </td>
-                            );
-                          }
-
-                          // Foreign key badge for class
-                          if ((col.name === 'class_batch' || col.name === 'batch_id') && classMap[val]) {
-                            return (
-                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 font-bold">
-                                  <span className="font-mono text-purple-600">{val}</span>
-                                  <span className="text-slate-600">({classMap[val]})</span>
-                                </span>
-                              </td>
-                            );
-                          }
-
-                          return (
-                            <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                              {typeof val === 'string' && val.startsWith('http') ? (
-                                <a href={val} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline flex items-center gap-1">
-                                  <span className="truncate">{val}</span>
-                                  <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                                </a>
-                              ) : (
-                                <span className={col.pk === 1 ? 'font-bold font-mono text-slate-900' : ''}>
-                                  {String(val)}
-                                </span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* MODE 2: CUSTOM SQL TERMINAL */}
-      {activeMode === 'sql' && (
-        <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div>
-              <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <Code className="w-5 h-5 text-teal-600" />
-                <span>Execute Custom SQL Query</span>
-              </h3>
-              <p className="text-xs text-slate-400">
-                Type any valid SQLite query (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) to query or modify the database directly.
-              </p>
-            </div>
-
-            {/* Quick Queries Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-slate-400">Sample Templates:</span>
-              <select
-                onChange={(e) => { if (e.target.value) setSqlQuery(e.target.value); }}
-                className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-slate-50 cursor-pointer"
-              >
-                <option value="">Select Template...</option>
-                <option value="SELECT * FROM tabStudent LIMIT 10;">All Enrolled Students</option>
-                <option value="SELECT * FROM tabAnnouncement ORDER BY created_at DESC;">Recent Announcements</option>
-                <option value="SELECT * FROM tabFeeSchedule WHERE outstanding_amount > 0;">Unpaid Fees</option>
-                <option value="SELECT student_name, date, status FROM tabStudentAttendance ORDER BY date DESC LIMIT 20;">Recent Attendance</option>
-                <option value="SELECT * FROM tabSubjectSchedule ORDER BY day_of_week ASC;">Class Timetable</option>
-              </select>
-            </div>
-          </div>
-
-          {/* SQL Code Box */}
-          <div className="relative">
-            <textarea
-              rows={5}
-              value={sqlQuery}
-              onChange={(e) => setSqlQuery(e.target.value)}
-              placeholder="e.g. SELECT name, student_name, student_batch FROM tabStudent;"
-              className="w-full p-4 rounded-2xl bg-[#0f172a] text-[#38bdf8] font-mono text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 border border-slate-800"
-            />
-            <button
-              onClick={handleExecuteSql}
-              disabled={sqlRunning}
-              className="absolute right-3 bottom-4 px-5 py-2 rounded-xl bg-[#00a884] hover:bg-[#009172] text-white font-bold text-xs shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+      {/* SCHOOL RECORDS BROWSER & LIVE EDITOR */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left: Tables Inventory List */}
+        <div className="lg:col-span-3 bg-white rounded-3xl p-4 border border-slate-200/80 shadow-sm space-y-3">
+          <div className="flex items-center justify-between px-2 pb-2 border-b border-slate-100">
+            <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+              Database Tables ({tables.length})
+            </span>
+            <button 
+              onClick={loadTables} 
+              className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+              title="Refresh Table List"
             >
-              {sqlRunning ? (
-                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Play className="w-3.5 h-3.5" />
-              )}
-              <span>Run SQL</span>
+              <RefreshCw className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* SQL Error Banner */}
-          {sqlError && (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span className="font-mono">{sqlError}</span>
-            </div>
-          )}
+          <div className="space-y-1 max-h-[600px] overflow-y-auto pr-1">
+            {tables.map(t => {
+              const isSelected = selectedTable === t.name;
+              return (
+                <button
+                  key={t.name}
+                  onClick={() => {
+                    setSelectedTable(t.name);
+                    setSearchQuery('');
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer text-left ${
+                    isSelected 
+                      ? 'bg-[#00a884] text-white shadow-md shadow-[#00a884]/20' 
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <Table className={`w-3.5 h-3.5 flex-shrink-0 ${isSelected ? 'text-white' : 'text-teal-600'}`} />
+                    <span className="truncate">{t.name}</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {t.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-          {/* SQL Result Table */}
-          {sqlResult && (
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">
-                  Query Result: {sqlResult.type === 'SELECT' ? `${sqlResult.count} Rows Returned` : `Success (${sqlResult.changes} rows modified)`}
+        {/* Right: Active Table Data Grid & Controls */}
+        <div className="lg:col-span-9 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+          
+          {/* Table Header Controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <span>{selectedTable}</span>
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                  {tableData.total} Records
                 </span>
-              </div>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Click Edit on any row to modify its values, Add Row to insert new records, or export this sheet to Excel.
+              </p>
+            </div>
 
-              {sqlResult.rows && sqlResult.rows.length > 0 ? (
-                <div className="overflow-x-auto rounded-2xl border border-slate-200 max-h-[400px] overflow-y-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
-                      <tr>
-                        {Object.keys(sqlResult.rows[0]).map(k => (
-                          <th key={k} className="py-2.5 px-3 whitespace-nowrap">{k}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                      {sqlResult.rows.map((row, i) => (
-                        <tr key={i} className="hover:bg-slate-50">
-                          {Object.values(row).map((v, j) => (
-                            <td key={j} className="py-2 px-3 whitespace-nowrap text-[11px]">
-                              {v === null ? <span className="text-slate-300 italic">NULL</span> : String(v)}
+            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+              {/* Search in Table */}
+              <form onSubmit={handleSearchSubmit} className="relative flex-1 sm:w-56">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search in table..."
+                  className="w-full pl-9 pr-3 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+              </form>
+
+              {/* Export Current Table to Excel */}
+              <button
+                onClick={handleExportCurrentTable}
+                className="px-3 py-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                title="Export this table to Excel (.xlsx)"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="hidden sm:inline">Export Sheet</span>
+              </button>
+
+              {/* Add Row Button */}
+              <button
+                onClick={() => {
+                  const initial = {};
+                  tableData.columns.forEach(c => { initial[c.name] = ''; });
+                  setFormData(initial);
+                  setIsCreatingRow(true);
+                }}
+                className="px-3.5 py-2 rounded-2xl bg-[#00a884] hover:bg-[#009172] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#00a884]/20 cursor-pointer flex-shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Row</span>
+              </button>
+
+              {/* Reload Button */}
+              <button
+                onClick={() => loadTableData(selectedTable, searchQuery)}
+                className="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer flex-shrink-0"
+                title="Reload Table Data"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Data Table */}
+          {loading ? (
+            <div className="py-20 text-center">
+              <div className="w-8 h-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-xs text-slate-400 font-medium">Loading table rows from SQLite database...</p>
+            </div>
+          ) : tableData.rows.length === 0 ? (
+            <div className="py-16 text-center text-slate-400 space-y-2">
+              <AlertCircle className="w-8 h-8 mx-auto text-slate-300" />
+              <p className="text-xs font-bold">No records found in {selectedTable}</p>
+              <p className="text-[11px]">Click "Add Row" to insert the first record.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="py-3 px-3 w-16 text-center">Actions</th>
+                    {tableData.columns.map(col => (
+                      <th key={col.name} className="py-3 px-3 whitespace-nowrap">
+                        <div className="flex items-center gap-1">
+                          <span>{col.name}</span>
+                          {col.pk === 1 && (
+                            <span className="text-[9px] font-mono px-1 rounded bg-amber-100 text-amber-800 font-bold">PK</span>
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {tableData.rows.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-teal-50/40 transition-colors group">
+                      {/* Action buttons */}
+                      <td className="py-2.5 px-3 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => {
+                              setEditingRow(row);
+                              setFormData({ ...row });
+                            }}
+                            className="p-1 rounded-lg hover:bg-teal-100 text-teal-700 transition-colors cursor-pointer"
+                            title="Edit Row"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteRow(row)}
+                            className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                            title="Delete Row"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+
+                      {/* Row Data Cells */}
+                      {tableData.columns.map(col => {
+                        const val = row[col.name];
+                        if (val === null || val === undefined) {
+                          return (
+                            <td key={col.name} className="py-2.5 px-3 text-slate-300 italic text-[11px]">
+                              NULL
                             </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                sqlResult.type === 'SELECT' && (
-                  <p className="text-xs text-slate-400 italic">Query executed successfully with 0 rows returned.</p>
-                )
-              )}
+                          );
+                        }
+
+                        // Foreign key badge for student
+                        if ((col.name === 'child' || col.name === 'student' || col.name === 'student_id') && studentMap[val]) {
+                          return (
+                            <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 font-bold">
+                                <span className="font-mono text-teal-600">{val}</span>
+                                <span className="text-slate-700 font-semibold">• {studentMap[val]}</span>
+                              </span>
+                            </td>
+                          );
+                        }
+
+                        // Foreign key badge for teacher
+                        if ((col.name === 'teacher' || col.name === 'class_teacher' || col.name === 'assigned_by') && teacherMap[val]) {
+                          return (
+                            <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold">
+                                <span className="font-mono text-indigo-600">{val}</span>
+                                <span className="text-slate-700 font-semibold">• {teacherMap[val]}</span>
+                              </span>
+                            </td>
+                          );
+                        }
+
+                        // Foreign key badge for class
+                        if ((col.name === 'class_batch' || col.name === 'batch_id') && classMap[val]) {
+                          return (
+                            <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 font-bold">
+                                <span className="font-mono text-purple-600">{val}</span>
+                                <span className="text-slate-600">({classMap[val]})</span>
+                              </span>
+                            </td>
+                          );
+                        }
+
+                        return (
+                          <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
+                            {typeof val === 'string' && val.startsWith('http') ? (
+                              <a href={val} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline flex items-center gap-1">
+                                <span className="truncate">{val}</span>
+                                <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                              </a>
+                            ) : (
+                              <span className={col.pk === 1 ? 'font-bold font-mono text-slate-900' : ''}>
+                                {String(val)}
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* CREATE / EDIT ROW MODAL */}
       {(isCreatingRow || editingRow) && (
