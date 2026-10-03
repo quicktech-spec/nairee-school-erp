@@ -224,7 +224,11 @@ export const api = {
 
     // Client-side fallback authentication for static GitHub Pages / Netlify standalone
     const u = (username || '').toLowerCase().trim();
-    const fallbackUser = FALLBACK_DATA.users.find(acc => acc.username?.toLowerCase() === u || acc.id?.toLowerCase() === u);
+    const fallbackUser = FALLBACK_DATA.users.find(acc => 
+      acc.username?.toLowerCase() === u || 
+      acc.id?.toLowerCase() === u || 
+      acc.student_id?.toLowerCase() === u
+    );
 
     if (fallbackUser) {
       return {
@@ -233,12 +237,48 @@ export const api = {
       };
     }
 
+    // Dynamic master student lookup
+    const masterStudents = getMasterStudents();
+    const matchedStudent = masterStudents.find(s => {
+      const sId = String(s.student_id || s.id || '').toLowerCase().trim();
+      const sName = String(s.name || s.student_name || '').toLowerCase().trim();
+      const sFirstName = sName.split(' ')[0];
+      const sRoll = String(s.roll_no || '').toLowerCase().trim();
+      const sEmail = String(s.email || '').toLowerCase().trim();
+      return u === sId || u === sName || u === sFirstName || u === sRoll || u === sEmail;
+    });
+
+    if (matchedStudent) {
+      const studentUser = {
+        id: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
+        student_id: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
+        username: (matchedStudent.name || 'student').toLowerCase().replace(/\s+/g, ''),
+        full_name: matchedStudent.name || matchedStudent.student_name,
+        role: 'student',
+        email: matchedStudent.email || `${(matchedStudent.name || 'student').toLowerCase().replace(/\s+/g, '')}@example.com`,
+        status: 'Active',
+        batch_name: matchedStudent.class_batch || 'Class 3 - Section A',
+        student_batch: matchedStudent.class_batch || 'Class 3 - Section A',
+        roll_number: matchedStudent.roll_no || '102',
+        student: {
+          name: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
+          student_name: matchedStudent.name || matchedStudent.student_name,
+          roll_no: matchedStudent.roll_no || '102',
+          student_batch: matchedStudent.class_batch || 'Class 3 - Section A'
+        }
+      };
+      return {
+        user: studentUser,
+        token: 'mock-jwt-token-student'
+      };
+    }
+
     // Default to admin if testing
     if (u === 'admin' || u === 'principal') {
       return { user: FALLBACK_DATA.users[0], token: 'mock-jwt-admin' };
     }
 
-    throw new Error('Invalid credentials. Use demo accounts: admin, teacher_jenkins, nairee, or parent_patel');
+    throw new Error('Invalid credentials. Use student ID "STU-002" or username "aarav" (password: student123)');
   },
 
   async getDashboardStats() {
@@ -295,7 +335,36 @@ export const api = {
 
   async getStudentDetail(id) {
     const data = await safeFetch(`/students/${id}`);
-    return data || FALLBACK_DATA.students.find(s => s.id === id || s.name === id) || FALLBACK_DATA.students[0];
+    if (data) return data;
+    const cleanId = String(id || '').toLowerCase().trim();
+    const master = getMasterStudents();
+    const found = master.find(s => {
+      const sId = String(s.student_id || s.id || '').toLowerCase().trim();
+      const sName = String(s.name || s.student_name || '').toLowerCase().trim();
+      const sRoll = String(s.roll_no || '').toLowerCase().trim();
+      return cleanId === sId || cleanId === sName || cleanId === sRoll;
+    });
+    if (found) {
+      return {
+        id: found.student_id || found.id || 'STU-002',
+        student_id: found.student_id || found.id || 'STU-002',
+        name: found.student_id || found.id || 'STU-002',
+        full_name: found.name || found.student_name,
+        student_name: found.name || found.student_name,
+        roll_number: found.roll_no || '102',
+        roll_no: found.roll_no || '102',
+        batch_id: (found.class_batch?.includes('Section B') || found.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026',
+        student_batch: found.class_batch || 'Class 10 - Section A',
+        email: found.email || 'aarav.sharma@example.com',
+        phone: found.phone || '+91 98765 00002',
+        guardian_name: found.father_name || found.mother_name || 'Mr. Suresh Sharma',
+        guardian_mobile: found.father_phone || found.mother_phone || '+91 98765 43214',
+        attendance_percentage: 94.0,
+        fee_status: found.fee_status || 'Paid',
+        balance_due: (found.fee_status === 'Pending' || found.fee_status === 'Unpaid') ? 35000 : 0
+      };
+    }
+    return FALLBACK_DATA.students.find(s => s.id === id || s.name === id) || FALLBACK_DATA.students[0];
   },
 
   async createStudent(studentData) {
