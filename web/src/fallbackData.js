@@ -1,212 +1,161 @@
-// Fallback in-memory database store for static GitHub Pages / Netlify hosting
+// Primary in-memory database store with clean relational table names
 export const INITIAL_DB_STORE = {
-  tabStudent: {
+  'Student List': {
     columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'first_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'last_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'student_email_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'student_mobile_number', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'roll_number', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'roll_number', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link -> Class & Batch List]', pk: 0 },
       { name: 'attendance_percentage', type: 'FLOAT', pk: 0 },
       { name: 'fee_status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { name: 'EDU-STU-2026-00001', first_name: 'Nairee', last_name: 'Patel', student_email_id: 'syalfreelance@gmail.com', student_mobile_number: '+91 98765 00001', batch_id: 'BATCH-10A-2026', roll_number: '10A-01', attendance_percentage: 97.5, fee_status: 'Paid' },
-      { name: 'EDU-STU-2026-00002', first_name: 'Aarav', last_name: 'Sharma', student_email_id: 'aarav.sharma@example.com', student_mobile_number: '+91 98765 00002', batch_id: 'BATCH-10A-2026', roll_number: '10A-02', attendance_percentage: 94.0, fee_status: 'Paid' },
-      { name: 'EDU-STU-2026-00003', first_name: 'Diya', last_name: 'Gupta', student_email_id: 'diya.gupta@example.com', student_mobile_number: '+91 98765 00003', batch_id: 'BATCH-10A-2026', roll_number: '10A-03', attendance_percentage: 98.2, fee_status: 'Pending' },
-      { name: 'EDU-STU-2026-00004', first_name: 'Rohan', last_name: 'Mehta', student_email_id: 'rohan.mehta@example.com', student_mobile_number: '+91 98765 00004', batch_id: 'BATCH-10A-2026', roll_number: '10A-04', attendance_percentage: 91.5, fee_status: 'Paid' },
-      { name: 'EDU-STU-2026-00005', first_name: 'Ananya', last_name: 'Iyer', student_email_id: 'ananya.iyer@example.com', student_mobile_number: '+91 98765 00005', batch_id: 'BATCH-10A-2026', roll_number: '10A-05', attendance_percentage: 99.0, fee_status: 'Paid' },
-      { name: 'EDU-STU-2026-00006', first_name: 'Kabir', last_name: 'Singh', student_email_id: 'kabir.singh@example.com', student_mobile_number: '+91 98765 00006', batch_id: 'BATCH-10B-2026', roll_number: '10B-01', attendance_percentage: 93.4, fee_status: 'Pending' }
+      { roll_number: 'STU-001', name: 'Devon Patel', email: 'devon.patel@nairee.edu', phone: '+1 (555) 789-0123', class_batch: 'CLS-10A', attendance_percentage: 98.0, fee_status: 'Paid' },
+      { roll_number: 'STU-002', name: 'Aarav Sharma', email: 'aarav.sharma@example.com', phone: '+91 98765 00002', class_batch: 'CLS-10A', attendance_percentage: 94.0, fee_status: 'Paid' },
+      { roll_number: 'STU-003', name: 'Diya Gupta', email: 'diya.gupta@example.com', phone: '+91 98765 00003', class_batch: 'CLS-10A', attendance_percentage: 98.2, fee_status: 'Pending' },
+      { roll_number: 'STU-004', name: 'Rohan Mehta', email: 'rohan.mehta@example.com', phone: '+91 98765 00004', class_batch: 'CLS-10A', attendance_percentage: 91.5, fee_status: 'Paid' },
+      { roll_number: 'STU-005', name: 'Ananya Iyer', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', class_batch: 'CLS-10A', attendance_percentage: 99.0, fee_status: 'Paid' },
+      { roll_number: 'STU-006', name: 'Kabir Singh', email: 'kabir.singh@example.com', phone: '+91 98765 00006', class_batch: 'CLS-10B', attendance_percentage: 93.4, fee_status: 'Pending' }
     ]
   },
-  tabCourse: {
+  'Teacher List': {
     columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'course_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'course_code', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'default_instructor', type: 'VARCHAR(255)', pk: 0 }
-    ],
-    rows: [
-      { name: 'CRS-MATH-10', course_name: 'Advanced Mathematics', course_code: 'MATH-101', department: 'Mathematics & Science', default_instructor: 'Prof. Sarah Jenkins' },
-      { name: 'CRS-PHYS-10', course_name: 'Physics & Lab Dynamics', course_code: 'PHYS-102', department: 'Physics & STEM', default_instructor: 'Dr. Marcus Vance' },
-      { name: 'CRS-CHEM-10', course_name: 'Organic & Applied Chemistry', course_code: 'CHEM-103', department: 'Chemistry & Bio', default_instructor: 'Dr. Marcus Vance' },
-      { name: 'CRS-COMP-10', course_name: 'Computer Science & AI Basics', course_code: 'CS-104', department: 'Computer Science', default_instructor: 'Prof. Sarah Jenkins' }
-    ]
-  },
-  tabStudentBatch: {
-    columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'batch_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'grade_level', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'section', type: 'VARCHAR(10)', pk: 0 },
-      { name: 'class_teacher', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'room_no', type: 'VARCHAR(50)', pk: 0 }
-    ],
-    rows: [
-      { name: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A', grade_level: 'Grade 10', section: 'A', class_teacher: 'Prof. Sarah Jenkins', room_no: 'Room 204' },
-      { name: 'BATCH-10B-2026', batch_name: 'Grade 10 - Section B', grade_level: 'Grade 10', section: 'B', class_teacher: 'Dr. Marcus Vance', room_no: 'Room 205' }
-    ]
-  },
-  tabTeacher: {
-    columns: [
-      { name: 'teacher_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'designation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'teacher_number', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'email', type: 'VARCHAR(255)', pk: 0 },
       { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'assigned_classes', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'designation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'workload_hours', type: 'INT', pk: 0 },
       { name: 'monthly_salary', type: 'DECIMAL(10,2)', pk: 0 },
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { teacher_id: 'TEA-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', designation: 'Senior Faculty Lead', email: 'sjenkins@nairee.edu', phone: '+1 (555) 234-5671', assigned_classes: 'Grade 10-A, Grade 11-A', monthly_salary: 5600, status: 'Active' },
-      { teacher_id: 'TEA-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', designation: 'Head of STEM Academics', email: 'admin@nairee.edu', phone: '+1 (555) 234-5672', assigned_classes: 'Grade 10-B, Grade 12-A', monthly_salary: 6250, status: 'Active' },
-      { teacher_id: 'TEA-003', full_name: 'Mr. Robert Chen', department: 'Computer Science', designation: 'AI Systems Instructor', email: 'rchen@nairee.edu', phone: '+1 (555) 234-5673', assigned_classes: 'Grade 10-A, Grade 10-B', monthly_salary: 5300, status: 'Active' },
-      { teacher_id: 'TEA-004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', designation: 'Literature Lead', email: 'coswald@nairee.edu', phone: '+1 (555) 234-5674', assigned_classes: 'Grade 10-A, Grade 11-A', monthly_salary: 5000, status: 'Active' }
+      { teacher_number: 'TEA-001', name: 'Prof. Sarah Jenkins', email: 'sjenkins@nairee.edu', phone: '+1 (555) 234-5671', department: 'Mathematics & Science', designation: 'Senior Faculty Lead', workload_hours: 24, monthly_salary: 5600, status: 'Active' },
+      { teacher_number: 'TEA-002', name: 'Dr. Evelyn Reed', email: 'ereed@nairee.edu', phone: '+1 (555) 345-6789', department: 'STEM & Robotics', designation: 'Head of STEM Academics', workload_hours: 18, monthly_salary: 6250, status: 'Active' },
+      { teacher_number: 'TEA-003', name: 'Mr. Robert Chen', email: 'rchen@nairee.edu', phone: '+1 (555) 234-5673', department: 'Computer Science', designation: 'AI Systems Instructor', workload_hours: 20, monthly_salary: 5300, status: 'Active' },
+      { teacher_number: 'TEA-004', name: 'Ms. Clara Oswald', email: 'coswald@nairee.edu', phone: '+1 (555) 234-5674', department: 'Humanities & English', designation: 'Literature Lead', workload_hours: 18, monthly_salary: 5000, status: 'Active' }
     ]
   },
-  tabFaculty: {
+  'Class & Batch List': {
     columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'department', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'mobile_number', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'workload_hours', type: 'INT', pk: 0 }
-    ],
-    rows: [
-      { name: 'FAC-001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', email: 'sjenkins@nairee.edu', mobile_number: '+91 98765 43211', workload_hours: 24 },
-      { name: 'FAC-002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', email: 'admin@nairee.edu', mobile_number: '+91 98765 43210', workload_hours: 18 },
-      { name: 'FAC-003', full_name: 'Mr. Robert Chen', department: 'Computer Science', email: 'rchen@nairee.edu', mobile_number: '+91 98765 43212', workload_hours: 20 },
-      { name: 'FAC-004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', email: 'coswald@nairee.edu', mobile_number: '+91 98765 43213', workload_hours: 18 }
-    ]
-  },
-  tabFeeSchedule: {
-    columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
-      { name: 'due_date', type: 'DATE', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
-    ],
-    rows: [
-      { name: 'FEE-2026-001', student_id: 'EDU-STU-2026-00001', fee_title: 'Term 1 Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid' },
-      { name: 'FEE-2026-002', student_id: 'EDU-STU-2026-00001', fee_title: 'Science Lab & STEM Materials Fee', amount: 8500, due_date: '2026-10-25', status: 'Pending' }
-    ]
-  },
-  tabStudentAttendance: {
-    columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'attendance_date', type: 'DATE', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 }
-    ],
-    rows: [
-      { name: 'ATT-001', student_id: 'EDU-STU-2026-00001', attendance_date: '2026-10-01', status: 'Present', batch_id: 'BATCH-10A-2026' },
-      { name: 'ATT-002', student_id: 'EDU-STU-2026-00002', attendance_date: '2026-10-01', status: 'Present', batch_id: 'BATCH-10A-2026' },
-      { name: 'ATT-003', student_id: 'EDU-STU-2026-00003', attendance_date: '2026-10-01', status: 'Absent', batch_id: 'BATCH-10A-2026' }
-    ]
-  },
-  tabParent: {
-    columns: [
-      { name: 'parent_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'child_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'relationship', type: 'VARCHAR(50)', pk: 0 }
-    ],
-    rows: [
-      { parent_id: 'PAR-001', full_name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child_id: 'EDU-STU-2026-00001', relationship: 'Father' },
-      { parent_id: 'PAR-002', full_name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child_id: 'EDU-STU-2026-00002', relationship: 'Mother' },
-      { parent_id: 'PAR-003', full_name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child_id: 'EDU-STU-2026-00003', relationship: 'Father' }
-    ]
-  },
-  tabSubject: {
-    columns: [
-      { name: 'subject_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'subject_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'subject_code', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'teacher_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'credit_hours', type: 'INT', pk: 0 },
-      { name: 'department', type: 'VARCHAR(255)', pk: 0 }
-    ],
-    rows: [
-      { subject_id: 'SUB-001', subject_name: 'Advanced Mathematics', subject_code: 'MATH-101', teacher_id: 'TEA-001', credit_hours: 4, department: 'Mathematics & Science' },
-      { subject_id: 'SUB-002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS-102', teacher_id: 'TEA-002', credit_hours: 4, department: 'Physics & STEM' },
-      { subject_id: 'SUB-003', subject_name: 'Computer Science & AI', subject_code: 'CS-104', teacher_id: 'TEA-003', credit_hours: 3, department: 'Computer Science' },
-      { subject_id: 'SUB-004', subject_name: 'English & World Literature', subject_code: 'ENG-105', teacher_id: 'TEA-004', credit_hours: 3, department: 'Humanities & English' }
-    ]
-  },
-  tabClass: {
-    columns: [
-      { name: 'batch_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'batch_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'batch_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'grade_level', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'section', type: 'VARCHAR(10)', pk: 0 },
-      { name: 'class_teacher_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'class_teacher', type: 'VARCHAR(50) [Link -> Teacher List]', pk: 0 },
       { name: 'room_no', type: 'VARCHAR(50)', pk: 0 },
       { name: 'capacity', type: 'INT', pk: 0 }
     ],
     rows: [
-      { batch_id: 'CLS-10A', batch_name: 'Class 10-A', grade_level: 'Grade 10', section: 'A', class_teacher_id: 'TEA-001', room_no: 'Room 204', capacity: 35 },
-      { batch_id: 'CLS-10B', batch_name: 'Class 10-B', grade_level: 'Grade 10', section: 'B', class_teacher_id: 'TEA-002', room_no: 'Room 205', capacity: 35 },
-      { batch_id: 'CLS-11A', batch_name: 'Class 11-A', grade_level: 'Grade 11', section: 'A', class_teacher_id: 'TEA-003', room_no: 'Room 301', capacity: 30 }
+      { batch_id: 'CLS-10A', batch_name: 'Class 10-A', class_teacher: 'TEA-001', room_no: 'Room 204', capacity: 35 },
+      { batch_id: 'CLS-10B', batch_name: 'Class 10-B', class_teacher: 'TEA-002', room_no: 'Room 205', capacity: 35 },
+      { batch_id: 'CLS-11A', batch_name: 'Class 11-A', class_teacher: 'TEA-003', room_no: 'Room 301', capacity: 30 }
     ]
   },
-  tabFeeRecord: {
+  'Subjects List': {
     columns: [
-      { name: 'fee_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
-      { name: 'paid_amount', type: 'DECIMAL(10,2)', pk: 0 },
-      { name: 'balance_due', type: 'DECIMAL(10,2)', pk: 0 },
-      { name: 'due_date', type: 'DATE', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+      { name: 'subject_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'subject_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'subject_code', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'teacher', type: 'VARCHAR(50) [Link -> Teacher List]', pk: 0 },
+      { name: 'credit_hours', type: 'INT', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 }
     ],
     rows: [
-      { fee_id: 'FEE-001', student_id: 'EDU-STU-2026-00001', fee_title: 'Term 1 Tuition Fee', amount: 35000, paid_amount: 35000, balance_due: 0, due_date: '2026-10-15', status: 'Paid' },
-      { fee_id: 'FEE-002', student_id: 'EDU-STU-2026-00001', fee_title: 'Science Lab & STEM Fee', amount: 8500, paid_amount: 0, balance_due: 8500, due_date: '2026-10-25', status: 'Pending' },
-      { fee_id: 'FEE-003', student_id: 'EDU-STU-2026-00003', fee_title: 'Annual Activity & Sports Fee', amount: 12500, paid_amount: 0, balance_due: 12500, due_date: '2026-10-30', status: 'Pending' }
+      { subject_id: 'SUB-001', subject_name: 'Advanced Mathematics', subject_code: 'MATH-101', teacher: 'TEA-001', credit_hours: 4, department: 'Mathematics & Science' },
+      { subject_id: 'SUB-002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS-102', teacher: 'TEA-002', credit_hours: 4, department: 'Physics & STEM' },
+      { subject_id: 'SUB-003', subject_name: 'Computer Science & AI', subject_code: 'CS-104', teacher: 'TEA-003', credit_hours: 3, department: 'Computer Science' },
+      { subject_id: 'SUB-004', subject_name: 'English & World Literature', subject_code: 'ENG-105', teacher: 'TEA-004', credit_hours: 3, department: 'Humanities & English' }
     ]
   },
-  tabHomework: {
+  'Fee Records': {
     columns: [
-      { name: 'homework_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'subject_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'fee_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student', type: 'VARCHAR(50) [Link -> Student List]', pk: 0 },
+      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'due_date', type: 'DATE', pk: 0 }
+    ],
+    rows: [
+      { fee_id: 'FEE-001', student: 'STU-001', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
+      { fee_id: 'FEE-002', student: 'STU-001', fee_title: 'Science Lab & STEM Fee', amount: 8500, status: 'Pending', due_date: '2026-10-25' },
+      { fee_id: 'FEE-003', student: 'STU-003', fee_title: 'Annual Activity & Sports Fee', amount: 12500, status: 'Pending', due_date: '2026-10-30' }
+    ]
+  },
+  'Parent List': {
+    columns: [
+      { name: 'parent_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'child', type: 'VARCHAR(50) [Link -> Student List]', pk: 0 },
+      { name: 'relationship', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { parent_id: 'PAR-001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'STU-001', relationship: 'Father' },
+      { parent_id: 'PAR-002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'STU-002', relationship: 'Mother' },
+      { parent_id: 'PAR-003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'STU-003', relationship: 'Father' }
+    ]
+  },
+  'Admin List': {
+    columns: [
+      { name: 'admin_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'role', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'designation', type: 'VARCHAR(100)', pk: 0 }
+    ],
+    rows: [
+      { admin_id: 'ADM-001', name: 'Dr. Marcus Vance', email: 'admin@nairee.edu', role: 'Principal', designation: 'Executive Principal & Academic Director' },
+      { admin_id: 'ADM-002', name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar' }
+    ]
+  },
+  'Attendance Records': {
+    columns: [
+      { name: 'attendance_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student', type: 'VARCHAR(50) [Link -> Student List]', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link -> Class & Batch List]', pk: 0 }
+    ],
+    rows: [
+      { attendance_id: 'ATT-001', student: 'STU-001', date: '2026-10-01', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-002', student: 'STU-002', date: '2026-10-01', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-003', student: 'STU-003', date: '2026-10-01', status: 'Absent', class_batch: 'CLS-10A' }
+    ]
+  },
+  'Homework List': {
+    columns: [
+      { name: 'homework_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link -> Class & Batch List]', pk: 0 },
+      { name: 'subject', type: 'VARCHAR(50) [Link -> Subjects List]', pk: 0 },
       { name: 'title', type: 'VARCHAR(255)', pk: 0 },
       { name: 'instructions', type: 'TEXT', pk: 0 },
       { name: 'due_date', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'assigned_by', type: 'VARCHAR(255)', pk: 0 }
+      { name: 'assigned_by', type: 'VARCHAR(50) [Link -> Teacher List]', pk: 0 }
     ],
     rows: [
-      { homework_id: 'HW-001', batch_id: 'CLS-10A', subject_id: 'SUB-001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step-by-step proofs.', due_date: 'Tomorrow, 5:00 PM', assigned_by: 'TEA-001' },
-      { homework_id: 'HW-002', batch_id: 'CLS-10A', subject_id: 'SUB-002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday, 11:59 PM', assigned_by: 'TEA-002' }
-    ]
-  },
-  tabAdmin: {
-    columns: [
-      { name: 'admin_id', type: 'VARCHAR(255)', pk: 1 },
-      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'role', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'designation', type: 'VARCHAR(100)', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
-    ],
-    rows: [
-      { admin_id: 'ADM-001', full_name: 'Dr. Marcus Vance', email: 'admin@nairee.edu', role: 'Principal', designation: 'Executive Principal & Academic Director', status: 'Active' },
-      { admin_id: 'ADM-002', full_name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar', status: 'Active' }
+      { homework_id: 'HW-001', class_batch: 'CLS-10A', subject: 'SUB-001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step-by-step proofs.', due_date: 'Tomorrow, 5:00 PM', assigned_by: 'TEA-001' },
+      { homework_id: 'HW-002', class_batch: 'CLS-10A', subject: 'SUB-002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday, 11:59 PM', assigned_by: 'TEA-002' }
     ]
   }
 };
+
+// Aliases for compatibility
+INITIAL_DB_STORE['tabStudent'] = INITIAL_DB_STORE['Student List'];
+INITIAL_DB_STORE['tabTeacher'] = INITIAL_DB_STORE['Teacher List'];
+INITIAL_DB_STORE['tabFaculty'] = INITIAL_DB_STORE['Teacher List'];
+INITIAL_DB_STORE['tabClass'] = INITIAL_DB_STORE['Class & Batch List'];
+INITIAL_DB_STORE['tabStudentBatch'] = INITIAL_DB_STORE['Class & Batch List'];
+INITIAL_DB_STORE['tabSubject'] = INITIAL_DB_STORE['Subjects List'];
+INITIAL_DB_STORE['tabCourse'] = INITIAL_DB_STORE['Subjects List'];
+INITIAL_DB_STORE['tabFeeRecord'] = INITIAL_DB_STORE['Fee Records'];
+INITIAL_DB_STORE['tabFeeSchedule'] = INITIAL_DB_STORE['Fee Records'];
+INITIAL_DB_STORE['tabParent'] = INITIAL_DB_STORE['Parent List'];
+INITIAL_DB_STORE['tabStudentAttendance'] = INITIAL_DB_STORE['Attendance Records'];
+INITIAL_DB_STORE['tabHomework'] = INITIAL_DB_STORE['Homework List'];
+INITIAL_DB_STORE['tabAdmin'] = INITIAL_DB_STORE['Admin List'];
 
 // Fallback data for static deployments (GitHub Pages, Netlify standalone)
 export const FALLBACK_DATA = {

@@ -25,14 +25,14 @@ const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
 export default function DatabaseStudioView() {
   const [tables, setTables] = useState([]);
-  const [selectedTable, setSelectedTable] = useState('tabStudent');
+  const [selectedTable, setSelectedTable] = useState('Student List');
   const [tableData, setTableData] = useState({ rows: [], total: 0, columns: [] });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeMode, setActiveMode] = useState('browser'); // 'browser' or 'sql'
   
   // Custom SQL State
-  const [sqlQuery, setSqlQuery] = useState("SELECT * FROM tabStudent LIMIT 10;");
+  const [sqlQuery, setSqlQuery] = useState("SELECT * FROM \"Student List\" LIMIT 10;");
   const [sqlResult, setSqlResult] = useState(null);
   const [sqlRunning, setSqlRunning] = useState(false);
   const [sqlError, setSqlError] = useState('');
@@ -57,7 +57,7 @@ export default function DatabaseStudioView() {
       const contentType = res.headers.get('content-type') || '';
       if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        const filtered = (data.tables || []).filter(t => !t.name.startsWith('sqlite_'));
+        const filtered = (data.tables || []).filter(t => !t.name.startsWith('sqlite_') && !t.name.startsWith('tab'));
         if (filtered.length > 0) {
           setTables(filtered);
           if (!selectedTable) setSelectedTable(filtered[0].name);
@@ -65,12 +65,13 @@ export default function DatabaseStudioView() {
         }
       }
     } catch (err) {
-      console.warn('Live database unreachable, using built-in Frappe schema store');
+      console.warn('Live database unreachable, using built-in schema store');
     }
 
-    // Fallback tables
+    // Clean tables list (hide tab-prefixed aliases from table selector)
     const currentDb = { ...INITIAL_DB_STORE };
-    const fallbackList = Object.keys(currentDb).map(name => ({
+    const cleanNames = Object.keys(currentDb).filter(name => !name.startsWith('tab'));
+    const fallbackList = cleanNames.map(name => ({
       name,
       type: 'table',
       count: (currentDb[name]?.rows || []).length
