@@ -578,8 +578,8 @@ export default function TransferCertificateView() {
         <div className="absolute right-0 top-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight capitalize">
-              document generator
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+              Document Generator
             </h1>
             <p className="text-xs text-slate-300 mt-1">
               Select any student or generate all certificates, marksheet reports, and identity cards in high-resolution printable format
