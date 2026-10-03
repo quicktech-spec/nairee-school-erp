@@ -194,7 +194,7 @@ export default function AppLayout({
           content: ann.content || '',
           category: ann.category || 'Announcement',
           time: ann.created_at || 'Just now',
-          unread: !readIds.includes(String(id)) && idx < 2
+          unread: !readIds.includes(String(id))
         };
       });
 
