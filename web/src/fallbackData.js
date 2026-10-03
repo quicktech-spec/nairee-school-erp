@@ -227,9 +227,10 @@ export const FALLBACK_DATA = {
     status: 'On Route — Approaching Stop 3'
   },
   announcements: [
-    { id: 'ANN-2026-LIVE-01', title: '🚨 Urgent Update: Science Olympiad registrations extended till Sunday & Inter-School Sports Trials', category: 'Urgent Circular', created_at: 'Just now', sender: 'Principal Office', content: 'Registrations are now open for all students Grade 6-12. Contact the sports coordinator for trial slots.' },
-    { id: 'ANN-01', title: 'Due to heavy rainfall next 2 days (October 2 & 3) holidays', category: 'Weather Circular', created_at: '2 hours ago', sender: 'Principal Office' },
-    { id: 'ANN-02', title: 'Mid-term examination schedule released for Grades 9 through 12', category: 'Academics', created_at: '5 hours ago', sender: 'Academic Cell' }
+    { id: 'ANN-LIVE-FLASH-999', title: '🔥 LIVE ALERT: Annual Inter-School Tech & Sports Championship dates officially declared!', category: 'Breaking Announcement', created_at: 'Just now', sender: 'Executive Principal Office', content: 'Championship trials begin this Friday. All house captains and student athletes are invited to submit team rosters today.' },
+    { id: 'ANN-2026-LIVE-01', title: '🚨 Urgent Update: Science Olympiad registrations extended till Sunday & Inter-School Sports Trials', category: 'Urgent Circular', created_at: '2 hours ago', sender: 'Principal Office', content: 'Registrations are now open for all students Grade 6-12. Contact the sports coordinator for trial slots.' },
+    { id: 'ANN-01', title: 'Due to heavy rainfall next 2 days (October 2 & 3) holidays', category: 'Weather Circular', created_at: '5 hours ago', sender: 'Principal Office' },
+    { id: 'ANN-02', title: 'Mid-term examination schedule released for Grades 9 through 12', category: 'Academics', created_at: '1 day ago', sender: 'Academic Cell' }
   ],
   messages: [
     { id: 'MSG-01', sender: 'Prof. Sarah Jenkins', content: 'Great effort on the recent Mathematics assignment test!', timestamp: '10:30 AM' }
