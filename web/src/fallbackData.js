@@ -72,18 +72,13 @@ export const INITIAL_DB_STORE = {
     columns: [
       { name: 'fee_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'student', type: 'VARCHAR(50) [Link -> Student List]', pk: 0 },
-      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
       { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
       { name: 'status', type: 'VARCHAR(50)', pk: 0 },
       { name: 'due_date', type: 'DATE', pk: 0 }
     ],
     rows: [
-      { fee_id: 'FEE-001', student: 'STU-001', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
-      { fee_id: 'FEE-002', student: 'STU-002', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
-      { fee_id: 'FEE-003', student: 'STU-003', fee_title: 'Term 1 Tuition & STEM Lab Fee', amount: 35000, status: 'Pending', due_date: '2026-10-20' },
-      { fee_id: 'FEE-004', student: 'STU-004', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
-      { fee_id: 'FEE-005', student: 'STU-005', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
-      { fee_id: 'FEE-006', student: 'STU-006', fee_title: 'Term 1 Tuition & Transport Fee', amount: 38000, status: 'Pending', due_date: '2026-10-25' }
+      { fee_id: 'FEE-001', student: 'STU-003', amount: 35000, status: 'Pending', due_date: '2026-10-20' },
+      { fee_id: 'FEE-002', student: 'STU-006', amount: 38000, status: 'Pending', due_date: '2026-10-25' }
     ]
   },
   'Parent List': {
