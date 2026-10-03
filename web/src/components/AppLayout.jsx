@@ -65,7 +65,7 @@ const NAV_CONFIG = {
     { id: 'class_manager', label: 'Class & Staff Manager', icon: School },
     { id: 'inventory_mgmt', label: 'Lab & Asset Tracker', icon: Package },
     { id: 'alumni_mgmt', label: 'Alumni Mentorship Hub', icon: Briefcase },
-    { id: 'database', label: 'Live Database Studio', icon: Database },
+    { id: 'database', label: 'School Records', icon: Database },
     { id: 'accounts', label: 'Accounts & Logins', icon: Users },
     { id: 'teachers', label: 'Teacher Workload', icon: BookOpen },
     { id: 'students', label: 'Student Performance', icon: AlertTriangle },
@@ -475,7 +475,7 @@ export default function AppLayout({
 
           {/* Right: DB Studio + Search + Notification Bell + Profile Capsule */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Quick Live Database Studio Button (ADMIN ONLY) */}
+            {/* Quick School Records Button (ADMIN ONLY) */}
             {user?.role === 'admin' && (
               <button
                 onClick={() => setActiveTab('database')}
@@ -484,10 +484,10 @@ export default function AppLayout({
                     ? 'bg-[#00a884] text-white border-[#00a884] shadow-sm'
                     : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700 shadow-xs'
                 }`}
-                title="Open Live Localhost Database Editor"
+                title="Open School Records"
               >
                 <Database className="w-3.5 h-3.5 text-teal-600" />
-                <span className="hidden md:inline">DB Studio</span>
+                <span className="hidden md:inline">School Records</span>
               </button>
             )}
 

@@ -1301,7 +1301,7 @@ export default function ClassStaffManagerView() {
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-medium text-xs"
               >
                 {classes.filter(c => c.id !== showTransferModal.class_id).map(c => (
-                  <option key={c.id} value={c.id}>{c.name} ({c.room}) — Teacher: {c.class_teacher_name}</option>
+                  <option key={c.id} value={c.id}>{c.name} ({c.room}) | Teacher: {c.class_teacher_name}</option>
                 ))}
               </select>
             </div>

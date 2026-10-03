@@ -29,7 +29,7 @@ export default function TransferCertificateView() {
   const [promotedTo, setPromotedTo] = useState('Promoted to Grade 11 (Senior Secondary)');
   const [duesCleared, setDuesCleared] = useState(true);
   const [lastExamResult, setLastExamResult] = useState('Passed with Distinction (92.4%)');
-  const [academicSession, setAcademicSession] = useState('2025 - 2026');
+  const [academicSession, setAcademicSession] = useState('2025 to 2026');
 
   // Find active student
   const student = FALLBACK_STUDENTS.find(s => s.name === selectedStudentId) || FALLBACK_STUDENTS[0];

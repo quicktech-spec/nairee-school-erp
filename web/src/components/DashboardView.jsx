@@ -49,7 +49,7 @@ export default function DashboardView({ stats, onNavigate }) {
           </h1>
 
           <p className="mt-4 text-swift-body text-sm sm:text-base leading-relaxed">
-            Nairee gives principals, teachers, parents, and students a single connected platform — powered by Frappe Education workflows, built natively for Windows and Android.
+            Nairee gives principals, teachers, parents, and students a single connected platform, powered by Frappe Education workflows, built natively for Windows and Android.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">

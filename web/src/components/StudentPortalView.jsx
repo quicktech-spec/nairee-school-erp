@@ -1235,7 +1235,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
               </div>
               <div>
                 <h3 className="font-bold text-slate-800 text-base">
-                  {transport?.route_name || 'Route 04 — North City Express'}
+                  {transport?.route_name || 'Route 04 North City Express'}
                 </h3>
                 <p className="text-xs text-slate-500">
                   Bus Registration Number: <strong className="text-slate-700">{transport?.bus_number || 'KA-04-E-8821'}</strong>

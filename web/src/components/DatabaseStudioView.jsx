@@ -310,19 +310,9 @@ export default function DatabaseStudioView() {
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-[#0c1f2c] via-[#112a3a] to-[#0c1f2c] rounded-3xl p-6 border border-teal-800/40 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-teal-400 mb-1">
-            <HardDrive className="w-4 h-4" />
-            <span className="uppercase tracking-wider">Frappe DocType Database Studio</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <span>Live Database Studio & Schema Explorer</span>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
-              ● Connected: frappe_education.db
-            </span>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            School Records
           </h1>
-          <p className="text-xs text-slate-300 mt-1">
-            Direct real-time view, query execution, and edit access to all Frappe Education DocType tables.
-          </p>
         </div>
 
         {/* Mode Toggle Pills: Table Browser vs SQL Runner */}

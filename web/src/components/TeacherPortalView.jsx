@@ -46,10 +46,10 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [selectedBatch, setSelectedBatch] = useState('BATCH-10A-2026');
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [batches, setBatches] = useState([
-    { name: 'BATCH-10A-2026', batch_name: 'Grade 10 - Section A' },
-    { name: 'BATCH-10B-2026', batch_name: 'Grade 10 - Section B' },
-    { name: 'BATCH-11A-2026', batch_name: 'Grade 11 - Section A' },
-    { name: 'BATCH-12A-2026', batch_name: 'Grade 12 - Section A (Science)' }
+    { name: 'BATCH-10A-2026', batch_name: 'Grade 10 Section A' },
+    { name: 'BATCH-10B-2026', batch_name: 'Grade 10 Section B' },
+    { name: 'BATCH-11A-2026', batch_name: 'Grade 11 Section A' },
+    { name: 'BATCH-12A-2026', batch_name: 'Grade 12 Section A (Science)' }
   ]);
   const [toastMessage, setToastMessage] = useState('');
   const [punchStatus, setPunchStatus] = useState(() => {
@@ -1602,7 +1602,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Calculus Problem Set #5 — Integration Rules"
+                  placeholder="e.g. Calculus Problem Set #5 : Integration Rules"
                   value={newHomework.title}
                   onChange={(e) => setNewHomework({ ...newHomework, title: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500"

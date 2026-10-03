@@ -679,7 +679,7 @@ export const api = {
         { name: 'RES-02', course: 'Physics', assessment_plan: 'Lab Dynamics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Strong experimental problem-solving.' }
       ],
       transport: {
-        route_name: 'Route 04 — North City Express',
+        route_name: 'Route 04 North City Express',
         bus_number: 'KA-04-E-8821',
         pickup_location: 'Green Valley Stop (Gate 2)',
         pickup_time: '07:35 AM',

@@ -403,7 +403,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Bus Route</span>
               <div className="mt-2 text-base font-black text-slate-800 truncate">
-                {childSummary?.transport?.route_name || 'Route 04 — North City'}
+                {childSummary?.transport?.route_name || 'Route 04 North City'}
               </div>
               <div className="text-[11px] text-slate-500 font-medium mt-1">
                 Pickup: {childSummary?.transport?.pickup_time || '07:35 AM'} &bull; Bus #{childSummary?.transport?.bus_number || 'KA-04'}
@@ -756,7 +756,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
               </div>
               <div>
                 <h3 className="font-bold text-slate-800 text-base">
-                  {childSummary?.transport?.route_name || 'Route 04 — North City Express'}
+                  {childSummary?.transport?.route_name || 'Route 04 North City Express'}
                 </h3>
                 <p className="text-xs text-slate-500">
                   Bus Registration Number: <strong className="text-slate-700">{childSummary?.transport?.bus_number || 'KA-04-E-8821'}</strong>
