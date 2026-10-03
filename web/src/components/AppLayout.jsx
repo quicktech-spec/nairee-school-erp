@@ -279,6 +279,38 @@ export default function AppLayout({
     setNotifications(prev => prev.map(n => String(n.id) === String(id) ? { ...n, unread: false } : n));
   };
 
+  const triggerLiveDemoPing = () => {
+    const titles = [
+      '🔥 LIVE ALERT: Annual Inter-School Tech & Sports Championship dates officially declared!',
+      '🔴 FLASH CIRCULAR: Science Olympiad registrations extended till Sunday evening',
+      '🌦️ WEATHER UPDATE: School transport timing updated due to heavy rain forecast',
+      '📝 ACADEMICS: Revised Mid-Term Mathematics sample question papers released',
+      '🏆 SPORTS: Annual Athletic Meet selections start Friday at Main Ground'
+    ];
+    const pickedTitle = titles[Math.floor(Math.random() * titles.length)];
+    const newNotice = {
+      id: `ANN-LIVE-${Date.now()}`,
+      title: pickedTitle,
+      content: 'Official circular broadcasted live from Principal Office. All students, teachers, and parents please take note.',
+      category: 'Live Broadcast',
+      created_at: 'Just now',
+      sender: 'Office of the Principal'
+    };
+
+    // Add to API and broadcast across tabs
+    api.createAnnouncement(newNotice);
+
+    // Trigger immediate local toast & notifications
+    setLiveToast({
+      title: newNotice.title,
+      category: newNotice.category,
+      content: newNotice.content,
+      id: newNotice.id
+    });
+    setTimeout(() => setLiveToast(null), 8000);
+    loadLiveNotifications();
+  };
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -424,6 +456,17 @@ export default function AppLayout({
               title="Search commands (Ctrl+K)"
             >
               <Search className="w-4 h-4" />
+            </button>
+
+            {/* Quick 1-Click Live Notification Drop Simulator Button */}
+            <button
+              onClick={triggerLiveDemoPing}
+              className="px-3.5 py-1.5 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Broadcast a live test notification instantly"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+              <span className="hidden sm:inline">⚡ Send Live Ping</span>
+              <span className="sm:hidden">⚡ Ping</span>
             </button>
 
             {/* Notification Bell with Dynamic Unread Badge */}
@@ -585,6 +628,14 @@ export default function AppLayout({
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <button
+                  onClick={triggerLiveDemoPing}
+                  className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                  title="Broadcast a test live circular"
+                >
+                  <Sparkles className="w-3 h-3 text-amber-600" />
+                  <span>+ Test Ping</span>
+                </button>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
