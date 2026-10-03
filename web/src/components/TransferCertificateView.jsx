@@ -82,25 +82,18 @@ export default function TransferCertificateView() {
       <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold border border-teal-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Official Institutional Registrar Portal</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              Transfer Certificate (TC) & Leaving Diploma Engine
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight capitalize">
+              document generator
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
-              Generate, certify, and print authentic Board-compliant Transfer Certificates for Grade 10th Completion, Grade 12th Board Graduation, and Early/Mid-Term Relocation with digital QR verification.
-            </p>
           </div>
 
           <button
             onClick={() => setShowPrintModal(true)}
-            className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105"
+            className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            <span>Generate & Print Certificate</span>
+            <span>Generate &amp; Print Certificate</span>
           </button>
         </div>
 

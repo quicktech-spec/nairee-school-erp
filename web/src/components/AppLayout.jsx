@@ -61,7 +61,7 @@ const NAV_CONFIG = {
   admin: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'financial_pl', label: 'Executive P&L Analytics', icon: TrendingUp },
-    { id: 'tc_generator', label: 'TC & Diploma Generator', icon: Award },
+    { id: 'tc_generator', label: 'document generator', icon: Award },
     { id: 'class_manager', label: 'Class & Staff Manager', icon: School },
     { id: 'inventory_mgmt', label: 'Lab & Asset Tracker', icon: Package },
     { id: 'alumni_mgmt', label: 'Alumni Mentorship Hub', icon: Briefcase },
