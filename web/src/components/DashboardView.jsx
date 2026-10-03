@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Users, 
   CheckCircle2, 
-  DollarSign, 
+  IndianRupee, 
   BookOpen, 
   Calendar, 
   ArrowUpRight, 
@@ -124,7 +124,7 @@ export default function DashboardView({ stats, onNavigate }) {
             <p className="text-xs text-swift-muted font-semibold mt-1">Daily Attendance</p>
           </div>
           <div className="p-5 text-center">
-            <p className="text-2xl font-extrabold text-brand-600">${(finance.totalCollected || 0).toLocaleString()}</p>
+            <p className="text-2xl font-extrabold text-brand-600">₹{(finance.totalCollected || 0).toLocaleString('en-IN')}</p>
             <p className="text-xs text-swift-muted font-semibold mt-1">Fees Collected ({finance.collectionRate || 0}%)</p>
           </div>
           <div className="p-5 text-center">

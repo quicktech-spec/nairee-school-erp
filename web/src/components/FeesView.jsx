@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Receipt, 
-  DollarSign, 
+  IndianRupee, 
   CreditCard, 
   CheckCircle2, 
   X, 
@@ -15,7 +15,7 @@ export default function FeesView({ onPaymentCompleted }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [payingFee, setPayingFee] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('Credit Card / Stripe');
+  const [paymentMethod, setPaymentMethod] = useState('UPI / Razorpay');
   const [isProcessing, setIsProcessing] = useState(false);
   const [receiptModal, setReceiptModal] = useState(null);
 
@@ -64,8 +64,8 @@ export default function FeesView({ onPaymentCompleted }) {
     }
   };
 
-  const totalBilled = fees.reduce((sum, f) => sum + (f.grand_total || 0), 0);
-  const totalPaid = fees.filter(f => f.status === 'Paid').reduce((sum, f) => sum + (f.grand_total || 0), 0);
+  const totalBilled = fees.reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
+  const totalPaid = fees.filter(f => f.status === 'Paid').reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
   const totalOutstanding = fees.reduce((sum, f) => sum + (f.outstanding_amount || 0), 0);
 
   return (
@@ -106,17 +106,17 @@ export default function FeesView({ onPaymentCompleted }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <div className="p-5 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-card">
           <p className="text-[10px] uppercase font-bold text-swift-muted">Total Invoiced</p>
-          <h3 className="text-2xl font-extrabold text-swift-dark mt-1">${totalBilled.toLocaleString()}</h3>
+          <h3 className="text-2xl font-extrabold text-swift-dark mt-1">₹{totalBilled.toLocaleString('en-IN')}</h3>
           <p className="text-xs text-swift-muted mt-1">Academic Year 2026-27</p>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-card">
           <p className="text-[10px] uppercase font-bold text-swift-muted">Collected Revenue</p>
-          <h3 className="text-2xl font-extrabold text-brand-600 mt-1">${totalPaid.toLocaleString()}</h3>
+          <h3 className="text-2xl font-extrabold text-brand-600 mt-1">₹{totalPaid.toLocaleString('en-IN')}</h3>
           <p className="text-xs text-swift-muted mt-1">Verified bank & digital receipts</p>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#cde8e8] shadow-swift-card">
           <p className="text-[10px] uppercase font-bold text-swift-muted">Outstanding Balance</p>
-          <h3 className="text-2xl font-extrabold text-rose-600 mt-1">${totalOutstanding.toLocaleString()}</h3>
+          <h3 className="text-2xl font-extrabold text-rose-600 mt-1">₹{totalOutstanding.toLocaleString('en-IN')}</h3>
           <p className="text-xs text-swift-muted mt-1">Active balance pending</p>
         </div>
       </div>
@@ -144,17 +144,17 @@ export default function FeesView({ onPaymentCompleted }) {
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs text-swift-body">
                 {fees.map((fee) => (
-                  <tr key={fee.name} className="hover:bg-[#edfafa]/50 transition-colors">
+                  <tr key={fee.name || fee.id} className="hover:bg-[#edfafa]/50 transition-colors">
                     <td className="py-3.5 px-4 font-mono font-bold text-brand-700">
-                      {fee.name}
+                      {fee.name || fee.id}
                     </td>
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-swift-dark">{fee.student_name}</p>
                       <p className="text-[11px] text-swift-muted">{fee.student}</p>
                     </td>
                     <td className="py-3.5 px-4">
-                      <p className="font-semibold text-swift-dark">{fee.academic_term}</p>
-                      <p className="text-[11px] text-swift-muted">{fee.student_batch}</p>
+                      <p className="font-semibold text-swift-dark">{fee.academic_term || 'Term 1'}</p>
+                      <p className="text-[11px] text-swift-muted">{fee.student_batch || 'Grade 10-A'}</p>
                     </td>
                     <td className="py-3.5 px-4 text-swift-muted font-medium">
                       {fee.due_date}
@@ -166,15 +166,15 @@ export default function FeesView({ onPaymentCompleted }) {
                             key={c.id}
                             className="text-[10px] font-medium px-2 py-0.5 rounded bg-[#edfafa] text-brand-800 border border-[#cde8e8]"
                           >
-                            {c.fee_category}: ${c.amount}
+                            {c.fee_category}: ₹{c.amount}
                           </span>
                         ))}
                       </div>
                     </td>
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-swift-dark">${fee.grand_total}</p>
-                      <p className={`text-[11px] font-bold ${fee.outstanding_amount > 0 ? 'text-rose-600' : 'text-brand-600'}`}>
-                        Due: ${fee.outstanding_amount}
+                      <p className="font-bold text-swift-dark">₹{(fee.grand_total || fee.amount || 35000).toLocaleString('en-IN')}</p>
+                      <p className={`text-[11px] font-bold ${(fee.outstanding_amount || 0) > 0 ? 'text-rose-600' : 'text-brand-600'}`}>
+                        Due: ₹{(fee.outstanding_amount || 0).toLocaleString('en-IN')}
                       </p>
                     </td>
                     <td className="py-3.5 px-4">
@@ -234,7 +234,7 @@ export default function FeesView({ onPaymentCompleted }) {
                   <p className="text-[11px] text-brand-700">{payingFee.academic_term} Tuition & Services</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xl font-extrabold text-brand-900">${payingFee.outstanding_amount}</span>
+                  <span className="text-xl font-extrabold text-brand-900">₹{payingFee.outstanding_amount || payingFee.amount || 35000}</span>
                   <span className="block text-[10px] text-brand-600 uppercase font-bold">Balance Due</span>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export default function FeesView({ onPaymentCompleted }) {
               <div>
                 <label className="text-xs font-bold text-swift-dark block mb-1">Select Payment Gateway</label>
                 <div className="space-y-2">
-                  {['Credit Card / Stripe', 'Apple Pay / Google Pay', 'Direct Bank Wire'].map((m) => (
+                  {['UPI / QR Code', 'Credit / Debit Card', 'Net Banking / NEFT'].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
@@ -275,7 +275,7 @@ export default function FeesView({ onPaymentCompleted }) {
                   disabled={isProcessing}
                   className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-swift-teal disabled:opacity-50 cursor-pointer"
                 >
-                  {isProcessing ? 'Processing...' : `Confirm & Pay $${payingFee.outstanding_amount}`}
+                  {isProcessing ? 'Processing...' : `Confirm & Pay ₹${payingFee.outstanding_amount || payingFee.amount || 35000}`}
                 </button>
               </div>
             </form>
@@ -324,19 +324,19 @@ export default function FeesView({ onPaymentCompleted }) {
                 {receiptModal.components?.map((c) => (
                   <div key={c.id} className="flex justify-between text-xs text-swift-body">
                     <span>{c.fee_category}</span>
-                    <span className="font-semibold">${c.amount.toFixed(2)}</span>
+                    <span className="font-semibold">₹{Number(c.amount).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
                 <div className="pt-2 border-t border-[#cde8e8] flex justify-between text-xs font-extrabold text-swift-dark">
                   <span>Grand Total Paid</span>
-                  <span className="text-brand-600">${receiptModal.grand_total.toFixed(2)}</span>
+                  <span className="text-brand-600">₹{Number(receiptModal.grand_total || receiptModal.amount || 35000).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="pt-3 flex items-center justify-between text-xs">
-                <span className="text-swift-muted">Method: {receiptModal.payment_method || 'Credit Card / Stripe'}</span>
+                <span className="text-swift-muted">Method: {receiptModal.payment_method || 'UPI / Online'}</span>
                 <span className="font-bold text-emerald-600 flex items-center gap-1">
-                  ✓ Balance Cleared ($0.00)
+                  ✓ Balance Cleared (₹0.00)
                 </span>
               </div>
             </div>

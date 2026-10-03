@@ -536,9 +536,9 @@ export const api = {
       student_batch: s.batch_id || s.student_batch || 'BATCH-10A-2026',
       attendancePct: s.attendance_percentage || 96,
       avgGrade: idx === 2 ? 62 : 92,
-      feeDues: idx === 2 ? 450 : 0,
+      feeDues: idx === 2 ? 35000 : 0,
       isAtRisk: idx === 2,
-      riskReasons: idx === 2 ? ['Term Fee Pending ($450)', 'Low Midterm Score in Physics'] : []
+      riskReasons: idx === 2 ? ['Term Fee Pending (₹35,000)', 'Low Midterm Score in Physics'] : []
     }));
   },
 

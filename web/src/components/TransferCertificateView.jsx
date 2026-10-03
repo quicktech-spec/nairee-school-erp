@@ -178,7 +178,7 @@ export default function TransferCertificateView() {
               >
                 {studentList.map(s => (
                   <option key={s.name} value={s.name}>
-                    {s.student_name} ({s.student_batch}) &bull; {((s.feeDues || s.fee_due || 0) === 0 || s.fee_status === 'Paid') ? 'Paid (Dues Cleared)' : `Due $${s.feeDues || s.fee_due}`}
+                    {s.student_name} ({s.student_batch}) &bull; {((s.feeDues || s.fee_due || 0) === 0 || s.fee_status === 'Paid') ? 'Paid (Dues Cleared)' : `Due ₹${s.feeDues || s.fee_due}`}
                   </option>
                 ))}
               </select>

@@ -401,7 +401,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                   (childSummary?.fees?.[0]?.outstanding_amount || 0) > 0 ? 'text-amber-600' : 'text-emerald-600'
                 }`}>
                   {(childSummary?.fees?.[0]?.outstanding_amount || 0) > 0
-                    ? `$${childSummary?.fees?.[0]?.outstanding_amount} Due`
+                    ? `₹${childSummary?.fees?.[0]?.outstanding_amount} Due`
                     : 'All Paid'}
                 </span>
               </div>
@@ -611,14 +611,14 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Term Billed Fee</span>
               <div className="text-2xl font-black text-slate-800 mt-2">
-                ${childSummary?.fees?.[0]?.grand_total || '1,450.00'}
+                ₹{childSummary?.fees?.[0]?.grand_total ? Number(childSummary.fees[0].grand_total).toLocaleString('en-IN') : '35,000'}
               </div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Outstanding Dues</span>
               <div className="text-2xl font-black text-rose-600 mt-2">
-                ${childSummary?.fees?.[0]?.outstanding_amount || '0.00'}
+                ₹{childSummary?.fees?.[0]?.outstanding_amount ? Number(childSummary.fees[0].outstanding_amount).toLocaleString('en-IN') : '0'}
               </div>
             </div>
 
@@ -648,7 +648,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-xs shadow-md shadow-teal-500/25 flex items-center space-x-1.5 transition-all"
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Pay Online (${childSummary.fees[0].outstanding_amount})</span>
+                  <span>Pay Online (₹{childSummary.fees[0].outstanding_amount})</span>
                 </button>
               ) : (
                 <span className="text-xs font-bold text-emerald-600 flex items-center space-x-1">
@@ -665,7 +665,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                     <span className="font-bold text-slate-800">{c.fee_category}</span>
                     <p className="text-slate-500 text-[11px]">{c.description}</p>
                   </div>
-                  <span className="font-mono font-bold text-slate-800">${Number(c.amount).toFixed(2)}</span>
+                  <span className="font-mono font-bold text-slate-800">₹{Number(c.amount).toLocaleString('en-IN')}</span>
                 </div>
               ))}
             </div>
@@ -954,7 +954,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                     disabled={isProcessingPayment}
                     className="flex-1 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs shadow-md shadow-teal-500/20 disabled:opacity-50 flex items-center justify-center space-x-1.5"
                   >
-                    {isProcessingPayment ? 'Processing...' : `Confirm Pay $${selectedFee.outstanding_amount}`}
+                    {isProcessingPayment ? 'Processing...' : `Confirm Pay ₹${selectedFee.outstanding_amount}`}
                   </button>
                 </div>
               </form>

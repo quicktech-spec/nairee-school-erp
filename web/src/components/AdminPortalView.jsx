@@ -93,7 +93,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
     if (type === 'risk') {
       defaultMsg = `Dear Parent/Guardian of *${student.student_name}*,\n\nThis is an official communication from the Office of the Principal at Nairee.\n\nOur academic tracking system has flagged that ${student.student_name} currently has an attendance rate of ${student.attendancePct}% and an average grade of ${student.avgGrade}%.\n\nWe kindly request a Parent-Teacher conference with the Principal and class counselor. Please contact the school office at +1 (555) 234-5678 to schedule a convenient time.\n\nBest regards,\nOffice of Administration\nNairee`;
     } else {
-      defaultMsg = `Dear Parent/Guardian of *${student.student_name}*,\n\nGreetings from Nairee Accounts Office.\n\nThis is a friendly reminder that an outstanding tuition fee balance of *$${student.feeDues || 1450}* remains due for Term 1. Please remit the pending balance via the Parent Portal online payment gateway or at the school fee desk by this Friday.\n\nFor fee receipt or queries, reply to this message or contact accounts@nairee.edu.\n\nThank you,\nFinance Department\nNairee`;
+      defaultMsg = `Dear Parent/Guardian of *${student.student_name}*,\n\nGreetings from Nairee Accounts Office.\n\nThis is a friendly reminder that an outstanding tuition fee balance of *₹${student.feeDues || 35000}* remains due for Term 1. Please remit the pending balance via the Parent Portal online payment gateway or at the school fee desk by this Friday.\n\nFor fee receipt or queries, reply to this message or contact accounts@nairee.edu.\n\nThank you,\nFinance Department\nNairee`;
     }
 
     setAdminWhatsAppModal({
@@ -188,7 +188,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   };
 
   const handleSendReminder = (studentName, feeDue) => {
-    showToast(`Payment reminder SMS & Email sent to parents of ${studentName} for $${feeDue}`);
+    showToast(`Payment reminder SMS & Email sent to parents of ${studentName} for ₹${feeDue}`);
   };
 
   const exportReportCSV = (type) => {
@@ -321,7 +321,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
               </div>
               <div className="mt-3">
                 <div className="text-2xl font-black text-slate-800">
-                  ${stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString() : '1,450'}
+                  ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '35,000'}
                 </div>
                 <div className="text-[11px] text-purple-600 font-medium mt-0.5">
                   {stats?.finance?.collectionRate || 22}% Collected This Term
@@ -676,7 +676,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                               </span>
                             ) : (
                               <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
-                                Due ${s.feeDues}
+                                Due ₹{s.feeDues}
                               </span>
                             )}
                           </div>
@@ -700,11 +700,11 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                         {s.feeDues === 0 ? (
                           <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            $0 (Cleared)
+                            ₹0 (Cleared)
                           </span>
                         ) : (
                           <span className="text-xs font-bold text-rose-600">
-                            ${s.feeDues}
+                            ₹{s.feeDues}
                           </span>
                         )}
                       </td>
@@ -757,21 +757,21 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Billed This Term</span>
               <div className="text-2xl font-black text-slate-800 mt-2">
-                ${stats?.finance?.totalBilled ? Number(stats.finance.totalBilled).toLocaleString() : '6,800'}
+                ₹{stats?.finance?.totalBilled ? Number(stats.finance.totalBilled).toLocaleString('en-IN') : '2,10,000'}
               </div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Received</span>
               <div className="text-2xl font-black text-emerald-600 mt-2">
-                ${stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString() : '1,450'}
+                ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '35,000'}
               </div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Outstanding</span>
               <div className="text-2xl font-black text-rose-600 mt-2">
-                ${stats?.finance?.totalOutstanding ? Number(stats.finance.totalOutstanding).toLocaleString() : '5,350'}
+                ₹{stats?.finance?.totalOutstanding ? Number(stats.finance.totalOutstanding).toLocaleString('en-IN') : '1,75,000'}
               </div>
             </div>
           </div>
@@ -792,7 +792,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-slate-800 text-xs">Grade 10-A (Honors STEM)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: $1,450 / student</div>
+                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student</div>
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-emerald-600">80% Remitted</span>
@@ -803,7 +803,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
                   <div className="font-bold text-slate-800 text-xs">Grade 10-B (Standard Secondary)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: $1,250 / student</div>
+                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹30,000 / student</div>
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-amber-600">Pending Dues</span>
@@ -845,7 +845,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                   {studentPerf.filter(s => (s.feeDues || 0) > 0).length === 0 ? (
                     <tr>
                       <td colSpan="5" className="py-6 text-center text-xs text-slate-400">
-                        No outstanding dues found across current batches.
+                        No outstanding dues found across current batches. All dues cleared (₹0).
                       </td>
                     </tr>
                   ) : (
@@ -871,7 +871,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                         </td>
                         <td className="py-3 px-4">
                           <span className="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
-                            ${s.feeDues}
+                            ₹{s.feeDues}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">

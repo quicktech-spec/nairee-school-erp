@@ -208,7 +208,7 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                             ) : (
                               <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                Due ${s.balance_due || s.fee_due || 450}
+                                Due ₹{s.balance_due || s.fee_due || s.feeDues || 35000}
                               </span>
                             )}
                           </div>
@@ -461,9 +461,9 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                           </div>
 
                           <div className="mt-3 pt-3 border-t border-[#cde8e8] flex items-center justify-between text-xs">
-                            <span className="text-swift-muted">Total: ${fee.grand_total}</span>
+                            <span className="text-swift-muted">Total: ₹{Number(fee.grand_total || 0).toLocaleString('en-IN')}</span>
                             <span className="font-extrabold text-swift-dark">
-                              Outstanding: ${fee.outstanding_amount}
+                              Outstanding: ₹{Number(fee.outstanding_amount || 0).toLocaleString('en-IN')}
                             </span>
                           </div>
                         </div>

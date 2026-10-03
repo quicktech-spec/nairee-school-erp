@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
   TrendingDown,
-  DollarSign,
+  IndianRupee,
   PieChart,
   Calendar,
   Download,
@@ -39,23 +39,23 @@ export default function FinancialPnLView() {
     }
   });
 
-  // Base constants
-  const tuitionPerStudent = 4200;
-  const labTechFees = 5600;
-  const transportFees = 7400;
+  // Base constants in Indian Rupees (₹)
+  const tuitionPerStudent = 35000;
+  const labTechFees = 45000;
+  const transportFees = 60000;
 
   // Faculty Payroll calculation
   const totalSalaries = FALLBACK_FACULTY.reduce((acc, f) => acc + (f.salary || 65000), 0);
-  const termPayrollDisbursed = 21500;
+  const termPayrollDisbursed = 185000;
 
-  // Operational Expenses State
+  // Operational Expenses State in INR
   const [expenses, setExpenses] = useState([
     { id: 'EXP 001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
-    { id: 'EXP 002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 4800, date: '2026-09-01', status: 'Paid', type: 'operational' },
-    { id: 'EXP 003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 1450, date: '2026-10-02', status: 'Pending', type: 'operational' },
-    { id: 'EXP 004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 1850, date: '2026-10-03', status: 'Pending', type: 'event' },
-    { id: 'EXP 005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 920, date: '2026-10-04', status: 'Pending', type: 'event' },
-    { id: 'EXP 006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 1200, date: '2026-09-25', status: 'Paid', type: 'facility' }
+    { id: 'EXP 002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 48000, date: '2026-09-01', status: 'Paid', type: 'operational' },
+    { id: 'EXP 003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 14500, date: '2026-10-02', status: 'Pending', type: 'operational' },
+    { id: 'EXP 004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 18500, date: '2026-10-03', status: 'Pending', type: 'event' },
+    { id: 'EXP 005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 9200, date: '2026-10-04', status: 'Pending', type: 'event' },
+    { id: 'EXP 006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 12000, date: '2026-09-25', status: 'Paid', type: 'facility' }
   ]);
 
   const [selectedExpenseIds, setSelectedExpenseIds] = useState([]);
@@ -119,7 +119,7 @@ export default function FinancialPnLView() {
     setStudentRecords(prev => prev.map(s => 
       s.name === student.name ? { ...s, feeDues: 0, fee_status: 'Paid' } : s
     ));
-    showToast(`🎉 Fee payment of $${amount.toLocaleString()} received for ${student.student_name}! Gross Revenue & Net Profit increased.`);
+    showToast(`🎉 Fee payment of ₹${amount.toLocaleString('en-IN')} received for ${student.student_name}! Gross Revenue & Net Profit increased.`);
   };
 
   // 1-Click Collect All Pending Student Fees
@@ -133,7 +133,7 @@ export default function FinancialPnLView() {
     }
 
     setStudentRecords(prev => prev.map(s => ({ ...s, feeDues: 0, fee_status: 'Paid' })));
-    showToast(`🎉 1-Click Fee Collection: Received $${totalCollected.toLocaleString()} across ${pendingStudents.length} students! Revenue & Profit fully updated.`);
+    showToast(`🎉 1-Click Fee Collection: Received ₹${totalCollected.toLocaleString('en-IN')} across ${pendingStudents.length} students! Revenue & Profit fully updated.`);
   };
 
   const handleToggleSelect = (id) => {
@@ -155,7 +155,7 @@ export default function FinancialPnLView() {
     if (!target) return;
     setExpenses(prev => prev.map(e => e.id === id ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
     setSelectedExpenseIds(prev => prev.filter(x => x !== id));
-    showToast(`Expense ${id} (${target.category} • $${target.amount}) settled successfully!`);
+    showToast(`Expense ${id} (${target.category} • ₹${Number(target.amount).toLocaleString('en-IN')}) settled successfully!`);
   };
 
   const handlePayAllSelected = () => {
@@ -164,7 +164,7 @@ export default function FinancialPnLView() {
     const total = selectedTotalAmount;
     setExpenses(prev => prev.map(e => selectedExpenseIds.includes(e.id) ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
     setSelectedExpenseIds([]);
-    showToast(`🎉 1-Click Pay All: Settled ${count} pending expenses ($${total.toLocaleString()})!`);
+    showToast(`🎉 1-Click Pay All: Settled ${count} pending expenses (₹${total.toLocaleString('en-IN')})!`);
   };
 
   const handleAddExpense = (e) => {
@@ -181,7 +181,7 @@ export default function FinancialPnLView() {
     };
     setExpenses([added, ...expenses]);
     setShowAddModal(false);
-    showToast(`Logged new pending expense for ${newExp.category} ($${newExp.amount})`);
+    showToast(`Logged new pending expense for ${newExp.category} (₹${Number(newExp.amount).toLocaleString('en-IN')})`);
     setNewExp({
       category: 'Annual Function',
       description: '',
@@ -210,13 +210,13 @@ export default function FinancialPnLView() {
   const pendingStudentsCount = studentRecords.filter(s => Number(s.feeDues) > 0 || s.fee_status === 'Pending').length;
 
   const exportCSV = () => {
-    let csv = "ID,Category,Description,Amount ($),Date,Status,Type\n";
+    let csv = "ID,Category,Description,Amount (₹),Date,Status,Type\n";
     expenses.forEach(e => {
       csv += `${e.id},"${e.category}","${e.description}",${e.amount},${e.date},${e.status},${e.type}\n`;
     });
-    csv += `\nTotal Gross Revenue,$${grossRevenue}\n`;
-    csv += `Total Expenses,$${totalExpenses}\n`;
-    csv += `Net Profit,$${netProfit}\n`;
+    csv += `\nTotal Gross Revenue,₹${grossRevenue}\n`;
+    csv += `Total Expenses,₹${totalExpenses}\n`;
+    csv += `Net Profit,₹${netProfit}\n`;
     csv += `Profit Margin,${marginPct}%\n`;
 
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -285,10 +285,10 @@ export default function FinancialPnLView() {
               </div>
             </div>
             <div className="text-2xl font-black text-emerald-400 mt-2 font-mono">
-              ${grossRevenue.toLocaleString()}
+              ₹{grossRevenue.toLocaleString('en-IN')}
             </div>
             <div className="text-[11px] text-slate-400 mt-1 flex items-center space-x-1">
-              <span>Tuition (${collectedTuition.toLocaleString()}) + Labs + Bus</span>
+              <span>Tuition (₹{collectedTuition.toLocaleString('en-IN')}) + Labs + Bus</span>
             </div>
           </div>
 
@@ -300,10 +300,10 @@ export default function FinancialPnLView() {
               </div>
             </div>
             <div className="text-2xl font-black text-rose-400 mt-2 font-mono">
-              ${totalPaidExpenses.toLocaleString()}
+              ₹{totalPaidExpenses.toLocaleString('en-IN')}
             </div>
             <div className="text-[11px] text-slate-400 mt-1">
-              Payroll (${termPayrollDisbursed.toLocaleString()}) + Rent + Events
+              Payroll (₹{termPayrollDisbursed.toLocaleString('en-IN')}) + Rent + Events
             </div>
           </div>
 
@@ -311,11 +311,11 @@ export default function FinancialPnLView() {
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
               <span>Net Institution Profit</span>
               <div className="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center">
-                <DollarSign className="w-4 h-4" />
+                <IndianRupee className="w-4 h-4" />
               </div>
             </div>
             <div className={`text-2xl font-black mt-2 font-mono ${netProfit >= 0 ? 'text-teal-300' : 'text-rose-400'}`}>
-              ${netProfit.toLocaleString()}
+              ₹{netProfit.toLocaleString('en-IN')}
             </div>
             <div className="text-[11px] text-teal-400 mt-1 flex items-center space-x-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -334,7 +334,7 @@ export default function FinancialPnLView() {
               {marginPct}%
             </div>
             <div className="text-[11px] text-slate-400 mt-1">
-              Outstanding Dues: ${totalPendingTuition.toLocaleString()}
+              Outstanding Dues: ₹{totalPendingTuition.toLocaleString('en-IN')}
             </div>
           </div>
         </div>
@@ -426,12 +426,12 @@ export default function FinancialPnLView() {
                     </td>
                     <td className="py-3.5 px-4 font-mono font-bold text-slate-700">{s.roll_no || s.roll_number || s.name}</td>
                     <td className="py-3.5 px-4 text-slate-600 font-medium">{s.student_batch || 'Grade 10 Section A'}</td>
-                    <td className="py-3.5 px-4 font-mono font-bold text-slate-800">${tuitionPerStudent.toLocaleString()}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-slate-800">₹{tuitionPerStudent.toLocaleString('en-IN')}</td>
                     <td className="py-3.5 px-4 font-mono font-bold">
                       {isPending ? (
-                        <span className="text-rose-600 font-black">${dueAmount.toLocaleString()}</span>
+                        <span className="text-rose-600 font-black">₹{dueAmount.toLocaleString('en-IN')}</span>
                       ) : (
-                        <span className="text-emerald-600 font-bold">$0 (Cleared)</span>
+                        <span className="text-emerald-600 font-bold">₹0 (Cleared)</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
@@ -486,7 +486,7 @@ export default function FinancialPnLView() {
               </div>
             </div>
             <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-mono">
-              ${grossRevenue.toLocaleString()}
+              ₹{grossRevenue.toLocaleString('en-IN')}
             </span>
           </div>
 
@@ -494,7 +494,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Student Tuition & Enrollment Fees</span>
-                <span>${collectedTuition.toLocaleString()} ({((collectedTuition / grossRevenue) * 100).toFixed(1)}%)</span>
+                <span>₹{collectedTuition.toLocaleString('en-IN')} ({((collectedTuition / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style={{ width: `${((collectedTuition / grossRevenue) * 100).toFixed(1)}%` }} />
@@ -504,7 +504,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>North City Transport & Bus Fleet Subscriptions</span>
-                <span>${transportFees.toLocaleString()} ({((transportFees / grossRevenue) * 100).toFixed(1)}%)</span>
+                <span>₹{transportFees.toLocaleString('en-IN')} ({((transportFees / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full" style={{ width: `${((transportFees / grossRevenue) * 100).toFixed(1)}%` }} />
@@ -514,7 +514,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Science, Robotics & Smart Classroom Lab Fees</span>
-                <span>${labTechFees.toLocaleString()} ({((labTechFees / grossRevenue) * 100).toFixed(1)}%)</span>
+                <span>₹{labTechFees.toLocaleString('en-IN')} ({((labTechFees / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: `${((labTechFees / grossRevenue) * 100).toFixed(1)}%` }} />
@@ -525,7 +525,7 @@ export default function FinancialPnLView() {
           <div className="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100 flex items-center justify-between text-xs">
             <div className="flex items-center space-x-2 text-emerald-800 font-semibold">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Online Payment Gateway Sync: Active (Stripe & Bank NEFT)</span>
+              <span>Online Payment Gateway Sync: Active (Razorpay & UPI & Bank NEFT)</span>
             </div>
             <span className="text-[11px] font-mono text-emerald-700 font-bold">100% Verified</span>
           </div>
@@ -544,7 +544,7 @@ export default function FinancialPnLView() {
               </div>
             </div>
             <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full font-mono">
-              ${totalPaidExpenses.toLocaleString()}
+              ₹{totalPaidExpenses.toLocaleString('en-IN')}
             </span>
           </div>
 
@@ -552,7 +552,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Faculty Salaries & Staff Remuneration</span>
-                <span>${termPayrollDisbursed.toLocaleString()} (69.9%)</span>
+                <span>₹{termPayrollDisbursed.toLocaleString('en-IN')} (69.9%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-rose-500 to-amber-500 rounded-full" style={{ width: '69.9%' }} />
@@ -562,7 +562,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Campus Building Lease & Ground Rent</span>
-                <span>$4,800 (15.6%)</span>
+                <span>₹48,000 (15.6%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full" style={{ width: '15.6%' }} />
@@ -572,7 +572,7 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Annual Function, Sports Day & Facility Upgrades</span>
-                <span>$4,420 (14.5%)</span>
+                <span>₹44,200 (14.5%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full" style={{ width: '14.5%' }} />
@@ -642,7 +642,7 @@ export default function FinancialPnLView() {
                 <strong className="text-slate-900 font-mono font-black">{selectedExpenseIds.length} Expenses</strong>
                 {selectedExpenseIds.length > 0 && (
                   <span className="text-emerald-700 font-bold ml-1.5 font-mono">
-                    (${selectedTotalAmount.toLocaleString()})
+                    (₹{selectedTotalAmount.toLocaleString('en-IN')})
                   </span>
                 )}
               </div>
@@ -728,7 +728,7 @@ export default function FinancialPnLView() {
                       )}
                     </td>
                     <td className="py-3 px-4 text-right font-black font-mono text-rose-600">
-                      -${Number(e.amount).toLocaleString()}
+                      -₹{Number(e.amount).toLocaleString('en-IN')}
                     </td>
                     <td className="py-3 px-4 text-center">
                       {isPending ? (
@@ -791,11 +791,11 @@ export default function FinancialPnLView() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-600 font-bold mb-1">Amount ($)</label>
+                  <label className="block text-slate-600 font-bold mb-1">Amount (₹)</label>
                   <input
                     type="number"
                     required
-                    placeholder="2500"
+                    placeholder="25000"
                     value={newExp.amount}
                     onChange={(e) => setNewExp({ ...newExp, amount: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500"

@@ -9,7 +9,7 @@ import {
   Trash2,
   Edit3,
   CreditCard,
-  DollarSign,
+  IndianRupee,
   Plus,
   Search,
   CheckCircle2,
@@ -871,7 +871,7 @@ export default function ClassStaffManagerView() {
                 <span className="text-[11px] text-slate-400">Total Staff: {teachers.length} Faculty Members</span>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center">
-                <DollarSign className="w-6 h-6" />
+                <IndianRupee className="w-6 h-6" />
               </div>
             </div>
 
@@ -1466,7 +1466,7 @@ export default function ClassStaffManagerView() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                  <DollarSign className="w-5 h-5" />
+                  <IndianRupee className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-800 text-sm">Disburse Monthly Faculty Salary</h3>

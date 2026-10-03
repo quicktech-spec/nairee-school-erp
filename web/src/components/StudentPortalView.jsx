@@ -211,7 +211,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
                 ) : (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    Fee Due ${student.balance_due || student.feeDues || 450}
+                    Fee Due ₹{student.balance_due || student.feeDues || 35000}
                   </span>
                 )}
               </div>
