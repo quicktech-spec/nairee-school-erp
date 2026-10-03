@@ -25,7 +25,9 @@ import {
   Play,
   Check,
   AlertCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  Lock,
+  ShieldAlert
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
@@ -178,6 +180,36 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
         <div className="fixed bottom-6 right-6 z-50 bg-[#0c1f2c] border border-teal-500/60 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs animate-bounce">
           <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* PROMIMENT OVERDUE FEE RED ALERT BANNER ON TOP */}
+      {!isFeePaid && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-rose-950/80 border-2 border-rose-500 text-white shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pulse backdrop-blur-md">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center font-black flex-shrink-0 shadow-lg shadow-rose-600/40">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-black uppercase tracking-wider">
+                  ⚠️ Fee Not Paid — Marksheet Withheld
+                </span>
+                <span className="text-sm sm:text-base font-extrabold text-white">
+                  Term Fee Due: ₹{student.balance_due || student.feeDues || 35000}
+                </span>
+              </div>
+              <p className="text-xs text-rose-200 mt-1">
+                Official marksheet and exam report card cannot be released automatically until pending fee dues are cleared.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveTab('fees')}
+            className="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-black text-xs shadow-lg shadow-rose-900/40 transition-all cursor-pointer flex-shrink-0 whitespace-nowrap"
+          >
+            Pay Term Fee (₹{student.balance_due || student.feeDues || 35000}) →
+          </button>
         </div>
       )}
 
@@ -1111,29 +1143,55 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
 
       {/* TAB 4: GRADES & REPORT CARD */}
       {activeTab === 'results' && (
-        <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <img src="/nairee-logo.png" alt="Nairee" className="h-8 w-auto object-contain" />
-              <div>
-                <h3 className="font-bold text-slate-800 text-sm">Official Academic Report Card</h3>
-                <p className="text-xs text-slate-500">Evaluated marks, percentiles, and comments from faculty</p>
-              </div>
+        !isFeePaid ? (
+          <div className="bg-white rounded-3xl border-2 border-rose-200 p-8 sm:p-12 text-center shadow-lg space-y-5 animate-fadeIn">
+            <div className="w-20 h-20 rounded-3xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto shadow-inner">
+              <Lock className="w-10 h-10 stroke-[2.2]" />
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
-              >
-                <Printer className="w-3.5 h-3.5 text-teal-600" />
-                <span>Print Official Report Card</span>
-              </button>
-              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800">
-                GPA Distinction
+            <div className="max-w-md mx-auto space-y-2">
+              <span className="inline-block text-[11px] font-black uppercase tracking-widest px-3.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
+                🔒 Marksheet Withheld &bull; Fee Due Pending
               </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900">
+                Automatic Marksheet Not Released
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                As per school administration policy, term evaluation marks, percentage scores, and official report cards for <strong>{student.student_name}</strong> are withheld until the outstanding fee balance of <strong>₹{student.balance_due || student.feeDues || 35000}</strong> is cleared.
+              </p>
+            </div>
+            <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => setActiveTab('fees')}
+                className="px-6 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-900/30 transition-all cursor-pointer hover:scale-105"
+              >
+                Pay Term Fee Online (Unlock Marksheet) →
+              </button>
             </div>
           </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <img src="/nairee-logo.png" alt="Nairee" className="h-8 w-auto object-contain" />
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">Official Academic Report Card</h3>
+                  <p className="text-xs text-slate-500">Evaluated marks, percentiles, and comments from faculty</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Print Official Report Card</span>
+                </button>
+                <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800">
+                  GPA Distinction
+                </span>
+              </div>
+            </div>
 
           <div className="bg-white rounded-2xl border border-teal-100 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
@@ -1168,7 +1226,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
             </div>
           </div>
         </div>
-      )}
+      ))}
 
       {/* TAB 5: TIMETABLE */}
       {activeTab === 'timetable' && (

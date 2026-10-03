@@ -2,21 +2,18 @@
 export const INITIAL_DB_STORE = {
   'Student List': {
     columns: [
-      { name: 'roll_number', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
       { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 },
-      { name: 'attendance_percentage', type: 'FLOAT', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Class & Section]', pk: 0 },
       { name: 'fee_status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { roll_number: 'STU 001', name: 'Devon Patel', email: 'devon.patel@nairee.edu', phone: '+1 555 789 0123', class_batch: 'CLS 10A', attendance_percentage: 98.0, fee_status: 'Paid' },
-      { roll_number: 'STU 002', name: 'Aarav Sharma', email: 'aarav.sharma@example.com', phone: '+91 98765 00002', class_batch: 'CLS 10A', attendance_percentage: 94.0, fee_status: 'Paid' },
-      { roll_number: 'STU 003', name: 'Diya Gupta', email: 'diya.gupta@example.com', phone: '+91 98765 00003', class_batch: 'CLS 10A', attendance_percentage: 98.2, fee_status: 'Pending' },
-      { roll_number: 'STU 004', name: 'Rohan Mehta', email: 'rohan.mehta@example.com', phone: '+91 98765 00004', class_batch: 'CLS 10A', attendance_percentage: 91.5, fee_status: 'Paid' },
-      { roll_number: 'STU 005', name: 'Ananya Iyer', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', class_batch: 'CLS 10A', attendance_percentage: 99.0, fee_status: 'Paid' },
-      { roll_number: 'STU 006', name: 'Kabir Singh', email: 'kabir.singh@example.com', phone: '+91 98765 00006', class_batch: 'CLS 10B', attendance_percentage: 93.4, fee_status: 'Pending' }
+      { name: 'Devon Patel', phone: '+1 555 789 0123', class_batch: 'Class 10 - Section A', fee_status: 'Paid' },
+      { name: 'Aarav Sharma', phone: '+91 98765 00002', class_batch: 'Class 10 - Section A', fee_status: 'Paid' },
+      { name: 'Diya Gupta', phone: '+91 98765 00003', class_batch: 'Class 10 - Section A', fee_status: 'Pending' },
+      { name: 'Rohan Mehta', phone: '+91 98765 00004', class_batch: 'Class 10 - Section A', fee_status: 'Paid' },
+      { name: 'Ananya Iyer', phone: '+91 98765 00005', class_batch: 'Class 10 - Section A', fee_status: 'Paid' },
+      { name: 'Kabir Singh', phone: '+91 98765 00006', class_batch: 'Class 10 - Section B', fee_status: 'Pending' }
     ]
   },
   'Teacher List': {

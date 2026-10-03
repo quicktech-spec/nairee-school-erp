@@ -17,7 +17,11 @@ import {
   X,
   ExternalLink,
   ChevronRight,
-  HardDrive
+  HardDrive,
+  MessageCircle,
+  QrCode,
+  Send,
+  PhoneCall
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
@@ -40,6 +44,9 @@ export default function DatabaseStudioView() {
   const [isCreatingRow, setIsCreatingRow] = useState(false);
   const [formData, setFormData] = useState({});
   const [toastMessage, setToastMessage] = useState('');
+
+  // WhatsApp Fee Reminder Modal State
+  const [whatsAppFeeModal, setWhatsAppFeeModal] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -285,7 +292,7 @@ export default function DatabaseStudioView() {
     const pkCol = tableData.columns.find(c => c.pk === 1) || tableData.columns.find(c => c.name === 'name' || c.name === 'id') || tableData.columns[0];
     const pkVal = row[pkCol.name];
     
-    if (!window.confirm(`Are you sure you want to delete row with ${pkCol.name}="${pkVal}" from ${selectedTable}?`)) {
+    if (!window.confirm(`Are you sure you want to delete record for "${row.name || pkVal}" from ${selectedTable}?`)) {
       return;
     }
 
@@ -321,28 +328,8 @@ export default function DatabaseStudioView() {
     showToast(`Row deleted from ${selectedTable}!`);
   };
 
-  // Lookup maps for clean foreign keys
-  const studentMap = {
-    'STU 001': 'Devon Patel',
-    'STU 002': 'Aarav Sharma',
-    'STU 003': 'Diya Gupta',
-    'STU 004': 'Rohan Mehta',
-    'STU 005': 'Ananya Iyer',
-    'STU 006': 'Kabir Singh'
-  };
-
-  const teacherMap = {
-    'TEA 001': 'Prof. Sarah Jenkins',
-    'TEA 002': 'Dr. Evelyn Reed',
-    'TEA 003': 'Mr. Robert Chen',
-    'TEA 004': 'Ms. Clara Oswald'
-  };
-
-  const classMap = {
-    'CLS 10A': 'Class 10A (Room 204)',
-    'CLS 10B': 'Class 10B (Room 205)',
-    'CLS 11A': 'Class 11A (Room 301)'
-  };
+  // Check if active table is Student List
+  const isStudentListTable = selectedTable === 'Student List';
 
   return (
     <div className="space-y-6">
@@ -439,7 +426,10 @@ export default function DatabaseStudioView() {
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
-                Click Edit on any row to modify its values, Add Row to insert new records, or export this sheet to Excel.
+                {isStudentListTable 
+                  ? 'Showing Student Name, Phone Number, Class & Section, and Fee Status with WhatsApp Reminders.'
+                  : 'Click Edit on any row to modify its values, Add Row to insert new records, or export this sheet to Excel.'
+                }
               </p>
             </div>
 
@@ -503,7 +493,103 @@ export default function DatabaseStudioView() {
               <p className="text-xs font-bold">No records found in {selectedTable}</p>
               <p className="text-[11px]">Click "Add Row" to insert the first record.</p>
             </div>
+          ) : isStudentListTable ? (
+            /* SPECIAL DEDICATED VIEW FOR STUDENT LIST TABLE */
+            <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="py-3 px-3 w-16 text-center">Actions</th>
+                    <th className="py-3 px-3">Student Name</th>
+                    <th className="py-3 px-3">Phone Number</th>
+                    <th className="py-3 px-3">Class & Section</th>
+                    <th className="py-3 px-3">Fee Status & WhatsApp Reminder</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {tableData.rows.map((row, idx) => {
+                    const studentName = row.name || row.student_name || 'Student';
+                    const phone = row.phone || row.student_mobile_number || row.guardian_mobile || '+91 98765 00000';
+                    const classBatch = row.class_batch || row.student_batch || row.batch_id || 'Class 10 - Section A';
+                    const isPaid = row.fee_status === 'Paid' || row.fee_status === 'Cleared';
+
+                    return (
+                      <tr key={idx} className="hover:bg-teal-50/40 transition-colors group">
+                        {/* Action buttons */}
+                        <td className="py-3 px-3 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => {
+                                setEditingRow(row);
+                                setFormData({ ...row });
+                              }}
+                              className="p-1 rounded-lg hover:bg-teal-100 text-teal-700 transition-colors cursor-pointer"
+                              title="Edit Row"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRow(row)}
+                              className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                              title="Delete Row"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* Student Name */}
+                        <td className="py-3 px-3 font-bold text-slate-900 text-xs">
+                          {studentName}
+                        </td>
+
+                        {/* Phone Number */}
+                        <td className="py-3 px-3 font-mono text-slate-600 text-xs">
+                          {phone}
+                        </td>
+
+                        {/* Class & Section */}
+                        <td className="py-3 px-3 text-slate-700 font-semibold text-xs">
+                          <span className="inline-block px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 font-bold">
+                            {classBatch}
+                          </span>
+                        </td>
+
+                        {/* Fee Status & WhatsApp Message Action */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          {isPaid ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Paid (Cleared)</span>
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300 font-bold text-xs">
+                                <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                                <span>Pending (Due ₹35,000)</span>
+                              </span>
+
+                              {/* WhatsApp Reminder Button with QR Code Modal Trigger */}
+                              <button
+                                onClick={() => setWhatsAppFeeModal(row)}
+                                className="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#25D366]/20 transition-all cursor-pointer hover:scale-105 active:scale-95"
+                                title="Send WhatsApp Fee Reminder with Payment QR Code"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                <span>Message (WhatsApp)</span>
+                                <QrCode className="w-3 h-3 text-emerald-100" />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           ) : (
+            /* GENERAL DYNAMIC TABLE VIEW FOR OTHER TABLES */
             <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
@@ -558,42 +644,6 @@ export default function DatabaseStudioView() {
                           );
                         }
 
-                        // Foreign key badge for student
-                        if ((col.name === 'child' || col.name === 'student' || col.name === 'student_id') && studentMap[val]) {
-                          return (
-                            <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 font-bold">
-                                <span className="font-mono text-teal-600">{val}</span>
-                                <span className="text-slate-700 font-semibold">• {studentMap[val]}</span>
-                              </span>
-                            </td>
-                          );
-                        }
-
-                        // Foreign key badge for teacher
-                        if ((col.name === 'teacher' || col.name === 'class_teacher' || col.name === 'assigned_by') && teacherMap[val]) {
-                          return (
-                            <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold">
-                                <span className="font-mono text-indigo-600">{val}</span>
-                                <span className="text-slate-700 font-semibold">• {teacherMap[val]}</span>
-                              </span>
-                            </td>
-                          );
-                        }
-
-                        // Foreign key badge for class
-                        if ((col.name === 'class_batch' || col.name === 'batch_id') && classMap[val]) {
-                          return (
-                            <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 font-bold">
-                                <span className="font-mono text-purple-600">{val}</span>
-                                <span className="text-slate-600">({classMap[val]})</span>
-                              </span>
-                            </td>
-                          );
-                        }
-
                         return (
                           <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
                             {typeof val === 'string' && val.startsWith('http') ? (
@@ -617,6 +667,112 @@ export default function DatabaseStudioView() {
           )}
         </div>
       </div>
+
+      {/* WHATSAPP FEE REMINDER & PAYMENT QR CODE MODAL */}
+      {whatsAppFeeModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setWhatsAppFeeModal(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#25D366]/10 text-[#25D366] flex items-center justify-center font-bold">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">WhatsApp Fee Notice & Payment QR</h3>
+                  <p className="text-xs text-slate-400">Direct reminder for {whatsAppFeeModal.name || whatsAppFeeModal.student_name}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWhatsAppFeeModal(null)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Student & Due Summary */}
+            <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-200 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-rose-700">Fee Payment Overdue</span>
+                <h4 className="font-extrabold text-slate-900 text-sm">{whatsAppFeeModal.name || whatsAppFeeModal.student_name}</h4>
+                <p className="text-xs text-slate-500">{whatsAppFeeModal.class_batch || 'Class 10 - Section A'} &bull; Phone: {whatsAppFeeModal.phone || '+91 98765 00000'}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-xl font-black text-rose-600">₹35,000</span>
+                <p className="text-[10px] font-bold text-rose-500">Term Tuition Due</p>
+              </div>
+            </div>
+
+            {/* UPI Payment QR Code */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2.5">
+              <div className="inline-block p-2.5 rounded-2xl bg-white border border-slate-200 shadow-md">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`upi://pay?pa=accounts@naireeschool.upi&pn=Nairee%20International%20School&am=35000&cu=INR&tn=Term%20Fee%20Payment%20${whatsAppFeeModal.name || whatsAppFeeModal.student_name}`)}`}
+                  alt="UPI QR Code"
+                  className="w-32 h-32 mx-auto rounded-lg"
+                />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-800 flex items-center justify-center gap-1">
+                  <QrCode className="w-3.5 h-3.5 text-teal-600" />
+                  Official School UPI QR Code
+                </span>
+                <p className="text-[11px] font-mono text-slate-500 mt-0.5">UPI ID: accounts@naireeschool.upi</p>
+              </div>
+            </div>
+
+            {/* WhatsApp Message Preview */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-600 uppercase">Message Preview (Dispatched to Parent)</label>
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed font-sans whitespace-pre-line max-h-28 overflow-y-auto">
+                {`📢 *Nairee School Fee Due Notice*\n\nDear Parent,\nThis is a notification from Nairee Accounts Office that the term fee of *₹35,000* for your ward *${whatsAppFeeModal.name || whatsAppFeeModal.student_name}* (${whatsAppFeeModal.class_batch || 'Class 10'}) is currently *PENDING*.\n\n📱 *Instant UPI Payment*: Scan the attached UPI QR Code or pay via Nairee Parent Portal.\n\n⚠️ *Note*: Academic marksheets and exam report cards are withheld until fee clearance.\n\nAccounts Helpline: +91 98765 00001`}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const sName = whatsAppFeeModal.name || whatsAppFeeModal.student_name;
+                  const updatedRows = (tableData.rows || []).map(r => (r.name === sName || r.student_name === sName) ? { ...r, fee_status: 'Paid' } : r);
+                  setTableData(prev => ({ ...prev, rows: updatedRows }));
+                  setDbStore(prev => ({
+                    ...prev,
+                    [selectedTable]: {
+                      ...(prev[selectedTable] || {}),
+                      rows: updatedRows
+                    }
+                  }));
+                  showToast(`✅ Fee marked as Paid for ${sName}! Marksheet is now released.`);
+                  setWhatsAppFeeModal(null);
+                }}
+                className="w-full sm:flex-1 py-2.5 rounded-xl border border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-bold text-xs transition-colors cursor-pointer text-center"
+              >
+                Mark as Paid (Release Marksheet)
+              </button>
+              <a
+                href={`https://wa.me/${(whatsAppFeeModal.phone || '919876500000').replace(/\D/g, '')}?text=${encodeURIComponent(
+                  `📢 *Nairee School Fee Due Notice*\n\nDear Parent,\nThis is a notification from Nairee Accounts Office that the term fee of *₹35,000* for your ward *${whatsAppFeeModal.name || whatsAppFeeModal.student_name}* (${whatsAppFeeModal.class_batch || 'Class 10'}) is currently *PENDING*.\n\n📱 *Instant Payment*: Scan the UPI QR Code (UPI: accounts@naireeschool.upi) or pay via Nairee Parent Portal.\n\n⚠️ *Note*: Academic marksheets and exam report cards are withheld until fee clearance.\n\nAccounts Helpline: +91 98765 00001`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => {
+                  showToast(`📱 WhatsApp Fee Reminder with QR Code sent to parents of ${whatsAppFeeModal.name || whatsAppFeeModal.student_name}!`);
+                  setWhatsAppFeeModal(null);
+                }}
+                className="w-full sm:flex-1 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs shadow-md shadow-[#25D366]/30 flex items-center justify-center gap-2 transition-all cursor-pointer text-center"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Send WhatsApp Notice</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CREATE / EDIT ROW MODAL */}
       {(isCreatingRow || editingRow) && (
