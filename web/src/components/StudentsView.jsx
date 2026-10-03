@@ -15,7 +15,7 @@ import {
   Sparkles,
   ShieldCheck
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 
 export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
   const [students, setStudents] = useState([]);
@@ -60,6 +60,16 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
 
   useEffect(() => {
     loadData();
+  }, [selectedBatch, searchQuery]);
+
+  // Live real-time sync across tabs and P&L fee settlements
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (event?.type === 'fee_updated' || event?.type === 'attendance_updated') {
+        loadData();
+      }
+    });
+    return () => unsub();
   }, [selectedBatch, searchQuery]);
 
   const handleOpenDetail = async (student) => {
@@ -180,14 +190,28 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                           className="w-9 h-9 rounded-xl object-cover ring-1 ring-[#cde8e8]"
                         />
                         <div>
-                          <p className="font-bold text-swift-dark group-hover:text-brand-600 transition-colors flex items-center gap-1.5">
-                            {s.student_name}
+                          <div className="flex items-center flex-wrap gap-1.5">
+                            <span className="font-bold text-swift-dark group-hover:text-brand-600 transition-colors">
+                              {s.student_name}
+                            </span>
                             {s.student_name.includes('Nairee') && (
                               <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300">
                                 Featured
                               </span>
                             )}
-                          </p>
+                            {/* LIVE FEE STATUS BADGE DIRECTLY ON SIDE OF STUDENT NAME */}
+                            {(s.fee_status === 'Paid' || (s.balance_due === 0 && s.fee_due === 0)) ? (
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Fee Paid
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                Due ${s.balance_due || s.fee_due || 450}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[11px] text-swift-muted">{s.student_email_id}</p>
                         </div>
                       </div>

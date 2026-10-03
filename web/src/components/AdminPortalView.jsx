@@ -27,7 +27,7 @@ import {
   X,
   Umbrella
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 import ClassStaffManagerView from './ClassStaffManagerView.jsx';
 import FinancialPnLView from './FinancialPnLView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
@@ -128,6 +128,16 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
 
   useEffect(() => {
     loadAllData();
+  }, [selectedBatch]);
+
+  // Real-time synchronization across admin dashboard, P&L fee settlements, and notice broadcasts
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (event?.type === 'fee_updated' || event?.type === 'announcement_created' || event?.type === 'attendance_updated') {
+        loadAllData();
+      }
+    });
+    return () => unsub();
   }, [selectedBatch]);
 
   const handleToggleUserStatus = async (userId, currentStatus) => {
@@ -658,7 +668,18 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                           className="w-8 h-8 rounded-full object-cover border border-slate-200"
                         />
                         <div>
-                          <div className="font-bold text-slate-800">{s.student_name}</div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-slate-800">{s.student_name}</span>
+                            {s.feeDues === 0 ? (
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                Fee Paid
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                                Due ${s.feeDues}
+                              </span>
+                            )}
+                          </div>
                           <div className="text-[10px] text-slate-400">Roll #{s.roll_no} &bull; {s.name}</div>
                         </div>
                       </td>
@@ -675,8 +696,17 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                           {s.avgGrade}%
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-700">
-                        ${s.feeDues || 0}
+                      <td className="py-3 px-4">
+                        {s.feeDues === 0 ? (
+                          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            $0 (Cleared)
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold text-rose-600">
+                            ${s.feeDues}
+                          </span>
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         {s.isAtRisk ? (

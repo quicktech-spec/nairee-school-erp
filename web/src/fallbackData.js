@@ -68,19 +68,6 @@ export const INITIAL_DB_STORE = {
       { subject_id: 'SUB 004', subject_name: 'English & World Literature', subject_code: 'ENG 105', teacher: 'TEA 004', credit_hours: 3, department: 'Humanities & English' }
     ]
   },
-  'Fee Records': {
-    columns: [
-      { name: 'fee_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
-      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'due_date', type: 'DATE', pk: 0 }
-    ],
-    rows: [
-      { fee_id: 'FEE 001', student: 'STU 003', amount: 35000, status: 'Pending', due_date: '2026-10-20' },
-      { fee_id: 'FEE 002', student: 'STU 006', amount: 38000, status: 'Pending', due_date: '2026-10-25' }
-    ]
-  },
   'Parent List': {
     columns: [
       { name: 'parent_id', type: 'VARCHAR(50)', pk: 1 },
@@ -148,8 +135,6 @@ INITIAL_DB_STORE['tabClass'] = INITIAL_DB_STORE['Class & Batch List'];
 INITIAL_DB_STORE['tabStudentBatch'] = INITIAL_DB_STORE['Class & Batch List'];
 INITIAL_DB_STORE['tabSubject'] = INITIAL_DB_STORE['Subjects List'];
 INITIAL_DB_STORE['tabCourse'] = INITIAL_DB_STORE['Subjects List'];
-INITIAL_DB_STORE['tabFeeRecord'] = INITIAL_DB_STORE['Fee Records'];
-INITIAL_DB_STORE['tabFeeSchedule'] = INITIAL_DB_STORE['Fee Records'];
 INITIAL_DB_STORE['tabParent'] = INITIAL_DB_STORE['Parent List'];
 INITIAL_DB_STORE['tabStudentAttendance'] = INITIAL_DB_STORE['Attendance Records'];
 INITIAL_DB_STORE['tabHomework'] = INITIAL_DB_STORE['Homework List'];

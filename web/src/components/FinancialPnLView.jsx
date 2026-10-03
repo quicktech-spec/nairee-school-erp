@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -21,37 +21,48 @@ import {
   Printer,
   ChevronRight,
   Filter,
-  X
+  X,
+  UserCheck,
+  Receipt
 } from 'lucide-react';
 import { FALLBACK_FACULTY, FALLBACK_STUDENTS } from '../fallbackData.js';
+import { api, subscribeLiveEvents } from '../api.js';
 
 export default function FinancialPnLView() {
-  // Base Tuition fee calculations
-  const totalStudents = FALLBACK_STUDENTS.length || 7;
+  // Reactive Student Fee Records State
+  const [studentRecords, setStudentRecords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nairee_fallback_students');
+      return saved ? JSON.parse(saved) : FALLBACK_STUDENTS;
+    } catch {
+      return FALLBACK_STUDENTS;
+    }
+  });
+
+  // Base constants
   const tuitionPerStudent = 4200;
-  const collectedTuition = 24800; // actual collected
-  const pendingTuition = totalStudents * tuitionPerStudent - collectedTuition; // ~ 4,600
   const labTechFees = 5600;
   const transportFees = 7400;
-  const grossRevenue = collectedTuition + labTechFees + transportFees; // ~ 37,800
 
   // Faculty Payroll calculation
-  const totalSalaries = FALLBACK_FACULTY.reduce((acc, f) => acc + (f.salary || 65000), 0); // e.g. 5 teachers * ~65k/year or ~27k/term
+  const totalSalaries = FALLBACK_FACULTY.reduce((acc, f) => acc + (f.salary || 65000), 0);
   const termPayrollDisbursed = 21500;
 
   // Operational Expenses State
   const [expenses, setExpenses] = useState([
-    { id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
-    { id: 'EXP-002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 4800, date: '2026-09-01', status: 'Paid', type: 'operational' },
-    { id: 'EXP-003', category: 'Utilities & Power', description: 'Electricity, High-speed Fiber & Water Bill', amount: 1450, date: '2026-10-02', status: 'Pending', type: 'operational' },
-    { id: 'EXP-004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 1850, date: '2026-10-03', status: 'Pending', type: 'event' },
-    { id: 'EXP-005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 920, date: '2026-10-04', status: 'Pending', type: 'event' },
-    { id: 'EXP-006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 1200, date: '2026-09-25', status: 'Paid', type: 'facility' }
+    { id: 'EXP 001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
+    { id: 'EXP 002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 4800, date: '2026-09-01', status: 'Paid', type: 'operational' },
+    { id: 'EXP 003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 1450, date: '2026-10-02', status: 'Pending', type: 'operational' },
+    { id: 'EXP 004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 1850, date: '2026-10-03', status: 'Pending', type: 'event' },
+    { id: 'EXP 005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 920, date: '2026-10-04', status: 'Pending', type: 'event' },
+    { id: 'EXP 006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 1200, date: '2026-09-25', status: 'Paid', type: 'facility' }
   ]);
 
   const [selectedExpenseIds, setSelectedExpenseIds] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [feeSearch, setFeeSearch] = useState('');
+  const [feeStatusFilter, setFeeStatusFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [newExp, setNewExp] = useState({
@@ -67,9 +78,63 @@ export default function FinancialPnLView() {
     setTimeout(() => setToastMessage(''), 4000);
   };
 
+  // Listen to live fee updates across all portals
+  useEffect(() => {
+    const unsubscribe = subscribeLiveEvents((event) => {
+      if (event.type === 'fee_updated') {
+        try {
+          const saved = localStorage.getItem('nairee_fallback_students');
+          if (saved) setStudentRecords(JSON.parse(saved));
+        } catch {}
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Dynamic Financial Calculations directly connected to student fee records
+  const totalStudents = studentRecords.length;
+  const totalPendingTuition = studentRecords.reduce((sum, s) => sum + (Number(s.feeDues) || 0), 0);
+  const totalPotentialTuition = totalStudents * tuitionPerStudent;
+  const collectedTuition = totalPotentialTuition - totalPendingTuition;
+  const grossRevenue = collectedTuition + labTechFees + transportFees;
+
   const pendingExpenses = expenses.filter(e => e.status === 'Pending');
   const selectedPendingExpenses = pendingExpenses.filter(e => selectedExpenseIds.includes(e.id));
   const selectedTotalAmount = selectedPendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const totalPaidExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
+  const totalPendingExpenses = pendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  
+  // Net Institution Profit = Gross Collected Revenue - Paid Expenses
+  const netProfit = grossRevenue - totalPaidExpenses;
+  const marginPct = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : '0.0';
+
+  // Settle single student fee
+  const handleCollectStudentFee = async (student) => {
+    const amount = Number(student.feeDues) > 0 ? Number(student.feeDues) : tuitionPerStudent;
+    await api.settleStudentFee(student.name, amount);
+    
+    // Update local reactive state
+    setStudentRecords(prev => prev.map(s => 
+      s.name === student.name ? { ...s, feeDues: 0, fee_status: 'Paid' } : s
+    ));
+    showToast(`🎉 Fee payment of $${amount.toLocaleString()} received for ${student.student_name}! Gross Revenue & Net Profit increased.`);
+  };
+
+  // 1-Click Collect All Pending Student Fees
+  const handleCollectAllStudentFees = async () => {
+    const pendingStudents = studentRecords.filter(s => Number(s.feeDues) > 0);
+    if (pendingStudents.length === 0) return;
+
+    const totalCollected = pendingStudents.reduce((sum, s) => sum + Number(s.feeDues), 0);
+    for (const s of pendingStudents) {
+      await api.settleStudentFee(s.name, Number(s.feeDues));
+    }
+
+    setStudentRecords(prev => prev.map(s => ({ ...s, feeDues: 0, fee_status: 'Paid' })));
+    showToast(`🎉 1-Click Fee Collection: Received $${totalCollected.toLocaleString()} across ${pendingStudents.length} students! Revenue & Profit fully updated.`);
+  };
 
   const handleToggleSelect = (id) => {
     setSelectedExpenseIds(prev => 
@@ -102,17 +167,11 @@ export default function FinancialPnLView() {
     showToast(`🎉 1-Click Pay All: Settled ${count} pending expenses ($${total.toLocaleString()})!`);
   };
 
-  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  const totalPaidExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
-  const totalPendingExpenses = pendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  const netProfit = grossRevenue - totalPaidExpenses;
-  const marginPct = ((netProfit / grossRevenue) * 100).toFixed(1);
-
   const handleAddExpense = (e) => {
     e.preventDefault();
     if (!newExp.amount || !newExp.description) return;
     const added = {
-      id: `EXP-00${expenses.length + 1}`,
+      id: `EXP 00${expenses.length + 1}`,
       category: newExp.category,
       description: newExp.description,
       amount: parseFloat(newExp.amount),
@@ -137,6 +196,19 @@ export default function FinancialPnLView() {
     return e.type === filterType;
   });
 
+  const filteredStudentFees = studentRecords.filter(s => {
+    const matchesSearch = !feeSearch || 
+      s.student_name?.toLowerCase().includes(feeSearch.toLowerCase()) ||
+      s.name?.toLowerCase().includes(feeSearch.toLowerCase()) ||
+      s.student_batch?.toLowerCase().includes(feeSearch.toLowerCase());
+    const isPending = Number(s.feeDues) > 0 || s.fee_status === 'Pending';
+    if (feeStatusFilter === 'pending') return matchesSearch && isPending;
+    if (feeStatusFilter === 'paid') return matchesSearch && !isPending;
+    return matchesSearch;
+  });
+
+  const pendingStudentsCount = studentRecords.filter(s => Number(s.feeDues) > 0 || s.fee_status === 'Pending').length;
+
   const exportCSV = () => {
     let csv = "ID,Category,Description,Amount ($),Date,Status,Type\n";
     expenses.forEach(e => {
@@ -151,50 +223,54 @@ export default function FinancialPnLView() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Nairee_Executive_PL_Report_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `Nairee_Financial_PL_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
+    showToast("Financial P&L Report exported successfully!");
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold border border-teal-500/30">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Principal & Executive Leadership Dashboard</span>
+    <div className="space-y-6 pb-12">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0c1f2c] border border-teal-500/60 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs animate-bounce">
+          <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
+          <span className="font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* TOP EXECUTIVE HERO BANNER */}
+      <div className="bg-gradient-to-r from-[#0c1f2c] via-[#112a3a] to-[#0c1f2c] rounded-3xl p-6 sm:p-8 border border-teal-800/40 text-white shadow-xl relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center space-x-2 text-xs font-semibold text-teal-400 mb-1">
+              <Sparkles className="w-4 h-4" />
+              <span className="uppercase tracking-wider">Fee Governance & Institutional Profit & Loss</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              School Financial P&L & Profit Analytics
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
+              <span>Financial P&L and Fee Governance</span>
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-normal">
+                ● Live Real-Time Sync
+              </span>
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
-              Real-time audit of gross institutional revenue, teacher payroll disbursements, campus utilities, and event expenditures with live net margin calculation.
+            <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+              Centralized financial overview linking student fee collections directly to gross revenue, operational disbursements, and institutional net surplus.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center space-x-2.5">
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105"
+              className="px-4 py-2 rounded-xl bg-[#00a884] hover:bg-[#009272] text-white text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Log School Expense</span>
+              <span>Log Outflow</span>
             </button>
             <button
               onClick={exportCSV}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 flex items-center space-x-2 transition-all"
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/20 flex items-center space-x-1.5 cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>Export P&L Statement</span>
-            </button>
-            <button
-              onClick={() => setShowPrintModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 flex items-center space-x-2 transition-all"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Print Audit Sheet</span>
+              <span>Export P&L</span>
             </button>
           </div>
         </div>
@@ -208,7 +284,7 @@ export default function FinancialPnLView() {
                 <ArrowUpRight className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-emerald-400 mt-2">
+            <div className="text-2xl font-black text-emerald-400 mt-2 font-mono">
               ${grossRevenue.toLocaleString()}
             </div>
             <div className="text-[11px] text-slate-400 mt-1 flex items-center space-x-1">
@@ -223,8 +299,8 @@ export default function FinancialPnLView() {
                 <ArrowDownRight className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-rose-400 mt-2">
-              ${totalExpenses.toLocaleString()}
+            <div className="text-2xl font-black text-rose-400 mt-2 font-mono">
+              ${totalPaidExpenses.toLocaleString()}
             </div>
             <div className="text-[11px] text-slate-400 mt-1">
               Payroll (${termPayrollDisbursed.toLocaleString()}) + Rent + Events
@@ -238,33 +314,164 @@ export default function FinancialPnLView() {
                 <DollarSign className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-teal-300 mt-2">
+            <div className={`text-2xl font-black mt-2 font-mono ${netProfit >= 0 ? 'text-teal-300' : 'text-rose-400'}`}>
               ${netProfit.toLocaleString()}
             </div>
             <div className="text-[11px] text-teal-400 mt-1 flex items-center space-x-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Positive Surplus Margin</span>
+              <span>{netProfit >= 0 ? 'Positive Operating Surplus' : 'Deficit Outflow'}</span>
             </div>
           </div>
 
           <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-              <span>Annual Profit Margin</span>
+              <span>Profit Margin</span>
               <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
                 <Percent className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-amber-300 mt-2">
+            <div className="text-2xl font-black text-amber-300 mt-2 font-mono">
               {marginPct}%
             </div>
             <div className="text-[11px] text-slate-400 mt-1">
-              Outstanding Dues: ${pendingTuition.toLocaleString()}
+              Outstanding Dues: ${totalPendingTuition.toLocaleString()}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Breakdown Cards & Visual Analytics */}
+      {/* SECTION 1: DEDICATED STUDENT FEE GOVERNANCE & RECEIVABLES TABLE */}
+      <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden p-6 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <CreditCard className="w-4 h-4" />
+              </div>
+              <h3 className="font-bold text-slate-800 text-base">Student Fee Governance & Tuition Receivables</h3>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                pendingStudentsCount > 0 
+                  ? 'bg-amber-50 text-amber-800 border border-amber-200' 
+                  : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+              }`}>
+                {pendingStudentsCount > 0 ? `${pendingStudentsCount} Pending Students` : 'All Fees Collected (100%)'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Every fee collected directly increases institutional Gross Revenue and Net Profit across all connected portals.
+            </p>
+          </div>
+
+          {/* Search, Filter & 1-Click Collect All */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <input
+              type="text"
+              placeholder="Search student or roll..."
+              value={feeSearch}
+              onChange={(e) => setFeeSearch(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-teal-500 w-44"
+            />
+            <select
+              value={feeStatusFilter}
+              onChange={(e) => setFeeStatusFilter(e.target.value)}
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              <option value="all">All Students ({studentRecords.length})</option>
+              <option value="pending">Pending Dues Only ({pendingStudentsCount})</option>
+              <option value="paid">Fully Paid ({studentRecords.length - pendingStudentsCount})</option>
+            </select>
+
+            {pendingStudentsCount > 0 && (
+              <button
+                onClick={handleCollectAllStudentFees}
+                className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>1-Click Collect All ({pendingStudentsCount})</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Student Fee Ledger Table */}
+        <div className="overflow-x-auto rounded-2xl border border-slate-100">
+          <table className="w-full text-left text-xs text-slate-600">
+            <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
+              <tr>
+                <th className="py-3.5 px-4">Student Name</th>
+                <th className="py-3.5 px-4">Roll Number</th>
+                <th className="py-3.5 px-4">Class & Batch</th>
+                <th className="py-3.5 px-4">Term Total Fee</th>
+                <th className="py-3.5 px-4">Pending Due</th>
+                <th className="py-3.5 px-4">Fee Status</th>
+                <th className="py-3.5 px-4 text-center">Settlement Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {filteredStudentFees.map((s) => {
+                const isPending = Number(s.feeDues) > 0 || s.fee_status === 'Pending';
+                const dueAmount = Number(s.feeDues) > 0 ? Number(s.feeDues) : (isPending ? tuitionPerStudent : 0);
+                return (
+                  <tr key={s.name} className={`transition-colors ${isPending ? 'bg-amber-50/20 hover:bg-amber-50/40' : 'hover:bg-slate-50/60'}`}>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-black text-xs flex items-center justify-center">
+                          {s.student_name?.[0] || 'S'}
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-900">{s.student_name}</span>
+                          <div className="text-[10px] text-slate-400">{s.guardian_name || 'Parent on Record'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-slate-700">{s.roll_no || s.roll_number || s.name}</td>
+                    <td className="py-3.5 px-4 text-slate-600 font-medium">{s.student_batch || 'Grade 10 Section A'}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-slate-800">${tuitionPerStudent.toLocaleString()}</td>
+                    <td className="py-3.5 px-4 font-mono font-bold">
+                      {isPending ? (
+                        <span className="text-rose-600 font-black">${dueAmount.toLocaleString()}</span>
+                      ) : (
+                        <span className="text-emerald-600 font-bold">$0 (Cleared)</span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {isPending ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                          <span>Pending</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Paid & Verified</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      {isPending ? (
+                        <button
+                          onClick={() => handleCollectStudentFee(s)}
+                          className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 mx-auto cursor-pointer active:scale-95"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span>Receive Payment</span>
+                        </button>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Receipt Generated</span>
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* SECTION 2: BREAKDOWN CARDS & VISUAL ANALYTICS */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Revenue Breakdown */}
         <div className="lg:col-span-6 bg-white rounded-3xl p-6 border border-teal-100 shadow-sm space-y-4">
@@ -278,7 +485,7 @@ export default function FinancialPnLView() {
                 <p className="text-[11px] text-slate-400">Total institutional collections for Academic Year 2026</p>
               </div>
             </div>
-            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-mono">
               ${grossRevenue.toLocaleString()}
             </span>
           </div>
@@ -287,30 +494,30 @@ export default function FinancialPnLView() {
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Student Tuition & Enrollment Fees</span>
-                <span>${collectedTuition.toLocaleString()} (65.6%)</span>
+                <span>${collectedTuition.toLocaleString()} ({((collectedTuition / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style={{ width: '65.6%' }} />
+                <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style={{ width: `${((collectedTuition / grossRevenue) * 100).toFixed(1)}%` }} />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>North City Transport & Bus Fleet Subscriptions</span>
-                <span>${transportFees.toLocaleString()} (19.5%)</span>
+                <span>${transportFees.toLocaleString()} ({((transportFees / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full" style={{ width: '19.5%' }} />
+                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full" style={{ width: `${((transportFees / grossRevenue) * 100).toFixed(1)}%` }} />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                 <span>Science, Robotics & Smart Classroom Lab Fees</span>
-                <span>${labTechFees.toLocaleString()} (14.9%)</span>
+                <span>${labTechFees.toLocaleString()} ({((labTechFees / grossRevenue) * 100).toFixed(1)}%)</span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: '14.9%' }} />
+                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: `${((labTechFees / grossRevenue) * 100).toFixed(1)}%` }} />
               </div>
             </div>
           </div>
@@ -336,8 +543,8 @@ export default function FinancialPnLView() {
                 <p className="text-[11px] text-slate-400">Payroll, maintenance, campus lease & functions</p>
               </div>
             </div>
-            <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full">
-              ${totalExpenses.toLocaleString()}
+            <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full font-mono">
+              ${totalPaidExpenses.toLocaleString()}
             </span>
           </div>
 
@@ -383,19 +590,14 @@ export default function FinancialPnLView() {
         </div>
       </div>
 
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#0c1f2c] border border-teal-500/60 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs animate-bounce">
-          <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
-          <span className="font-semibold">{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Detailed Expense Ledger Table & Settlement Hub */}
+      {/* SECTION 3: DETAILED EXPENSE LEDGER & SETTLEMENT HUB */}
       <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden space-y-4 p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                <TrendingDown className="w-4 h-4" />
+              </div>
               <h3 className="font-bold text-slate-800 text-base">Institutional Expense & Disbursement Hub</h3>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
                 {pendingExpenses.length} Pending Approval
@@ -421,7 +623,7 @@ export default function FinancialPnLView() {
           </div>
         </div>
 
-        {/* 1-CLICK BULK PAY / DISBURSE ACTION BANNER */}
+        {/* 1-CLICK BULK PAY DISBURSEMENTS */}
         {pendingExpenses.length > 0 && (
           <div className="bg-gradient-to-r from-amber-500/10 via-teal-500/10 to-emerald-500/10 rounded-2xl p-4 border border-amber-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-3">
@@ -551,189 +753,84 @@ export default function FinancialPnLView() {
         </div>
       </div>
 
-      {/* ADD EXPENSE MODAL */}
+      {/* Add Expense Modal */}
       {showAddModal && (
-        <div 
-          onClick={(e) => { if (e.target === e.currentTarget) setShowAddModal(false); }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
-        >
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-teal-100 space-y-4">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-teal-500 text-white flex items-center justify-center shadow-lg shadow-teal-500/30">
-                  <Plus className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-sm">Log New Institutional Expense</h3>
-                  <p className="text-xs text-slate-400">Record event, utility, campus or facility outflows</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-              >
+              <h3 className="font-bold text-slate-800 text-base">Record Operational Expense</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddExpense} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Expense Type</label>
-                  <select
-                    value={newExp.type}
-                    onChange={(e) => {
-                      const type = e.target.value;
-                      let defaultCat = 'Annual Function 2026';
-                      if (type === 'operational') defaultCat = 'Utilities & Maintenance';
-                      if (type === 'facility') defaultCat = 'Smart Classroom Upgrade';
-                      setNewExp({ ...newExp, type, category: defaultCat });
-                    }}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
-                  >
-                    <option value="event">School Event (Function / Sports)</option>
-                    <option value="facility">Facility & Lab Equipment</option>
-                    <option value="operational">Operational & Utilities</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Category Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={newExp.category}
-                    onChange={(e) => setNewExp({ ...newExp, category: e.target.value })}
-                    placeholder="e.g. Annual Function / Sports Day"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:ring-2 focus:ring-teal-500 outline-none"
-                  />
-                </div>
-              </div>
-
+            <form onSubmit={handleAddExpense} className="space-y-4 text-xs">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Expense Description / Vendor</label>
+                <label className="block text-slate-600 font-bold mb-1">Expense Category</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Sound system & stage rental for Annual Day"
+                  placeholder="e.g. Science Lab Chemical Reagents"
+                  value={newExp.category}
+                  onChange={(e) => setNewExp({ ...newExp, category: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-600 font-bold mb-1">Description</label>
+                <textarea
+                  required
+                  rows={2}
+                  placeholder="Purpose of disbursement..."
                   value={newExp.description}
                   onChange={(e) => setNewExp({ ...newExp, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500 outline-none"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Amount ($ USD)</label>
+                  <label className="block text-slate-600 font-bold mb-1">Amount ($)</label>
                   <input
                     type="number"
                     required
-                    min="1"
-                    placeholder="1250"
+                    placeholder="2500"
                     value={newExp.amount}
                     onChange={(e) => setNewExp({ ...newExp, amount: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-teal-500 outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Date Incurred</label>
-                  <input
-                    type="date"
-                    required
-                    value={newExp.date}
-                    onChange={(e) => setNewExp({ ...newExp, date: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
-                  />
+                  <label className="block text-slate-600 font-bold mb-1">Category Type</label>
+                  <select
+                    value={newExp.type}
+                    onChange={(e) => setNewExp({ ...newExp, type: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700"
+                  >
+                    <option value="operational">Operational & Bills</option>
+                    <option value="event">School Event</option>
+                    <option value="facility">Facility Asset</option>
+                  </select>
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center space-x-3">
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20"
+                  className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold shadow-md shadow-teal-600/20"
                 >
-                  Record Expense
+                  Record Outflow
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* PRINT AUDIT SHEET MODAL */}
-      {showPrintModal && (
-        <div 
-          onClick={(e) => { if (e.target === e.currentTarget) setShowPrintModal(false); }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
-        >
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-teal-100 space-y-6 text-slate-800">
-            <div className="flex items-center justify-between border-b pb-4">
-              <div>
-                <h2 className="text-xl font-black tracking-tight text-slate-900">NAIREE INTERNATIONAL ACADEMY</h2>
-                <p className="text-xs text-slate-500 font-semibold">Official Executive Financial Profit & Loss Statement</p>
-                <p className="text-[10px] text-slate-400 font-mono">Academic Year 2026-2027 &bull; Ref: NAIREE-AUDIT-2026-Q3</p>
-              </div>
-              <button
-                onClick={() => setShowPrintModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs">
-              <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-100">
-                <div className="font-bold text-emerald-900 uppercase tracking-wider text-[10px]">Gross Revenue</div>
-                <div className="text-lg font-black text-emerald-700">${grossRevenue.toLocaleString()}</div>
-                <div className="text-[10px] text-emerald-600 mt-1">Tuition + Transport + STEM Labs</div>
-              </div>
-
-              <div className="p-3.5 bg-rose-50 rounded-xl border border-rose-100">
-                <div className="font-bold text-rose-900 uppercase tracking-wider text-[10px]">Total Outflows</div>
-                <div className="text-lg font-black text-rose-700">${totalExpenses.toLocaleString()}</div>
-                <div className="text-[10px] text-rose-600 mt-1">Payroll + Rent + Utilities + Events</div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center justify-between">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-teal-400 tracking-wider">Net Institutional Surplus</span>
-                <div className="text-2xl font-black text-teal-300">${netProfit.toLocaleString()}</div>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Profit Margin</span>
-                <div className="text-2xl font-black text-amber-400">{marginPct}%</div>
-              </div>
-            </div>
-
-            <div className="border-t pt-4 flex items-center justify-between text-[11px] text-slate-400">
-              <div>Certified by: <strong>Office of the Principal & Board of Governors</strong></div>
-              <div>Generated: {new Date().toLocaleDateString()}</div>
-            </div>
-
-            <div className="flex items-center space-x-3 pt-2">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 flex items-center justify-center space-x-2"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Send to Printer</span>
-              </button>
-              <button
-                onClick={() => setShowPrintModal(false)}
-                className="px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50"
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       )}

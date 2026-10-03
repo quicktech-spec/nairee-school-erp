@@ -27,7 +27,7 @@ import {
   AlertCircle,
   LayoutDashboard
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function StudentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
@@ -121,6 +121,16 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
     loadStudentData();
   }, [studentId]);
 
+  // Live real-time sync for fee clearance and announcement updates
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (event?.type === 'fee_updated' || event?.type === 'announcement_created') {
+        loadStudentData();
+      }
+    });
+    return () => unsub();
+  }, [studentId]);
+
   const handleSubmitHomework = async (e) => {
     e.preventDefault();
     if (!selectedHw || (!submissionText.trim() && !attachmentUrl)) return;
@@ -159,6 +169,8 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
     ? Math.round(student.assessments.reduce((acc, a) => acc + (a.percentage || 0), 0) / student.assessments.length)
     : 96;
 
+  const isFeePaid = student.fee_status === 'Paid' || (student.balance_due === 0 && (student.feeDues === undefined || student.feeDues === 0));
+
   return (
     <div className="space-y-6">
       {/* Toast Alert */}
@@ -190,6 +202,18 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
                   Active Student
                 </span>
+                {/* Real-Time Fee Status Badge */}
+                {isFeePaid ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    Fee Paid (Receipt Active)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    Fee Due ${student.balance_due || student.feeDues || 450}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-300 mt-1">
                 Student ID: <code className="font-mono text-cyan-300 font-bold">{student.name}</code> &bull; Roll #{student.roll_no}
@@ -206,9 +230,15 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
               <span className="text-[10px] text-slate-400 uppercase font-bold">Attendance</span>
               <p className="text-xl font-black text-emerald-400">{student.attendance?.percentage || 100}%</p>
             </div>
-            <div className="text-center px-3">
+            <div className="text-center px-3 border-r border-slate-700">
               <span className="text-[10px] text-slate-400 uppercase font-bold">Term Average</span>
               <p className="text-xl font-black text-amber-400">{averageScore}% (A+)</p>
+            </div>
+            <div className="text-center px-3">
+              <span className="text-[10px] text-slate-400 uppercase font-bold">Fee Status</span>
+              <p className={`text-sm font-black mt-1 ${isFeePaid ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {isFeePaid ? 'Paid' : 'Pending'}
+              </p>
             </div>
           </div>
         </div>

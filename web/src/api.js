@@ -309,13 +309,75 @@ export const api = {
     if (data) return data;
     const item = FALLBACK_DATA.fees.find(f => f.id === feeId);
     if (item) item.status = 'Paid';
+    broadcastLiveEvent('fee_updated', { fee_id: feeId, status: 'Paid' });
     return { 
       success: true, 
       fee_id: feeId, 
       status: 'Paid',
-      receipt_no: `REC-2026-${Date.now().toString().slice(-4)}`,
+      receipt_no: `REC 2026 ${Date.now().toString().slice(-4)}`,
       amountPaid: item ? item.amount : 1450,
       payment_date: new Date().toISOString().split('T')[0]
+    };
+  },
+
+  async settleStudentFee(studentIdentifier, amount = 0, paymentMethod = 'Online Gateway') {
+    const student = FALLBACK_STUDENTS.find(s => 
+      s.name === studentIdentifier || 
+      s.student_name === studentIdentifier ||
+      s.roll_no === studentIdentifier
+    );
+    if (student) {
+      student.feeDues = 0;
+      student.fee_status = 'Paid';
+    }
+
+    const dataStu = FALLBACK_DATA.students.find(s => 
+      s.id === studentIdentifier || 
+      s.name === studentIdentifier || 
+      s.full_name === studentIdentifier || 
+      s.student_name === studentIdentifier
+    );
+    if (dataStu) {
+      dataStu.balance_due = 0;
+      dataStu.fee_status = 'Paid';
+    }
+
+    try {
+      localStorage.setItem('nairee_students', JSON.stringify(FALLBACK_DATA.students));
+      localStorage.setItem('nairee_fallback_students', JSON.stringify(FALLBACK_STUDENTS));
+    } catch {}
+
+    const receiptNo = `REC 2026 ${Date.now().toString().slice(-4)}`;
+    const studentName = student?.student_name || dataStu?.full_name || studentIdentifier;
+
+    FALLBACK_DATA.fees.unshift({
+      id: `FEE ${Date.now().toString().slice(-4)}`,
+      title: `Term 1 Tuition Fee (${studentName})`,
+      amount: amount || 35000,
+      due_date: new Date().toISOString().split('T')[0],
+      status: 'Paid',
+      payment_date: new Date().toISOString().split('T')[0],
+      student_name: studentName,
+      receipt_no: receiptNo
+    });
+
+    try {
+      localStorage.setItem('nairee_fees', JSON.stringify(FALLBACK_DATA.fees));
+    } catch {}
+
+    broadcastLiveEvent('fee_updated', {
+      student_id: studentIdentifier,
+      student_name: studentName,
+      amount: amount || 35000,
+      status: 'Paid',
+      receipt_no: receiptNo
+    });
+
+    return {
+      success: true,
+      student_name: studentName,
+      receipt_no: receiptNo,
+      status: 'Paid'
     };
   },
 

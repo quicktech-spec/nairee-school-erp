@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileText,
   Printer,
@@ -17,10 +17,12 @@ import {
   X
 } from 'lucide-react';
 import { FALLBACK_STUDENTS } from '../fallbackData.js';
+import { subscribeLiveEvents } from '../api.js';
 
 export default function TransferCertificateView() {
   const [tcType, setTcType] = useState('10th'); // '10th', '12th', 'early'
-  const [selectedStudentId, setSelectedStudentId] = useState(FALLBACK_STUDENTS[0]?.name || 'STU-2026-001');
+  const [studentList, setStudentList] = useState(FALLBACK_STUDENTS);
+  const [selectedStudentId, setSelectedStudentId] = useState(FALLBACK_STUDENTS[0]?.name || 'EDU STU 2026 00001');
   const [showPrintModal, setShowPrintModal] = useState(false);
   
   // Custom certificate fields
@@ -32,7 +34,28 @@ export default function TransferCertificateView() {
   const [academicSession, setAcademicSession] = useState('2025 to 2026');
 
   // Find active student
-  const student = FALLBACK_STUDENTS.find(s => s.name === selectedStudentId) || FALLBACK_STUDENTS[0];
+  const student = studentList.find(s => s.name === selectedStudentId) || studentList[0] || FALLBACK_STUDENTS[0];
+
+  // Auto-sync dues clearance whenever selected student changes
+  useEffect(() => {
+    const isPaid = (student.feeDues || student.fee_due || 0) === 0 || student.fee_status === 'Paid';
+    setDuesCleared(isPaid);
+  }, [student]);
+
+  // Live real-time sync when fees are paid anywhere across the platform
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (event?.type === 'fee_updated') {
+        setStudentList(prev => prev.map(s => {
+          if (s.name === event.student_id || s.student_name === event.student_name) {
+            return { ...s, feeDues: 0, fee_due: 0, fee_status: 'Paid' };
+          }
+          return s;
+        }));
+      }
+    });
+    return () => unsub();
+  }, []);
 
   const handleTcTypeChange = (type) => {
     setTcType(type);
@@ -153,9 +176,9 @@ export default function TransferCertificateView() {
                 onChange={(e) => setSelectedStudentId(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none"
               >
-                {FALLBACK_STUDENTS.map(s => (
+                {studentList.map(s => (
                   <option key={s.name} value={s.name}>
-                    {s.student_name} &bull; Roll #{s.roll_no} &bull; {s.student_batch}
+                    {s.student_name} ({s.student_batch}) &bull; {((s.feeDues || s.fee_due || 0) === 0 || s.fee_status === 'Paid') ? 'Paid (Dues Cleared)' : `Due $${s.feeDues || s.fee_due}`}
                   </option>
                 ))}
               </select>

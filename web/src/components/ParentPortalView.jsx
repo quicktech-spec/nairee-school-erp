@@ -22,7 +22,7 @@ import {
   LayoutDashboard,
   Award
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function ParentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab, onPaymentCompleted }) {
@@ -83,6 +83,16 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
     }
   }, [selectedChildId]);
 
+  // Live real-time sync for fee settlements and notices
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (event?.type === 'fee_updated' || event?.type === 'announcement_created') {
+        if (selectedChildId) loadChildData(selectedChildId);
+      }
+    });
+    return () => unsub();
+  }, [selectedChildId]);
+
   const activeChild = children.find(c => c.name === selectedChildId) || children[0] || {
     name: 'EDU-STU-2026-00001',
     student_name: 'Nairee Patel',
@@ -96,7 +106,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
 
     setIsProcessingPayment(true);
     try {
-      const res = await api.payFee(selectedFee.name, paymentMethod);
+      const res = await api.payFee(selectedFee.name, paymentMethod, selectedChildId);
       setPaymentSuccess(res);
       showToast('Fee payment confirmed! Official receipt generated.');
       if (onPaymentCompleted) onPaymentCompleted();

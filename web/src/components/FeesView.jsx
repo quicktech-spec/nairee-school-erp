@@ -8,7 +8,7 @@ import {
   Download, 
   Filter
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 
 export default function FeesView({ onPaymentCompleted }) {
   const [fees, setFees] = useState([]);
@@ -33,6 +33,12 @@ export default function FeesView({ onPaymentCompleted }) {
 
   useEffect(() => {
     loadFees();
+    const unsubscribe = subscribeLiveEvents((event) => {
+      if (event.type === 'fee_updated') {
+        loadFees();
+      }
+    });
+    return () => unsubscribe();
   }, [statusFilter]);
 
   const handlePay = async (e) => {
