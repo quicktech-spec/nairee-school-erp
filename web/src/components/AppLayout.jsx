@@ -157,6 +157,54 @@ const saveAllReadNotifIds = (ids) => {
   }
 };
 
+const isNotificationForUser = (item, currentUser) => {
+  if (!currentUser) return true;
+  const userRole = (currentUser.role || '').toLowerCase();
+  const userName = (currentUser.full_name || currentUser.student_name || '').toLowerCase();
+  const username = (currentUser.username || '').toLowerCase();
+
+  // 1. Role-based targeting
+  if (item.target_role && item.target_role !== 'All' && item.target_role !== 'all') {
+    const roles = Array.isArray(item.target_role) 
+      ? item.target_role.map(r => r.toLowerCase()) 
+      : [item.target_role.toLowerCase()];
+    if (!roles.includes(userRole) && userRole !== 'admin') {
+      return false;
+    }
+  }
+
+  // 2. Personal Student / Parent Privacy Protection
+  // If notification is about personal Fee dues, receipts, or Absent attendance:
+  if (item.student_name || item.target_student) {
+    const targetStudent = (item.student_name || item.target_student).toLowerCase();
+    
+    // Principal & Admin can supervise all records
+    if (userRole === 'admin') return true;
+
+    // Student sees only their own personal records
+    if (userRole === 'student') {
+      if (!userName.includes(targetStudent) && !targetStudent.includes(userName) && !username.includes(targetStudent)) {
+        return false;
+      }
+    }
+
+    // Parent sees only their own child's personal records
+    if (userRole === 'parent') {
+      const childName = (currentUser.child_name || 'nairee').toLowerCase();
+      if (!childName.includes(targetStudent) && !targetStudent.includes(childName)) {
+        return false;
+      }
+    }
+
+    // Teachers do not see private family tuition fee notices
+    if (userRole === 'teacher' && (item.category === 'Finance' || item.category === 'Fee Due')) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export default function AppLayout({
   user,
   activeTab,
@@ -179,13 +227,13 @@ export default function AppLayout({
     return SAMPLE_NOTIFICATIONS.map(s => ({
       ...s,
       unread: !readIds.includes(String(s.id)) && s.unread
-    }));
+    })).filter(n => isNotificationForUser(n, user));
   });
   const dropdownRef = useRef(null);
 
   const navItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
 
-  // Sync live announcements into notifications
+  // Sync live announcements into notifications with strict user privacy filters
   const loadLiveNotifications = async () => {
     try {
       const readIds = getReadNotifIds();
@@ -197,6 +245,8 @@ export default function AppLayout({
           title: ann.title,
           content: ann.content || '',
           category: ann.category || 'Announcement',
+          target_role: ann.target_role || 'All',
+          target_student: ann.target_student || ann.student_name || null,
           time: ann.created_at || 'Just now',
           unread: !readIds.includes(String(id))
         };
@@ -212,9 +262,12 @@ export default function AppLayout({
         ...samples.filter(s => !combined.some(c => c.title === s.title))
       ];
 
-      // If a new unread notice drops in real-time, show animated live toast banner!
+      // Filter strictly for the logged-in user's role and personal identity
+      const userFiltered = allMerged.filter(item => isNotificationForUser(item, user));
+
+      // If a new unread notice for this user drops in real-time, show animated live toast!
       if (!isInitialLoadRef.current) {
-        const newlyAdded = allMerged.find(item => item.unread && !lastKnownIdsRef.current.has(String(item.id)));
+        const newlyAdded = userFiltered.find(item => item.unread && !lastKnownIdsRef.current.has(String(item.id)));
         if (newlyAdded) {
           setLiveToast({
             title: newlyAdded.title,
@@ -226,11 +279,10 @@ export default function AppLayout({
         }
       }
 
-      allMerged.forEach(item => lastKnownIdsRef.current.add(String(item.id)));
+      userFiltered.forEach(item => lastKnownIdsRef.current.add(String(item.id)));
       isInitialLoadRef.current = false;
 
-      // Combine with sample system notifications
-      setNotifications(allMerged);
+      setNotifications(userFiltered);
     } catch (err) {
       console.warn('Error syncing notifications with announcements:', err);
     }
