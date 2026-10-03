@@ -112,6 +112,99 @@ export const INITIAL_DB_STORE = {
       { name: 'ATT-002', student_id: 'EDU-STU-2026-00002', attendance_date: '2026-10-01', status: 'Present', batch_id: 'BATCH-10A-2026' },
       { name: 'ATT-003', student_id: 'EDU-STU-2026-00003', attendance_date: '2026-10-01', status: 'Absent', batch_id: 'BATCH-10A-2026' }
     ]
+  },
+  tabParent: {
+    columns: [
+      { name: 'parent_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'child_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'relationship', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { parent_id: 'PAR-001', full_name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child_id: 'EDU-STU-2026-00001', relationship: 'Father' },
+      { parent_id: 'PAR-002', full_name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child_id: 'EDU-STU-2026-00002', relationship: 'Mother' },
+      { parent_id: 'PAR-003', full_name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child_id: 'EDU-STU-2026-00003', relationship: 'Father' }
+    ]
+  },
+  tabSubject: {
+    columns: [
+      { name: 'subject_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'subject_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'subject_code', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'teacher_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'credit_hours', type: 'INT', pk: 0 },
+      { name: 'department', type: 'VARCHAR(255)', pk: 0 }
+    ],
+    rows: [
+      { subject_id: 'SUB-001', subject_name: 'Advanced Mathematics', subject_code: 'MATH-101', teacher_id: 'TEA-001', credit_hours: 4, department: 'Mathematics & Science' },
+      { subject_id: 'SUB-002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS-102', teacher_id: 'TEA-002', credit_hours: 4, department: 'Physics & STEM' },
+      { subject_id: 'SUB-003', subject_name: 'Computer Science & AI', subject_code: 'CS-104', teacher_id: 'TEA-003', credit_hours: 3, department: 'Computer Science' },
+      { subject_id: 'SUB-004', subject_name: 'English & World Literature', subject_code: 'ENG-105', teacher_id: 'TEA-004', credit_hours: 3, department: 'Humanities & English' }
+    ]
+  },
+  tabClass: {
+    columns: [
+      { name: 'batch_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'batch_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'grade_level', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'section', type: 'VARCHAR(10)', pk: 0 },
+      { name: 'class_teacher_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'room_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'capacity', type: 'INT', pk: 0 }
+    ],
+    rows: [
+      { batch_id: 'CLS-10A', batch_name: 'Class 10-A', grade_level: 'Grade 10', section: 'A', class_teacher_id: 'TEA-001', room_no: 'Room 204', capacity: 35 },
+      { batch_id: 'CLS-10B', batch_name: 'Class 10-B', grade_level: 'Grade 10', section: 'B', class_teacher_id: 'TEA-002', room_no: 'Room 205', capacity: 35 },
+      { batch_id: 'CLS-11A', batch_name: 'Class 11-A', grade_level: 'Grade 11', section: 'A', class_teacher_id: 'TEA-003', room_no: 'Room 301', capacity: 30 }
+    ]
+  },
+  tabFeeRecord: {
+    columns: [
+      { name: 'fee_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'fee_title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'paid_amount', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'balance_due', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'due_date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { fee_id: 'FEE-001', student_id: 'EDU-STU-2026-00001', fee_title: 'Term 1 Tuition Fee', amount: 35000, paid_amount: 35000, balance_due: 0, due_date: '2026-10-15', status: 'Paid' },
+      { fee_id: 'FEE-002', student_id: 'EDU-STU-2026-00001', fee_title: 'Science Lab & STEM Fee', amount: 8500, paid_amount: 0, balance_due: 8500, due_date: '2026-10-25', status: 'Pending' },
+      { fee_id: 'FEE-003', student_id: 'EDU-STU-2026-00003', fee_title: 'Annual Activity & Sports Fee', amount: 12500, paid_amount: 0, balance_due: 12500, due_date: '2026-10-30', status: 'Pending' }
+    ]
+  },
+  tabHomework: {
+    columns: [
+      { name: 'homework_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'batch_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'subject_id', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'instructions', type: 'TEXT', pk: 0 },
+      { name: 'due_date', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'assigned_by', type: 'VARCHAR(255)', pk: 0 }
+    ],
+    rows: [
+      { homework_id: 'HW-001', batch_id: 'CLS-10A', subject_id: 'SUB-001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step-by-step proofs.', due_date: 'Tomorrow, 5:00 PM', assigned_by: 'TEA-001' },
+      { homework_id: 'HW-002', batch_id: 'CLS-10A', subject_id: 'SUB-002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday, 11:59 PM', assigned_by: 'TEA-002' }
+    ]
+  },
+  tabAdmin: {
+    columns: [
+      { name: 'admin_id', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'full_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'role', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'designation', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { admin_id: 'ADM-001', full_name: 'Dr. Marcus Vance', email: 'admin@nairee.edu', role: 'Principal', designation: 'Executive Principal & Academic Director', status: 'Active' },
+      { admin_id: 'ADM-002', full_name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar', status: 'Active' }
+    ]
   }
 };
 
