@@ -507,11 +507,93 @@ export default function DatabaseStudioView() {
                         </td>
                         {tableData.columns.map(col => {
                           const val = row[col.name];
+                          
+                          // Helper dictionary to resolve foreign keys to human names
+                          const studentMap = {
+                            'STU-001': 'Devon Patel',
+                            'STU-002': 'Aarav Sharma',
+                            'STU-003': 'Diya Gupta',
+                            'STU-004': 'Rohan Mehta',
+                            'STU-005': 'Ananya Iyer',
+                            'STU-006': 'Kabir Singh',
+                            'EDU-STU-2026-00001': 'Nairee Patel'
+                          };
+                          const teacherMap = {
+                            'TEA-001': 'Prof. Sarah Jenkins',
+                            'TEA-002': 'Dr. Evelyn Reed',
+                            'TEA-003': 'Mr. Robert Chen',
+                            'TEA-004': 'Ms. Clara Oswald'
+                          };
+                          const classMap = {
+                            'CLS-10A': 'Class 10-A',
+                            'CLS-10B': 'Class 10-B',
+                            'CLS-11A': 'Class 11-A',
+                            'BATCH-10A-2026': 'Class 10-A'
+                          };
+
+                          if (val === null || val === undefined) {
+                            return (
+                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
+                                <span className="text-slate-300 italic font-mono text-[10px]">NULL</span>
+                              </td>
+                            );
+                          }
+
+                          // Status badges
+                          if (col.name === 'status' || col.name === 'fee_status') {
+                            const isPaidOrPresent = val === 'Paid' || val === 'Present' || val === 'Active';
+                            return (
+                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                  isPaidOrPresent 
+                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                                }`}>
+                                  {String(val)}
+                                </span>
+                              </td>
+                            );
+                          }
+
+                          // Foreign key badge for student
+                          if ((col.name === 'student' || col.name === 'child' || col.name === 'student_id') && studentMap[val]) {
+                            return (
+                              <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 font-bold">
+                                  <span className="font-mono text-teal-600">{val}</span>
+                                  <span className="text-slate-700 font-semibold">• {studentMap[val]}</span>
+                                </span>
+                              </td>
+                            );
+                          }
+
+                          // Foreign key badge for teacher
+                          if ((col.name === 'teacher' || col.name === 'class_teacher' || col.name === 'assigned_by') && teacherMap[val]) {
+                            return (
+                              <td key={col.name} className="py-2.5 px-3 max-w-[220px] truncate text-[11px]">
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold">
+                                  <span className="font-mono text-indigo-600">{val}</span>
+                                  <span className="text-slate-700 font-semibold">• {teacherMap[val]}</span>
+                                </span>
+                              </td>
+                            );
+                          }
+
+                          // Foreign key badge for class
+                          if ((col.name === 'class_batch' || col.name === 'batch_id') && classMap[val]) {
+                            return (
+                              <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 font-bold">
+                                  <span className="font-mono text-purple-600">{val}</span>
+                                  <span className="text-slate-600">({classMap[val]})</span>
+                                </span>
+                              </td>
+                            );
+                          }
+
                           return (
                             <td key={col.name} className="py-2.5 px-3 max-w-[200px] truncate text-[11px]">
-                              {val === null || val === undefined ? (
-                                <span className="text-slate-300 italic font-mono text-[10px]">NULL</span>
-                              ) : typeof val === 'string' && val.startsWith('http') ? (
+                              {typeof val === 'string' && val.startsWith('http') ? (
                                 <a href={val} target="_blank" rel="noreferrer" className="text-teal-600 hover:underline flex items-center gap-1">
                                   <span className="truncate">{val}</span>
                                   <ExternalLink className="w-3 h-3 flex-shrink-0" />

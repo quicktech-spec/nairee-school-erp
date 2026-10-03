@@ -79,8 +79,11 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { fee_id: 'FEE-001', student: 'STU-001', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
-      { fee_id: 'FEE-002', student: 'STU-001', fee_title: 'Science Lab & STEM Fee', amount: 8500, status: 'Pending', due_date: '2026-10-25' },
-      { fee_id: 'FEE-003', student: 'STU-003', fee_title: 'Annual Activity & Sports Fee', amount: 12500, status: 'Pending', due_date: '2026-10-30' }
+      { fee_id: 'FEE-002', student: 'STU-002', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
+      { fee_id: 'FEE-003', student: 'STU-003', fee_title: 'Term 1 Tuition & STEM Lab Fee', amount: 35000, status: 'Pending', due_date: '2026-10-20' },
+      { fee_id: 'FEE-004', student: 'STU-004', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
+      { fee_id: 'FEE-005', student: 'STU-005', fee_title: 'Term 1 Tuition Fee', amount: 35000, status: 'Paid', due_date: '2026-10-15' },
+      { fee_id: 'FEE-006', student: 'STU-006', fee_title: 'Term 1 Tuition & Transport Fee', amount: 38000, status: 'Pending', due_date: '2026-10-25' }
     ]
   },
   'Parent List': {
