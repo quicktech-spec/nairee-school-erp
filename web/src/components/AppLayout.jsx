@@ -138,6 +138,25 @@ const SAMPLE_NOTIFICATIONS = [
   }
 ];
 
+const getReadNotifIds = () => {
+  try {
+    const raw = localStorage.getItem('nairee_read_notification_ids');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveAllReadNotifIds = (ids) => {
+  try {
+    const existing = getReadNotifIds();
+    const updated = Array.from(new Set([...existing, ...ids.map(String)]));
+    localStorage.setItem('nairee_read_notification_ids', JSON.stringify(updated));
+  } catch (e) {
+    console.warn(e);
+  }
+};
+
 export default function AppLayout({
   user,
   activeTab,
@@ -151,7 +170,13 @@ export default function AppLayout({
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
-  const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState(() => {
+    const readIds = getReadNotifIds();
+    return SAMPLE_NOTIFICATIONS.map(s => ({
+      ...s,
+      unread: !readIds.includes(String(s.id)) && s.unread
+    }));
+  });
   const dropdownRef = useRef(null);
 
   const navItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
@@ -159,20 +184,29 @@ export default function AppLayout({
   // Sync live announcements into notifications
   const loadLiveNotifications = async () => {
     try {
+      const readIds = getReadNotifIds();
       const annList = await api.getAnnouncements(user?.role || 'all').catch(() => []);
-      const combined = (annList && annList.length > 0 ? annList : FALLBACK_DATA.announcements).map((ann, idx) => ({
-        id: ann.id || `ann_${idx}`,
-        title: ann.title,
-        content: ann.content || '',
-        category: ann.category || 'Announcement',
-        time: ann.created_at || 'Just now',
-        unread: idx < 2 // First 2 new ones start as unread
+      const combined = (annList && annList.length > 0 ? annList : FALLBACK_DATA.announcements).map((ann, idx) => {
+        const id = ann.id || `ann_${idx}`;
+        return {
+          id: id,
+          title: ann.title,
+          content: ann.content || '',
+          category: ann.category || 'Announcement',
+          time: ann.created_at || 'Just now',
+          unread: !readIds.includes(String(id)) && idx < 2
+        };
+      });
+
+      const samples = SAMPLE_NOTIFICATIONS.map(s => ({
+        ...s,
+        unread: !readIds.includes(String(s.id)) && s.unread
       }));
 
       // Combine with sample system notifications
       setNotifications([
         ...combined,
-        ...SAMPLE_NOTIFICATIONS.filter(s => !combined.some(c => c.title === s.title))
+        ...samples.filter(s => !combined.some(c => c.title === s.title))
       ]);
     } catch (err) {
       console.warn('Error syncing notifications with announcements:', err);
@@ -186,11 +220,16 @@ export default function AppLayout({
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    setNotifications(prev => {
+      const allIds = prev.map(n => String(n.id));
+      saveAllReadNotifIds(allIds);
+      return prev.map(n => ({ ...n, unread: false }));
+    });
   };
 
   const markSingleAsRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+    saveAllReadNotifIds([String(id)]);
+    setNotifications(prev => prev.map(n => String(n.id) === String(id) ? { ...n, unread: false } : n));
   };
 
   useEffect(() => {
@@ -342,7 +381,10 @@ export default function AppLayout({
 
             {/* Notification Bell with Dynamic Unread Badge */}
             <button
-              onClick={() => setShowNoticesModal(true)}
+              onClick={() => {
+                setShowNoticesModal(true);
+                markAllAsRead();
+              }}
               className="relative w-10 h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
               title="Notifications & Circulars"
             >
