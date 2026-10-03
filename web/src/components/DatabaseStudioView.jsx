@@ -229,21 +229,6 @@ export default function DatabaseStudioView() {
     }
   };
 
-  const handleExportCurrentTable = () => {
-    try {
-      const rows = tableData.rows.length > 0 ? tableData.rows : [{}];
-      const ws = XLSX.utils.json_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      const safeSheetName = selectedTable.replace(/[\\/?*:[\]]/g, '').slice(0, 31);
-      XLSX.utils.book_append_sheet(wb, ws, safeSheetName);
-      const filename = `${selectedTable.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
-      XLSX.writeFile(wb, filename);
-      showToast(`📊 Exported ${tableData.rows.length} rows from "${selectedTable}" to Excel!`);
-    } catch (err) {
-      showToast('❌ Failed to export table: ' + err.message);
-    }
-  };
-
   const openStudentModal = (studentRow = null) => {
     if (studentRow) {
       setEditingRow(studentRow);
@@ -570,16 +555,6 @@ export default function DatabaseStudioView() {
                 />
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
               </form>
-
-              {/* Export Current Table to Excel */}
-              <button
-                onClick={handleExportCurrentTable}
-                className="px-3 py-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer flex-shrink-0"
-                title="Export this table to Excel (.xlsx)"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="hidden sm:inline">Export Sheet</span>
-              </button>
 
               {/* Add Student / Row Button */}
               <button
