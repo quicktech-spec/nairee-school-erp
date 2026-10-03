@@ -41,14 +41,16 @@ export default function FinancialPnLView() {
 
   // Operational Expenses State
   const [expenses, setExpenses] = useState([
-    { id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Disbursed', type: 'operational' },
+    { id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
     { id: 'EXP-002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 4800, date: '2026-09-01', status: 'Paid', type: 'operational' },
-    { id: 'EXP-003', category: 'Utilities & Power', description: 'Electricity, High-speed Fiber & Water', amount: 1450, date: '2026-09-15', status: 'Paid', type: 'operational' },
-    { id: 'EXP-004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 1850, date: '2026-09-20', status: 'Paid', type: 'event' },
-    { id: 'EXP-005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 920, date: '2026-09-22', status: 'Paid', type: 'event' },
+    { id: 'EXP-003', category: 'Utilities & Power', description: 'Electricity, High-speed Fiber & Water Bill', amount: 1450, date: '2026-10-02', status: 'Pending', type: 'operational' },
+    { id: 'EXP-004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 1850, date: '2026-10-03', status: 'Pending', type: 'event' },
+    { id: 'EXP-005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 920, date: '2026-10-04', status: 'Pending', type: 'event' },
     { id: 'EXP-006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 1200, date: '2026-09-25', status: 'Paid', type: 'facility' }
   ]);
 
+  const [selectedExpenseIds, setSelectedExpenseIds] = useState([]);
+  const [toastMessage, setToastMessage] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -60,8 +62,50 @@ export default function FinancialPnLView() {
     type: 'event'
   });
 
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  const pendingExpenses = expenses.filter(e => e.status === 'Pending');
+  const selectedPendingExpenses = pendingExpenses.filter(e => selectedExpenseIds.includes(e.id));
+  const selectedTotalAmount = selectedPendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const handleToggleSelect = (id) => {
+    setSelectedExpenseIds(prev => 
+      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedExpenseIds.length === pendingExpenses.length) {
+      setSelectedExpenseIds([]);
+    } else {
+      setSelectedExpenseIds(pendingExpenses.map(e => e.id));
+    }
+  };
+
+  const handlePayIndividual = (id) => {
+    const target = expenses.find(e => e.id === id);
+    if (!target) return;
+    setExpenses(prev => prev.map(e => e.id === id ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
+    setSelectedExpenseIds(prev => prev.filter(x => x !== id));
+    showToast(`Expense ${id} (${target.category} • $${target.amount}) settled successfully!`);
+  };
+
+  const handlePayAllSelected = () => {
+    if (selectedExpenseIds.length === 0) return;
+    const count = selectedExpenseIds.length;
+    const total = selectedTotalAmount;
+    setExpenses(prev => prev.map(e => selectedExpenseIds.includes(e.id) ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
+    setSelectedExpenseIds([]);
+    showToast(`🎉 1-Click Pay All: Settled ${count} pending expenses ($${total.toLocaleString()})!`);
+  };
+
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  const netProfit = grossRevenue - totalExpenses;
+  const totalPaidExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
+  const totalPendingExpenses = pendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const netProfit = grossRevenue - totalPaidExpenses;
   const marginPct = ((netProfit / grossRevenue) * 100).toFixed(1);
 
   const handleAddExpense = (e) => {
@@ -73,11 +117,12 @@ export default function FinancialPnLView() {
       description: newExp.description,
       amount: parseFloat(newExp.amount),
       date: newExp.date,
-      status: 'Paid',
+      status: 'Pending',
       type: newExp.type
     };
     setExpenses([added, ...expenses]);
     setShowAddModal(false);
+    showToast(`Logged new pending expense for ${newExp.category} ($${newExp.amount})`);
     setNewExp({
       category: 'Annual Function',
       description: '',
@@ -338,15 +383,30 @@ export default function FinancialPnLView() {
         </div>
       </div>
 
-      {/* Detailed Expense Ledger Table */}
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0c1f2c] border border-teal-500/60 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs animate-bounce">
+          <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
+          <span className="font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Detailed Expense Ledger Table & Settlement Hub */}
       <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden space-y-4 p-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-slate-800 text-base">Detailed Expense & Outflow Ledger</h3>
-            <p className="text-xs text-slate-400">All registered debits, salary payments, event costs and campus investments</p>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-slate-800 text-base">Institutional Expense & Disbursement Hub</h3>
+              <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                {pendingExpenses.length} Pending Approval
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Manage operational bills, teacher salaries, event costs with 1-Click bulk settlement or individual payments.
+            </p>
           </div>
 
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <div className="flex items-center space-x-2 w-full md:w-auto">
             <Filter className="w-4 h-4 text-slate-400" />
             <select
               value={filterType}
@@ -361,47 +421,131 @@ export default function FinancialPnLView() {
           </div>
         </div>
 
+        {/* 1-CLICK BULK PAY / DISBURSE ACTION BANNER */}
+        {pendingExpenses.length > 0 && (
+          <div className="bg-gradient-to-r from-amber-500/10 via-teal-500/10 to-emerald-500/10 rounded-2xl p-4 border border-amber-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center space-x-3">
+              <label className="flex items-center space-x-2 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs text-xs font-bold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={pendingExpenses.length > 0 && selectedExpenseIds.length === pendingExpenses.length}
+                  onChange={handleSelectAll}
+                  className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4 cursor-pointer"
+                />
+                <span>Select All Pending ({pendingExpenses.length})</span>
+              </label>
+
+              <div className="text-xs">
+                <span className="text-slate-500">Selected: </span>
+                <strong className="text-slate-900 font-mono font-black">{selectedExpenseIds.length} Expenses</strong>
+                {selectedExpenseIds.length > 0 && (
+                  <span className="text-emerald-700 font-bold ml-1.5 font-mono">
+                    (${selectedTotalAmount.toLocaleString()})
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
+              <button
+                onClick={handlePayAllSelected}
+                disabled={selectedExpenseIds.length === 0}
+                className={`w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 shadow-md transition-all ${
+                  selectedExpenseIds.length > 0
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30 cursor-pointer active:scale-95'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                }`}
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>1-Click Pay All Selected ({selectedExpenseIds.length})</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-left text-xs text-slate-600">
             <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
               <tr>
+                <th className="py-3.5 px-3 w-10 text-center">
+                  <span className="sr-only">Select</span>
+                </th>
                 <th className="py-3.5 px-4">Expense ID</th>
                 <th className="py-3.5 px-4">Category & Purpose</th>
                 <th className="py-3.5 px-4">Classification</th>
                 <th className="py-3.5 px-4">Date Logged</th>
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4 text-right">Amount</th>
+                <th className="py-3.5 px-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
-              {filteredExpenses.map((e) => (
-                <tr key={e.id} className="hover:bg-teal-50/20 transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-slate-800">{e.id}</td>
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-800">{e.category}</div>
-                    <div className="text-[11px] text-slate-400">{e.description}</div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                      e.type === 'operational' ? 'bg-blue-100 text-blue-800' :
-                      e.type === 'event' ? 'bg-purple-100 text-purple-800' :
-                      'bg-amber-100 text-amber-800'
-                    }`}>
-                      {e.type === 'operational' ? 'Operational' : e.type === 'event' ? 'School Event' : 'Facility Asset'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-slate-500">{e.date}</td>
-                  <td className="py-3 px-4">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 flex items-center space-x-1 w-fit">
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>{e.status}</span>
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-right font-black text-rose-600">
-                    -${Number(e.amount).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
+              {filteredExpenses.map((e) => {
+                const isPending = e.status === 'Pending';
+                const isSelected = selectedExpenseIds.includes(e.id);
+                return (
+                  <tr key={e.id} className={`transition-colors ${isSelected ? 'bg-teal-50/50' : 'hover:bg-slate-50/60'}`}>
+                    <td className="py-3 px-3 text-center">
+                      {isPending ? (
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleToggleSelect(e.id)}
+                          className="rounded text-teal-600 focus:ring-teal-500 w-4 h-4 cursor-pointer"
+                        />
+                      ) : (
+                        <span className="text-slate-300 font-mono text-[10px]">✓</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 font-mono font-bold text-slate-800">{e.id}</td>
+                    <td className="py-3 px-4">
+                      <div className="font-bold text-slate-800">{e.category}</div>
+                      <div className="text-[11px] text-slate-400">{e.description}</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                        e.type === 'operational' ? 'bg-blue-100 text-blue-800' :
+                        e.type === 'event' ? 'bg-purple-100 text-purple-800' :
+                        'bg-amber-100 text-amber-800'
+                      }`}>
+                        {e.type === 'operational' ? 'Operational' : e.type === 'event' ? 'School Event' : 'Facility Asset'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">{e.date}</td>
+                    <td className="py-3 px-4">
+                      {isPending ? (
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300 flex items-center space-x-1 w-fit">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                          <span>Pending Payment</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1 w-fit">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Paid & Settled</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-black font-mono text-rose-600">
+                      -${Number(e.amount).toLocaleString()}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {isPending ? (
+                        <button
+                          onClick={() => handlePayIndividual(e.id)}
+                          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 hover:text-white text-xs font-bold transition-all shadow-sm flex items-center space-x-1 mx-auto cursor-pointer"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span>Pay Now</span>
+                        </button>
+                      ) : (
+                        <span className="text-[11px] font-bold text-slate-400 flex items-center justify-center gap-1 font-mono">
+                          <span>Settled</span>
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
