@@ -359,9 +359,10 @@ export const FALLBACK_DATA = {
   students: [
     { id: 'EDU STU 2026 00001', full_name: 'Nairee Patel', roll_number: '10A 01', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'syalfreelance@gmail.com', phone: '+91 98765 00001', attendance_percentage: 97.5, fee_status: 'Paid', balance_due: 0 },
     { id: 'EDU STU 2026 00002', full_name: 'Aarav Sharma', roll_number: '10A 02', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'aarav.sharma@example.com', phone: '+91 98765 00002', attendance_percentage: 94.0, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00003', full_name: 'Diya Gupta', roll_number: '10A 03', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'diya.gupta@example.com', phone: '+91 98765 00003', attendance_percentage: 98.2, fee_status: 'Pending', balance_due: 12500 },
+    { id: 'EDU STU 2026 00003', full_name: 'Diya Gupta', roll_number: '10A 03', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'diya.gupta@example.com', phone: '+91 98765 00003', attendance_percentage: 98.2, fee_status: 'Pending', balance_due: 35000 },
     { id: 'EDU STU 2026 00004', full_name: 'Rohan Mehta', roll_number: '10A 04', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'rohan.mehta@example.com', phone: '+91 98765 00004', attendance_percentage: 91.5, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00005', full_name: 'Ananya Iyer', roll_number: '10A 05', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', attendance_percentage: 99.0, fee_status: 'Paid', balance_due: 0 }
+    { id: 'EDU STU 2026 00005', full_name: 'Ananya Iyer', roll_number: '10A 05', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', attendance_percentage: 99.0, fee_status: 'Paid', balance_due: 0 },
+    { id: 'EDU STU 2026 00006', full_name: 'Kabir Singh', roll_number: '10B 06', batch_id: 'BATCH 10B 2026', batch_name: 'Grade 10 Section B', email: 'kabir.singh@example.com', phone: '+91 98765 00006', attendance_percentage: 89.0, fee_status: 'Pending', balance_due: 35000 }
   ],
   batches: [
     { id: 'BATCH 10A 2026', name: 'Grade 10 Section A', grade: '10', section: 'A', room: 'Room 204' },
@@ -423,12 +424,12 @@ export const FALLBACK_DATA = {
 };
 
 export const FALLBACK_STUDENTS = [
-  { name: 'EDU STU 2026 00001', student_name: 'Nairee Patel', roll_no: '101', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Rajesh Patel', guardian_mobile: '+1 555 901 2234', attendancePct: 98, avgGrade: 96, feeDues: 0 },
-  { name: 'EDU STU 2026 00002', student_name: 'Aarav Sharma', roll_no: '102', student_batch: 'Grade 10 Section A', guardian_name: 'Mrs. Sunita Sharma', guardian_mobile: '+1 555 901 2235', attendancePct: 94, avgGrade: 88, feeDues: 0 },
-  { name: 'EDU STU 2026 00003', student_name: 'Diya Gupta', roll_no: '103', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Vikram Gupta', guardian_mobile: '+1 555 901 2236', attendancePct: 99, avgGrade: 92, feeDues: 450 },
-  { name: 'EDU STU 2026 00004', student_name: 'Rohan Mehta', roll_no: '104', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Sanjay Mehta', guardian_mobile: '+1 555 901 2237', attendancePct: 91, avgGrade: 84, feeDues: 0 },
-  { name: 'EDU STU 2026 00005', student_name: 'Ananya Iyer', roll_no: '105', student_batch: 'Grade 10 Section A', guardian_name: 'Mrs. Meenakshi Iyer', guardian_mobile: '+1 555 901 2238', attendancePct: 97, avgGrade: 95, feeDues: 0 },
-  { name: 'EDU STU 2026 00006', student_name: 'Kabir Singh', roll_no: '106', student_batch: 'Grade 10 Section B', guardian_name: 'Mr. Jaswinder Singh', guardian_mobile: '+1 555 901 2239', attendancePct: 89, avgGrade: 78, feeDues: 800 }
+  { name: 'EDU STU 2026 00001', student_name: 'Nairee Patel', roll_no: '101', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Rajesh Patel', guardian_mobile: '+91 98765 43212', attendancePct: 98, avgGrade: 96, feeDues: 0 },
+  { name: 'EDU STU 2026 00002', student_name: 'Aarav Sharma', roll_no: '102', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Suresh Sharma', guardian_mobile: '+91 98765 43214', attendancePct: 94, avgGrade: 88, feeDues: 0 },
+  { name: 'EDU STU 2026 00003', student_name: 'Diya Gupta', roll_no: '103', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Vikram Gupta', guardian_mobile: '+91 98765 43216', attendancePct: 99, avgGrade: 92, feeDues: 35000 },
+  { name: 'EDU STU 2026 00004', student_name: 'Rohan Mehta', roll_no: '104', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Manish Mehta', guardian_mobile: '+91 98765 43218', attendancePct: 91, avgGrade: 84, feeDues: 0 },
+  { name: 'EDU STU 2026 00005', student_name: 'Ananya Iyer', roll_no: '105', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Karthik Iyer', guardian_mobile: '+91 98765 43220', attendancePct: 97, avgGrade: 95, feeDues: 0 },
+  { name: 'EDU STU 2026 00006', student_name: 'Kabir Singh', roll_no: '106', student_batch: 'Grade 10 Section B', guardian_name: 'Mr. Harpreet Singh', guardian_mobile: '+91 98765 43222', attendancePct: 89, avgGrade: 78, feeDues: 35000 }
 ];
 
 export const FALLBACK_FACULTY = [

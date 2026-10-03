@@ -129,11 +129,20 @@ export const api = {
   async getDashboardStats() {
     const data = await safeFetch('/dashboard/stats');
     if (data) return data;
+    const billed = 210000;
+    const collected = 140000;
+    const outstanding = 70000;
     return {
       ...FALLBACK_DATA.stats,
-      students: FALLBACK_DATA.students.length,
-      teachers: FALLBACK_DATA.faculty.length,
-      total_students: FALLBACK_DATA.students.length * 120
+      students: FALLBACK_DATA.students.length || 6,
+      teachers: FALLBACK_DATA.faculty.length || 4,
+      total_students: 840,
+      finance: {
+        totalBilled: billed,
+        totalCollected: collected,
+        totalOutstanding: outstanding,
+        collectionRate: 67
+      }
     };
   },
 
@@ -528,18 +537,30 @@ export const api = {
     const data = await safeFetch(`/admin/student-performance?${params.toString()}`);
     if (data) return data;
 
-    return FALLBACK_DATA.students.map((s, idx) => ({
-      id: s.id || s.name,
-      name: s.id || s.name,
-      student_name: s.full_name || s.student_name,
-      roll_no: s.roll_number || s.roll_no || `${101 + idx}`,
-      student_batch: s.batch_id || s.student_batch || 'BATCH-10A-2026',
-      attendancePct: s.attendance_percentage || 96,
-      avgGrade: idx === 2 ? 62 : 92,
-      feeDues: idx === 2 ? 35000 : 0,
-      isAtRisk: idx === 2,
-      riskReasons: idx === 2 ? ['Term Fee Pending (₹35,000)', 'Low Midterm Score in Physics'] : []
-    }));
+    const sourceList = (FALLBACK_DATA.students && FALLBACK_DATA.students.length >= 6) ? FALLBACK_DATA.students : FALLBACK_STUDENTS;
+    return sourceList.map((s, idx) => {
+      const isPending = idx === 2 || idx === 5 || s.fee_status === 'Pending' || s.balance_due > 0 || (s.feeDues || 0) > 0;
+      const feeAmount = isPending ? 35000 : 0;
+      const guardianMobile = idx === 2 ? '+91 98765 43216' : idx === 5 ? '+91 98765 43222' : (s.phone || `+91 98765 0000${idx + 1}`);
+      const guardianName = idx === 2 ? 'Mr. Vikram Gupta' : idx === 5 ? 'Mr. Harpreet Singh' : (s.guardian_name || 'Parent');
+
+      return {
+        id: s.id || s.name,
+        name: s.id || s.name,
+        student_name: s.full_name || s.student_name,
+        roll_no: s.roll_number || s.roll_no || `${101 + idx}`,
+        student_batch: s.batch_id || s.student_batch || (idx === 5 ? 'Class 10 - Section B' : 'Class 10 - Section A'),
+        batch_name: s.batch_name || s.student_batch || (idx === 5 ? 'Class 10 - Section B' : 'Class 10 - Section A'),
+        attendancePct: s.attendance_percentage || s.attendancePct || (idx === 5 ? 89 : 96),
+        avgGrade: idx === 2 ? 62 : idx === 5 ? 78 : 92,
+        feeDues: feeAmount,
+        fee_status: isPending ? 'Pending' : 'Paid',
+        guardian_name: guardianName,
+        guardian_mobile: guardianMobile,
+        isAtRisk: isPending,
+        riskReasons: isPending ? ['Term Fee Pending (₹35,000)'] : []
+      };
+    });
   },
 
   async getSyllabus(params = {}) {

@@ -27,7 +27,13 @@ import {
   X,
   Umbrella,
   Lock,
-  QrCode
+  QrCode,
+  Receipt,
+  FileText,
+  IndianRupee,
+  Check,
+  AlertCircle,
+  Eye
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
 import ClassStaffManagerView from './ClassStaffManagerView.jsx';
@@ -51,6 +57,84 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Total Outstanding Breakdown Modal State
+  const [showOutstandingModal, setShowOutstandingModal] = useState(false);
+  const [outstandingFilter, setOutstandingFilter] = useState('all');
+  const [outstandingSearch, setOutstandingSearch] = useState('');
+  const [outstandingExpenses, setOutstandingExpenses] = useState([
+    {
+      id: 'EXP-OUT-001',
+      name: 'Student Tuition & Academic Term Fee — Diya Gupta (Roll #103, Class 10-A)',
+      type: 'Student Tuition Fee Receivable',
+      amount: 35000,
+      status: 'Unpaid',
+      student_name: 'Diya Gupta',
+      roll_no: '103',
+      guardian_name: 'Mr. Vikram Gupta',
+      guardian_mobile: '+91 98765 43216'
+    },
+    {
+      id: 'EXP-OUT-002',
+      name: 'Student Tuition & Academic Term Fee — Kabir Singh (Roll #106, Class 10-B)',
+      type: 'Student Tuition Fee Receivable',
+      amount: 35000,
+      status: 'Unpaid',
+      student_name: 'Kabir Singh',
+      roll_no: '106',
+      guardian_name: 'Mr. Harpreet Singh',
+      guardian_mobile: '+91 98765 43222'
+    },
+    {
+      id: 'EXP-OUT-003',
+      name: 'Advanced STEM & AI Robotics Lab Instrumentation Procurement',
+      type: 'Laboratory Capex & Equipment',
+      amount: 45000,
+      status: 'Unpaid'
+    },
+    {
+      id: 'EXP-OUT-004',
+      name: 'Campus High-Speed Dedicated Optical Fiber Lease (Q3 Billing)',
+      type: 'IT Infrastructure & Telecom',
+      amount: 12500,
+      status: 'Unpaid'
+    },
+    {
+      id: 'EXP-OUT-005',
+      name: 'Campus Power Grid & Solar Inverter Quarterly Maintenance',
+      type: 'Campus Electricity & Utilities',
+      amount: 24000,
+      status: 'Unpaid'
+    },
+    {
+      id: 'EXP-OUT-006',
+      name: 'Smart Interactive 75" Flat Panels for Secondary Wing',
+      type: 'Classroom Digital Hardware',
+      amount: 90000,
+      status: 'Paid'
+    },
+    {
+      id: 'EXP-OUT-007',
+      name: 'Central Library Academic Reference Volumes & Digital Periodicals',
+      type: 'Academic Learning Resources',
+      amount: 18500,
+      status: 'Paid'
+    },
+    {
+      id: 'EXP-OUT-008',
+      name: 'Sports Ground Synthetic Turfing & Athletics Kit Renewal',
+      type: 'Sports & Athletics Infrastructure',
+      amount: 50000,
+      status: 'Paid'
+    },
+    {
+      id: 'EXP-OUT-009',
+      name: 'Faculty Academic Research Grants & Pedagogical Training Workshop',
+      type: 'Staff Development & Grants',
+      amount: 46500,
+      status: 'Paid'
+    }
+  ]);
 
   // Modals
   const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
@@ -775,26 +859,42 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
               <div className="text-2xl font-black text-slate-800 mt-2">
                 ₹{stats?.finance?.totalBilled ? Number(stats.finance.totalBilled).toLocaleString('en-IN') : '2,10,000'}
               </div>
+              <div className="text-[11px] text-slate-400 mt-1 font-medium">6 Enrolled Students &times; ₹35,000 / term</div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Received</span>
               <div className="text-2xl font-black text-emerald-600 mt-2">
-                ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '35,000'}
+                ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '1,40,000'}
               </div>
+              <div className="text-[11px] text-emerald-600 font-medium mt-1">4 Student Accounts Cleared (67%)</div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Outstanding</span>
+            <div 
+              onClick={() => setShowOutstandingModal(true)}
+              className="bg-white p-5 rounded-2xl border border-rose-200 hover:border-rose-400 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden bg-gradient-to-br from-white to-rose-50/40"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Outstanding</span>
+                <span className="text-[10px] font-bold text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-full group-hover:bg-rose-200 transition-colors flex items-center gap-1 shadow-sm">
+                  <span>View Details</span> &rarr;
+                </span>
+              </div>
               <div className="text-2xl font-black text-rose-600 mt-2">
-                ₹{stats?.finance?.totalOutstanding ? Number(stats.finance.totalOutstanding).toLocaleString('en-IN') : '1,75,000'}
+                ₹{stats?.finance?.totalOutstanding ? Number(stats.finance.totalOutstanding).toLocaleString('en-IN') : '70,000'}
+              </div>
+              <div className="text-[11px] text-rose-600/90 mt-1 font-semibold flex items-center gap-1">
+                <span>2 Pending Student Accounts &bull; Click for 4-column ledger</span>
               </div>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-slate-800 text-sm">Fee Collection by Class Batch</h3>
+              <div>
+                <h3 className="font-bold text-slate-800 text-sm">Fee Collection by Class Batch</h3>
+                <p className="text-xs text-slate-400">Class-wise fee realization and pending dues distribution</p>
+              </div>
               <button
                 onClick={() => exportReportCSV('attendance')}
                 className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors"
@@ -807,23 +907,23 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <div className="font-bold text-slate-800 text-xs">Grade 10-A (Honors STEM)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student</div>
+                  <div className="font-bold text-slate-800 text-xs">Class 10 - Section A (Honors STEM)</div>
+                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student &bull; 5 Enrolled</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-bold text-emerald-600">80% Remitted</span>
-                  <div className="text-[11px] text-slate-400">1 Overdue Account</div>
+                  <span className="text-xs font-bold text-emerald-600">80% Remitted (₹1,40,000)</span>
+                  <div className="text-[11px] text-rose-600 font-medium">1 Overdue Account (Diya Gupta - ₹35,000)</div>
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <div className="font-bold text-slate-800 text-xs">Grade 10-B (Standard Secondary)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹30,000 / student</div>
+                  <div className="font-bold text-slate-800 text-xs">Class 10 - Section B (Standard Secondary)</div>
+                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student &bull; 1 Enrolled</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-bold text-amber-600">Pending Dues</span>
-                  <div className="text-[11px] text-slate-400">Invoices issued</div>
+                  <span className="text-xs font-bold text-amber-600">0% Remitted (₹0)</span>
+                  <div className="text-[11px] text-rose-600 font-medium">1 Overdue Account (Kabir Singh - ₹35,000)</div>
                 </div>
               </div>
             </div>
@@ -1459,6 +1559,298 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Open in WhatsApp</span>
               </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TOTAL OUTSTANDING BREAKDOWN POPUP MODAL (4 SECTIONS: Name of Expense, Type of Expense, Total Amount, Paid or Unpaid) */}
+      {showOutstandingModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowOutstandingModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-teal-100 overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-rose-950 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-400/30 text-rose-400 flex items-center justify-center shadow-inner">
+                  <Receipt className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-base sm:text-lg tracking-tight">Institutional Outstandings &amp; Expenses Ledger</h3>
+                    <span className="px-2.5 py-0.5 rounded-full bg-rose-500/30 border border-rose-400/40 text-rose-300 text-[10px] font-bold">
+                      Live Ledger
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    Itemized view of student fee balances, campus liabilities, and procurement expenses
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowOutstandingModal(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                title="Close Modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick KPI Summary Bar */}
+            <div className="bg-slate-50 border-b border-slate-200/80 p-4 px-6 grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0">
+              <div className="p-3 bg-white rounded-xl border border-rose-100 shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-rose-600 block">Total Unpaid (Outstanding)</span>
+                  <span className="text-lg font-black text-rose-600">
+                    ₹{outstandingExpenses.filter(e => e.status === 'Unpaid').reduce((s, i) => s + i.amount, 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
+                  {outstandingExpenses.filter(e => e.status === 'Unpaid').length}
+                </div>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-emerald-100 shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-emerald-600 block">Total Cleared (Paid)</span>
+                  <span className="text-lg font-black text-emerald-600">
+                    ₹{outstandingExpenses.filter(e => e.status === 'Paid').reduce((s, i) => s + i.amount, 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                  {outstandingExpenses.filter(e => e.status === 'Paid').length}
+                </div>
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Gross Ledger Volume</span>
+                  <span className="text-lg font-black text-slate-800">
+                    ₹{outstandingExpenses.reduce((s, i) => s + i.amount, 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs">
+                  {outstandingExpenses.length}
+                </div>
+              </div>
+            </div>
+
+            {/* Filter and Search Controls */}
+            <div className="p-4 px-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white shrink-0">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setOutstandingFilter('all')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    outstandingFilter === 'all'
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                  }`}
+                >
+                  All Records ({outstandingExpenses.length})
+                </button>
+                <button
+                  onClick={() => setOutstandingFilter('unpaid')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    outstandingFilter === 'unpaid'
+                      ? 'bg-rose-600 text-white shadow-sm'
+                      : 'bg-rose-50 hover:bg-rose-100 text-rose-700'
+                  }`}
+                >
+                  Unpaid Only ({outstandingExpenses.filter(e => e.status === 'Unpaid').length})
+                </button>
+                <button
+                  onClick={() => setOutstandingFilter('paid')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    outstandingFilter === 'paid'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'
+                  }`}
+                >
+                  Paid Only ({outstandingExpenses.filter(e => e.status === 'Paid').length})
+                </button>
+              </div>
+
+              <div className="relative flex-1 sm:max-w-xs">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search expense or category..."
+                  value={outstandingSearch}
+                  onChange={(e) => setOutstandingSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
+
+            {/* 4-Column Table Content */}
+            <div className="flex-1 overflow-y-auto p-4 px-6">
+              <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <table className="w-full text-left text-xs text-slate-600">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="py-3.5 px-4 w-[38%]">
+                        <div className="flex items-center gap-1.5">
+                          <span>1. Name of the Expense</span>
+                        </div>
+                      </th>
+                      <th className="py-3.5 px-4 w-[24%]">
+                        <div className="flex items-center gap-1.5">
+                          <span>2. Type of Expense</span>
+                        </div>
+                      </th>
+                      <th className="py-3.5 px-4 w-[18%]">
+                        <div className="flex items-center gap-1.5">
+                          <span>3. Total Amount</span>
+                        </div>
+                      </th>
+                      <th className="py-3.5 px-4 w-[20%] text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span>4. Paid or Unpaid</span>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium bg-white">
+                    {outstandingExpenses
+                      .filter(item => {
+                        if (outstandingFilter === 'unpaid') return item.status === 'Unpaid';
+                        if (outstandingFilter === 'paid') return item.status === 'Paid';
+                        return true;
+                      })
+                      .filter(item => {
+                        if (!outstandingSearch) return true;
+                        const s = outstandingSearch.toLowerCase();
+                        return (
+                          item.name.toLowerCase().includes(s) ||
+                          item.type.toLowerCase().includes(s)
+                        );
+                      })
+                      .map((item) => (
+                        <tr key={item.id} className="hover:bg-teal-50/20 transition-colors">
+                          {/* Column 1: Name of the Expense */}
+                          <td className="py-3.5 px-4">
+                            <div className="font-bold text-slate-800 text-xs flex items-center gap-2">
+                              <span>{item.name}</span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                              ID: {item.id}
+                            </div>
+                          </td>
+
+                          {/* Column 2: Type of Expense */}
+                          <td className="py-3.5 px-4">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                              {item.type}
+                            </span>
+                          </td>
+
+                          {/* Column 3: Total Amount */}
+                          <td className="py-3.5 px-4">
+                            <div className="font-mono font-black text-sm text-slate-800">
+                              ₹{item.amount.toLocaleString('en-IN')}
+                            </div>
+                          </td>
+
+                          {/* Column 4: Paid or Unpaid (Status) */}
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {item.status === 'Paid' ? (
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Paid</span>
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shadow-sm animate-pulse">
+                                  <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                                  <span>Unpaid</span>
+                                </span>
+                              )}
+
+                              {/* Interactive Action Shortcuts */}
+                              {item.status === 'Unpaid' && item.student_name && (
+                                <button
+                                  onClick={() => {
+                                    setShowOutstandingModal(false);
+                                    openWhatsAppAlert({
+                                      student_name: item.student_name,
+                                      roll_no: item.roll_no,
+                                      guardian_name: item.guardian_name,
+                                      guardian_mobile: item.guardian_mobile,
+                                      feeDues: item.amount
+                                    }, 'fee');
+                                  }}
+                                  className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold inline-flex items-center gap-1 shadow-sm transition-all"
+                                  title="Send WhatsApp Fee Reminder"
+                                >
+                                  <MessageSquare className="w-3 h-3" />
+                                  <span>WhatsApp</span>
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => {
+                                  const newStatus = item.status === 'Paid' ? 'Unpaid' : 'Paid';
+                                  setOutstandingExpenses(prev => prev.map(ex => ex.id === item.id ? { ...ex, status: newStatus } : ex));
+                                  if (item.student_name) {
+                                    api.settleStudentFee(item.student_name, item.amount);
+                                  }
+                                  showToast(`Status updated to ${newStatus} for ${item.id}`);
+                                }}
+                                className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-colors ${
+                                  item.status === 'Paid'
+                                    ? 'border-slate-200 text-slate-500 hover:bg-rose-50 hover:text-rose-600'
+                                    : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                }`}
+                                title="Toggle Paid / Unpaid"
+                              >
+                                {item.status === 'Paid' ? 'Mark Unpaid' : 'Mark Paid'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 px-6 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+              <div className="text-xs text-slate-500 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>All records reflect real-time finance &amp; ERP database synchronization</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const csvContent = "data:text/csv;charset=utf-8," + 
+                      "Name of Expense,Type of Expense,Total Amount,Status\n" +
+                      outstandingExpenses.map(e => `"${e.name}","${e.type}",${e.amount},"${e.status}"`).join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    link.setAttribute("download", `Nairee_Outstandings_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showToast('Outstandings ledger exported to CSV successfully!');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center space-x-1.5 transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export CSV</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowOutstandingModal(false)}
+                  className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-sm"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
