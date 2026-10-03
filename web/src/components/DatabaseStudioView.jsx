@@ -947,16 +947,54 @@ export default function DatabaseStudioView() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {/* Photo URL */}
+                  {/* Student Photo Upload */}
                   <div className="sm:col-span-2 md:col-span-3">
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Student Photo URL / Avatar</label>
-                    <input
-                      type="url"
-                      value={formData.photo || ''}
-                      onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                      placeholder="Enter image URL..."
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                      Student Photo <span className="text-teal-600 font-semibold">(Upload Image)</span>
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 p-3 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                      <div className="relative shrink-0">
+                        <img
+                          src={formData.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
+                          alt="Student Preview"
+                          className="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-sm ring-2 ring-teal-500/20"
+                        />
+                        {formData.photo && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, photo: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-0.5 shadow transition-colors"
+                            title="Remove Photo"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1 w-full">
+                        <label className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-300 bg-teal-50/50 hover:bg-teal-50 text-teal-800 font-bold text-xs cursor-pointer transition-all shadow-sm">
+                          <Upload className="w-4 h-4 text-teal-600" />
+                          <span>Click to Upload Student Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setFormData(prev => ({ ...prev, photo: event.target.result }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                        <span className="block text-[10px] text-slate-400 mt-1 text-center sm:text-left">
+                          Supports JPG, PNG, WEBP &bull; Converts automatically for database storage
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Full Name */}
@@ -1265,6 +1303,52 @@ export default function DatabaseStudioView() {
                     </label>
                   </div>
 
+                  {/* Father's Photo Upload */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Father's Photo (Upload Image)</label>
+                    <div className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="relative shrink-0">
+                        <img
+                          src={formData.father_photo || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'}
+                          alt="Father Preview"
+                          className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-sm"
+                        />
+                        {formData.father_photo && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, father_photo: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-0.5 shadow"
+                            title="Remove Photo"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer transition-colors shadow-sm">
+                          <Upload className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Upload Father's Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setFormData(prev => ({ ...prev, father_photo: event.target.result }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                        <span className="block text-[10px] text-slate-400 mt-0.5">Supports JPG, PNG, WEBP</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-[10px] font-bold text-slate-600 mb-1">Father's Name</label>
@@ -1329,6 +1413,52 @@ export default function DatabaseStudioView() {
                       />
                       <span>Address same as student</span>
                     </label>
+                  </div>
+
+                  {/* Mother's Photo Upload */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-600 mb-1">Mother's Photo (Upload Image)</label>
+                    <div className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="relative shrink-0">
+                        <img
+                          src={formData.mother_photo || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100'}
+                          alt="Mother Preview"
+                          className="w-12 h-12 rounded-lg object-cover border border-slate-200 shadow-sm"
+                        />
+                        {formData.mother_photo && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, mother_photo: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-0.5 shadow"
+                            title="Remove Photo"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer transition-colors shadow-sm">
+                          <Upload className="w-3.5 h-3.5 text-pink-600" />
+                          <span>Upload Mother's Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setFormData(prev => ({ ...prev, mother_photo: event.target.result }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                        <span className="block text-[10px] text-slate-400 mt-0.5">Supports JPG, PNG, WEBP</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
