@@ -35,6 +35,8 @@ import {
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
+import { api } from '../api.js';
+import { FALLBACK_DATA } from '../fallbackData.js';
 
 const NAV_CONFIG = {
   student: [
@@ -149,9 +151,47 @@ export default function AppLayout({
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [notifications, setNotifications] = useState(SAMPLE_NOTIFICATIONS);
   const dropdownRef = useRef(null);
 
   const navItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
+
+  // Sync live announcements into notifications
+  const loadLiveNotifications = async () => {
+    try {
+      const annList = await api.getAnnouncements(user?.role || 'all').catch(() => []);
+      const combined = (annList && annList.length > 0 ? annList : FALLBACK_DATA.announcements).map((ann, idx) => ({
+        id: ann.id || `ann_${idx}`,
+        title: ann.title,
+        content: ann.content || '',
+        category: ann.category || 'Announcement',
+        time: ann.created_at || 'Just now',
+        unread: idx < 2 // First 2 new ones start as unread
+      }));
+
+      // Combine with sample system notifications
+      setNotifications([
+        ...combined,
+        ...SAMPLE_NOTIFICATIONS.filter(s => !combined.some(c => c.title === s.title))
+      ]);
+    } catch (err) {
+      console.warn('Error syncing notifications with announcements:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadLiveNotifications();
+  }, [user]);
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const markSingleAsRead = (id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -300,16 +340,18 @@ export default function AppLayout({
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Notification Bell with Red Badge '7' */}
+            {/* Notification Bell with Dynamic Unread Badge */}
             <button
               onClick={() => setShowNoticesModal(true)}
               className="relative w-10 h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/80 shadow-sm flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
               title="Notifications & Circulars"
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center shadow-sm border-2 border-white">
-                7
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center shadow-sm border-2 border-white animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Profile Avatar Capsule with Dropdown */}
@@ -348,25 +390,25 @@ export default function AppLayout({
                   <div className="grid grid-cols-2 gap-1.5 my-1">
                     <button
                       onClick={() => { onSwitchUser('student_emma', 'student123'); setIsProfileDropdownOpen(false); }}
-                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors"
+                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors cursor-pointer"
                     >
                       🎓 Student
                     </button>
                     <button
                       onClick={() => { onSwitchUser('teacher_sarah', 'teacher123'); setIsProfileDropdownOpen(false); }}
-                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors"
+                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors cursor-pointer"
                     >
                       👩‍🏫 Teacher
                     </button>
                     <button
                       onClick={() => { onSwitchUser('admin', 'admin123'); setIsProfileDropdownOpen(false); }}
-                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors"
+                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors cursor-pointer"
                     >
                       🛡️ Principal
                     </button>
                     <button
                       onClick={() => { onSwitchUser('parent_roberts', 'parent123'); setIsProfileDropdownOpen(false); }}
-                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors"
+                      className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-teal-50 hover:text-teal-800 text-[11px] font-bold text-left transition-colors cursor-pointer"
                     >
                       👨‍👩‍👧 Parent
                     </button>
@@ -376,7 +418,7 @@ export default function AppLayout({
                   <div className="pt-2 border-t border-slate-100 mt-2">
                     <button
                       onClick={() => { onLogout(); setIsProfileDropdownOpen(false); }}
-                      className="w-full py-2 px-3 rounded-xl hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+                      className="w-full py-2 px-3 rounded-xl hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
@@ -408,41 +450,83 @@ export default function AppLayout({
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-800 text-sm">School Notices & Notifications</h3>
-                  <p className="text-xs text-slate-400">7 active announcements from administration</p>
+                  <p className="text-xs text-slate-400">
+                    {unreadCount > 0 ? `${unreadCount} unread announcements` : 'All announcements caught up'}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => setShowNoticesModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    Mark All as Read
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowNoticesModal(false)}
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
-              {SAMPLE_NOTIFICATIONS.map((n) => (
-                <div
-                  key={n.id}
-                  className={`p-3.5 rounded-2xl border transition-all ${
-                    n.unread ? 'bg-teal-50/40 border-teal-200' : 'bg-slate-50 border-slate-100'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-teal-800 border border-teal-200">
-                      {n.category}
-                    </span>
-                    <span className="text-[10px] text-slate-400">{n.time}</span>
-                  </div>
-                  <h4 className="text-xs font-bold text-slate-800">{n.title}</h4>
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 max-h-[60vh]">
+              {notifications.length === 0 ? (
+                <div className="text-center py-8 text-slate-400 text-xs">
+                  No notifications right now.
                 </div>
-              ))}
+              ) : (
+                notifications.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => markSingleAsRead(n.id)}
+                    className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                      n.unread 
+                        ? 'bg-teal-50/60 border-teal-300 shadow-xs' 
+                        : 'bg-slate-50/70 border-slate-100 hover:bg-slate-100/80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-teal-800 border border-teal-200">
+                          {n.category}
+                        </span>
+                        {n.unread && (
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">{n.time}</span>
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-800">{n.title}</h4>
+                    {n.content && (
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{n.content}</p>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-400 text-[11px]">Synced with Nairee Live Central Database</span>
               <button
-                onClick={() => setShowNoticesModal(false)}
-                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs"
+                onClick={() => {
+                  markAllAsRead();
+                  setShowNoticesModal(false);
+                  setActiveTab('announcements');
+                }}
+                className="text-teal-700 hover:underline font-bold text-xs flex items-center gap-1 cursor-pointer"
+              >
+                <span>Open Full Notice Board</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  markAllAsRead();
+                  setShowNoticesModal(false);
+                }}
+                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs cursor-pointer"
               >
                 Done
               </button>
