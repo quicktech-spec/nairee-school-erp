@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 import { FALLBACK_DATA } from '../fallbackData.js';
 
 const NAV_CONFIG = {
@@ -170,6 +170,10 @@ export default function AppLayout({
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [liveToast, setLiveToast] = useState(null);
+  const lastKnownIdsRef = useRef(new Set());
+  const isInitialLoadRef = useRef(true);
+
   const [notifications, setNotifications] = useState(() => {
     const readIds = getReadNotifIds();
     return SAMPLE_NOTIFICATIONS.map(s => ({
@@ -203,11 +207,30 @@ export default function AppLayout({
         unread: !readIds.includes(String(s.id)) && s.unread
       }));
 
-      // Combine with sample system notifications
-      setNotifications([
+      const allMerged = [
         ...combined,
         ...samples.filter(s => !combined.some(c => c.title === s.title))
-      ]);
+      ];
+
+      // If a new unread notice drops in real-time, show animated live toast banner!
+      if (!isInitialLoadRef.current) {
+        const newlyAdded = allMerged.find(item => item.unread && !lastKnownIdsRef.current.has(String(item.id)));
+        if (newlyAdded) {
+          setLiveToast({
+            title: newlyAdded.title,
+            category: newlyAdded.category || 'Live Notice',
+            content: newlyAdded.content || '',
+            id: newlyAdded.id
+          });
+          setTimeout(() => setLiveToast(null), 7000);
+        }
+      }
+
+      allMerged.forEach(item => lastKnownIdsRef.current.add(String(item.id)));
+      isInitialLoadRef.current = false;
+
+      // Combine with sample system notifications
+      setNotifications(allMerged);
     } catch (err) {
       console.warn('Error syncing notifications with announcements:', err);
     }
@@ -215,6 +238,30 @@ export default function AppLayout({
 
   useEffect(() => {
     loadLiveNotifications();
+
+    // 1. Subscribe to real-time events across tabs & in-app
+    const unsubscribe = subscribeLiveEvents((event) => {
+      loadLiveNotifications();
+      if (event?.type === 'announcement_created' && event?.payload) {
+        setLiveToast({
+          title: event.payload.title,
+          category: event.payload.category || 'Broadcast Circular',
+          content: event.payload.content || '',
+          id: event.payload.id
+        });
+        setTimeout(() => setLiveToast(null), 7000);
+      }
+    });
+
+    // 2. High-frequency 2.5s live polling heartbeat (Zero-refresh real-time sync)
+    const pollTimer = setInterval(() => {
+      loadLiveNotifications();
+    }, 2500);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollTimer);
+    };
   }, [user]);
 
   const unreadCount = notifications.filter(n => n.unread).length;
@@ -477,6 +524,46 @@ export default function AppLayout({
           {children}
         </main>
       </div>
+
+      {/* REAL-TIME FLOATING LIVE TOAST (Zero-Refresh Instant Notification) */}
+      {liveToast && (
+        <div className="fixed top-5 right-5 z-50 max-w-sm w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-teal-500/40 p-4 animate-bounce flex items-start gap-3.5 transition-all">
+          <div className="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-teal-500/30 animate-pulse">
+            <Bell className="w-5 h-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+                {liveToast.category || 'Live Update'}
+              </span>
+              <span className="text-[10px] text-teal-600 font-bold animate-pulse">● Live Now</span>
+            </div>
+            <h4 className="text-xs font-bold text-slate-900 mt-1 line-clamp-2">{liveToast.title}</h4>
+            {liveToast.content && (
+              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">{liveToast.content}</p>
+            )}
+            <div className="flex items-center gap-2 mt-2">
+              <button
+                onClick={() => {
+                  setLiveToast(null);
+                  setShowNoticesModal(true);
+                  markAllAsRead();
+                }}
+                className="text-[11px] font-bold text-teal-600 hover:text-teal-700 underline cursor-pointer flex items-center gap-1"
+              >
+                <span>Open Notice</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+          <button
+            onClick={() => setLiveToast(null)}
+            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* 3. NOTIFICATIONS MODAL (Triggered by Bell Icon) */}
       {showNoticesModal && (

@@ -46,6 +46,54 @@ async function safeFetch(endpoint, options = {}) {
   return null;
 }
 
+// Real-time Event Hub & Broadcast Engine (Across Tabs and Live Reactive UI)
+let liveChannel = null;
+try {
+  if (typeof BroadcastChannel !== 'undefined') {
+    liveChannel = new BroadcastChannel('nairee_live_sync_channel');
+  }
+} catch (e) {
+  console.warn('BroadcastChannel init notice:', e);
+}
+
+export function broadcastLiveEvent(type, payload = {}) {
+  const eventData = { type, payload, timestamp: Date.now() };
+  try {
+    if (liveChannel) {
+      liveChannel.postMessage(eventData);
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: eventData }));
+    }
+  } catch (err) {
+    console.warn('Broadcast error:', err);
+  }
+}
+
+export function subscribeLiveEvents(callback) {
+  if (typeof window === 'undefined') return () => {};
+
+  const handleCustom = (e) => {
+    if (e && e.detail) callback(e.detail);
+  };
+
+  const handleChannelMessage = (e) => {
+    if (e && e.data) callback(e.data);
+  };
+
+  window.addEventListener('nairee_live_sync', handleCustom);
+  if (liveChannel) {
+    liveChannel.addEventListener('message', handleChannelMessage);
+  }
+
+  return () => {
+    window.removeEventListener('nairee_live_sync', handleCustom);
+    if (liveChannel) {
+      liveChannel.removeEventListener('message', handleChannelMessage);
+    }
+  };
+}
+
 export const api = {
   // Auth
   async login(username, password) {
@@ -584,6 +632,7 @@ export const api = {
     try {
       localStorage.setItem('nairee_announcements', JSON.stringify(FALLBACK_DATA.announcements));
     } catch {}
+    broadcastLiveEvent('announcement_created', newAnn);
     return res || newAnn;
   },
 
