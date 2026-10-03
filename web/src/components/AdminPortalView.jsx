@@ -889,46 +889,6 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-bold text-slate-800 text-sm">Fee Collection by Class Batch</h3>
-                <p className="text-xs text-slate-400">Class-wise fee realization and pending dues distribution</p>
-              </div>
-              <button
-                onClick={() => exportReportCSV('attendance')}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export Invoices</span>
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-slate-800 text-xs">Class 10 - Section A (Honors STEM)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student &bull; 5 Enrolled</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-bold text-emerald-600">80% Remitted (₹1,40,000)</span>
-                  <div className="text-[11px] text-rose-600 font-medium">1 Overdue Account (Diya Gupta - ₹35,000)</div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <div>
-                  <div className="font-bold text-slate-800 text-xs">Class 10 - Section B (Standard Secondary)</div>
-                  <div className="text-[11px] text-slate-500">Term 1 Standard Fee: ₹35,000 / student &bull; 1 Enrolled</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-bold text-amber-600">0% Remitted (₹0)</span>
-                  <div className="text-[11px] text-rose-600 font-medium">1 Overdue Account (Kabir Singh - ₹35,000)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Instant WhatsApp Fee Recovery Roster */}
           <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-6 space-y-4">
             <div className="flex items-center justify-between">
