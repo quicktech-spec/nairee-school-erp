@@ -1,4 +1,5 @@
 import { FALLBACK_DATA, INITIAL_DB_STORE } from './fallbackData.js';
+import { supabase } from './supabaseClient.js';
 
 const API_BASE = ((typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api').replace(/\/$/, '');
 
@@ -56,6 +57,69 @@ try {
   console.warn('BroadcastChannel init notice:', e);
 }
 
+// Global Supabase Cloud WebSocket Channel for Cross-Device Sync
+let supabaseChannel = null;
+try {
+  if (supabase) {
+    supabaseChannel = supabase.channel('nairee_school_cloud_sync');
+    supabaseChannel
+      .on('broadcast', { event: 'live_sync' }, ({ payload }) => {
+        if (payload) {
+          // If receiving a cloud store update, apply it to local storage & broadcast to React components
+          if (payload.type === 'db_store_updated' && payload.payload) {
+            try {
+              if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('nairee_db_store', JSON.stringify(payload.payload));
+                if (payload.payload['Student List']?.rows) {
+                  localStorage.setItem('nairee_students', JSON.stringify(payload.payload['Student List'].rows));
+                }
+              }
+            } catch (e) {}
+            if (payload.payload['Student List']?.rows) {
+              INITIAL_DB_STORE['Student List'].rows = payload.payload['Student List'].rows;
+            }
+          }
+          if (payload.type === 'student_updated' && payload.payload?.students) {
+            try {
+              if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('nairee_students', JSON.stringify(payload.payload.students));
+              }
+            } catch (e) {}
+            INITIAL_DB_STORE['Student List'].rows = payload.payload.students;
+          }
+          // Notify local subscribers across views
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: payload }));
+          }
+        }
+      })
+      .on('broadcast', { event: 'request_db_sync' }, () => {
+        // Send current db store to newly joined device
+        const currentDb = getStoredDb();
+        if (supabaseChannel) {
+          supabaseChannel.send({
+            type: 'broadcast',
+            event: 'live_sync',
+            payload: { type: 'db_store_updated', payload: currentDb }
+          }).catch(() => {});
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('⚡ Connected to Supabase Cloud Realtime Sync!');
+          // Request latest db from active peers
+          supabaseChannel.send({
+            type: 'broadcast',
+            event: 'request_db_sync',
+            payload: {}
+          }).catch(() => {});
+        }
+      });
+  }
+} catch (err) {
+  console.warn('Supabase realtime init warning:', err);
+}
+
 export function broadcastLiveEvent(type, payload = {}) {
   const eventData = { type, payload, timestamp: Date.now() };
   try {
@@ -64,6 +128,14 @@ export function broadcastLiveEvent(type, payload = {}) {
     }
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: eventData }));
+    }
+    // Broadcast live across all laptops, phones, and devices worldwide via Supabase!
+    if (supabaseChannel) {
+      supabaseChannel.send({
+        type: 'broadcast',
+        event: 'live_sync',
+        payload: eventData
+      }).catch(() => {});
     }
   } catch (err) {
     console.warn('Broadcast error:', err);
