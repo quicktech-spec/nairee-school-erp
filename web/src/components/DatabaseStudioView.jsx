@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
+import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents } from '../api.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
@@ -65,8 +66,8 @@ export default function DatabaseStudioView() {
   const [loading, setLoading] = useState(false);
   const [exportingExcel, setExportingExcel] = useState(false);
 
-  // In-memory fallback DB storage state
-  const [dbStore, setDbStore] = useState(INITIAL_DB_STORE);
+  // Persistent DB storage state initialized from central sync engine
+  const [dbStore, setDbStore] = useState(() => getStoredDb());
 
   // Row Edit / Create Modals
   const [editingRow, setEditingRow] = useState(null);
@@ -100,7 +101,7 @@ export default function DatabaseStudioView() {
     }
 
     // Clean tables list (hide tab-prefixed aliases from table selector)
-    const currentDb = { ...INITIAL_DB_STORE };
+    const currentDb = getStoredDb();
     const cleanNames = Object.keys(currentDb).filter(name => !name.startsWith('tab'));
     const fallbackList = cleanNames.map(name => ({
       name,
@@ -130,8 +131,9 @@ export default function DatabaseStudioView() {
       console.warn('Using local table data fallback for', tName);
     }
 
-    // Fallback table data from in-memory DB store
-    const localTbl = INITIAL_DB_STORE[tName] || dbStore[tName] || { columns: [], rows: [] };
+    // Centralized persistent store fallback
+    const currentDb = getStoredDb();
+    const localTbl = currentDb[tName] || INITIAL_DB_STORE[tName] || { columns: [], rows: [] };
     let filteredRows = [...(localTbl.rows || [])];
     if (search) {
       const q = search.toLowerCase();
@@ -156,7 +158,18 @@ export default function DatabaseStudioView() {
     if (selectedTable) {
       loadTableData(selectedTable, searchQuery);
     }
-  }, [selectedTable, dbStore]);
+  }, [selectedTable]);
+
+  // Subscribe to live multi-tab & cross-component database sync events
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      const freshDb = getStoredDb();
+      setDbStore(freshDb);
+      loadTableData(selectedTable, searchQuery);
+      loadTables();
+    });
+    return () => unsub();
+  }, [selectedTable, searchQuery]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -332,20 +345,16 @@ export default function DatabaseStudioView() {
 
     try {
       if (isNew) {
-        const res = await fetch(`${API_BASE}/database/table/Student List/row`, {
+        const res = await fetch(`${API_BASE}/database/table/${selectedTable}/row`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cleanRecord)
         });
         if (res.ok) {
-          showToast(`✅ Student ${sName} (${cleanRecord.student_id}) enrolled successfully!`);
-          setIsCreatingRow(false);
-          setFormData({});
-          loadTableData('Student List');
-          return;
+          showToast(`✅ Record saved to ${selectedTable} successfully!`);
         }
       } else {
-        const res = await fetch(`${API_BASE}/database/table/Student List/row`, {
+        const res = await fetch(`${API_BASE}/database/table/${selectedTable}/row`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -355,51 +364,60 @@ export default function DatabaseStudioView() {
           })
         });
         if (res.ok) {
-          showToast(`✅ Student record for ${sName} updated successfully!`);
-          setEditingRow(null);
-          setFormData({});
-          loadTableData('Student List');
-          return;
+          showToast(`✅ Record updated in ${selectedTable} successfully!`);
         }
       }
     } catch (err) {
-      console.warn('Saving student record to local in-memory DB store');
+      console.warn('Saving record locally');
     }
 
-    // Fallback local store save
-    const currentTbl = dbStore['Student List'] || { columns: [], rows: [] };
+    // Centralized persistent storage update
+    const currentDb = getStoredDb();
+    const currentTbl = currentDb[selectedTable] || { columns: [], rows: [] };
+    let updatedRows = [];
     if (isNew) {
-      const updatedRows = [cleanRecord, ...(currentTbl.rows || [])];
-      setDbStore(prev => ({
-        ...prev,
-        'Student List': { ...currentTbl, rows: updatedRows }
-      }));
-      setTableData(prev => ({ ...prev, rows: updatedRows, total: updatedRows.length }));
-      showToast(`✅ New student ${sName} (${cleanRecord.student_id}) enrolled successfully!`);
-      setIsCreatingRow(false);
-      setFormData({});
+      updatedRows = [cleanRecord, ...(currentTbl.rows || [])];
     } else {
-      const origName = editingRow?.name || editingRow?.student_name;
-      const updatedRows = (currentTbl.rows || []).map(r => (r.name === origName || r.student_name === origName) ? cleanRecord : r);
-      setDbStore(prev => ({
-        ...prev,
-        'Student List': { ...currentTbl, rows: updatedRows }
-      }));
-      setTableData(prev => ({ ...prev, rows: updatedRows }));
-      showToast(`✅ Student record for ${sName} updated successfully!`);
-      setEditingRow(null);
-      setFormData({});
+      const origName = editingRow?.name || editingRow?.student_name || editingRow?.id;
+      const origId = editingRow?.student_id || editingRow?.id;
+      updatedRows = (currentTbl.rows || []).map(r => {
+        const rName = r.name || r.student_name;
+        const rId = r.student_id || r.id;
+        if ((origName && rName === origName) || (origId && rId === origId)) {
+          return cleanRecord;
+        }
+        return r;
+      });
     }
+
+    const updatedDb = {
+      ...currentDb,
+      [selectedTable]: {
+        ...currentTbl,
+        rows: updatedRows
+      }
+    };
+
+    setDbStore(updatedDb);
+    setTableData(prev => ({ ...prev, rows: updatedRows, total: updatedRows.length }));
+    saveStoredDb(updatedDb);
+    if (selectedTable === 'Student List') {
+      saveMasterStudents(updatedRows);
+    }
+    showToast(isNew ? `✅ Record saved to ${selectedTable}!` : `✅ Record updated in ${selectedTable}!`);
+    setIsCreatingRow(false);
+    setEditingRow(null);
+    setFormData({});
   };
 
   const handleDeleteRow = async (row) => {
-    const sName = row.name || row.student_name || row.roll_number;
+    const sName = row.name || row.student_name || row.roll_number || row.id;
     if (!window.confirm(`Are you sure you want to delete record for "${sName}" from ${selectedTable}?`)) {
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE}/database/table/${selectedTable}/row`, {
+      await fetch(`${API_BASE}/database/table/${selectedTable}/row`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -407,27 +425,27 @@ export default function DatabaseStudioView() {
           primaryValue: sName
         })
       });
-      if (res.ok) {
-        showToast(`Record for ${sName} deleted from ${selectedTable}!`);
-        loadTableData(selectedTable);
-        loadTables();
-        return;
-      }
     } catch (err) {
-      console.warn('Deleting row from local in-memory DB store');
+      console.warn('Deleting row locally');
     }
 
-    // Fallback local delete
-    const currentTbl = dbStore[selectedTable] || { columns: [], rows: [] };
-    const updatedRows = (currentTbl.rows || []).filter(r => (r.name || r.student_name) !== sName);
-    setDbStore(prev => ({
-      ...prev,
+    const currentDb = getStoredDb();
+    const currentTbl = currentDb[selectedTable] || { columns: [], rows: [] };
+    const updatedRows = (currentTbl.rows || []).filter(r => (r.name || r.student_name || r.roll_number || r.id) !== sName);
+    const updatedDb = {
+      ...currentDb,
       [selectedTable]: {
         ...currentTbl,
         rows: updatedRows
       }
-    }));
+    };
+
+    setDbStore(updatedDb);
     setTableData(prev => ({ ...prev, rows: updatedRows, total: updatedRows.length }));
+    saveStoredDb(updatedDb);
+    if (selectedTable === 'Student List') {
+      saveMasterStudents(updatedRows);
+    }
     showToast(`Record for ${sName} deleted from ${selectedTable}!`);
   };
 
@@ -852,15 +870,20 @@ export default function DatabaseStudioView() {
                 type="button"
                 onClick={() => {
                   const sName = whatsAppFeeModal.name || whatsAppFeeModal.student_name;
-                  const updatedRows = (tableData.rows || []).map(r => (r.name === sName || r.student_name === sName) ? { ...r, fee_status: 'Paid' } : r);
-                  setTableData(prev => ({ ...prev, rows: updatedRows }));
-                  setDbStore(prev => ({
-                    ...prev,
-                    [selectedTable]: {
-                      ...(prev[selectedTable] || {}),
+                  const currentDb = getStoredDb();
+                  const currentTbl = currentDb['Student List'] || { columns: [], rows: [] };
+                  const updatedRows = (currentTbl.rows || []).map(r => (r.name === sName || r.student_name === sName) ? { ...r, fee_status: 'Paid' } : r);
+                  const updatedDb = {
+                    ...currentDb,
+                    'Student List': {
+                      ...currentTbl,
                       rows: updatedRows
                     }
-                  }));
+                  };
+                  setDbStore(updatedDb);
+                  setTableData(prev => ({ ...prev, rows: updatedRows }));
+                  saveStoredDb(updatedDb);
+                  saveMasterStudents(updatedRows);
                   showToast(`✅ Fee marked as Paid for ${sName}! Marksheet is now released.`);
                   setWhatsAppFeeModal(null);
                 }}

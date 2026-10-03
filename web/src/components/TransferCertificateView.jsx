@@ -27,40 +27,48 @@ import {
   Barcode
 } from 'lucide-react';
 import { INITIAL_DB_STORE, FALLBACK_STUDENTS } from '../fallbackData.js';
-import { subscribeLiveEvents } from '../api.js';
+import { getMasterStudents, subscribeLiveEvents } from '../api.js';
+
+function getSynchronizedStudents() {
+  const master = getMasterStudents();
+  if (master && master.length > 0) {
+    return master.map((s, idx) => ({
+      id: s.student_id || s.id || `STU-00${idx + 1}`,
+      name: s.name || s.student_name,
+      student_name: s.name || s.student_name,
+      roll_no: s.roll_no ? String(s.roll_no).replace(/\D/g, '') : `${101 + idx}`,
+      student_batch: s.class_batch || 'Class 10 - Section A',
+      class_batch: s.class_batch || 'Class 10 - Section A',
+      stream: s.stream || 'Science & Advanced Mathematics',
+      photo: s.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      dob: s.dob || '2011-04-12',
+      religion: s.religion || 'Hindu',
+      nationality: s.nationality || 'Indian',
+      blood_group: s.blood_group || 'O+',
+      gender: s.gender || 'Male',
+      aadhaar_no: s.aadhaar_no || '9876 5432 1091',
+      admission_date: s.admission_date || '2024-06-15',
+      phone: s.phone || '+91 98765 00001',
+      father_name: s.father_name || 'Rajesh Patel',
+      father_phone: s.father_phone || '+91 98765 43212',
+      mother_name: s.mother_name || 'Meera Patel',
+      residential_address: s.residential_address || 'Flat 402, Green Meadows Residency, Indiranagar, Bengaluru - 560038',
+      fee_status: s.fee_status || (idx === 2 || idx === 5 ? 'Pending' : 'Paid'),
+      feeDues: (s.fee_status === 'Pending' || s.fee_status === 'Unpaid') ? 35000 : 0
+    }));
+  }
+  return FALLBACK_STUDENTS;
+}
 
 export default function TransferCertificateView() {
   // 6 Supported Document Types: 'tc', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
   const [docType, setDocType] = useState('tc');
   
-  // Student source data
-  const initialStudents = (INITIAL_DB_STORE['Student List']?.rows || []).map((s, idx) => ({
-    id: s.student_id || `STU-00${idx + 1}`,
-    name: s.name || s.student_name,
-    student_name: s.name || s.student_name,
-    roll_no: s.roll_no || `${101 + idx}`,
-    student_batch: s.class_batch || 'Class 10 - Section A',
-    class_batch: s.class_batch || 'Class 10 - Section A',
-    stream: s.stream || 'Science & Advanced Mathematics',
-    photo: s.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-    dob: s.dob || '2011-04-12',
-    religion: s.religion || 'Hindu',
-    nationality: s.nationality || 'Indian',
-    blood_group: s.blood_group || 'O+',
-    gender: s.gender || 'Male',
-    aadhaar_no: s.aadhaar_no || '9876 5432 1091',
-    admission_date: s.admission_date || '2024-06-15',
-    phone: s.phone || '+91 98765 00001',
-    father_name: s.father_name || 'Rajesh Patel',
-    father_phone: s.father_phone || '+91 98765 43212',
-    mother_name: s.mother_name || 'Meera Patel',
-    residential_address: s.residential_address || 'Flat 402, Green Meadows Residency, Indiranagar, Bengaluru - 560038',
-    fee_status: s.fee_status || (idx === 2 || idx === 5 ? 'Pending' : 'Paid'),
-    feeDues: (idx === 2 || idx === 5 || s.fee_status === 'Pending') ? 35000 : 0
-  }));
-
-  const [studentList, setStudentList] = useState(initialStudents.length ? initialStudents : FALLBACK_STUDENTS);
-  const [selectedStudentId, setSelectedStudentId] = useState(initialStudents[0]?.id || 'STU-001');
+  const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
+  const [selectedStudentId, setSelectedStudentId] = useState(() => {
+    const list = getSynchronizedStudents();
+    return list[0]?.id || 'STU-001';
+  });
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
   
@@ -73,19 +81,13 @@ export default function TransferCertificateView() {
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Active student object
-  const activeStudent = studentList.find(s => s.id === selectedStudentId || s.name === selectedStudentId) || studentList[0];
+  const activeStudent = studentList.find(s => s.id === selectedStudentId || s.name === selectedStudentId) || studentList[0] || {};
 
-  // Auto-sync fee updates across app
+  // Auto-sync updates across app (transfers, admissions, fee clearances)
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
-      if (event?.type === 'fee_updated') {
-        setStudentList(prev => prev.map(s => {
-          if (s.id === event.student_id || s.name === event.student_name || s.student_name === event.student_name) {
-            return { ...s, feeDues: 0, fee_status: 'Paid' };
-          }
-          return s;
-        }));
-      }
+      const freshList = getSynchronizedStudents();
+      setStudentList(freshList);
     });
     return () => unsub();
   }, []);

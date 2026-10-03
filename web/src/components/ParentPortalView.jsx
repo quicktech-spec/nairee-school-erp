@@ -83,10 +83,16 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
     }
   }, [selectedChildId]);
 
-  // Live real-time sync for fee settlements and notices
+  // Live real-time sync for fee settlements, transfers, and notices
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
-      if (event?.type === 'fee_updated' || event?.type === 'announcement_created') {
+      if (
+        event?.type === 'fee_updated' || 
+        event?.type === 'student_transferred' || 
+        event?.type === 'student_updated' || 
+        event?.type === 'announcement_created' ||
+        event?.type === 'db_store_updated'
+      ) {
         if (selectedChildId) loadChildData(selectedChildId);
       }
     });

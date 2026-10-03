@@ -27,6 +27,26 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
+import { getMasterStudents, saveMasterStudents, transferStudentClass, subscribeLiveEvents } from '../api.js';
+
+function mapMasterToMgmtStudents(masterList) {
+  return masterList.map((s, idx) => ({
+    id: s.student_id || s.id || `EDU-STU-2026-0000${idx + 1}`,
+    name: s.name || s.student_name,
+    roll_no: s.roll_no ? `${s.class_batch?.includes('10 - Section B') || s.class_batch?.includes('10B') ? '10B' : '10A'}-${s.roll_no}` : `10A-0${idx + 1}`,
+    class_id: (s.class_batch?.includes('Section B') || s.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : (s.class_batch?.includes('11') ? 'BATCH-11A-2026' : 'BATCH-10A-2026'),
+    class_name: s.class_batch || 'Class 10 - Section A',
+    email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+    phone: s.phone || '+91 98765 00000',
+    parent_name: s.father_name || s.mother_name || 'Parent',
+    parent_phone: s.father_phone || s.mother_phone || s.phone || '+91 98765 00000',
+    attendance: 96.5,
+    fee_total: 43500,
+    fee_paid: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 43500 : (s.fee_paid !== undefined ? s.fee_paid : (s.fee_status === 'Pending' ? 0 : 43500)),
+    fee_due: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 0 : (s.fee_due !== undefined ? s.fee_due : (s.fee_status === 'Pending' ? 35000 : 0)),
+    fee_status: s.fee_status || 'Paid'
+  }));
+}
 
 // Default initial data for Class & Staff Manager
 const DEFAULT_CLASSES = [
@@ -254,6 +274,10 @@ export default function ClassStaffManagerView() {
   });
 
   const [students, setStudents] = useState(() => {
+    const master = getMasterStudents();
+    if (master && master.length > 0) {
+      return mapMasterToMgmtStudents(master);
+    }
     try {
       const saved = localStorage.getItem('nairee_mgmt_students');
       return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
@@ -309,6 +333,17 @@ export default function ClassStaffManagerView() {
       console.error('Failed to persist manager state:', e);
     }
   }, [classes, teachers, students]);
+
+  // Subscribe to live multi-tab & cross-component database sync events
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      const freshMaster = getMasterStudents();
+      if (freshMaster && freshMaster.length > 0) {
+        setStudents(mapMasterToMgmtStudents(freshMaster));
+      }
+    });
+    return () => unsub();
+  }, []);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -398,6 +433,29 @@ export default function ClassStaffManagerView() {
     };
 
     setStudents(prev => [studentObj, ...prev]);
+
+    // Sync to Central Master Database
+    const currentMaster = getMasterStudents();
+    const newMasterRow = {
+      student_id: studentObj.id,
+      name: studentObj.name,
+      roll_no: studentObj.roll_no.replace(/\D/g, '') || '108',
+      class_batch: targetClass.name,
+      batch_id: targetClass.id,
+      phone: studentObj.phone,
+      email: studentObj.email,
+      father_name: studentObj.parent_name,
+      father_phone: studentObj.parent_phone,
+      fee_status: studentObj.fee_status,
+      dob: '2011-01-01',
+      gender: 'Male',
+      religion: 'Hindu',
+      nationality: 'Indian',
+      blood_group: 'O+',
+      stream: 'Computer Applications & Math'
+    };
+    saveMasterStudents([newMasterRow, ...currentMaster]);
+
     showToast(`Student "${studentObj.name}" added to ${targetClass.name}!`);
     setShowAddStudentModal(false);
     setNewStudent({
@@ -418,13 +476,17 @@ export default function ClassStaffManagerView() {
     const targetClass = classes.find(c => c.id === transferTargetClassId);
     if (!targetClass) return;
 
+    const studentIdentifier = showTransferModal.id || showTransferModal.name;
+    // Central database transfer & broadcast
+    transferStudentClass(studentIdentifier, targetClass.id, targetClass.name);
+
     setStudents(prev => prev.map(s => {
-      if (s.id === showTransferModal.id) {
+      if (s.id === showTransferModal.id || s.name === showTransferModal.name) {
         return {
           ...s,
           class_id: targetClass.id,
           class_name: targetClass.name,
-          roll_no: `${targetClass.section}-${s.roll_no.split('-')[1] || '01'}`
+          roll_no: `${targetClass.section}-${(s.roll_no || '').split('-')[1] || '01'}`
         };
       }
       return s;
@@ -438,7 +500,10 @@ export default function ClassStaffManagerView() {
     if (!window.confirm(`Are you sure you want to delete student "${student.name}" (Roll No: ${student.roll_no}) from the school roster?`)) {
       return;
     }
-    setStudents(prev => prev.filter(s => s.id !== student.id));
+    setStudents(prev => prev.filter(s => s.id !== student.id && s.name !== student.name));
+    const currentMaster = getMasterStudents();
+    const updatedMaster = currentMaster.filter(s => (s.student_id || s.id) !== student.id && (s.name || s.student_name) !== student.name);
+    saveMasterStudents(updatedMaster);
     showToast(`Removed student "${student.name}" from class.`);
   };
 

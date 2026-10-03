@@ -123,10 +123,16 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
     loadStudentData();
   }, [studentId]);
 
-  // Live real-time sync for fee clearance and announcement updates
+  // Live real-time sync for fee clearance, class transfer, and student profile updates
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
-      if (event?.type === 'fee_updated' || event?.type === 'announcement_created') {
+      if (
+        event?.type === 'fee_updated' || 
+        event?.type === 'student_transferred' || 
+        event?.type === 'student_updated' || 
+        event?.type === 'announcement_created' ||
+        event?.type === 'db_store_updated'
+      ) {
         loadStudentData();
       }
     });

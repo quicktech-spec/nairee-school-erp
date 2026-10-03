@@ -94,6 +94,121 @@ export function subscribeLiveEvents(callback) {
   };
 }
 
+// --- CENTRALIZED DATABASE STORAGE & SYNC ENGINE ---
+export function getStoredDb() {
+  if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
+  try {
+    const saved = localStorage.getItem('nairee_db_store');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...INITIAL_DB_STORE, ...parsed };
+    }
+  } catch (e) {
+    console.warn('Error reading nairee_db_store:', e);
+  }
+  return INITIAL_DB_STORE;
+}
+
+export function saveStoredDb(newDbStore) {
+  if (!newDbStore) return;
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('nairee_db_store', JSON.stringify(newDbStore));
+      if (newDbStore['Student List']?.rows) {
+        localStorage.setItem('nairee_students', JSON.stringify(newDbStore['Student List'].rows));
+      }
+    }
+  } catch (e) {
+    console.warn('Error writing nairee_db_store:', e);
+  }
+  if (newDbStore['Student List']?.rows) {
+    INITIAL_DB_STORE['Student List'].rows = newDbStore['Student List'].rows;
+  }
+  broadcastLiveEvent('db_store_updated', newDbStore);
+}
+
+export function getMasterStudents() {
+  const db = getStoredDb();
+  const rows = db['Student List']?.rows;
+  if (Array.isArray(rows) && rows.length > 0) {
+    return rows;
+  }
+  return INITIAL_DB_STORE['Student List'].rows;
+}
+
+export function saveMasterStudents(updatedStudentsList) {
+  const currentDb = getStoredDb();
+  const currentTbl = currentDb['Student List'] || INITIAL_DB_STORE['Student List'];
+  const updatedDb = {
+    ...currentDb,
+    'Student List': {
+      ...currentTbl,
+      rows: updatedStudentsList
+    }
+  };
+  saveStoredDb(updatedDb);
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('nairee_students', JSON.stringify(updatedStudentsList));
+      // Sync to ClassStaffManager local state cache
+      const mgmtStudents = updatedStudentsList.map((s, idx) => ({
+        id: s.student_id || s.id || `EDU-STU-2026-0000${idx + 1}`,
+        name: s.name || s.student_name,
+        roll_no: s.roll_no ? `${s.class_batch?.includes('10 - Section B') || s.class_batch?.includes('10B') ? '10B' : '10A'}-${s.roll_no}` : `10A-0${idx + 1}`,
+        class_id: (s.class_batch?.includes('Section B') || s.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026',
+        class_name: s.class_batch || 'Class 10 - Section A',
+        email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+        phone: s.phone || '+91 98765 00000',
+        parent_name: s.father_name || s.mother_name || 'Parent',
+        parent_phone: s.father_phone || s.mother_phone || s.phone || '+91 98765 00000',
+        attendance: 96.5,
+        fee_total: 43500,
+        fee_paid: s.fee_status === 'Paid' ? 43500 : 0,
+        fee_due: s.fee_status === 'Paid' ? 0 : 43500,
+        fee_status: s.fee_status || 'Paid'
+      }));
+      localStorage.setItem('nairee_mgmt_students', JSON.stringify(mgmtStudents));
+    }
+  } catch (e) {
+    console.warn('Error syncing mgmt students:', e);
+  }
+
+  broadcastLiveEvent('student_updated', { students: updatedStudentsList });
+}
+
+export function transferStudentClass(studentIdentifier, newClassId, newClassName) {
+  const students = [...getMasterStudents()];
+  const cleanId = String(studentIdentifier || '').toLowerCase().trim();
+  
+  let found = false;
+  const updatedStudents = students.map(s => {
+    const sid = String(s.student_id || s.id || '').toLowerCase().trim();
+    const sname = String(s.name || s.student_name || '').toLowerCase().trim();
+    const sroll = String(s.roll_no || '').toLowerCase().trim();
+    
+    if (sid === cleanId || sname === cleanId || sroll === cleanId || sid.includes(cleanId) || cleanId.includes(sid)) {
+      found = true;
+      return {
+        ...s,
+        class_batch: newClassName || newClassId,
+        batch_id: newClassId
+      };
+    }
+    return s;
+  });
+
+  if (found) {
+    saveMasterStudents(updatedStudents);
+    broadcastLiveEvent('student_transferred', {
+      student_id: studentIdentifier,
+      new_class_id: newClassId,
+      new_class_name: newClassName
+    });
+  }
+  return updatedStudents;
+}
+
 export const api = {
   // Auth
   async login(username, password) {
@@ -129,19 +244,23 @@ export const api = {
   async getDashboardStats() {
     const data = await safeFetch('/dashboard/stats');
     if (data) return data;
-    const billed = 210000;
-    const collected = 140000;
-    const outstanding = 70000;
+    const students = getMasterStudents();
+    const totalCount = students.length;
+    const pendingCount = students.filter(s => s.fee_status === 'Pending' || (s.feeDues || 0) > 0).length;
+    const paidCount = totalCount - pendingCount;
+    const billed = totalCount * 35000;
+    const collected = paidCount * 35000;
+    const outstanding = pendingCount * 35000;
     return {
       ...FALLBACK_DATA.stats,
-      students: FALLBACK_DATA.students.length || 6,
+      students: totalCount,
       teachers: FALLBACK_DATA.faculty.length || 4,
       total_students: 840,
       finance: {
         totalBilled: billed,
         totalCollected: collected,
         totalOutstanding: outstanding,
-        collectionRate: 67
+        collectionRate: totalCount > 0 ? Math.round((collected / billed) * 100) : 100
       }
     };
   },
@@ -153,19 +272,24 @@ export const api = {
     const data = await safeFetch(`/students?${params.toString()}`);
     if (data) return data;
 
-    let list = [...FALLBACK_DATA.students];
+    let list = getMasterStudents();
     if (batch && batch !== 'all') {
-      list = list.filter(s => s.batch_id === batch || s.student_batch === batch);
+      list = list.filter(s => 
+        s.batch_id === batch || 
+        s.class_batch === batch || 
+        (s.class_batch && s.class_batch.toLowerCase().includes(batch.toLowerCase()))
+      );
     }
     if (search) {
-      list = list.filter(s => (s.full_name || s.student_name || '').toLowerCase().includes(search.toLowerCase()));
+      list = list.filter(s => (s.name || s.student_name || '').toLowerCase().includes(search.toLowerCase()));
     }
     return list.map(s => ({
       ...s,
-      name: s.id || s.name,
-      student_name: s.full_name || s.student_name || 'Student',
-      roll_no: s.roll_number || s.roll_no || '101',
-      student_batch: s.batch_id || s.student_batch || 'Grade 10-A'
+      id: s.student_id || s.id || s.name,
+      name: s.name || s.student_name,
+      student_name: s.name || s.student_name || 'Student',
+      roll_no: s.roll_no || '101',
+      student_batch: s.class_batch || 'Class 10 - Section A'
     }));
   },
 
