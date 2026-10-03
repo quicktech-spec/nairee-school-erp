@@ -61,7 +61,10 @@ try {
 let supabaseChannel = null;
 try {
   if (supabase) {
-    supabaseChannel = supabase.channel('nairee_school_cloud_sync');
+    supabaseChannel = supabase.channel('nairee_school_cloud_sync', {
+      config: { broadcast: { self: false } }
+    });
+
     supabaseChannel
       .on('broadcast', { event: 'live_sync' }, ({ payload }) => {
         if (payload) {
@@ -79,6 +82,7 @@ try {
               INITIAL_DB_STORE['Student List'].rows = payload.payload['Student List'].rows;
             }
           }
+
           if (payload.type === 'student_updated' && payload.payload?.students) {
             try {
               if (typeof localStorage !== 'undefined') {
@@ -87,7 +91,42 @@ try {
             } catch (e) {}
             INITIAL_DB_STORE['Student List'].rows = payload.payload.students;
           }
-          // Notify local subscribers across views
+
+          if (payload.type === 'student_transferred' && payload.payload) {
+            const { student_id, new_class_id, new_class_name } = payload.payload;
+            const currentDb = getStoredDb();
+            const students = currentDb['Student List']?.rows || [];
+            const cleanId = String(student_id || '').toLowerCase().trim();
+            const updated = students.map(s => {
+              const sid = String(s.student_id || s.id || '').toLowerCase().trim();
+              const sname = String(s.name || s.student_name || '').toLowerCase().trim();
+              if (sid === cleanId || sname === cleanId || sid.includes(cleanId) || cleanId.includes(sid)) {
+                return { ...s, class_batch: new_class_name || new_class_id, batch_id: new_class_id };
+              }
+              return s;
+            });
+            const updatedDb = { ...currentDb, 'Student List': { ...(currentDb['Student List'] || {}), rows: updated } };
+            try {
+              localStorage.setItem('nairee_db_store', JSON.stringify(updatedDb));
+              localStorage.setItem('nairee_students', JSON.stringify(updated));
+            } catch (e) {}
+            INITIAL_DB_STORE['Student List'].rows = updated;
+          }
+
+          if (payload.type === 'fee_updated' && payload.payload) {
+            const sName = payload.payload.student_name;
+            const currentDb = getStoredDb();
+            const students = currentDb['Student List']?.rows || [];
+            const updated = students.map(s => (s.name === sName || s.student_name === sName) ? { ...s, fee_status: 'Paid' } : s);
+            const updatedDb = { ...currentDb, 'Student List': { ...(currentDb['Student List'] || {}), rows: updated } };
+            try {
+              localStorage.setItem('nairee_db_store', JSON.stringify(updatedDb));
+              localStorage.setItem('nairee_students', JSON.stringify(updated));
+            } catch (e) {}
+            INITIAL_DB_STORE['Student List'].rows = updated;
+          }
+
+          // Notify all local React components & views immediately without page refresh
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: payload }));
           }
@@ -121,7 +160,14 @@ try {
 }
 
 export function broadcastLiveEvent(type, payload = {}) {
-  const eventData = { type, payload, timestamp: Date.now() };
+  const currentDb = getStoredDb();
+  const eventData = { 
+    type, 
+    payload, 
+    dbStore: currentDb,
+    timestamp: Date.now() 
+  };
+
   try {
     if (liveChannel) {
       liveChannel.postMessage(eventData);
@@ -413,30 +459,54 @@ export const api = {
     const found = master.find(s => {
       const sId = String(s.student_id || s.id || '').toLowerCase().trim();
       const sName = String(s.name || s.student_name || '').toLowerCase().trim();
+      const sFirstName = sName.split(' ')[0];
       const sRoll = String(s.roll_no || '').toLowerCase().trim();
-      return cleanId === sId || cleanId === sName || cleanId === sRoll;
-    });
+      return cleanId === sId || cleanId === sName || cleanId === sFirstName || cleanId === sRoll || cleanId.includes(sId) || sId.includes(cleanId);
+    }) || master[0];
+
     if (found) {
+      const classBatch = found.class_batch || found.student_batch || found.batch_name || 'Class 10 - Section A';
+      const isPaid = found.fee_status === 'Paid' || found.fee_status === 'Cleared';
       return {
-        id: found.student_id || found.id || 'STU-002',
-        student_id: found.student_id || found.id || 'STU-002',
-        name: found.student_id || found.id || 'STU-002',
-        full_name: found.name || found.student_name,
-        student_name: found.name || found.student_name,
-        roll_number: found.roll_no || '102',
-        roll_no: found.roll_no || '102',
-        batch_id: (found.class_batch?.includes('Section B') || found.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026',
-        student_batch: found.class_batch || 'Class 10 - Section A',
-        email: found.email || 'aarav.sharma@example.com',
-        phone: found.phone || '+91 98765 00002',
-        guardian_name: found.father_name || found.mother_name || 'Mr. Suresh Sharma',
-        guardian_mobile: found.father_phone || found.mother_phone || '+91 98765 43214',
-        attendance_percentage: 94.0,
-        fee_status: found.fee_status || 'Paid',
-        balance_due: (found.fee_status === 'Pending' || found.fee_status === 'Unpaid') ? 35000 : 0
+        id: found.student_id || found.id || 'STU-001',
+        student_id: found.student_id || found.id || 'STU-001',
+        name: found.student_id || found.id || 'STU-001',
+        full_name: found.name || found.student_name || 'Devon Patel',
+        student_name: found.name || found.student_name || 'Devon Patel',
+        roll_number: found.roll_no || '101',
+        roll_no: found.roll_no || '101',
+        batch_id: found.batch_id || ((classBatch.includes('Section B') || classBatch.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026'),
+        batch_name: classBatch,
+        student_batch: classBatch,
+        class_batch: classBatch,
+        program_name: found.stream || 'Senior Secondary Academic Stream',
+        stream: found.stream || 'Computer Applications & Advanced Math',
+        dob: found.dob || '2011-04-12',
+        religion: found.religion || 'Hindu',
+        nationality: found.nationality || 'Indian',
+        blood_group: found.blood_group || 'O+',
+        gender: found.gender || 'Male',
+        admission_date: found.admission_date || '2024-06-15',
+        residential_address: found.residential_address || 'Indiranagar, Bengaluru - 560038',
+        permanent_address: found.permanent_address || 'Indiranagar, Bengaluru - 560038',
+        photo: found.photo || found.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+        image: found.photo || found.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
+        email: found.email || `${(found.name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+        phone: found.phone || '+91 98765 00001',
+        father_name: found.father_name || 'Rajesh Patel',
+        father_phone: found.father_phone || '+91 98765 43212',
+        mother_name: found.mother_name || 'Meera Patel',
+        mother_phone: found.mother_phone || '+91 98765 43213',
+        guardian_name: found.father_name || found.mother_name || 'Mr. Rajesh Patel',
+        guardian_mobile: found.father_phone || found.mother_phone || '+91 98765 43212',
+        attendance: { percentage: 98.5 },
+        attendance_percentage: 98.5,
+        fee_status: isPaid ? 'Paid' : 'Pending',
+        balance_due: isPaid ? 0 : 35000,
+        feeDues: isPaid ? 0 : 35000
       };
     }
-    return FALLBACK_DATA.students.find(s => s.id === id || s.name === id) || FALLBACK_DATA.students[0];
+    return FALLBACK_DATA.students[0];
   },
 
   async createStudent(studentData) {

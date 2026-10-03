@@ -234,31 +234,73 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
               </span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black tracking-tight">Welcome back, {student.student_name}!</h1>
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
                   Active Student
                 </span>
                 {/* Real-Time Fee Status Badge */}
                 {isFeePaid ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                     <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                     Fee Paid (Receipt Active)
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 animate-pulse">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
                     Fee Due ₹{student.balance_due || student.feeDues || 35000}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-300 mt-1">
-                Student ID: <code className="font-mono text-cyan-300 font-bold">{student.name}</code> &bull; Roll #{student.roll_no}
-              </p>
-              <p className="text-xs text-slate-400 mt-0.5 font-medium">
-                {student.batch_name} &bull; {student.program_name}
-              </p>
+
+              {/* Student Metadata Info Badges */}
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                {/* Class & Section Badge */}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-teal-500/20 text-teal-200 border border-teal-400/30 text-xs font-bold shadow-sm">
+                  <GraduationCap className="w-3.5 h-3.5 text-teal-400" />
+                  <span>{student.class_batch || student.student_batch || student.batch_name || 'Class 10 - Section A'}</span>
+                </span>
+
+                {/* Student ID Badge */}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-xs font-mono font-bold shadow-sm">
+                  <User className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>ID: {student.student_id || student.id || student.name || 'STU-001'}</span>
+                </span>
+
+                {/* Roll Number */}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-800/80 text-slate-200 border border-slate-700 text-xs font-bold shadow-sm">
+                  <span>Roll #{student.roll_no || student.roll_number || '101'}</span>
+                </span>
+
+                {/* Stream / Subjects */}
+                {student.stream && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs font-semibold shadow-sm">
+                    <BookOpen className="w-3.5 h-3.5 text-purple-400" />
+                    <span>{student.stream}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Secondary Details: DOB, Blood Group & Parent */}
+              <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-300 mt-2 font-medium">
+                {student.dob && (
+                  <span className="flex items-center gap-1 text-slate-300">
+                    <Calendar className="w-3 h-3 text-teal-400" />
+                    DOB: {student.dob}
+                  </span>
+                )}
+                {student.blood_group && (
+                  <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">
+                    Blood: {student.blood_group}
+                  </span>
+                )}
+                {student.guardian_name && (
+                  <span className="text-slate-400">
+                    Guardian: <strong className="text-white">{student.guardian_name}</strong> {student.guardian_mobile ? `(${student.guardian_mobile})` : ''}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
