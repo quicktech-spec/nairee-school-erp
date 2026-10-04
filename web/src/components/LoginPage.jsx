@@ -277,7 +277,7 @@ export default function LoginPage({ onLoginSuccess }) {
                     >
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="text-xs font-bold text-slate-800 truncate">{acc.name}</span>
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded border ${acc.badge}`}>
+                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${acc.badge}`}>
                           {acc.role.split(' ')[0]}
                         </span>
                       </div>

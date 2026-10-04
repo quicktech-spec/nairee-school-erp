@@ -98,7 +98,7 @@ export default function TimetableScheduleView() {
             <span className="font-extrabold text-brand-900 uppercase tracking-wide text-[10px]">
               AI Schedule Optimization Active
             </span>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.2 rounded-full">
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
               Zero Conflicts
             </span>
           </div>

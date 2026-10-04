@@ -80,7 +80,7 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
             <div className="text-left hidden sm:block">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold text-white truncate max-w-[140px]">{user?.full_name}</span>
-                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border shadow-xs ${badge.bg}`}>
+                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border shadow-xs ${badge.bg}`}>
                   {badge.label}
                 </span>
               </div>

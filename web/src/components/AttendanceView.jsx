@@ -220,7 +220,7 @@ export default function AttendanceView({ onAttendanceSaved }) {
                           <p className="font-bold text-swift-dark flex items-center gap-1.5">
                             {student.student_name}
                             {student.name === 'EDU-STU-2026-00001' && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                                 Nairee
                               </span>
                             )}

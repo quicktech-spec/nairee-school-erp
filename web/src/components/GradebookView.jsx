@@ -186,7 +186,7 @@ export default function GradebookView() {
                       <p className="font-bold text-swift-dark flex items-center gap-1.5">
                         {r.student_name}
                         {r.student_name.includes('Nairee') && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                             ★ Top Scorer
                           </span>
                         )}

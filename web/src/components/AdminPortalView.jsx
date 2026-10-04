@@ -488,7 +488,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                         <div className="text-[11px] text-slate-500">{s.student_batch} &bull; Roll #{s.roll_no}</div>
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {s.riskReasons?.map((r, idx) => (
-                            <span key={idx} className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-rose-200/80 text-rose-800">
+                            <span key={idx} className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-rose-200/80 text-rose-800">
                               {r}
                             </span>
                           ))}
@@ -758,11 +758,11 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                           <div className="flex items-center gap-1.5">
                             <span className="font-bold text-slate-800">{s.student_name}</span>
                             {s.feeDues === 0 ? (
-                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
                                 Fee Paid
                               </span>
                             ) : (
-                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
                                 Due ₹{s.feeDues}
                               </span>
                             )}

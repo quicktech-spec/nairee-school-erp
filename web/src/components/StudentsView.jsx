@@ -195,7 +195,7 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                               {s.student_name}
                             </span>
                             {s.student_name.includes('Nairee') && (
-                              <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300">
+                              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">
                                 Featured
                               </span>
                             )}
