@@ -239,14 +239,14 @@ export default function LoginPage({ onLoginSuccess }) {
                   )}
                 </button>
 
-                {/* Don't have account footer link */}
+                {/* Don't have an account footer link */}
                 <div className="text-center pt-2">
                   <p className="text-xs text-slate-600 font-medium">
-                    Don't have account? Let's{' '}
+                    Don't have an account? Let's{' '}
                     <button
                       type="button"
                       onClick={() => setErrorMessage('Student & Parent accounts are issued by the School Admissions Office.')}
-                      className="text-[#3b82f6] hover:underline font-bold"
+                      className="text-[#3b82f6] hover:underline font-bold cursor-pointer"
                     >
                       Get Started For Free
                     </button>
