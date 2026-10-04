@@ -26,6 +26,7 @@ export default function LoginPage({ onLoginSuccess }) {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
+  const [activePolicyModal, setActivePolicyModal] = useState(null);
 
   const demoAccounts = [
     {
@@ -340,16 +341,120 @@ export default function LoginPage({ onLoginSuccess }) {
         </div>
       )}
 
+      {/* Policy & Compliance Modal */}
+      {activePolicyModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setActivePolicyModal(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-4 max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">
+                    {activePolicyModal === 'privacy' && 'Student Data Privacy Policy'}
+                    {activePolicyModal === 'roles' && 'Role-Based Access & Scoping Rules'}
+                    {activePolicyModal === 'security' && 'Institution Security Protocol'}
+                  </h3>
+                  <p className="text-xs text-slate-400">Nairee Institutional Compliance & Governance</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActivePolicyModal(null)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-1 text-xs text-slate-600 space-y-3 leading-relaxed">
+              {activePolicyModal === 'privacy' && (
+                <>
+                  <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-medium">
+                    🔒 <strong>Zero Third-Party Tracking:</strong> All student identities, Aadhaar numbers, and guardian financial records are stored securely with strict data isolation.
+                  </div>
+                  <p>
+                    Nairee School ERP complies with educational data privacy standards. Student academic records, personal photographs, and attendance logs remain strictly within the institution's private cloud tenant.
+                  </p>
+                  <p>
+                    Parents and legal guardians retain full rights to inspect and request verification of stored educational records at any time through the Parent Portal.
+                  </p>
+                </>
+              )}
+
+              {activePolicyModal === 'roles' && (
+                <>
+                  <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 font-medium">
+                    👥 <strong>Strict Role Isolation:</strong> 4 distinct security tiers safeguard administrative controls from student/parent accounts.
+                  </div>
+                  <ul className="space-y-2 list-disc pl-4 text-slate-700">
+                    <li><strong>Principal / Admin:</strong> Unrestricted access to master database, fee ledgers, staff payroll, and class transfers.</li>
+                    <li><strong>Faculty / Teacher:</strong> Scoped exclusively to assigned classrooms, subject gradebooks, and attendance registers.</li>
+                    <li><strong>Student:</strong> Read-only access to enrolled timetable, syllabus, report cards, and fee status.</li>
+                    <li><strong>Parent:</strong> Restricted view of enrolled ward(s), fee payment gateway, and official circulars.</li>
+                  </ul>
+                </>
+              )}
+
+              {activePolicyModal === 'security' && (
+                <>
+                  <div className="p-3 rounded-2xl bg-purple-50 border border-purple-200 text-purple-900 font-medium">
+                    🛡️ <strong>Bank-Grade Infrastructure:</strong> Powered by 256-bit TLS encryption and Supabase Row Level Security (RLS).
+                  </div>
+                  <p>
+                    All API transactions, database updates, and UPI payment notifications are transmitted over encrypted HTTPS channels. Passwords and session tokens utilize salted cryptographic hashing.
+                  </p>
+                  <p>
+                    Automated hourly snapshots and dual-engine offline caching ensure uninterrupted campus operations even during network disruptions.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setActivePolicyModal(null)}
+                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-200 cursor-pointer"
+              >
+                Understood &amp; Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="border-t border-indigo-100 px-6 py-4 text-center text-xs text-slate-500 bg-white/50">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>&copy; {new Date().getFullYear()} Nairee &bull; School ERP</span>
           <div className="flex items-center space-x-4">
-            <span className="hover:text-slate-700 transition-colors">Privacy Policy</span>
+            <button
+              type="button"
+              onClick={() => setActivePolicyModal('privacy')}
+              className="hover:text-indigo-600 transition-colors cursor-pointer font-medium hover:underline underline-offset-4"
+            >
+              Privacy Policy
+            </button>
             <span>&bull;</span>
-            <span className="hover:text-slate-700 transition-colors">Role Scoping Rules</span>
+            <button
+              type="button"
+              onClick={() => setActivePolicyModal('roles')}
+              className="hover:text-indigo-600 transition-colors cursor-pointer font-medium hover:underline underline-offset-4"
+            >
+              Role Scoping Rules
+            </button>
             <span>&bull;</span>
-            <span className="hover:text-slate-700 transition-colors">Security Protocol</span>
+            <button
+              type="button"
+              onClick={() => setActivePolicyModal('security')}
+              className="hover:text-indigo-600 transition-colors cursor-pointer font-medium hover:underline underline-offset-4"
+            >
+              Security Protocol
+            </button>
           </div>
         </div>
       </footer>
