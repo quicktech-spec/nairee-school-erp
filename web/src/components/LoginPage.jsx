@@ -166,8 +166,15 @@ export default function LoginPage({ onLoginSuccess }) {
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 {/* Username Input with User Icon on Right */}
                 <div className="relative">
+                  <label htmlFor="username" className="sr-only">
+                    Username or Email
+                  </label>
                   <input
+                    id="username"
+                    name="username"
                     type="text"
+                    autoComplete="username"
+                    aria-label="Username or Email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="school"
@@ -182,8 +189,15 @@ export default function LoginPage({ onLoginSuccess }) {
                 {/* Password Input with Eye Icon on Right */}
                 <div>
                   <div className="relative">
+                    <label htmlFor="password" className="sr-only">
+                      Password
+                    </label>
                     <input
+                      id="password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      aria-label="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
@@ -193,7 +207,8 @@ export default function LoginPage({ onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -202,7 +217,7 @@ export default function LoginPage({ onLoginSuccess }) {
                     <button
                       type="button"
                       onClick={() => setShowForgotModal(true)}
-                      className="text-xs text-[#3b82f6] hover:underline font-semibold"
+                      className="text-xs text-[#3b82f6] hover:underline font-semibold cursor-pointer"
                     >
                       Forgot Password?
                     </button>
@@ -307,11 +322,15 @@ export default function LoginPage({ onLoginSuccess }) {
             ) : (
               <form onSubmit={handleForgotSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label htmlFor="forgot-email" className="block text-xs font-semibold text-slate-700 mb-1">
                     Registered Email or Phone Number
                   </label>
                   <input
+                    id="forgot-email"
+                    name="forgot-email"
                     type="text"
+                    autoComplete="email"
+                    aria-label="Registered Email or Phone Number"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
                     placeholder="e.g. rajesh.patel@gmail.com or s.jenkins@school.edu"
