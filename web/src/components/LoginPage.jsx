@@ -181,8 +181,8 @@ export default function LoginPage({ onLoginSuccess }) {
                     className="w-full px-5 py-3.5 rounded-xl bg-[#f2f4f7] border border-transparent text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-12 font-medium"
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-800">
-                    <User className="w-5 h-5 fill-slate-800 text-slate-800" />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                    <User className="w-5 h-5" />
                   </div>
                 </div>
 
