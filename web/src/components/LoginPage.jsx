@@ -177,7 +177,7 @@ export default function LoginPage({ onLoginSuccess }) {
                     aria-label="Username or Email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="school"
+                    placeholder="Username or School ID"
                     className="w-full px-5 py-3.5 rounded-xl bg-[#f2f4f7] border border-transparent text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-12 font-medium"
                     required
                   />
@@ -200,7 +200,7 @@ export default function LoginPage({ onLoginSuccess }) {
                       aria-label="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="Enter your password"
                       className="w-full px-5 py-3.5 rounded-xl bg-[#f2f4f7] border border-transparent text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] focus:bg-white transition-all pr-12 font-medium"
                       required
                     />
