@@ -1,16 +1,35 @@
-// Primary in-memory database store with clean relational table names
+// Master Centralized Relational Database Store for Nairee School ERP
+// Single Source of Truth for all Portals, Database Studio, and Management Views
+
 export const INITIAL_DB_STORE = {
   'Student List': {
     columns: [
-      { name: 'name', type: 'VARCHAR(255)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'roll_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(100) [Link to Class & Batch List]', pk: 0 },
+      { name: 'stream', type: 'VARCHAR(150)', pk: 0 },
+      { name: 'gender', type: 'VARCHAR(20)', pk: 0 },
+      { name: 'dob', type: 'DATE', pk: 0 },
+      { name: 'blood_group', type: 'VARCHAR(10)', pk: 0 },
+      { name: 'aadhaar_no', type: 'VARCHAR(50)', pk: 0 },
       { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'class_batch', type: 'VARCHAR(50) [Class & Section]', pk: 0 },
-      { name: 'fee_status', type: 'VARCHAR(50)', pk: 0 }
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'residential_address', type: 'TEXT', pk: 0 },
+      { name: 'permanent_address', type: 'TEXT', pk: 0 },
+      { name: 'fee_status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'father_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'father_phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'father_occupation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'mother_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'mother_phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'mother_occupation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
       { 
         student_id: 'STU-001', 
-        name: 'Devon Patel', 
+        name: 'Nairee Patel', 
         roll_no: '101', 
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         dob: '2011-04-12',
@@ -18,14 +37,15 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'O+',
         class_batch: 'Class 10 - Section A',
+        batch_id: 'CLS 10A',
         stream: 'Computer Applications & Advanced Math',
         aadhaar_no: '9876 5432 1091',
-        gender: 'Male',
+        gender: 'Female',
         admission_date: '2024-06-15',
         residential_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
         permanent_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
-        phone: '+1 555 789 0123',
-        email: 'devon.patel@nairee.edu',
+        phone: '+91 98765 00001',
+        email: 'syalfreelance@gmail.com',
         fee_status: 'Paid',
         father_name: 'Rajesh Patel',
         father_occupation: 'Senior Software Director',
@@ -45,7 +65,8 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'STU-008',
         sibling_name: 'Riya Patel',
         sibling_class: 'Class 6 - Section A',
-        sibling_roll_no: '106'
+        sibling_roll_no: '108',
+        status: 'Active'
       },
       { 
         student_id: 'STU-002', 
@@ -57,6 +78,7 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'B+',
         class_batch: 'Class 10 - Section A',
+        batch_id: 'CLS 10A',
         stream: 'Hindi & Applied Science',
         aadhaar_no: '9876 5432 1092',
         gender: 'Male',
@@ -77,7 +99,8 @@ export const INITIAL_DB_STORE = {
         mother_photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100',
         mother_address: 'House #22, Palm Grove Enclave, Koramangala 4th Block, Bengaluru - 560034',
         has_previous_school: false,
-        has_siblings: false
+        has_siblings: false,
+        status: 'Active'
       },
       { 
         student_id: 'STU-003', 
@@ -89,6 +112,7 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'A+',
         class_batch: 'Class 10 - Section A',
+        batch_id: 'CLS 10A',
         stream: 'Sanskrit & Pure Science',
         aadhaar_no: '9876 5432 1093',
         gender: 'Female',
@@ -116,7 +140,8 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'STU-009',
         sibling_name: 'Kavya Gupta',
         sibling_class: 'Class 4 - Section B',
-        sibling_roll_no: '104'
+        sibling_roll_no: '104',
+        status: 'Active'
       },
       { 
         student_id: 'STU-004', 
@@ -128,6 +153,7 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'AB+',
         class_batch: 'Class 10 - Section A',
+        batch_id: 'CLS 10A',
         stream: 'Physical Education (PE) & Math',
         aadhaar_no: '9876 5432 1094',
         gender: 'Male',
@@ -148,7 +174,8 @@ export const INITIAL_DB_STORE = {
         mother_photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100',
         mother_address: 'B-601, Brigade Gateway, Malleshwaram, Bengaluru - 560055',
         has_previous_school: false,
-        has_siblings: false
+        has_siblings: false,
+        status: 'Active'
       },
       { 
         student_id: 'STU-005', 
@@ -160,6 +187,7 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'O-',
         class_batch: 'Class 10 - Section A',
+        batch_id: 'CLS 10A',
         stream: 'Computer Applications & STEM',
         aadhaar_no: '9876 5432 1095',
         gender: 'Female',
@@ -180,7 +208,8 @@ export const INITIAL_DB_STORE = {
         mother_photo: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=100',
         mother_address: 'Flat 101, Shriram Spandana, Wind Tunnel Road, Murugeshpalya, Bengaluru - 560017',
         has_previous_school: false,
-        has_siblings: false
+        has_siblings: false,
+        status: 'Active'
       },
       { 
         student_id: 'STU-006', 
@@ -192,6 +221,7 @@ export const INITIAL_DB_STORE = {
         nationality: 'Indian',
         blood_group: 'B+',
         class_batch: 'Class 10 - Section B',
+        batch_id: 'CLS 10B',
         stream: 'Physical Education (PE) & Hindi',
         aadhaar_no: '9876 5432 1096',
         gender: 'Male',
@@ -215,10 +245,46 @@ export const INITIAL_DB_STORE = {
         prev_school_name: 'Army Public School, ASC Center',
         prev_school_board: 'CBSE',
         prev_studied_class: 'Class 9',
-        has_siblings: false
+        has_siblings: false,
+        status: 'Active'
+      },
+      {
+        student_id: 'STU-008',
+        name: 'Riya Patel',
+        roll_no: '108',
+        photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+        dob: '2015-02-10',
+        religion: 'Hindu',
+        nationality: 'Indian',
+        blood_group: 'O+',
+        class_batch: 'Class 6 - Section A',
+        batch_id: 'CLS 6A',
+        stream: 'General Science & Arts',
+        aadhaar_no: '9876 5432 1098',
+        gender: 'Female',
+        admission_date: '2024-06-15',
+        residential_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
+        permanent_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
+        phone: '+91 98765 43212',
+        email: 'riya.patel@student.nairee.edu',
+        fee_status: 'Paid',
+        father_name: 'Rajesh Patel',
+        father_occupation: 'Senior Software Director',
+        father_phone: '+91 98765 43212',
+        mother_name: 'Meera Patel',
+        mother_occupation: 'Professor of Economics',
+        mother_phone: '+91 98765 43213',
+        has_previous_school: false,
+        has_siblings: true,
+        sibling_id: 'STU-001',
+        sibling_name: 'Nairee Patel',
+        sibling_class: 'Class 10 - Section A',
+        sibling_roll_no: '101',
+        status: 'Active'
       }
     ]
   },
+
   'Teacher List': {
     columns: [
       { name: 'teacher_number', type: 'VARCHAR(50)', pk: 1 },
@@ -234,9 +300,8 @@ export const INITIAL_DB_STORE = {
       { name: 'bank_account_no', type: 'VARCHAR(50)', pk: 0 },
       { name: 'bank_ifsc', type: 'VARCHAR(50)', pk: 0 },
       { name: 'father_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'father_occupation', type: 'VARCHAR(255)', pk: 0 },
       { name: 'mother_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'mother_occupation', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'workload_hours', type: 'INT', pk: 0 },
       { name: 'monthly_salary', type: 'DECIMAL(10,2)', pk: 0 },
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
@@ -360,9 +425,40 @@ export const INITIAL_DB_STORE = {
         bank_holder_name: 'Clara Oswald',
         pan_no: 'OPQRS3456T',
         status: 'Active' 
+      },
+      {
+        teacher_number: 'TEA 005',
+        name: 'Ms. Priya Deshmukh',
+        photo: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150',
+        gender: 'Female',
+        dob: '1991-08-12',
+        blood_group: 'B+',
+        aadhaar_no: '4390 1289 7711',
+        email: 'pdeshmukh@nairee.edu',
+        phone: '+91 98765 43215',
+        department: 'Languages & Humanities',
+        designation: 'Hindi & Sanskrit Faculty',
+        qualification: 'M.A. Hindi, B.Ed',
+        workload_hours: 16,
+        monthly_salary: 58000,
+        joining_date: '2022-06-15',
+        residential_address: 'Flat 12B, Salarpuria Sattva, Marathahalli, Bengaluru - 560037',
+        permanent_address: 'House #4, Model Colony, Pune - 411016',
+        father_name: 'Anand Deshmukh',
+        father_occupation: 'Senior Geologist',
+        mother_name: 'Sunanda Deshmukh',
+        mother_occupation: 'Educator',
+        emergency_contact_phone: '+91 98765 43288',
+        bank_name: 'Kotak Mahindra Bank',
+        bank_account_no: '4819203948',
+        bank_ifsc: 'KKBK0008123',
+        bank_holder_name: 'Priya Deshmukh',
+        pan_no: 'UVWXY7890Z',
+        status: 'Active'
       }
     ]
   },
+
   'Class & Batch List': {
     columns: [
       { name: 'batch_id', type: 'VARCHAR(50)', pk: 1 },
@@ -372,11 +468,13 @@ export const INITIAL_DB_STORE = {
       { name: 'capacity', type: 'INT', pk: 0 }
     ],
     rows: [
-      { batch_id: 'CLS 10A', batch_name: 'Class 10A', class_teacher: 'TEA 001', room_no: 'Room 204', capacity: 35 },
-      { batch_id: 'CLS 10B', batch_name: 'Class 10B', class_teacher: 'TEA 002', room_no: 'Room 205', capacity: 35 },
-      { batch_id: 'CLS 11A', batch_name: 'Class 11A', class_teacher: 'TEA 003', room_no: 'Room 301', capacity: 30 }
+      { batch_id: 'CLS 10A', batch_name: 'Class 10 - Section A', class_teacher: 'TEA 001', room_no: 'Room 204', capacity: 35 },
+      { batch_id: 'CLS 10B', batch_name: 'Class 10 - Section B', class_teacher: 'TEA 002', room_no: 'Room 205', capacity: 35 },
+      { batch_id: 'CLS 11A', batch_name: 'Class 11 - Section A', class_teacher: 'TEA 003', room_no: 'Room 301', capacity: 30 },
+      { batch_id: 'CLS 12A', batch_name: 'Class 12 - Section A (Science)', class_teacher: 'TEA 004', room_no: 'Room 302', capacity: 30 }
     ]
   },
+
   'Subjects List': {
     columns: [
       { name: 'subject_id', type: 'VARCHAR(50)', pk: 1 },
@@ -390,9 +488,194 @@ export const INITIAL_DB_STORE = {
       { subject_id: 'SUB 001', subject_name: 'Advanced Mathematics', subject_code: 'MATH 101', teacher: 'TEA 001', credit_hours: 4, department: 'Mathematics & Science' },
       { subject_id: 'SUB 002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS 102', teacher: 'TEA 002', credit_hours: 4, department: 'Physics & STEM' },
       { subject_id: 'SUB 003', subject_name: 'Computer Science & AI', subject_code: 'CS 104', teacher: 'TEA 003', credit_hours: 3, department: 'Computer Science' },
-      { subject_id: 'SUB 004', subject_name: 'English & World Literature', subject_code: 'ENG 105', teacher: 'TEA 004', credit_hours: 3, department: 'Humanities & English' }
+      { subject_id: 'SUB 004', subject_name: 'English & World Literature', subject_code: 'ENG 105', teacher: 'TEA 004', credit_hours: 3, department: 'Humanities & English' },
+      { subject_id: 'SUB 005', subject_name: 'Hindi Literature & Grammar', subject_code: 'HIN 106', teacher: 'TEA 005', credit_hours: 3, department: 'Languages & Humanities' }
     ]
   },
+
+  'Assessment Plans': {
+    columns: [
+      { name: 'plan_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'assessment_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'course_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'subject', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'maximum_score', type: 'INT', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { plan_id: 'PLAN-01', assessment_name: 'Mid-Term Examinations 2026', course_name: 'Advanced Mathematics', subject: 'Mathematics', maximum_score: 100, date: '2026-10-15', class_batch: 'CLS 10A' },
+      { plan_id: 'PLAN-02', assessment_name: 'Lab Dynamics Practical Evaluation', course_name: 'Physics & Dynamics', subject: 'Physics', maximum_score: 50, date: '2026-10-20', class_batch: 'CLS 10A' },
+      { plan_id: 'PLAN-03', assessment_name: 'AI & Python Coding Assessment', course_name: 'Computer Science & AI', subject: 'Computer Science', maximum_score: 100, date: '2026-10-28', class_batch: 'CLS 10A' },
+      { plan_id: 'PLAN-04', assessment_name: 'English Essay & Creative Composition', course_name: 'English & World Literature', subject: 'English', maximum_score: 50, date: '2026-11-05', class_batch: 'CLS 10A' }
+    ]
+  },
+
+  'Assessment Results': {
+    columns: [
+      { name: 'result_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
+      { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'plan_id', type: 'VARCHAR(50) [Link to Assessment Plans]', pk: 0 },
+      { name: 'assessment_plan', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'course', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'score', type: 'DECIMAL(5,2)', pk: 0 },
+      { name: 'maximum_score', type: 'DECIMAL(5,2)', pk: 0 },
+      { name: 'percentage', type: 'DECIMAL(5,2)', pk: 0 },
+      { name: 'grade', type: 'VARCHAR(10)', pk: 0 },
+      { name: 'comment', type: 'TEXT', pk: 0 }
+    ],
+    rows: [
+      { result_id: 'RES-001', student_id: 'STU-001', student_name: 'Nairee Patel', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional mathematical rigor and step-by-step proofs.' },
+      { result_id: 'RES-002', student_id: 'STU-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 88, maximum_score: 100, percentage: 88, grade: 'A', comment: 'Strong analytical skills, minor accuracy slip in trigonometry.' },
+      { result_id: 'RES-003', student_id: 'STU-003', student_name: 'Diya Gupta', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Brilliant conceptual grasp across algebra and calculus.' },
+      { result_id: 'RES-004', student_id: 'STU-004', student_name: 'Rohan Mehta', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
+      { result_id: 'RES-005', student_id: 'STU-005', student_name: 'Ananya Iyer', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
+      { result_id: 'RES-006', student_id: 'STU-006', student_name: 'Kabir Singh', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
+      { result_id: 'RES-007', student_id: 'STU-001', student_name: 'Nairee Patel', plan_id: 'PLAN-02', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
+      { result_id: 'RES-008', student_id: 'STU-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-02', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics', score: 44, maximum_score: 50, percentage: 88, grade: 'A', comment: 'Well documented experimental observations.' }
+    ]
+  },
+
+  'Attendance Records': {
+    columns: [
+      { name: 'attendance_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
+      { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 }
+    ],
+    rows: [
+      { attendance_id: 'ATT-001', student_id: 'STU-001', student_name: 'Nairee Patel', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-002', student_id: 'STU-002', student_name: 'Aarav Sharma', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-003', student_id: 'STU-003', student_name: 'Diya Gupta', date: '2026-10-01', status: 'Absent', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-004', student_id: 'STU-004', student_name: 'Rohan Mehta', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-005', student_id: 'STU-005', student_name: 'Ananya Iyer', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-006', student_id: 'STU-006', student_name: 'Kabir Singh', date: '2026-10-01', status: 'Absent', class_batch: 'CLS 10B' },
+      { attendance_id: 'ATT-007', student_id: 'STU-001', student_name: 'Nairee Patel', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-008', student_id: 'STU-002', student_name: 'Aarav Sharma', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-009', student_id: 'STU-003', student_name: 'Diya Gupta', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-010', student_id: 'STU-004', student_name: 'Rohan Mehta', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-011', student_id: 'STU-005', student_name: 'Ananya Iyer', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
+      { attendance_id: 'ATT-012', student_id: 'STU-006', student_name: 'Kabir Singh', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10B' }
+    ]
+  },
+
+  'Teacher Attendance': {
+    columns: [
+      { name: 'punch_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List]', pk: 0 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 },
+      { name: 'punch_in', type: 'VARCHAR(20)', pk: 0 },
+      { name: 'punch_out', type: 'VARCHAR(20)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'hours_recorded', type: 'DECIMAL(4,2)', pk: 0 }
+    ],
+    rows: [
+      { punch_id: 'TP-001', teacher_number: 'TEA 001', name: 'Prof. Sarah Jenkins', date: '2026-10-04', punch_in: '08:15 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-002', teacher_number: 'TEA 002', name: 'Dr. Evelyn Reed', date: '2026-10-04', punch_in: '08:20 AM', punch_out: '04:20 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-003', teacher_number: 'TEA 003', name: 'Mr. Robert Chen', date: '2026-10-04', punch_in: '08:10 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-004', teacher_number: 'TEA 004', name: 'Ms. Clara Oswald', date: '2026-10-04', punch_in: '08:25 AM', punch_out: '04:25 PM', status: 'On Duty', hours_recorded: 8.0 }
+    ]
+  },
+
+  'Classes Conducted Log': {
+    columns: [
+      { name: 'log_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List]', pk: 0 },
+      { name: 'teacher_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 },
+      { name: 'subject', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'topic_covered', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'period_slot', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 }
+    ],
+    rows: [
+      { log_id: 'LOG-001', teacher_number: 'TEA 001', teacher_name: 'Prof. Sarah Jenkins', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', topic_covered: 'Quadratic Polynomial Factorization & Real Roots', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-04' },
+      { log_id: 'LOG-002', teacher_number: 'TEA 002', teacher_name: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Physics & Dynamics', topic_covered: 'Electromagnetic Inductance & Faraday Law Verification', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-04' }
+    ]
+  },
+
+  'Teacher Substitution': {
+    columns: [
+      { name: 'sub_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'original_teacher', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'substitute_teacher', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'subject', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'period_slot', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'date', type: 'DATE', pk: 0 },
+      { name: 'reason', type: 'TEXT', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { sub_id: 'SUBST-001', original_teacher: 'Prof. Sarah Jenkins', substitute_teacher: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', period_slot: '02:00 PM - 03:00 PM', date: '2026-10-05', reason: 'CBSE Mathematics Workshop Attendance', status: 'Approved' }
+    ]
+  },
+
+  'Fee Invoices & Ledger': {
+    columns: [
+      { name: 'invoice_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
+      { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'fee_type', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
+      { name: 'due_date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'payment_date', type: 'DATE', pk: 0 },
+      { name: 'receipt_no', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { invoice_id: 'INV-2026-001', student_id: 'STU-001', student_name: 'Nairee Patel', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
+      { invoice_id: 'INV-2026-002', student_id: 'STU-001', student_name: 'Nairee Patel', title: 'STEM & Robotics Lab Instrumentation Fee', fee_type: 'Laboratory Fee', amount: 8500, due_date: '2026-10-25', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9042' },
+      { invoice_id: 'INV-2026-003', student_id: 'STU-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9043' },
+      { invoice_id: 'INV-2026-004', student_id: 'STU-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-005', student_id: 'STU-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9044' },
+      { invoice_id: 'INV-2026-006', student_id: 'STU-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9045' },
+      { invoice_id: 'INV-2026-007', student_id: 'STU-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-008', student_id: 'STU-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' }
+    ]
+  },
+
+  'Homework List': {
+    columns: [
+      { name: 'homework_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 },
+      { name: 'subject', type: 'VARCHAR(50) [Link to Subjects List]', pk: 0 },
+      { name: 'title', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'instructions', type: 'TEXT', pk: 0 },
+      { name: 'due_date', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'assigned_by', type: 'VARCHAR(50) [Link to Teacher List]', pk: 0 }
+    ],
+    rows: [
+      { homework_id: 'HW 001', class_batch: 'CLS 10A', subject: 'SUB 001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step by step proofs.', due_date: 'Tomorrow 5:00 PM', assigned_by: 'TEA 001' },
+      { homework_id: 'HW 002', class_batch: 'CLS 10A', subject: 'SUB 002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday 11:59 PM', assigned_by: 'TEA 002' },
+      { homework_id: 'HW 003', class_batch: 'CLS 10A', subject: 'SUB 003', title: 'Python Recursion & Linked Lists Exercise', instructions: 'Write recursive solutions for binary tree traversal and submit code file.', due_date: 'Monday 10:00 AM', assigned_by: 'TEA 003' }
+    ]
+  },
+
+  'Homework Submissions': {
+    columns: [
+      { name: 'submission_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'homework_id', type: 'VARCHAR(50) [Link to Homework List]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
+      { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'submission_text', type: 'TEXT', pk: 0 },
+      { name: 'attachment_url', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'submitted_at', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'marks_awarded', type: 'INT', pk: 0 },
+      { name: 'teacher_feedback', type: 'TEXT', pk: 0 }
+    ],
+    rows: [
+      { submission_id: 'SUBM-001', homework_id: 'HW 001', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Attached solved PDF for Trigonometric Integrals Exercise 4.2 with verified derivatives.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_ex_4_2_nairee.pdf', submitted_at: '2026-10-03 04:30 PM', status: 'Graded', marks_awarded: 100, teacher_feedback: 'Flawless proofs and neat layout!' },
+      { submission_id: 'SUBM-002', homework_id: 'HW 002', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Completed interactive simulation friction parameter table.', attachment_url: 'https://cdn.nairee.edu/uploads/newtonian_sim_nairee.pdf', submitted_at: '2026-10-04 02:15 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' }
+    ]
+  },
+
   'Parent List': {
     columns: [
       { name: 'parent_id', type: 'VARCHAR(50)', pk: 1 },
@@ -403,11 +686,12 @@ export const INITIAL_DB_STORE = {
       { name: 'relationship', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { parent_id: 'PAR 001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'STU 001', relationship: 'Father' },
-      { parent_id: 'PAR 002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'STU 002', relationship: 'Mother' },
-      { parent_id: 'PAR 003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'STU 003', relationship: 'Father' }
+      { parent_id: 'PAR 001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'STU-001', relationship: 'Father', children_ids: ['STU-001', 'STU-008'] },
+      { parent_id: 'PAR 002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'STU-002', relationship: 'Mother', children_ids: ['STU-002'] },
+      { parent_id: 'PAR 003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'STU-003', relationship: 'Father', children_ids: ['STU-003'] }
     ]
   },
+
   'Admin List': {
     columns: [
       { name: 'admin_id', type: 'VARCHAR(50)', pk: 1 },
@@ -421,33 +705,35 @@ export const INITIAL_DB_STORE = {
       { admin_id: 'ADM 002', name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar' }
     ]
   },
-  'Attendance Records': {
+
+  'Transfer Certificates': {
     columns: [
-      { name: 'attendance_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student', type: 'VARCHAR(50) [Link to Student List]', pk: 0 },
-      { name: 'date', type: 'DATE', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 }
+      { name: 'tc_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'leaving_date', type: 'DATE', pk: 0 },
+      { name: 'reason', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'conduct', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { attendance_id: 'ATT 001', student: 'STU 001', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT 002', student: 'STU 002', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT 003', student: 'STU 003', date: '2026-10-01', status: 'Absent', class_batch: 'CLS 10A' }
+      { tc_id: 'TC-2026-001', student_id: 'STU-007', student_name: 'Sameer Kulkarni', class_batch: 'Class 10 - Section B', leaving_date: '2026-08-30', reason: 'Parent Relocated to Mumbai', conduct: 'Exemplary', status: 'Issued' }
     ]
   },
-  'Homework List': {
+
+  'Alumni Network': {
     columns: [
-      { name: 'homework_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 },
-      { name: 'subject', type: 'VARCHAR(50) [Link to Subjects List]', pk: 0 },
-      { name: 'title', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'instructions', type: 'TEXT', pk: 0 },
-      { name: 'due_date', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'assigned_by', type: 'VARCHAR(50) [Link to Teacher List]', pk: 0 }
+      { name: 'alumni_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'passing_year', type: 'VARCHAR(20)', pk: 0 },
+      { name: 'higher_education', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'current_profession', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 }
     ],
     rows: [
-      { homework_id: 'HW 001', class_batch: 'CLS 10A', subject: 'SUB 001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step by step proofs.', due_date: 'Tomorrow 5:00 PM', assigned_by: 'TEA 001' },
-      { homework_id: 'HW 002', class_batch: 'CLS 10A', subject: 'SUB 002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday 11:59 PM', assigned_by: 'TEA 002' }
+      { alumni_id: 'ALUM-2025-01', name: 'Tanvi Deshmukh', passing_year: 'Batch of 2025', higher_education: 'B.Tech Computer Science, IIT Bombay', current_profession: 'AI Research Intern', email: 'tanvi.deshmukh@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2024-02', name: 'Karan Mehra', passing_year: 'Batch of 2024', higher_education: 'MBBS, AIIMS New Delhi', current_profession: 'Medical Scholar', email: 'karan.mehra@alumni.nairee.edu' }
     ]
   }
 };
@@ -462,17 +748,25 @@ INITIAL_DB_STORE['tabSubject'] = INITIAL_DB_STORE['Subjects List'];
 INITIAL_DB_STORE['tabCourse'] = INITIAL_DB_STORE['Subjects List'];
 INITIAL_DB_STORE['tabParent'] = INITIAL_DB_STORE['Parent List'];
 INITIAL_DB_STORE['tabStudentAttendance'] = INITIAL_DB_STORE['Attendance Records'];
+INITIAL_DB_STORE['tabAttendance'] = INITIAL_DB_STORE['Attendance Records'];
+INITIAL_DB_STORE['tabTeacherAttendance'] = INITIAL_DB_STORE['Teacher Attendance'];
+INITIAL_DB_STORE['tabAssessmentPlan'] = INITIAL_DB_STORE['Assessment Plans'];
+INITIAL_DB_STORE['tabAssessmentResult'] = INITIAL_DB_STORE['Assessment Results'];
+INITIAL_DB_STORE['tabFeeInvoice'] = INITIAL_DB_STORE['Fee Invoices & Ledger'];
 INITIAL_DB_STORE['tabHomework'] = INITIAL_DB_STORE['Homework List'];
+INITIAL_DB_STORE['tabHomeworkSubmission'] = INITIAL_DB_STORE['Homework Submissions'];
 INITIAL_DB_STORE['tabAdmin'] = INITIAL_DB_STORE['Admin List'];
+INITIAL_DB_STORE['tabTransferCertificate'] = INITIAL_DB_STORE['Transfer Certificates'];
+INITIAL_DB_STORE['tabAlumni'] = INITIAL_DB_STORE['Alumni Network'];
 
-// Fallback data for static deployments (GitHub Pages, Netlify standalone)
+// Synchronized Fallback Object mapped directly to master tables
 export const FALLBACK_DATA = {
   users: [
     { id: 'admin 1', username: 'admin', full_name: 'Dr. Marcus Vance', role: 'admin', email: 'admin@nairee.edu', status: 'Active', department: 'Executive Board', phone: '+91 98765 43210' },
-    { id: 'teacher 1', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211' },
-    { id: 'EDU-STU-2026-00001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Grade 10 Section A', roll_number: '101', student_id: 'STU-001' },
-    { id: 'EDU-STU-2026-00002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 3 - Section A', roll_number: '102', student_id: 'STU-002' },
-    { id: 'parent 1', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212' }
+    { id: 'teacher 1', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'TEA 001' },
+    { id: 'STU-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '101', student_id: 'STU-001' },
+    { id: 'STU-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '102', student_id: 'STU-002' },
+    { id: 'parent 1', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212', children: [{ id: 'STU-001', name: 'Nairee Patel', class_batch: 'Class 10 - Section A' }, { id: 'STU-008', name: 'Riya Patel', class_batch: 'Class 6 - Section A' }] }
   ],
   stats: {
     total_students: 840,
@@ -482,48 +776,15 @@ export const FALLBACK_DATA = {
     active_courses: 14,
     pending_homework: 3
   },
-  students: [
-    { id: 'EDU STU 2026 00001', full_name: 'Nairee Patel', roll_number: '10A 01', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'syalfreelance@gmail.com', phone: '+91 98765 00001', attendance_percentage: 97.5, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00002', full_name: 'Aarav Sharma', roll_number: '10A 02', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'aarav.sharma@example.com', phone: '+91 98765 00002', attendance_percentage: 94.0, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00003', full_name: 'Diya Gupta', roll_number: '10A 03', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'diya.gupta@example.com', phone: '+91 98765 00003', attendance_percentage: 98.2, fee_status: 'Pending', balance_due: 35000 },
-    { id: 'EDU STU 2026 00004', full_name: 'Rohan Mehta', roll_number: '10A 04', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'rohan.mehta@example.com', phone: '+91 98765 00004', attendance_percentage: 91.5, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00005', full_name: 'Ananya Iyer', roll_number: '10A 05', batch_id: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', email: 'ananya.iyer@example.com', phone: '+91 98765 00005', attendance_percentage: 99.0, fee_status: 'Paid', balance_due: 0 },
-    { id: 'EDU STU 2026 00006', full_name: 'Kabir Singh', roll_number: '10B 06', batch_id: 'BATCH 10B 2026', batch_name: 'Grade 10 Section B', email: 'kabir.singh@example.com', phone: '+91 98765 00006', attendance_percentage: 89.0, fee_status: 'Pending', balance_due: 35000 }
-  ],
-  batches: [
-    { id: 'BATCH 10A 2026', name: 'Grade 10 Section A', grade: '10', section: 'A', room: 'Room 204' },
-    { id: 'BATCH 10B 2026', name: 'Grade 10 Section B', grade: '10', section: 'B', room: 'Room 205' }
-  ],
-  courses: [
-    { id: 'CRS MATH 10', name: 'Advanced Mathematics', code: 'MATH 101', instructor: 'Prof. Sarah Jenkins' },
-    { id: 'CRS PHYS 10', name: 'Physics & Lab Dynamics', code: 'PHYS 102', instructor: 'Dr. Marcus Vance' },
-    { id: 'CRS CHEM 10', name: 'Organic & Applied Chemistry', code: 'CHEM 103', instructor: 'Dr. Marcus Vance' }
-  ],
-  faculty: [
-    { id: 'FAC 001', name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', email: 'sjenkins@nairee.edu', phone: '+91 98765 43211', workload_hours: 24 },
-    { id: 'FAC 002', name: 'Dr. Marcus Vance', department: 'Physics & STEM', email: 'admin@nairee.edu', phone: '+91 98765 43210', workload_hours: 18 }
-  ],
   schedule: [
     { id: 'SCH 01', day: 'Monday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Advanced Mathematics', instructor: 'Prof. Sarah Jenkins', room: 'Room 204' },
-    { id: 'SCH 02', day: 'Monday', time_slot: '09:40 AM to 10:40 AM', course_name: 'Physics & Lab Dynamics', instructor: 'Dr. Marcus Vance', room: 'Lab 2' },
-    { id: 'SCH 03', day: 'Tuesday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Organic & Applied Chemistry', instructor: 'Dr. Marcus Vance', room: 'Lab 1' }
-  ],
-  attendance: [
-    { id: 'ATT 001', student_id: 'EDU STU 2026 00001', student_name: 'Nairee Patel', date: '2026-10-01', status: 'Present' },
-    { id: 'ATT 002', student_id: 'EDU STU 2026 00002', student_name: 'Aarav Sharma', date: '2026-10-01', status: 'Present' },
-    { id: 'ATT 003', student_id: 'EDU STU 2026 00003', student_name: 'Diya Gupta', date: '2026-10-01', status: 'Absent' }
-  ],
-  fees: [
-    { id: 'FEE 2026 001', title: 'Term 1 Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', student_name: 'Nairee Patel' },
-    { id: 'FEE 2026 002', title: 'Science Lab & STEM Materials Fee', amount: 8500, due_date: '2026-10-25', status: 'Pending', student_name: 'Nairee Patel' }
+    { id: 'SCH 02', day: 'Monday', time_slot: '09:40 AM to 10:40 AM', course_name: 'Physics & Dynamics', instructor: 'Dr. Evelyn Reed', room: 'Lab 2' },
+    { id: 'SCH 03', day: 'Tuesday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Computer Science & AI', instructor: 'Mr. Robert Chen', room: 'Lab 1' }
   ],
   syllabus: [
     { id: 'SYL 01', subject: 'Mathematics', topic: 'Quadratic Equations & Polynomials', total_topics: 10, completed_topics: 8, status: 'In Progress' },
-    { id: 'SYL 02', subject: 'Physics', topic: 'Electromagnetism & Waves', total_topics: 8, completed_topics: 6, status: 'In Progress' }
-  ],
-  homework: [
-    { id: 'HW 01', title: 'Calculus Trigonometric Integrals Exercise 4.2', subject: 'Mathematics', due_date: 'Tomorrow 5:00 PM', status: 'Assigned', instructions: 'Solve problems 1 through 15 with step by step proofs.' },
-    { id: 'HW 02', title: 'Newtonian Dynamics Mechanics Simulation', subject: 'Physics', due_date: 'Friday 11:59 PM', status: 'Submitted', instructions: 'Complete virtual lab friction parameters chart.' }
+    { id: 'SYL 02', subject: 'Physics', topic: 'Electromagnetism & Waves', total_topics: 8, completed_topics: 6, status: 'In Progress' },
+    { id: 'SYL 03', subject: 'Computer Science', topic: 'Data Structures & Recursion', total_topics: 12, completed_topics: 9, status: 'In Progress' }
   ],
   study_materials: [
     { id: 'MAT 01', title: 'Mathematics Formula Cheat Sheet 2026', subject: 'Mathematics', type: 'PDF Document', size: '2.4 MB' },
@@ -549,24 +810,34 @@ export const FALLBACK_DATA = {
   ]
 };
 
-export const FALLBACK_STUDENTS = [
-  { name: 'EDU STU 2026 00001', student_name: 'Nairee Patel', roll_no: '101', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Rajesh Patel', guardian_mobile: '+91 98765 43212', attendancePct: 98, avgGrade: 96, feeDues: 0 },
-  { name: 'EDU STU 2026 00002', student_name: 'Aarav Sharma', roll_no: '102', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Suresh Sharma', guardian_mobile: '+91 98765 43214', attendancePct: 94, avgGrade: 88, feeDues: 0 },
-  { name: 'EDU STU 2026 00003', student_name: 'Diya Gupta', roll_no: '103', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Vikram Gupta', guardian_mobile: '+91 98765 43216', attendancePct: 99, avgGrade: 92, feeDues: 35000 },
-  { name: 'EDU STU 2026 00004', student_name: 'Rohan Mehta', roll_no: '104', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Manish Mehta', guardian_mobile: '+91 98765 43218', attendancePct: 91, avgGrade: 84, feeDues: 0 },
-  { name: 'EDU STU 2026 00005', student_name: 'Ananya Iyer', roll_no: '105', student_batch: 'Grade 10 Section A', guardian_name: 'Mr. Karthik Iyer', guardian_mobile: '+91 98765 43220', attendancePct: 97, avgGrade: 95, feeDues: 0 },
-  { name: 'EDU STU 2026 00006', student_name: 'Kabir Singh', roll_no: '106', student_batch: 'Grade 10 Section B', guardian_name: 'Mr. Harpreet Singh', guardian_mobile: '+91 98765 43222', attendancePct: 89, avgGrade: 78, feeDues: 35000 }
-];
+// Backward compatibility export aliases mapped directly to master tables
+export const FALLBACK_STUDENTS = INITIAL_DB_STORE['Student List'].rows.map(s => ({
+  name: s.student_id,
+  student_name: s.name,
+  roll_no: s.roll_no,
+  student_batch: s.class_batch,
+  guardian_name: s.father_name || s.mother_name || 'Guardian',
+  guardian_mobile: s.father_phone || s.mother_phone || s.phone,
+  attendancePct: 98,
+  avgGrade: 96,
+  feeDues: s.fee_status === 'Paid' ? 0 : 35000,
+  fee_status: s.fee_status
+}));
 
-export const FALLBACK_FACULTY = [
-  { name: 'FAC 001', full_name: 'Prof. Sarah Jenkins', department: 'Mathematics & Science', designation: 'Senior Faculty Lead', email: 'sjenkins@nairee.edu', salary: 68000 },
-  { name: 'FAC 002', full_name: 'Dr. Marcus Vance', department: 'Physics & STEM', designation: 'Head of STEM Academics', email: 'admin@nairee.edu', salary: 75000 },
-  { name: 'FAC 003', full_name: 'Mr. Robert Chen', department: 'Computer Science', designation: 'AI Systems Instructor', email: 'rchen@nairee.edu', salary: 64000 },
-  { name: 'FAC 004', full_name: 'Ms. Clara Oswald', department: 'Humanities & English', designation: 'Literature Lead', email: 'coswald@nairee.edu', salary: 60000 }
-];
+export const FALLBACK_FACULTY = INITIAL_DB_STORE['Teacher List'].rows.map(t => ({
+  name: t.teacher_number,
+  full_name: t.name,
+  department: t.department,
+  designation: t.designation,
+  email: t.email,
+  salary: t.monthly_salary
+}));
 
-export const FALLBACK_BATCHES = [
-  { name: 'BATCH 10A 2026', batch_name: 'Grade 10 Section A', grade_level: 'Grade 10', section: 'A', class_teacher: 'Prof. Sarah Jenkins', room_no: 'Room 204' },
-  { name: 'BATCH 10B 2026', batch_name: 'Grade 10 Section B', grade_level: 'Grade 10', section: 'B', class_teacher: 'Dr. Marcus Vance', room_no: 'Room 205' },
-  { name: 'BATCH 11A 2026', batch_name: 'Grade 11 Section A', grade_level: 'Grade 11', section: 'A', class_teacher: 'Mr. Robert Chen', room_no: 'Room 301' }
-];
+export const FALLBACK_BATCHES = INITIAL_DB_STORE['Class & Batch List'].rows.map(b => ({
+  name: b.batch_id,
+  batch_name: b.batch_name,
+  grade_level: b.batch_name.split('-')[0]?.trim() || 'Grade 10',
+  section: b.batch_name.split('Section')[1]?.trim() || 'A',
+  class_teacher: b.class_teacher,
+  room_no: b.room_no
+}));

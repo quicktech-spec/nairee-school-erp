@@ -193,18 +193,33 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   const loadAllData = async () => {
     setIsLoading(true);
     try {
-      const [sData, uData, tData, stData, aData] = await Promise.all([
+      const [sData, uData, tData, stData, aData, fData] = await Promise.all([
         api.getDashboardStats().catch(() => null),
         api.getUsers().catch(() => []),
         api.getTeacherPerformance().catch(() => []),
         api.getStudentPerformance(selectedBatch).catch(() => []),
-        api.getAnnouncements().catch(() => [])
+        api.getAnnouncements().catch(() => []),
+        api.getFees().catch(() => [])
       ]);
       setStats(sData);
       setUsersList(uData);
       setTeacherPerf(tData);
       setStudentPerf(stData);
       setAnnouncements(aData);
+      if (fData && fData.length > 0) {
+        const feeItems = fData.map(f => ({
+          id: f.id || f.invoice_id,
+          name: `${f.title || 'Tuition Fee'} — ${f.student_name}`,
+          type: f.fee_type || 'Student Tuition Fee Receivable',
+          amount: Number(f.amount || f.grand_total) || 35000,
+          status: f.status === 'Paid' ? 'Paid' : 'Unpaid',
+          student_name: f.student_name,
+          roll_no: f.student_id ? f.student_id.replace(/\D/g, '') : '101',
+          guardian_name: f.student_name,
+          guardian_mobile: '+91 98765 00000'
+        }));
+        setOutstandingExpenses(feeItems);
+      }
     } catch (err) {
       console.error('Failed to load admin data:', err);
     } finally {

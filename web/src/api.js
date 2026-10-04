@@ -3,34 +3,6 @@ import { supabase } from './supabaseClient.js';
 
 const API_BASE = ((typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api').replace(/\/$/, '');
 
-// Initialize from LocalStorage if available for real-time cross-tab persistence
-try {
-  if (typeof localStorage !== 'undefined') {
-    const savedUsers = localStorage.getItem('nairee_users');
-    if (savedUsers) FALLBACK_DATA.users = JSON.parse(savedUsers);
-
-    const savedStudents = localStorage.getItem('nairee_students');
-    if (savedStudents) {
-      FALLBACK_DATA.students = JSON.parse(savedStudents);
-      INITIAL_DB_STORE.tabStudent.rows = JSON.parse(savedStudents);
-    }
-
-    const savedFaculty = localStorage.getItem('nairee_faculty');
-    if (savedFaculty) {
-      FALLBACK_DATA.faculty = JSON.parse(savedFaculty);
-      INITIAL_DB_STORE.tabFaculty.rows = JSON.parse(savedFaculty);
-    }
-
-    const savedAnnouncements = localStorage.getItem('nairee_announcements');
-    if (savedAnnouncements) FALLBACK_DATA.announcements = JSON.parse(savedAnnouncements);
-
-    const savedHomework = localStorage.getItem('nairee_homework');
-    if (savedHomework) FALLBACK_DATA.homework = JSON.parse(savedHomework);
-  }
-} catch (e) {
-  console.warn('LocalStorage initialization warning:', e);
-}
-
 // Safe fetch wrapper that handles HTML 404s gracefully
 async function safeFetch(endpoint, options = {}) {
   try {
@@ -42,7 +14,7 @@ async function safeFetch(endpoint, options = {}) {
       return data;
     }
   } catch (err) {
-    console.warn(`Live API call to ${endpoint} failed, falling back to local client state:`, err.message);
+    // Graceful fallback to client unified store
   }
   return null;
 }
@@ -68,72 +40,15 @@ try {
     supabaseChannel
       .on('broadcast', { event: 'live_sync' }, ({ payload }) => {
         if (payload) {
-          // If receiving a cloud store update, apply it to local storage & broadcast to React components
           if (payload.type === 'db_store_updated' && payload.payload) {
-            try {
-              if (typeof localStorage !== 'undefined') {
-                localStorage.setItem('nairee_db_store', JSON.stringify(payload.payload));
-                if (payload.payload['Student List']?.rows) {
-                  localStorage.setItem('nairee_students', JSON.stringify(payload.payload['Student List'].rows));
-                }
-              }
-            } catch (e) {}
-            if (payload.payload['Student List']?.rows) {
-              INITIAL_DB_STORE['Student List'].rows = payload.payload['Student List'].rows;
-            }
+            saveStoredDb(payload.payload, false);
           }
-
-          if (payload.type === 'student_updated' && payload.payload?.students) {
-            try {
-              if (typeof localStorage !== 'undefined') {
-                localStorage.setItem('nairee_students', JSON.stringify(payload.payload.students));
-              }
-            } catch (e) {}
-            INITIAL_DB_STORE['Student List'].rows = payload.payload.students;
-          }
-
-          if (payload.type === 'student_transferred' && payload.payload) {
-            const { student_id, new_class_id, new_class_name } = payload.payload;
-            const currentDb = getStoredDb();
-            const students = currentDb['Student List']?.rows || [];
-            const cleanId = String(student_id || '').toLowerCase().trim();
-            const updated = students.map(s => {
-              const sid = String(s.student_id || s.id || '').toLowerCase().trim();
-              const sname = String(s.name || s.student_name || '').toLowerCase().trim();
-              if (sid === cleanId || sname === cleanId || sid.includes(cleanId) || cleanId.includes(sid)) {
-                return { ...s, class_batch: new_class_name || new_class_id, batch_id: new_class_id };
-              }
-              return s;
-            });
-            const updatedDb = { ...currentDb, 'Student List': { ...(currentDb['Student List'] || {}), rows: updated } };
-            try {
-              localStorage.setItem('nairee_db_store', JSON.stringify(updatedDb));
-              localStorage.setItem('nairee_students', JSON.stringify(updated));
-            } catch (e) {}
-            INITIAL_DB_STORE['Student List'].rows = updated;
-          }
-
-          if (payload.type === 'fee_updated' && payload.payload) {
-            const sName = payload.payload.student_name;
-            const currentDb = getStoredDb();
-            const students = currentDb['Student List']?.rows || [];
-            const updated = students.map(s => (s.name === sName || s.student_name === sName) ? { ...s, fee_status: 'Paid' } : s);
-            const updatedDb = { ...currentDb, 'Student List': { ...(currentDb['Student List'] || {}), rows: updated } };
-            try {
-              localStorage.setItem('nairee_db_store', JSON.stringify(updatedDb));
-              localStorage.setItem('nairee_students', JSON.stringify(updated));
-            } catch (e) {}
-            INITIAL_DB_STORE['Student List'].rows = updated;
-          }
-
-          // Notify all local React components & views immediately without page refresh
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: payload }));
           }
         }
       })
       .on('broadcast', { event: 'request_db_sync' }, () => {
-        // Send current db store to newly joined device
         const currentDb = getStoredDb();
         if (supabaseChannel) {
           supabaseChannel.send({
@@ -145,8 +60,6 @@ try {
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
-          console.log('⚡ Connected to Supabase Cloud Realtime Sync!');
-          // Request latest db from active peers
           supabaseChannel.send({
             type: 'broadcast',
             event: 'request_db_sync',
@@ -175,7 +88,6 @@ export function broadcastLiveEvent(type, payload = {}) {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('nairee_live_sync', { detail: eventData }));
     }
-    // Broadcast live across all laptops, phones, and devices worldwide via Supabase!
     if (supabaseChannel) {
       supabaseChannel.send({
         type: 'broadcast',
@@ -212,14 +124,21 @@ export function subscribeLiveEvents(callback) {
   };
 }
 
-// --- CENTRALIZED DATABASE STORAGE & SYNC ENGINE ---
+// --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
 export function getStoredDb() {
   if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
   try {
     const saved = localStorage.getItem('nairee_db_store');
     if (saved) {
       const parsed = JSON.parse(saved);
-      return { ...INITIAL_DB_STORE, ...parsed };
+      // Merge with initial schema to ensure any newly added tables are always present
+      const merged = { ...INITIAL_DB_STORE };
+      Object.keys(parsed).forEach(k => {
+        if (parsed[k] && parsed[k].rows) {
+          merged[k] = parsed[k];
+        }
+      });
+      return merged;
     }
   } catch (e) {
     console.warn('Error reading nairee_db_store:', e);
@@ -227,31 +146,24 @@ export function getStoredDb() {
   return INITIAL_DB_STORE;
 }
 
-export function saveStoredDb(newDbStore) {
+export function saveStoredDb(newDbStore, shouldBroadcast = true) {
   if (!newDbStore) return;
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('nairee_db_store', JSON.stringify(newDbStore));
-      if (newDbStore['Student List']?.rows) {
-        localStorage.setItem('nairee_students', JSON.stringify(newDbStore['Student List'].rows));
-      }
     }
   } catch (e) {
     console.warn('Error writing nairee_db_store:', e);
   }
-  if (newDbStore['Student List']?.rows) {
-    INITIAL_DB_STORE['Student List'].rows = newDbStore['Student List'].rows;
+  if (shouldBroadcast) {
+    broadcastLiveEvent('db_store_updated', newDbStore);
   }
-  broadcastLiveEvent('db_store_updated', newDbStore);
 }
 
+// Master Helpers for Students & Teachers
 export function getMasterStudents() {
   const db = getStoredDb();
-  const rows = db['Student List']?.rows;
-  if (Array.isArray(rows) && rows.length > 0) {
-    return rows;
-  }
-  return INITIAL_DB_STORE['Student List'].rows;
+  return db['Student List']?.rows || INITIAL_DB_STORE['Student List'].rows;
 }
 
 export function saveMasterStudents(updatedStudentsList) {
@@ -265,34 +177,26 @@ export function saveMasterStudents(updatedStudentsList) {
     }
   };
   saveStoredDb(updatedDb);
-
-  try {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('nairee_students', JSON.stringify(updatedStudentsList));
-      // Sync to ClassStaffManager local state cache
-      const mgmtStudents = updatedStudentsList.map((s, idx) => ({
-        id: s.student_id || s.id || `EDU-STU-2026-0000${idx + 1}`,
-        name: s.name || s.student_name,
-        roll_no: s.roll_no ? `${s.class_batch?.includes('10 - Section B') || s.class_batch?.includes('10B') ? '10B' : '10A'}-${s.roll_no}` : `10A-0${idx + 1}`,
-        class_id: (s.class_batch?.includes('Section B') || s.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026',
-        class_name: s.class_batch || 'Class 10 - Section A',
-        email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
-        phone: s.phone || '+91 98765 00000',
-        parent_name: s.father_name || s.mother_name || 'Parent',
-        parent_phone: s.father_phone || s.mother_phone || s.phone || '+91 98765 00000',
-        attendance: 96.5,
-        fee_total: 43500,
-        fee_paid: s.fee_status === 'Paid' ? 43500 : 0,
-        fee_due: s.fee_status === 'Paid' ? 0 : 43500,
-        fee_status: s.fee_status || 'Paid'
-      }));
-      localStorage.setItem('nairee_mgmt_students', JSON.stringify(mgmtStudents));
-    }
-  } catch (e) {
-    console.warn('Error syncing mgmt students:', e);
-  }
-
   broadcastLiveEvent('student_updated', { students: updatedStudentsList });
+}
+
+export function getMasterTeachers() {
+  const db = getStoredDb();
+  return db['Teacher List']?.rows || INITIAL_DB_STORE['Teacher List'].rows;
+}
+
+export function saveMasterTeachers(updatedTeachersList) {
+  const currentDb = getStoredDb();
+  const currentTbl = currentDb['Teacher List'] || INITIAL_DB_STORE['Teacher List'];
+  const updatedDb = {
+    ...currentDb,
+    'Teacher List': {
+      ...currentTbl,
+      rows: updatedTeachersList
+    }
+  };
+  saveStoredDb(updatedDb);
+  broadcastLiveEvent('teacher_updated', { teachers: updatedTeachersList });
 }
 
 export function transferStudentClass(studentIdentifier, newClassId, newClassName) {
@@ -327,6 +231,46 @@ export function transferStudentClass(studentIdentifier, newClassId, newClassName
   return updatedStudents;
 }
 
+// Calculate dynamic attendance rate for a student from live attendance logs
+export function calculateStudentAttendanceRate(studentId, defaultRate = 96.5) {
+  const db = getStoredDb();
+  const records = db['Attendance Records']?.rows || [];
+  const cleanId = String(studentId || '').toLowerCase().replace(/\s+/g, '');
+  const studentRecords = records.filter(r => {
+    const rSid = String(r.student_id || r.student || '').toLowerCase().replace(/\s+/g, '');
+    return rSid === cleanId || cleanId.includes(rSid) || rSid.includes(cleanId);
+  });
+
+  if (studentRecords.length === 0) return defaultRate;
+  const presentCount = studentRecords.filter(r => r.status === 'Present').length;
+  return Number(((presentCount / studentRecords.length) * 100).toFixed(1));
+}
+
+// Calculate dynamic fee dues for a student from live fee invoice ledger
+export function calculateStudentFeeDues(studentId, studentName = '') {
+  const db = getStoredDb();
+  const invoices = db['Fee Invoices & Ledger']?.rows || [];
+  const cleanId = String(studentId || '').toLowerCase().replace(/\s+/g, '');
+  const cleanName = String(studentName || '').toLowerCase().trim();
+
+  const studentInvoices = invoices.filter(inv => {
+    const invSid = String(inv.student_id || '').toLowerCase().replace(/\s+/g, '');
+    const invName = String(inv.student_name || '').toLowerCase().trim();
+    return (cleanId && invSid === cleanId) || (cleanName && invName === cleanName);
+  });
+
+  const unpaidInvoices = studentInvoices.filter(inv => inv.status === 'Pending' || inv.status === 'Unpaid');
+  const totalDue = unpaidInvoices.reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
+  const isPaid = studentInvoices.length > 0 ? unpaidInvoices.length === 0 : true;
+
+  return {
+    totalDue,
+    fee_status: isPaid ? 'Paid' : 'Pending',
+    invoices: studentInvoices
+  };
+}
+
+// --- UNIFIED API OBJECT ---
 export const api = {
   // Auth
   async login(username, password) {
@@ -336,12 +280,11 @@ export const api = {
       body: JSON.stringify({ username, password }),
     });
 
-    if (result && result.user) {
-      return result;
-    }
+    if (result && result.user) return result;
 
-    // Client-side fallback authentication for static GitHub Pages / Netlify standalone
     const u = (username || '').toLowerCase().trim();
+    
+    // Check master users
     const fallbackUser = FALLBACK_DATA.users.find(acc => 
       acc.username?.toLowerCase() === u || 
       acc.id?.toLowerCase() === u || 
@@ -355,7 +298,7 @@ export const api = {
       };
     }
 
-    // Dynamic master student lookup
+    // Dynamic Student Lookup from Master DB
     const masterStudents = getMasterStudents();
     const matchedStudent = masterStudents.find(s => {
       const sId = String(s.student_id || s.id || '').toLowerCase().trim();
@@ -367,62 +310,103 @@ export const api = {
     });
 
     if (matchedStudent) {
+      const feeInfo = calculateStudentFeeDues(matchedStudent.student_id, matchedStudent.name);
       const studentUser = {
-        id: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
-        student_id: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
+        id: matchedStudent.student_id,
+        student_id: matchedStudent.student_id,
         username: (matchedStudent.name || 'student').toLowerCase().replace(/\s+/g, ''),
-        full_name: matchedStudent.name || matchedStudent.student_name,
+        full_name: matchedStudent.name,
         role: 'student',
-        email: matchedStudent.email || `${(matchedStudent.name || 'student').toLowerCase().replace(/\s+/g, '')}@example.com`,
-        status: 'Active',
-        batch_name: matchedStudent.class_batch || 'Class 3 - Section A',
-        student_batch: matchedStudent.class_batch || 'Class 3 - Section A',
-        roll_number: matchedStudent.roll_no || '102',
+        email: matchedStudent.email || 'student@nairee.edu',
+        status: matchedStudent.status || 'Active',
+        batch_name: matchedStudent.class_batch || 'Class 10 - Section A',
+        student_batch: matchedStudent.class_batch || 'Class 10 - Section A',
+        roll_number: matchedStudent.roll_no || '101',
+        fee_status: feeInfo.fee_status,
+        balance_due: feeInfo.totalDue,
         student: {
-          name: matchedStudent.student_id || matchedStudent.id || `STU-${matchedStudent.roll_no || '002'}`,
-          student_name: matchedStudent.name || matchedStudent.student_name,
-          roll_no: matchedStudent.roll_no || '102',
-          student_batch: matchedStudent.class_batch || 'Class 3 - Section A'
+          name: matchedStudent.student_id,
+          student_name: matchedStudent.name,
+          roll_no: matchedStudent.roll_no,
+          student_batch: matchedStudent.class_batch
         }
       };
-      return {
-        user: studentUser,
-        token: 'mock-jwt-token-student'
-      };
+      return { user: studentUser, token: 'mock-jwt-token-student' };
     }
 
-    // Default to admin if testing
+    // Dynamic Teacher Lookup from Master DB
+    const masterTeachers = getMasterTeachers();
+    const matchedTeacher = masterTeachers.find(t => {
+      const tNum = String(t.teacher_number || '').toLowerCase().replace(/\s+/g, '');
+      const tName = String(t.name || '').toLowerCase().trim();
+      const tEmail = String(t.email || '').toLowerCase().trim();
+      const cleanU = u.replace(/\s+/g, '');
+      return cleanU === tNum || u === tName || u === tEmail || tName.includes(u);
+    });
+
+    if (matchedTeacher) {
+      const teacherUser = {
+        id: matchedTeacher.teacher_number,
+        teacher_number: matchedTeacher.teacher_number,
+        username: matchedTeacher.name.toLowerCase().replace(/\s+/g, '_'),
+        full_name: matchedTeacher.name,
+        role: 'teacher',
+        email: matchedTeacher.email,
+        department: matchedTeacher.department,
+        designation: matchedTeacher.designation,
+        status: matchedTeacher.status || 'Active'
+      };
+      return { user: teacherUser, token: 'mock-jwt-token-teacher' };
+    }
+
     if (u === 'admin' || u === 'principal') {
       return { user: FALLBACK_DATA.users[0], token: 'mock-jwt-admin' };
     }
 
-    throw new Error('Invalid credentials. Use student ID "STU-002" or username "aarav" (password: student123)');
+    throw new Error('Invalid credentials. Use "admin", "teacher_jenkins", "nairee", or student ID "STU-001".');
   },
 
+  // Dashboard Metrics & Live Aggregations
   async getDashboardStats() {
     const data = await safeFetch('/dashboard/stats');
     if (data) return data;
-    const students = getMasterStudents();
-    const totalCount = students.length;
-    const pendingCount = students.filter(s => s.fee_status === 'Pending' || (s.feeDues || 0) > 0).length;
-    const paidCount = totalCount - pendingCount;
-    const billed = totalCount * 35000;
-    const collected = paidCount * 35000;
-    const outstanding = pendingCount * 35000;
+
+    const db = getStoredDb();
+    const students = db['Student List']?.rows || [];
+    const teachers = db['Teacher List']?.rows || [];
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const attendance = db['Attendance Records']?.rows || [];
+
+    const totalStudents = students.length;
+    const totalTeachers = teachers.length;
+
+    const totalBilled = invoices.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+    const totalCollected = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+    const totalOutstanding = invoices.filter(i => i.status === 'Pending' || i.status === 'Unpaid').reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+    const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 100;
+
+    const presentAttendance = attendance.filter(a => a.status === 'Present').length;
+    const attendanceRate = attendance.length > 0 ? ((presentAttendance / attendance.length) * 100).toFixed(1) + '%' : '96.4%';
+
     return {
-      ...FALLBACK_DATA.stats,
-      students: totalCount,
-      teachers: FALLBACK_DATA.faculty.length || 4,
+      students: totalStudents,
+      teachers: totalTeachers,
       total_students: 840,
+      total_teachers: totalTeachers,
+      attendance_rate: attendanceRate,
+      fee_collection_rate: `${collectionRate}%`,
+      active_courses: db['Subjects List']?.rows?.length || 5,
+      pending_homework: db['Homework List']?.rows?.length || 3,
       finance: {
-        totalBilled: billed,
-        totalCollected: collected,
-        totalOutstanding: outstanding,
-        collectionRate: totalCount > 0 ? Math.round((collected / billed) * 100) : 100
+        totalBilled,
+        totalCollected,
+        totalOutstanding,
+        collectionRate
       }
     };
   },
 
+  // Master Students with Live Aggregated Calculations
   async getStudents(batch = '', search = '') {
     const params = new URLSearchParams();
     if (batch) params.append('batch', batch);
@@ -439,74 +423,71 @@ export const api = {
       );
     }
     if (search) {
-      list = list.filter(s => (s.name || s.student_name || '').toLowerCase().includes(search.toLowerCase()));
+      const q = search.toLowerCase();
+      list = list.filter(s => 
+        (s.name || '').toLowerCase().includes(q) || 
+        (s.roll_no || '').toLowerCase().includes(q) ||
+        (s.student_id || '').toLowerCase().includes(q)
+      );
     }
-    return list.map(s => ({
-      ...s,
-      id: s.student_id || s.id || s.name,
-      name: s.name || s.student_name,
-      student_name: s.name || s.student_name || 'Student',
-      roll_no: s.roll_no || '101',
-      student_batch: s.class_batch || 'Class 10 - Section A'
-    }));
+
+    return list.map(s => {
+      const feeInfo = calculateStudentFeeDues(s.student_id, s.name);
+      const attRate = calculateStudentAttendanceRate(s.student_id);
+      return {
+        ...s,
+        id: s.student_id,
+        name: s.name,
+        student_name: s.name,
+        roll_no: s.roll_no,
+        roll_number: s.roll_no,
+        student_batch: s.class_batch,
+        batch_name: s.class_batch,
+        attendance_percentage: attRate,
+        fee_status: feeInfo.fee_status,
+        balance_due: feeInfo.totalDue,
+        fee_due: feeInfo.totalDue,
+        fee_paid: feeInfo.totalDue === 0 ? 43500 : 0
+      };
+    });
   },
 
   async getStudentDetail(id) {
     const data = await safeFetch(`/students/${id}`);
     if (data) return data;
+
     const cleanId = String(id || '').toLowerCase().trim();
     const master = getMasterStudents();
     const found = master.find(s => {
-      const sId = String(s.student_id || s.id || '').toLowerCase().trim();
-      const sName = String(s.name || s.student_name || '').toLowerCase().trim();
+      const sId = String(s.student_id || '').toLowerCase().trim();
+      const sName = String(s.name || '').toLowerCase().trim();
       const sFirstName = sName.split(' ')[0];
       const sRoll = String(s.roll_no || '').toLowerCase().trim();
       return cleanId === sId || cleanId === sName || cleanId === sFirstName || cleanId === sRoll || cleanId.includes(sId) || sId.includes(cleanId);
     }) || master[0];
 
     if (found) {
-      const classBatch = found.class_batch || found.student_batch || found.batch_name || 'Class 10 - Section A';
-      const isPaid = found.fee_status === 'Paid' || found.fee_status === 'Cleared';
+      const feeInfo = calculateStudentFeeDues(found.student_id, found.name);
+      const attRate = calculateStudentAttendanceRate(found.student_id);
       return {
-        id: found.student_id || found.id || 'STU-001',
-        student_id: found.student_id || found.id || 'STU-001',
-        name: found.student_id || found.id || 'STU-001',
-        full_name: found.name || found.student_name || 'Devon Patel',
-        student_name: found.name || found.student_name || 'Devon Patel',
-        roll_number: found.roll_no || '101',
-        roll_no: found.roll_no || '101',
-        batch_id: found.batch_id || ((classBatch.includes('Section B') || classBatch.includes('10B')) ? 'BATCH-10B-2026' : 'BATCH-10A-2026'),
-        batch_name: classBatch,
-        student_batch: classBatch,
-        class_batch: classBatch,
-        program_name: found.stream || 'Senior Secondary Academic Stream',
-        stream: found.stream || 'Computer Applications & Advanced Math',
-        dob: found.dob || '2011-04-12',
-        religion: found.religion || 'Hindu',
-        nationality: found.nationality || 'Indian',
-        blood_group: found.blood_group || 'O+',
-        gender: found.gender || 'Male',
-        admission_date: found.admission_date || '2024-06-15',
-        residential_address: found.residential_address || 'Indiranagar, Bengaluru - 560038',
-        permanent_address: found.permanent_address || 'Indiranagar, Bengaluru - 560038',
-        photo: found.photo || found.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-        image: found.photo || found.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
-        email: found.email || `${(found.name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
-        phone: found.phone || '+91 98765 00001',
-        father_name: found.father_name || 'Rajesh Patel',
-        father_phone: found.father_phone || '+91 98765 43212',
-        mother_name: found.mother_name || 'Meera Patel',
-        mother_phone: found.mother_phone || '+91 98765 43213',
-        guardian_name: found.father_name || found.mother_name || 'Mr. Rajesh Patel',
-        guardian_mobile: found.father_phone || found.mother_phone || '+91 98765 43212',
-        attendance: { percentage: 98.5 },
-        attendance_percentage: 98.5,
-        fee_status: isPaid ? 'Paid' : 'Pending',
-        balance_due: isPaid ? 0 : 35000,
-        feeDues: isPaid ? 0 : 35000
+        ...found,
+        id: found.student_id,
+        student_id: found.student_id,
+        full_name: found.name,
+        student_name: found.name,
+        roll_number: found.roll_no,
+        student_batch: found.class_batch,
+        batch_name: found.class_batch,
+        attendance: { percentage: attRate },
+        attendance_percentage: attRate,
+        fee_status: feeInfo.fee_status,
+        balance_due: feeInfo.totalDue,
+        feeDues: feeInfo.totalDue,
+        guardian_name: found.father_name || found.mother_name || 'Guardian',
+        guardian_mobile: found.father_phone || found.mother_phone || found.phone
       };
     }
-    return FALLBACK_DATA.students[0];
+    return master[0];
   },
 
   async createStudent(studentData) {
@@ -516,55 +497,110 @@ export const api = {
       body: JSON.stringify(studentData),
     });
     if (data) return data;
-    const newId = `EDU-STU-2026-${String(FALLBACK_DATA.students.length + 1).padStart(5, '0')}`;
-    const newStudent = { 
-      id: newId,
-      name: newId,
-      full_name: studentData.full_name || studentData.student_name,
-      student_name: studentData.full_name || studentData.student_name,
-      roll_number: studentData.roll_number || `10A-0${FALLBACK_DATA.students.length + 1}`,
-      roll_no: studentData.roll_no || `10${FALLBACK_DATA.students.length + 1}`,
-      batch_id: studentData.batch_id || studentData.student_batch || 'BATCH-10A-2026',
-      student_batch: studentData.student_batch || studentData.batch_id || 'Grade 10-A',
-      email: studentData.email || 'student@nairee.edu',
-      phone: studentData.phone || '+1 (555) 901-2234',
-      attendance_percentage: 100,
-      fee_status: 'Paid',
-      balance_due: 0
+
+    const master = getMasterStudents();
+    const nextNum = master.length + 1;
+    const newStudentId = `STU-${String(nextNum).padStart(3, '0')}`;
+    const newRoll = `10${nextNum}`;
+
+    const newStudent = {
+      student_id: newStudentId,
+      name: studentData.student_name || studentData.full_name || `${studentData.first_name || 'New'} ${studentData.last_name || 'Student'}`.trim(),
+      roll_no: studentData.roll_no || newRoll,
+      class_batch: studentData.class_batch || studentData.student_batch || 'Class 10 - Section A',
+      batch_id: 'CLS 10A',
+      stream: studentData.stream || 'Computer Applications & Math',
+      gender: studentData.gender || 'Female',
+      dob: studentData.date_of_birth || studentData.dob || '2011-05-15',
+      blood_group: studentData.blood_group || 'O+',
+      aadhaar_no: studentData.aadhaar_no || `9876 5432 109${nextNum}`,
+      phone: studentData.phone || studentData.student_mobile_number || '+91 98765 00000',
+      email: studentData.email || studentData.student_email_id || `${(studentData.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+      residential_address: studentData.residential_address || studentData.address_line_1 || 'Bengaluru',
+      permanent_address: studentData.permanent_address || studentData.address_line_1 || 'Bengaluru',
+      fee_status: 'Pending',
+      father_name: studentData.father_name || studentData.parent_name || 'Father',
+      father_phone: studentData.father_phone || studentData.parent_phone || '+91 98765 00000',
+      father_occupation: studentData.father_occupation || 'Professional',
+      mother_name: studentData.mother_name || 'Mother',
+      mother_phone: studentData.mother_phone || '+91 98765 00000',
+      mother_occupation: studentData.mother_occupation || 'Homemaker',
+      status: 'Active'
     };
-    FALLBACK_DATA.students.push(newStudent);
-    INITIAL_DB_STORE.tabStudent.rows.push({
-      name: newId,
-      first_name: newStudent.student_name.split(' ')[0],
-      last_name: newStudent.student_name.split(' ').slice(1).join(' ') || '',
-      student_email_id: newStudent.email,
-      student_mobile_number: newStudent.phone,
-      batch_id: newStudent.batch_id,
-      roll_number: newStudent.roll_number,
-      attendance_percentage: 100.0,
-      fee_status: 'Paid'
+
+    const updated = [newStudent, ...master];
+    saveMasterStudents(updated);
+
+    // Create default tuition fee invoice
+    const db = getStoredDb();
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    invoices.unshift({
+      invoice_id: `INV-2026-${String(invoices.length + 1).padStart(3, '0')}`,
+      student_id: newStudentId,
+      student_name: newStudent.name,
+      title: 'Term 1 Tuition & Academic Fee',
+      fee_type: 'Tuition Fee',
+      amount: 35000,
+      due_date: '2026-10-15',
+      status: 'Pending',
+      payment_date: null,
+      receipt_no: null
     });
-    try {
-      localStorage.setItem('nairee_students', JSON.stringify(FALLBACK_DATA.students));
-    } catch {}
+    db['Fee Invoices & Ledger'].rows = invoices;
+    saveStoredDb(db);
+
     return newStudent;
   },
 
+  // Classes & Batches
   async getBatches() {
     const data = await safeFetch('/batches');
-    return data || FALLBACK_DATA.batches;
+    if (data) return data;
+    const db = getStoredDb();
+    const rows = db['Class & Batch List']?.rows || [];
+    return rows.map(b => ({
+      ...b,
+      id: b.batch_id,
+      name: b.batch_name,
+      grade: b.batch_name.split('-')[0]?.trim() || 'Class 10',
+      section: b.batch_name.split('Section')[1]?.trim() || 'A',
+      room: b.room_no
+    }));
   },
 
+  // Courses & Subjects
   async getCourses() {
     const data = await safeFetch('/courses');
-    return data || FALLBACK_DATA.courses;
+    if (data) return data;
+    const db = getStoredDb();
+    const rows = db['Subjects List']?.rows || [];
+    return rows.map(c => ({
+      ...c,
+      id: c.subject_id,
+      name: c.subject_name,
+      code: c.subject_code,
+      instructor: c.teacher
+    }));
   },
 
+  // Teachers & Faculty
   async getFaculty() {
     const data = await safeFetch('/faculty');
-    return data || FALLBACK_DATA.faculty;
+    if (data) return data;
+    const teachers = getMasterTeachers();
+    return teachers.map(t => ({
+      ...t,
+      id: t.teacher_number,
+      full_name: t.name,
+      salary: t.monthly_salary
+    }));
   },
 
+  async getTeachers() {
+    return this.getFaculty();
+  },
+
+  // Schedule & Timetable
   async getSchedule(batch = '', day = '') {
     const params = new URLSearchParams();
     if (batch) params.append('batch', batch);
@@ -573,12 +609,22 @@ export const api = {
     return data || FALLBACK_DATA.schedule;
   },
 
-  async getAttendance(batch = 'BATCH-10A-2026', date = '') {
+  // Attendance Records & Bulk Marking
+  async getAttendance(batch = 'CLS 10A', date = '') {
     const params = new URLSearchParams();
     if (batch) params.append('batch', batch);
     if (date) params.append('date', date);
     const data = await safeFetch(`/attendance?${params.toString()}`);
-    return data || FALLBACK_DATA.attendance;
+    if (data) return data;
+
+    const db = getStoredDb();
+    const records = db['Attendance Records']?.rows || [];
+    const targetDate = date || '2026-10-01';
+    return records.filter(r => {
+      const matchBatch = !batch || batch === 'all' || r.class_batch === batch || r.class_batch?.includes(batch);
+      const matchDate = !date || r.date === targetDate;
+      return matchBatch && matchDate;
+    });
   },
 
   async submitBulkAttendance(batch, date, records) {
@@ -588,45 +634,70 @@ export const api = {
       body: JSON.stringify({ batch, date, records }),
     });
     if (data) return data;
-    
-    // In-memory sync to DB table tabStudentAttendance
+
+    const db = getStoredDb();
+    const attTbl = db['Attendance Records'] || { rows: [], columns: [] };
+    const currentRows = [...(attTbl.rows || [])];
+    const targetDate = date || new Date().toISOString().split('T')[0];
+
     if (Array.isArray(records)) {
       records.forEach(r => {
-        const studentId = r.student || r.student_id || r.name;
+        const studentId = r.student_id || r.student || r.name;
+        const studentName = r.student_name || r.name;
         const status = r.status || 'Present';
-        const existingIdx = INITIAL_DB_STORE.tabStudentAttendance.rows.findIndex(
-          row => row.student_id === studentId && row.attendance_date === date
+        const cleanSid = String(studentId).toLowerCase().trim();
+
+        const existingIdx = currentRows.findIndex(
+          row => String(row.student_id).toLowerCase().trim() === cleanSid && row.date === targetDate
         );
+
         if (existingIdx >= 0) {
-          INITIAL_DB_STORE.tabStudentAttendance.rows[existingIdx].status = status;
+          currentRows[existingIdx].status = status;
         } else {
-          INITIAL_DB_STORE.tabStudentAttendance.rows.push({
-            name: `ATT-${Date.now().toString().slice(-4)}`,
+          currentRows.push({
+            attendance_id: `ATT-${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*100)}`,
             student_id: studentId,
-            attendance_date: date || new Date().toISOString().split('T')[0],
+            student_name: studentName,
+            date: targetDate,
             status,
-            batch_id: batch || 'BATCH-10A-2026'
+            class_batch: batch || 'CLS 10A'
           });
         }
       });
     }
+
+    db['Attendance Records'].rows = currentRows;
+    saveStoredDb(db);
+    broadcastLiveEvent('attendance_updated', { batch, date: targetDate, count: records.length });
     return { success: true, count: Array.isArray(records) ? records.length : 0 };
   },
 
+  // Assessment Plans & Results
   async getAssessmentPlans() {
     const data = await safeFetch('/assessments/plans');
-    return data || [
-      { id: 'PLAN-01', name: 'Mid-Term Examinations 2026', course_name: 'Advanced Mathematics', date: '2026-10-15', max_score: 100 }
-    ];
+    if (data) return data;
+    const db = getStoredDb();
+    const rows = db['Assessment Plans']?.rows || [];
+    return rows.map(p => ({
+      ...p,
+      name: p.plan_id,
+      id: p.plan_id
+    }));
   },
 
   async getAssessmentResults(params = {}) {
     const q = new URLSearchParams(params);
     const data = await safeFetch(`/assessments/results?${q.toString()}`);
-    return data || [
-      { id: 'RES-01', student_name: 'Nairee Patel', roll_number: '10A-01', score: 95, grade: 'A+', course: 'Mathematics', assessment_plan: 'Mid-Term Exam', percentage: 95, maximum_score: 100, comment: 'Exceptional analytical proofs and thorough presentation.' },
-      { id: 'RES-02', student_name: 'Aarav Sharma', roll_number: '10A-02', score: 88, grade: 'A', course: 'Physics', assessment_plan: 'Lab Dynamics', percentage: 88, maximum_score: 100, comment: 'Good understanding of experimental parameters.' }
-    ];
+    if (data) return data;
+
+    const db = getStoredDb();
+    const rows = db['Assessment Results']?.rows || [];
+    const planFilter = params.plan;
+
+    if (planFilter && planFilter !== 'all') {
+      return rows.filter(r => r.plan_id === planFilter || r.assessment_plan === planFilter);
+    }
+    return rows;
   },
 
   async submitGrade(data) {
@@ -635,84 +706,170 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return res || { success: true, ...data };
+    if (res) return res;
+
+    const db = getStoredDb();
+    const resTbl = db['Assessment Results'] || { rows: [], columns: [] };
+    const currentRows = [...(resTbl.rows || [])];
+
+    const score = Number(data.score) || 0;
+    const maxScore = Number(data.maximum_score) || 100;
+    const pct = Number(((score / maxScore) * 100).toFixed(1));
+    let grade = 'B';
+    if (pct >= 90) grade = 'A+';
+    else if (pct >= 80) grade = 'A';
+    else if (pct >= 70) grade = 'B+';
+    else if (pct >= 60) grade = 'B';
+    else if (pct >= 50) grade = 'C';
+    else grade = 'D';
+
+    const newResult = {
+      result_id: `RES-${Date.now().toString().slice(-4)}`,
+      student_id: data.student || data.student_id || 'STU-001',
+      student_name: data.student_name || 'Student',
+      plan_id: data.assessment_plan || 'PLAN-01',
+      assessment_plan: data.assessment_plan_name || data.assessment_plan || 'Mid-Term Exam',
+      course: data.course || 'Mathematics',
+      score,
+      maximum_score: maxScore,
+      percentage: pct,
+      grade,
+      comment: data.comment || 'Performance evaluated.'
+    };
+
+    const existingIdx = currentRows.findIndex(
+      r => r.student_id === newResult.student_id && r.plan_id === newResult.plan_id
+    );
+
+    if (existingIdx >= 0) {
+      currentRows[existingIdx] = { ...currentRows[existingIdx], ...newResult };
+    } else {
+      currentRows.unshift(newResult);
+    }
+
+    db['Assessment Results'].rows = currentRows;
+    saveStoredDb(db);
+    broadcastLiveEvent('grade_updated', newResult);
+    return { success: true, ...newResult };
   },
 
+  // Fees & Financial Ledger
   async getFees(params = {}) {
     const q = new URLSearchParams(params);
     const data = await safeFetch(`/fees?${q.toString()}`);
-    return data || FALLBACK_DATA.fees;
+    if (data) return data;
+
+    const db = getStoredDb();
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const statusFilter = params.status;
+
+    if (statusFilter && statusFilter !== 'all') {
+      return invoices.filter(i => i.status === statusFilter);
+    }
+    return invoices.map(i => ({
+      ...i,
+      id: i.invoice_id,
+      name: i.invoice_id,
+      grand_total: Number(i.amount) || 0,
+      outstanding_amount: i.status === 'Paid' ? 0 : (Number(i.amount) || 0)
+    }));
   },
 
-  async payFee(feeId, paymentMethod = 'Credit Card / Online') {
+  async payFee(invoiceId, paymentMethod = 'Online Gateway / UPI') {
     const data = await safeFetch('/fees/pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fee_id: feeId, payment_method: paymentMethod }),
+      body: JSON.stringify({ fee_id: invoiceId, payment_method: paymentMethod }),
     });
     if (data) return data;
-    const item = FALLBACK_DATA.fees.find(f => f.id === feeId);
-    if (item) item.status = 'Paid';
-    broadcastLiveEvent('fee_updated', { fee_id: feeId, status: 'Paid' });
-    return { 
-      success: true, 
-      fee_id: feeId, 
+
+    const db = getStoredDb();
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const receiptNo = `REC-2026-${Date.now().toString().slice(-4)}`;
+    const paymentDate = new Date().toISOString().split('T')[0];
+
+    const cleanInvId = String(invoiceId).toLowerCase().trim();
+    let updatedStudentId = null;
+
+    const updatedInvoices = invoices.map(inv => {
+      if (String(inv.invoice_id).toLowerCase().trim() === cleanInvId) {
+        updatedStudentId = inv.student_id;
+        return {
+          ...inv,
+          status: 'Paid',
+          payment_date: paymentDate,
+          receipt_no: receiptNo
+        };
+      }
+      return inv;
+    });
+
+    db['Fee Invoices & Ledger'].rows = updatedInvoices;
+
+    // Recheck student fee status
+    if (updatedStudentId) {
+      const remainingUnpaid = updatedInvoices.filter(
+        i => i.student_id === updatedStudentId && (i.status === 'Pending' || i.status === 'Unpaid')
+      );
+      const students = db['Student List']?.rows || [];
+      db['Student List'].rows = students.map(s => {
+        if (s.student_id === updatedStudentId) {
+          return { ...s, fee_status: remainingUnpaid.length === 0 ? 'Paid' : 'Pending' };
+        }
+        return s;
+      });
+    }
+
+    saveStoredDb(db);
+    broadcastLiveEvent('fee_updated', { invoice_id: invoiceId, status: 'Paid', receipt_no: receiptNo });
+    return {
+      success: true,
+      invoice_id: invoiceId,
       status: 'Paid',
-      receipt_no: `REC 2026 ${Date.now().toString().slice(-4)}`,
-      amountPaid: item ? item.amount : 1450,
-      payment_date: new Date().toISOString().split('T')[0]
+      receipt_no: receiptNo,
+      payment_date: paymentDate
     };
   },
 
   async settleStudentFee(studentIdentifier, amount = 0, paymentMethod = 'Online Gateway') {
-    const student = FALLBACK_STUDENTS.find(s => 
-      s.name === studentIdentifier || 
-      s.student_name === studentIdentifier ||
-      s.roll_no === studentIdentifier
-    );
-    if (student) {
-      student.feeDues = 0;
-      student.fee_status = 'Paid';
-    }
+    const db = getStoredDb();
+    const cleanId = String(studentIdentifier || '').toLowerCase().trim();
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const receiptNo = `REC-2026-${Date.now().toString().slice(-4)}`;
+    const paymentDate = new Date().toISOString().split('T')[0];
 
-    const dataStu = FALLBACK_DATA.students.find(s => 
-      s.id === studentIdentifier || 
-      s.name === studentIdentifier || 
-      s.full_name === studentIdentifier || 
-      s.student_name === studentIdentifier
-    );
-    if (dataStu) {
-      dataStu.balance_due = 0;
-      dataStu.fee_status = 'Paid';
-    }
-
-    try {
-      localStorage.setItem('nairee_students', JSON.stringify(FALLBACK_DATA.students));
-      localStorage.setItem('nairee_fallback_students', JSON.stringify(FALLBACK_STUDENTS));
-    } catch {}
-
-    const receiptNo = `REC 2026 ${Date.now().toString().slice(-4)}`;
-    const studentName = student?.student_name || dataStu?.full_name || studentIdentifier;
-
-    FALLBACK_DATA.fees.unshift({
-      id: `FEE ${Date.now().toString().slice(-4)}`,
-      title: `Term 1 Tuition Fee (${studentName})`,
-      amount: amount || 35000,
-      due_date: new Date().toISOString().split('T')[0],
-      status: 'Paid',
-      payment_date: new Date().toISOString().split('T')[0],
-      student_name: studentName,
-      receipt_no: receiptNo
+    let studentName = '';
+    const updatedInvoices = invoices.map(inv => {
+      const invSid = String(inv.student_id || '').toLowerCase().trim();
+      const invName = String(inv.student_name || '').toLowerCase().trim();
+      if (invSid === cleanId || invName === cleanId || cleanId.includes(invSid) || cleanId.includes(invName)) {
+        studentName = inv.student_name;
+        return {
+          ...inv,
+          status: 'Paid',
+          payment_date: paymentDate,
+          receipt_no: receiptNo
+        };
+      }
+      return inv;
     });
 
-    try {
-      localStorage.setItem('nairee_fees', JSON.stringify(FALLBACK_DATA.fees));
-    } catch {}
+    db['Fee Invoices & Ledger'].rows = updatedInvoices;
 
+    const students = db['Student List']?.rows || [];
+    db['Student List'].rows = students.map(s => {
+      const sid = String(s.student_id || '').toLowerCase().trim();
+      const sname = String(s.name || '').toLowerCase().trim();
+      if (sid === cleanId || sname === cleanId || cleanId.includes(sid) || cleanId.includes(sname)) {
+        return { ...s, fee_status: 'Paid' };
+      }
+      return s;
+    });
+
+    saveStoredDb(db);
     broadcastLiveEvent('fee_updated', {
       student_id: studentIdentifier,
       student_name: studentName,
-      amount: amount || 35000,
       status: 'Paid',
       receipt_no: receiptNo
     });
@@ -725,6 +882,181 @@ export const api = {
     };
   },
 
+  // Teacher Attendance & Punch In/Out
+  async getTeacherAttendance(date = '') {
+    const db = getStoredDb();
+    const rows = db['Teacher Attendance']?.rows || [];
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    return rows.filter(r => !date || r.date === targetDate);
+  },
+
+  async punchTeacher(teacherNumber, teacherName, action = 'toggle') {
+    const db = getStoredDb();
+    const attTbl = db['Teacher Attendance'] || { rows: [], columns: [] };
+    const currentRows = [...(attTbl.rows || [])];
+    const today = new Date().toISOString().split('T')[0];
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const cleanTNum = String(teacherNumber || 'TEA 001').toUpperCase().trim();
+    const existingIdx = currentRows.findIndex(r => r.teacher_number === cleanTNum && r.date === today);
+
+    let status = 'On Duty';
+    if (existingIdx >= 0) {
+      if (currentRows[existingIdx].status === 'On Duty') {
+        currentRows[existingIdx].punch_out = timeStr;
+        currentRows[existingIdx].status = 'Completed Shift';
+        status = 'Completed Shift';
+      } else {
+        currentRows[existingIdx].punch_in = timeStr;
+        currentRows[existingIdx].status = 'On Duty';
+        status = 'On Duty';
+      }
+    } else {
+      currentRows.unshift({
+        punch_id: `TP-${Date.now().toString().slice(-4)}`,
+        teacher_number: cleanTNum,
+        name: teacherName || 'Prof. Sarah Jenkins',
+        date: today,
+        punch_in: timeStr,
+        punch_out: null,
+        status: 'On Duty',
+        hours_recorded: 8.0
+      });
+    }
+
+    db['Teacher Attendance'].rows = currentRows;
+    saveStoredDb(db);
+    broadcastLiveEvent('teacher_punched', { teacher_number: cleanTNum, time: timeStr, status });
+    return { success: true, status, time: timeStr };
+  },
+
+  // Performance Analysis
+  async getStudentPerformance(batch = '') {
+    const params = new URLSearchParams();
+    if (batch && batch !== 'all') params.append('batch', batch);
+    const data = await safeFetch(`/admin/student-performance?${params.toString()}`);
+    if (data) return data;
+
+    const students = await this.getStudents(batch);
+    const db = getStoredDb();
+    const marks = db['Assessment Results']?.rows || [];
+
+    return students.map((s, idx) => {
+      const stuMarks = marks.filter(m => m.student_id === s.student_id || m.student_name === s.name);
+      const avgScore = stuMarks.length > 0 
+        ? Math.round(stuMarks.reduce((sum, m) => sum + (Number(m.score) || 0), 0) / stuMarks.length)
+        : (idx === 0 ? 98 : idx === 1 ? 88 : idx === 2 ? 94 : 85);
+
+      const isFeePending = s.fee_status === 'Pending' || s.balance_due > 0;
+      const isAttLow = s.attendance_percentage < 85;
+      const isGradeLow = avgScore < 60;
+      const isAtRisk = isFeePending || isAttLow || isGradeLow;
+
+      const riskReasons = [];
+      if (isFeePending) riskReasons.push(`Fee Due (₹${s.balance_due || 35000})`);
+      if (isAttLow) riskReasons.push(`Low Attendance (${s.attendance_percentage}%)`);
+      if (isGradeLow) riskReasons.push(`Low Grade (${avgScore}%)`);
+
+      return {
+        id: s.student_id,
+        name: s.student_id,
+        student_name: s.name,
+        roll_no: s.roll_no,
+        student_batch: s.class_batch,
+        batch_name: s.class_batch,
+        attendancePct: s.attendance_percentage,
+        avgGrade: avgScore,
+        feeDues: s.balance_due || 0,
+        fee_status: s.fee_status,
+        guardian_name: s.father_name || s.mother_name || 'Parent',
+        guardian_mobile: s.father_phone || s.mother_phone || s.phone,
+        isAtRisk,
+        riskReasons
+      };
+    });
+  },
+
+  async getTeacherPerformance() {
+    const data = await safeFetch('/admin/teacher-performance');
+    if (data) return data;
+
+    const teachers = getMasterTeachers();
+    return teachers.map((t, idx) => ({
+      id: t.teacher_number,
+      name: t.name,
+      department: t.department,
+      designation: t.designation,
+      assignedClasses: idx === 0 ? 3 : 2,
+      syllabusCompletionRate: idx === 0 ? 90 : 85,
+      studentAverageScore: idx === 0 ? 94 : 88,
+      rating: 4.8 + (idx * 0.05),
+      attendance_avg: '98%',
+      syllabus_progress: `${idx === 0 ? 90 : 85}%`
+    }));
+  },
+
+  // Parent Child Summary
+  async getParentChildSummary(studentId) {
+    const sDetail = await this.getStudentDetail(studentId);
+    const db = getStoredDb();
+    const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const childInvoices = invoices.filter(i => i.student_id === sDetail.student_id || i.student_name === sDetail.name);
+
+    return {
+      student: sDetail,
+      attendance: { rate: sDetail.attendance_percentage, total_days: 42, present_days: Math.round(42 * (sDetail.attendance_percentage / 100)) },
+      fees: {
+        status: sDetail.fee_status,
+        totalDue: sDetail.balance_due,
+        invoices: childInvoices
+      },
+      academics: {
+        overall_gpa: '3.9',
+        rank: '2nd in Class 10-A'
+      }
+    };
+  },
+
+  // Homework & Materials
+  async getHomework(batch = '') {
+    const db = getStoredDb();
+    const rows = db['Homework List']?.rows || [];
+    return rows;
+  },
+
+  async getHomeworkSubmissions(homeworkId = '') {
+    const db = getStoredDb();
+    const rows = db['Homework Submissions']?.rows || [];
+    if (homeworkId) return rows.filter(r => r.homework_id === homeworkId);
+    return rows;
+  },
+
+  async submitHomework(submissionData) {
+    const db = getStoredDb();
+    const subTbl = db['Homework Submissions'] || { rows: [], columns: [] };
+    const rows = [...(subTbl.rows || [])];
+
+    const newSubm = {
+      submission_id: `SUBM-${Date.now().toString().slice(-4)}`,
+      homework_id: submissionData.homework_id || 'HW 001',
+      student_id: submissionData.student_id || 'STU-001',
+      student_name: submissionData.student_name || 'Nairee Patel',
+      submission_text: submissionData.submission_text || '',
+      attachment_url: submissionData.attachment_url || '',
+      submitted_at: new Date().toLocaleString(),
+      status: 'Submitted',
+      marks_awarded: null,
+      teacher_feedback: ''
+    };
+
+    rows.unshift(newSubm);
+    db['Homework Submissions'].rows = rows;
+    saveStoredDb(db);
+    broadcastLiveEvent('homework_submitted', newSubm);
+    return { success: true, ...newSubm };
+  },
+
+  // Users & System Administration
   async getUsers(role = '') {
     const params = new URLSearchParams();
     if (role && role !== 'all') params.append('role', role);
@@ -740,116 +1072,27 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
-    const user = FALLBACK_DATA.users.find(u => u.name === id || u.id === id);
+    const user = FALLBACK_DATA.users.find(u => u.id === id || u.username === id);
     if (user) user.status = status;
-    try {
-      localStorage.setItem('nairee_users', JSON.stringify(FALLBACK_DATA.users));
-    } catch {}
     return data || { success: true, id, status };
   },
 
   async createAccount(data) {
-    const res = await safeFetch('/admin/accounts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (res) return res;
-
     const usernameGenerated = data.email ? data.email.split('@')[0] : (data.full_name || 'user').toLowerCase().replace(/\s+/g, '_');
-    const newId = `usr_${Date.now().toString().slice(-6)}`;
-    const newAcc = { 
-      id: newId, 
-      name: newId,
-      full_name: data.full_name,
+    const newId = `USR-${Date.now().toString().slice(-4)}`;
+    const newAcc = {
+      id: newId,
       username: usernameGenerated,
+      full_name: data.full_name,
+      email: data.email,
       role: data.role,
-      email: data.email || `${usernameGenerated}@nairee.edu`,
-      phone: data.phone || '+1 (555) 901-2234',
       status: 'Active',
-      department: data.department || 'Academics',
-      batch: data.batch || 'BATCH-10A-2026'
+      department: data.department || 'Academics'
     };
-
     FALLBACK_DATA.users.push(newAcc);
-
-    // Sync to respective Database Studio tables
-    if (data.role === 'student') {
-      const studentId = `EDU-STU-2026-${String(FALLBACK_DATA.students.length + 1).padStart(5, '0')}`;
-      const newStu = {
-        id: studentId,
-        name: studentId,
-        full_name: data.full_name,
-        student_name: data.full_name,
-        roll_number: `10A-0${FALLBACK_DATA.students.length + 1}`,
-        roll_no: `10${FALLBACK_DATA.students.length + 1}`,
-        batch_id: data.batch || 'BATCH-10A-2026',
-        student_batch: data.batch || 'Grade 10-A',
-        email: data.email,
-        phone: data.phone || '+1 (555) 901-2234',
-        attendance_percentage: 100,
-        fee_status: 'Paid',
-        balance_due: 0
-      };
-      FALLBACK_DATA.students.push(newStu);
-      INITIAL_DB_STORE.tabStudent.rows.push({
-        name: studentId,
-        first_name: data.full_name.split(' ')[0],
-        last_name: data.full_name.split(' ').slice(1).join(' ') || '',
-        student_email_id: data.email,
-        student_mobile_number: data.phone || '+1 (555) 901-2234',
-        batch_id: data.batch || 'BATCH-10A-2026',
-        roll_number: `10A-0${INITIAL_DB_STORE.tabStudent.rows.length + 1}`,
-        attendance_percentage: 100.0,
-        fee_status: 'Paid'
-      });
-      try {
-        localStorage.setItem('nairee_students', JSON.stringify(FALLBACK_DATA.students));
-      } catch {}
-    } else if (data.role === 'teacher') {
-      const facId = `FAC-00${FALLBACK_DATA.faculty.length + 1}`;
-      const newFac = {
-        id: facId,
-        name: facId,
-        full_name: data.full_name,
-        department: data.department || 'Mathematics & Science',
-        email: data.email,
-        phone: data.phone || '+1 (555) 901-2234',
-        workload_hours: 20
-      };
-      FALLBACK_DATA.faculty.push(newFac);
-      INITIAL_DB_STORE.tabFaculty.rows.push({
-        name: facId,
-        full_name: data.full_name,
-        department: data.department || 'Mathematics & Science',
-        email: data.email,
-        mobile_number: data.phone || '+1 (555) 901-2234',
-        workload_hours: 20
-      });
-      if (INITIAL_DB_STORE.tabTeacher) {
-        INITIAL_DB_STORE.tabTeacher.rows.push({
-          teacher_id: `TEA-00${INITIAL_DB_STORE.tabTeacher.rows.length + 1}`,
-          full_name: data.full_name,
-          department: data.department || 'Mathematics & Science',
-          designation: data.designation || 'Faculty Lead',
-          email: data.email,
-          phone: data.phone || '+1 (555) 901-2234',
-          assigned_classes: data.batch || 'Grade 10-A',
-          monthly_salary: 5800,
-          status: 'Active'
-        });
-      }
-      try {
-        localStorage.setItem('nairee_faculty', JSON.stringify(FALLBACK_DATA.faculty));
-      } catch {}
-    }
-
-    try {
-      localStorage.setItem('nairee_users', JSON.stringify(FALLBACK_DATA.users));
-    } catch {}
-
+    broadcastLiveEvent('user_created', newAcc);
     return {
-      message: `Account created for ${data.full_name}! User can log in with username "${usernameGenerated}"`,
+      message: `Account created for ${data.full_name}!`,
       username: usernameGenerated,
       password: 'Welcome@123',
       role: data.role,
@@ -857,265 +1100,55 @@ export const api = {
     };
   },
 
-  async getTeacherPerformance() {
-    const data = await safeFetch('/admin/teacher-performance');
-    return data || [
-      { id: 'FAC-001', name: 'Prof. Sarah Jenkins', department: 'Mathematics', designation: 'Senior Faculty', assignedClasses: 3, syllabusCompletionRate: 85, studentAverageScore: 92, rating: 4.9, attendance_avg: '98%', syllabus_progress: '85%' },
-      { id: 'FAC-002', name: 'Dr. Marcus Vance', department: 'Physics & STEM', designation: 'Head of STEM', assignedClasses: 2, syllabusCompletionRate: 90, studentAverageScore: 94, rating: 4.8, attendance_avg: '97%', syllabus_progress: '90%' },
-      { id: 'FAC-003', name: 'Mr. Robert Chen', department: 'Computer Science', designation: 'AI Instructor', assignedClasses: 2, syllabusCompletionRate: 78, studentAverageScore: 88, rating: 4.7, attendance_avg: '96%', syllabus_progress: '78%' }
-    ];
+  async getAnnouncements(targetRole = '') {
+    return FALLBACK_DATA.announcements;
   },
 
-  async getStudentPerformance(batch = '') {
-    const params = new URLSearchParams();
-    if (batch && batch !== 'all') params.append('batch', batch);
-    const data = await safeFetch(`/admin/student-performance?${params.toString()}`);
-    if (data) return data;
+  async postAnnouncement(notice) {
+    const newNotice = {
+      id: `ANN-${Date.now().toString().slice(-4)}`,
+      title: notice.title,
+      content: notice.content,
+      category: notice.category || 'General',
+      created_at: 'Just now',
+      sender: 'Principal Office'
+    };
+    FALLBACK_DATA.announcements.unshift(newNotice);
+    broadcastLiveEvent('announcement_created', newNotice);
+    return { success: true, announcement: newNotice };
+  },
 
-    const sourceList = (FALLBACK_DATA.students && FALLBACK_DATA.students.length >= 6) ? FALLBACK_DATA.students : FALLBACK_STUDENTS;
-    return sourceList.map((s, idx) => {
-      const isPending = idx === 2 || idx === 5 || s.fee_status === 'Pending' || s.balance_due > 0 || (s.feeDues || 0) > 0;
-      const feeAmount = isPending ? 35000 : 0;
-      const guardianMobile = idx === 2 ? '+91 98765 43216' : idx === 5 ? '+91 98765 43222' : (s.phone || `+91 98765 0000${idx + 1}`);
-      const guardianName = idx === 2 ? 'Mr. Vikram Gupta' : idx === 5 ? 'Mr. Harpreet Singh' : (s.guardian_name || 'Parent');
+  async getMessages(username, role) {
+    return FALLBACK_DATA.messages;
+  },
 
-      return {
-        id: s.id || s.name,
-        name: s.id || s.name,
-        student_name: s.full_name || s.student_name,
-        roll_no: s.roll_number || s.roll_no || `${101 + idx}`,
-        student_batch: s.batch_id || s.student_batch || (idx === 5 ? 'Class 10 - Section B' : 'Class 10 - Section A'),
-        batch_name: s.batch_name || s.student_batch || (idx === 5 ? 'Class 10 - Section B' : 'Class 10 - Section A'),
-        attendancePct: s.attendance_percentage || s.attendancePct || (idx === 5 ? 89 : 96),
-        avgGrade: idx === 2 ? 62 : idx === 5 ? 78 : 92,
-        feeDues: feeAmount,
-        fee_status: isPending ? 'Pending' : 'Paid',
-        guardian_name: guardianName,
-        guardian_mobile: guardianMobile,
-        isAtRisk: isPending,
-        riskReasons: isPending ? ['Term Fee Pending (₹35,000)'] : []
-      };
+  async sendMessage(msg) {
+    FALLBACK_DATA.messages.unshift({
+      id: `MSG-${Date.now().toString().slice(-4)}`,
+      sender: msg.sender || 'Staff',
+      content: msg.content || msg.message,
+      timestamp: 'Just now'
     });
+    return { success: true };
   },
 
-  async getSyllabus(params = {}) {
-    const q = new URLSearchParams(params);
-    const data = await safeFetch(`/syllabus?${q.toString()}`);
-    return data || [
-      { id: 'SYL-01', subject: 'Mathematics', course: 'CRS-MATH-10', chapter_number: 1, chapter_title: 'Real Numbers & Polynomials', total_topics: 10, completed_topics: 10, status: 'Completed' },
-      { id: 'SYL-02', subject: 'Mathematics', course: 'CRS-MATH-10', chapter_number: 2, chapter_title: 'Quadratic Equations & Arithmetic Progressions', total_topics: 12, completed_topics: 9, status: 'In Progress' },
-      { id: 'SYL-03', subject: 'Mathematics', course: 'CRS-MATH-10', chapter_number: 3, chapter_title: 'Differential Calculus & Geometry', total_topics: 15, completed_topics: 6, status: 'In Progress' },
-      { id: 'SYL-04', subject: 'Physics', course: 'CRS-PHYS-10', chapter_number: 1, chapter_title: 'Electromagnetism & Waves', total_topics: 8, completed_topics: 6, status: 'In Progress' }
-    ];
+  async getSyllabus() {
+    return FALLBACK_DATA.syllabus;
   },
 
   async updateSyllabus(id, data) {
-    const res = await safeFetch(`/syllabus/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return res || { success: true, id, ...data };
+    return { success: true, id, ...data };
   },
 
-  async createSyllabus(data) {
-    const res = await safeFetch('/syllabus', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return res || { id: `SYL-${Date.now()}`, ...data };
+  async getStudyMaterials() {
+    return FALLBACK_DATA.study_materials;
   },
 
-  async getHomework(params = {}) {
-    const q = new URLSearchParams(params);
-    const data = await safeFetch(`/homework?${q.toString()}`);
-    if (data) return data;
-    
-    let list = [...FALLBACK_DATA.homework];
-    if (params.batch && params.batch !== 'all') {
-      list = list.filter(hw => hw.student_batch === params.batch || hw.course?.includes(params.batch.split('-')[1]?.substring(0, 2) || ''));
-    }
-    return list;
-  },
-
-  async createHomework(data) {
-    const res = await safeFetch('/homework', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const newHw = {
-      id: `HW-0${FALLBACK_DATA.homework.length + 1}`,
-      title: data.title,
-      course: data.course || 'CRS-MATH-10',
-      subject: data.subject || 'Mathematics',
-      student_batch: data.student_batch || 'BATCH-10A-2026',
-      due_date: data.due_date || new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
-      instructions: data.instructions || '',
-      max_points: data.max_points || 100,
-      status: 'Assigned',
-      submissionCount: 0
-    };
-    FALLBACK_DATA.homework.unshift(newHw);
-    try {
-      localStorage.setItem('nairee_homework', JSON.stringify(FALLBACK_DATA.homework));
-    } catch {}
-    return res || newHw;
-  },
-
-  async getHomeworkSubmissions(id) {
-    const data = await safeFetch(`/homework/${id}/submissions`);
-    return data || [
-      { id: 'sub_1', student_id: 'EDU-STU-2026-00001', student: 'EDU-STU-2026-00001', student_name: 'Nairee Patel', submitted_at: 'Yesterday', status: 'Graded', score: 98, submission_text: 'Attached solved problem set 4.1 to 4.5 along with step-by-step calculus proofs.', feedback: 'Outstanding rigor and clear explanations!' },
-      { id: 'sub_2', student_id: 'EDU-STU-2026-00002', student: 'EDU-STU-2026-00002', student_name: 'Aarav Sharma', submitted_at: '2 hours ago', status: 'Submitted', score: null, submission_text: 'Calculus derivatives worksheet completed. Page 42 questions 1-12.', feedback: null }
-    ];
-  },
-
-  async submitHomework(data) {
-    const res = await safeFetch('/homework/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return res || { success: true, ...data };
-  },
-
-  async gradeHomework(data) {
-    const res = await safeFetch('/homework/grade', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return res || { success: true, ...data };
-  },
-
-  async getStudyMaterials(params = {}) {
-    const q = new URLSearchParams(params);
-    const data = await safeFetch(`/study-materials?${q.toString()}`);
-    return data || FALLBACK_DATA.study_materials;
-  },
-
-  async uploadStudyMaterial(data) {
-    const res = await safeFetch('/study-materials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const newMat = {
-      id: `MAT-0${FALLBACK_DATA.study_materials.length + 1}`,
-      title: data.title,
-      subject: data.subject || 'Mathematics',
-      material_type: data.material_type || 'PDF Document',
-      description: data.description || '',
-      url: data.url || '#',
-      uploaded_by: data.uploaded_by || 'Prof. Sarah Jenkins',
-      created_at: new Date().toISOString().split('T')[0]
-    };
-    FALLBACK_DATA.study_materials.unshift(newMat);
-    return res || newMat;
-  },
-
-  async getAnnouncements(role = '', batch = '') {
-    const params = new URLSearchParams();
-    if (role) params.append('role', role);
-    if (batch) params.append('batch', batch);
-    const data = await safeFetch(`/announcements?${params.toString()}`);
-    if (data) return data;
-
-    let list = [...FALLBACK_DATA.announcements];
-    if (role && role !== 'all' && role !== 'All') {
-      list = list.filter(a => !a.target_role || a.target_role === 'All' || a.target_role.toLowerCase() === role.toLowerCase());
-    }
-    return list;
-  },
-
-  async createAnnouncement(data) {
-    const res = await safeFetch('/announcements', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const newAnn = {
-      id: `ANN-0${FALLBACK_DATA.announcements.length + 1}`,
-      title: data.title,
-      content: data.content,
-      category: data.category || 'General Circular',
-      target_role: data.target_role || 'All',
-      priority: data.priority || 'Normal',
-      created_at: new Date().toISOString(),
-      posted_by: data.posted_by || 'Office of Principal'
-    };
-    FALLBACK_DATA.announcements.unshift(newAnn);
-    try {
-      localStorage.setItem('nairee_announcements', JSON.stringify(FALLBACK_DATA.announcements));
-    } catch {}
-    broadcastLiveEvent('announcement_created', newAnn);
-    return res || newAnn;
-  },
-
-  async getTransport(studentId) {
-    const data = await safeFetch(`/transport/${studentId}`);
-    return data || FALLBACK_DATA.transport;
-  },
-
-  async getMessages(username = '', role = '') {
-    const params = new URLSearchParams();
-    if (username) params.append('username', username);
-    if (role) params.append('role', role);
-    const data = await safeFetch(`/messages?${params.toString()}`);
-    return data || [
-      { id: 'MSG-01', sender_name: 'Prof. Sarah Jenkins (Math Lead)', recipient_name: 'Rajesh Patel', subject: 'Mathematics Term Progress & Honors Project', message: 'Hello Mr. Patel, Nairee is performing exceptionally well in Advanced Calculus. We would love to nominate her for the Regional STEM Olympiad.', created_at: new Date().toISOString() },
-      { id: 'MSG-02', sender_name: 'Office of Administration', recipient_name: 'All Parents', subject: 'Annual Day Function Rehearsals', message: 'Dear Parents, Annual function rehearsals will commence this Friday from 2:00 PM to 4:00 PM.', created_at: new Date().toISOString() }
-    ];
-  },
-
-  async sendMessage(data) {
-    const res = await safeFetch('/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return res || { success: true, id: `MSG-${Date.now()}`, ...data };
-  },
-
-  async getParentChildSummary(studentId) {
-    const data = await safeFetch(`/parent/child/${studentId}/summary`);
-    return data || {
-      student: FALLBACK_DATA.students[0] || { student_name: 'Nairee Patel', roll_no: '101', student_batch: 'Grade 10-A' },
-      attendance: {
-        percentage: 97.5,
-        totalClasses: 120,
-        attended: 117,
-        absentAlerts: []
-      },
-      fees: [
-        { name: 'FEE-2026-001', grand_total: 1450, outstanding_amount: 0, status: 'Paid', due_date: 'Oct 20, 2026' }
-      ],
-      results: [
-        { name: 'RES-01', course: 'Mathematics', assessment_plan: 'Mid-Term Exam', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional analytical proofs and thorough presentation.' },
-        { name: 'RES-02', course: 'Physics', assessment_plan: 'Lab Dynamics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Strong experimental problem-solving.' }
-      ],
-      transport: {
-        route_name: 'Route 04 North City Express',
-        bus_number: 'KA-04-E-8821',
-        pickup_location: 'Green Valley Stop (Gate 2)',
-        pickup_time: '07:35 AM',
-        drop_location: 'Green Valley Stop (Gate 2)',
-        drop_time: '03:45 PM',
-        driver_name: 'Mr. David K.',
-        driver_phone: '+1 (555) 882-1920'
-      }
-    };
+  async getTransportInfo() {
+    return FALLBACK_DATA.transport;
   },
 
   async uploadFile(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    const data = await safeFetch('/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    return data || { url: URL.createObjectURL(file), name: file.name };
+    return { url: URL.createObjectURL(file), name: file.name };
   }
 };

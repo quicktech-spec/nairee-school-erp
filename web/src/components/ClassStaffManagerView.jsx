@@ -27,7 +27,7 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
-import { getMasterStudents, saveMasterStudents, transferStudentClass, subscribeLiveEvents } from '../api.js';
+import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents } from '../api.js';
 
 function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => ({
@@ -267,10 +267,23 @@ export default function ClassStaffManagerView() {
   });
 
   const [teachers, setTeachers] = useState(() => {
-    try {
-      const saved = localStorage.getItem('nairee_mgmt_teachers');
-      return saved ? JSON.parse(saved) : DEFAULT_TEACHERS;
-    } catch { return DEFAULT_TEACHERS; }
+    const masterT = getMasterTeachers();
+    if (masterT && masterT.length > 0) {
+      return masterT.map(t => ({
+        id: t.teacher_number || t.id,
+        name: t.name,
+        department: t.department,
+        email: t.email,
+        phone: t.phone,
+        base_salary: Number(t.monthly_salary) || 65000,
+        bonus: 5000,
+        deductions: 2500,
+        salary_status: 'Paid',
+        paid_date: '2026-09-30',
+        assigned_classes: ['Grade 10 - Section A']
+      }));
+    }
+    return DEFAULT_TEACHERS;
   });
 
   const [students, setStudents] = useState(() => {
