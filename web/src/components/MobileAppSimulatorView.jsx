@@ -220,7 +220,10 @@ export default function MobileAppSimulatorView({ onNavigate }) {
                                 <button
                                   type="button"
                                   onClick={() => setShowPassword(!showPassword)}
-                                  className="absolute right-1 pb-2 text-slate-400 hover:text-slate-600"
+                                  aria-label="Toggle password visibility"
+                                  aria-pressed={showPassword}
+                                  title={showPassword ? 'Hide password' : 'Show password'}
+                                  className="absolute right-1 pb-2 text-slate-400 hover:text-slate-600 cursor-pointer"
                                 >
                                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
