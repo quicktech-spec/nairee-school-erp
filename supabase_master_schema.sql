@@ -168,7 +168,7 @@ CREATE TABLE students (
     residential_address TEXT NOT NULL,
     permanent_address TEXT NOT NULL,
     fee_status VARCHAR(50) DEFAULT 'Pending',
-    enrollment_status VARCHAR(50) DEFAULT 'Active',
+    status VARCHAR(50) DEFAULT 'Active',
     has_siblings BOOLEAN DEFAULT FALSE,
     sibling_student_id UUID REFERENCES students(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -443,3 +443,57 @@ VALUES
 ('77777777-7777-7777-7777-777777777772', '11111111-1111-1111-1111-111111111111', 'STU-002', 'ADM-2024-002', 'Aarav Sharma', '102', '55555555-5555-5555-5555-555555555551', 'Hindi & Applied Science', 'Male', '2011-08-25', '2024-06-16', '+91 98765 00002', 'aarav.sharma@example.com', 'Koramangala, Bengaluru - 560034', 'Koramangala, Bengaluru - 560034', 'Paid', 'Active'),
 ('77777777-7777-7777-7777-777777777773', '11111111-1111-1111-1111-111111111111', 'STU-003', 'ADM-2024-003', 'Diya Gupta', '103', '55555555-5555-5555-5555-555555555551', 'Sanskrit & Pure Science', 'Female', '2011-11-10', '2024-06-18', '+91 98765 00003', 'diya.gupta@example.com', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Pending', 'Active')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES
+('77777777-7777-7777-7777-777777777771', 'Rajesh Patel', 'Senior Tech Director', '+91 98765 11111', 'Sunita Patel', 'Architect', '+91 98765 22222', 'syalfreelance@gmail.com'),
+('77777777-7777-7777-7777-777777777772', 'Vikram Sharma', 'Civil Engineer', '+91 98765 33333', 'Pooja Sharma', 'Chartered Accountant', '+91 98765 44444', 'aarav.sharma@example.com'),
+('77777777-7777-7777-7777-777777777773', 'Manoj Gupta', 'Business Executive', '+91 98765 55555', 'Anita Gupta', 'Professor', '+91 98765 66666', 'diya.gupta@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES
+('77777777-7777-7777-7777-777777777771', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331'),
+('77777777-7777-7777-7777-777777777772', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331'),
+('77777777-7777-7777-7777-777777777773', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Absent', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO exam_terms (id, school_id, plan_code, assessment_name, academic_year_id, start_date, end_date)
+VALUES
+('88888888-8888-8888-8888-888888888881', '11111111-1111-1111-1111-111111111111', 'EXAM-T1-2026', 'Mid-Term Examination 2026', '22222222-2222-2222-2222-222222222222', '2026-09-10', '2026-09-25')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
+VALUES
+('99999999-9999-9999-9999-999999999991', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666661', '44444444-4444-4444-4444-444444444441', '2026-09-15', 100.0, 40.0),
+('99999999-9999-9999-9999-999999999992', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666662', '44444444-4444-4444-4444-444444444441', '2026-09-18', 100.0, 40.0),
+('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666663', '44444444-4444-4444-4444-444444444441', '2026-09-21', 100.0, 40.0)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES
+('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777771', 94.0, 100.0, 'A+', 'Outstanding performance in calculus & geometry', '33333333-3333-3333-3333-333333333331'),
+('99999999-9999-9999-9999-999999999992', '77777777-7777-7777-7777-777777777771', 89.0, 100.0, 'A', 'Strong analytical understanding', '33333333-3333-3333-3333-333333333332'),
+('99999999-9999-9999-9999-999999999993', '77777777-7777-7777-7777-777777777771', 98.0, 100.0, 'A+', 'Exceptional coding and system logic', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES
+('INV-2026-001', '77777777-7777-7777-7777-777777777771', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Paid', '2026-05-10', 'REC-2026-8801'),
+('INV-2026-002', '77777777-7777-7777-7777-777777777772', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Paid', '2026-05-12', 'REC-2026-8802'),
+('INV-2026-003', '77777777-7777-7777-7777-777777777773', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Pending', NULL, NULL)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES
+('33333333-3333-3333-3333-333333333331', CURRENT_DATE, '07:48 AM', '03:45 PM', 'On Duty', 8.0),
+('33333333-3333-3333-3333-333333333332', CURRENT_DATE, '07:55 AM', '03:50 PM', 'On Duty', 8.0),
+('33333333-3333-3333-3333-333333333333', CURRENT_DATE, '08:02 AM', '04:00 PM', 'On Duty', 8.0)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES
+('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666661', 'Matrix Inversion & Linear Equations', '08:30 - 09:15', CURRENT_DATE),
+('33333333-3333-3333-3333-333333333332', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666662', 'Electromagnetic Induction & Faraday Laws', '09:15 - 10:00', CURRENT_DATE)
+ON CONFLICT DO NOTHING;
+
