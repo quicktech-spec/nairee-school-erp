@@ -59,23 +59,19 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     try { return localStorage.getItem('nairee_teacher_punch_time') || '08:15 AM'; } catch { return '08:15 AM'; }
   });
 
-  const handlePunchToggle = () => {
+  const handlePunchToggle = async () => {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    if (punchStatus === 'in') {
-      setPunchStatus('out');
-      setPunchTime(timeStr);
-      try {
-        localStorage.setItem('nairee_teacher_punch', 'out');
-        localStorage.setItem('nairee_teacher_punch_time', timeStr);
-      } catch {}
+    const nextStatus = punchStatus === 'in' ? 'out' : 'in';
+    setPunchStatus(nextStatus);
+    setPunchTime(timeStr);
+    try {
+      localStorage.setItem('nairee_teacher_punch', nextStatus);
+      localStorage.setItem('nairee_teacher_punch_time', timeStr);
+      await api.punchTeacher(user?.teacher_number || user?.id || 'TEA 001', user?.full_name || 'Prof. Sarah Jenkins');
+    } catch {}
+    if (nextStatus === 'out') {
       showToast(`Punched Out at ${timeStr}. Shift recorded to Principal overview.`);
     } else {
-      setPunchStatus('in');
-      setPunchTime(timeStr);
-      try {
-        localStorage.setItem('nairee_teacher_punch', 'in');
-        localStorage.setItem('nairee_teacher_punch_time', timeStr);
-      } catch {}
       showToast(`Punched In at ${timeStr} (On Duty). Shift recorded to Principal overview.`);
     }
   };

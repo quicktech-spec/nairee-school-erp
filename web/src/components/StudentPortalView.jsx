@@ -131,6 +131,8 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
         event?.type === 'fee_updated' || 
         event?.type === 'student_transferred' || 
         event?.type === 'student_updated' || 
+        event?.type === 'grade_updated' ||
+        event?.type === 'attendance_updated' ||
         event?.type === 'announcement_created' ||
         event?.type === 'db_store_updated'
       ) {

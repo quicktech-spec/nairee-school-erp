@@ -469,6 +469,16 @@ export const api = {
     if (found) {
       const feeInfo = calculateStudentFeeDues(found.student_id, found.name);
       const attRate = calculateStudentAttendanceRate(found.student_id);
+      const db = getStoredDb();
+      const allResults = db['Assessment Results']?.rows || [];
+      const studentResults = allResults.filter(
+        r => r.student_id === found.student_id || r.student_name === found.name
+      ).map(r => ({
+        ...r,
+        name: r.result_id,
+        id: r.result_id
+      }));
+
       return {
         ...found,
         id: found.student_id,
@@ -483,6 +493,7 @@ export const api = {
         fee_status: feeInfo.fee_status,
         balance_due: feeInfo.totalDue,
         feeDues: feeInfo.totalDue,
+        assessments: studentResults,
         guardian_name: found.father_name || found.mother_name || 'Guardian',
         guardian_mobile: found.father_phone || found.mother_phone || found.phone
       };
