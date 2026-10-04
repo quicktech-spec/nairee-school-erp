@@ -330,12 +330,94 @@ export default function DatabaseStudioView() {
     }
   };
 
+  const openTeacherModal = (teacherRow = null) => {
+    if (teacherRow) {
+      setEditingRow(teacherRow);
+      setFormData({
+        teacher_number: teacherRow.teacher_number || teacherRow.id || `TEA 001`,
+        name: teacherRow.name || '',
+        photo: teacherRow.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+        gender: teacherRow.gender || 'Female',
+        dob: teacherRow.dob || '1988-03-14',
+        blood_group: teacherRow.blood_group || 'O+',
+        aadhaar_no: teacherRow.aadhaar_no || '',
+        email: teacherRow.email || '',
+        phone: teacherRow.phone || '',
+        department: teacherRow.department || 'Mathematics & Science',
+        designation: teacherRow.designation || 'Senior Faculty Lead',
+        qualification: teacherRow.qualification || 'M.Sc., B.Ed',
+        workload_hours: teacherRow.workload_hours || 20,
+        monthly_salary: teacherRow.monthly_salary || 65000,
+        joining_date: teacherRow.joining_date || '2021-06-01',
+        residential_address: teacherRow.residential_address || '',
+        permanent_address: teacherRow.permanent_address || '',
+        father_name: teacherRow.father_name || '',
+        father_occupation: teacherRow.father_occupation || '',
+        mother_name: teacherRow.mother_name || '',
+        mother_occupation: teacherRow.mother_occupation || '',
+        emergency_contact_phone: teacherRow.emergency_contact_phone || '',
+        bank_name: teacherRow.bank_name || 'State Bank of India',
+        bank_account_no: teacherRow.bank_account_no || '',
+        bank_ifsc: teacherRow.bank_ifsc || '',
+        bank_holder_name: teacherRow.bank_holder_name || teacherRow.name || '',
+        pan_no: teacherRow.pan_no || '',
+        status: teacherRow.status || 'Active'
+      });
+      setIsCreatingRow(false);
+    } else {
+      const nextNum = (tableData.rows?.length || 0) + 1;
+      const formattedNum = `TEA ${String(nextNum).padStart(3, '0')}`;
+      setIsCreatingRow(true);
+      setEditingRow(null);
+      setFormData({
+        teacher_number: formattedNum,
+        name: '',
+        photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+        gender: 'Female',
+        dob: '1990-05-15',
+        blood_group: 'O+',
+        aadhaar_no: '',
+        email: '',
+        phone: '+91 ',
+        department: 'Mathematics & Science',
+        designation: 'Faculty Lead',
+        qualification: 'M.Sc., B.Ed',
+        workload_hours: 20,
+        monthly_salary: 60000,
+        joining_date: new Date().toISOString().split('T')[0],
+        residential_address: '',
+        permanent_address: '',
+        father_name: '',
+        father_occupation: '',
+        mother_name: '',
+        mother_occupation: '',
+        emergency_contact_phone: '+91 ',
+        bank_name: 'State Bank of India',
+        bank_account_no: '',
+        bank_ifsc: '',
+        bank_holder_name: '',
+        pan_no: '',
+        status: 'Active'
+      });
+    }
+  };
+
   const handleSaveStudent = async (e) => {
     e.preventDefault();
     const isNew = isCreatingRow;
-    const sName = formData.name || 'Student';
+    const isTeacher = selectedTable === 'Teacher List' || selectedTable === 'staff_faculty';
+    const sName = formData.name || (isTeacher ? 'Faculty Member' : 'Student');
 
-    const cleanRecord = {
+    const cleanRecord = isTeacher ? {
+      ...formData,
+      teacher_number: formData.teacher_number || `TEA ${String((tableData.rows || []).length + 1).padStart(3, '0')}`,
+      name: formData.name || 'Faculty Member',
+      phone: formData.phone || '+91 98765 00000',
+      email: formData.email || `${(formData.name || 'teacher').toLowerCase().replace(/\s+/g, '')}@nairee.edu`,
+      monthly_salary: Number(formData.monthly_salary) || 60000,
+      workload_hours: Number(formData.workload_hours) || 20,
+      status: formData.status || 'Active'
+    } : {
       ...formData,
       roll_number: formData.student_id || `STU-${formData.roll_no || '101'}`,
       roll_no: formData.roll_no ? String(formData.roll_no).replace(/\D/g, '') : '101',
@@ -358,8 +440,8 @@ export default function DatabaseStudioView() {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            primaryKey: 'name',
-            primaryValue: editingRow?.name || editingRow?.student_name,
+            primaryKey: isTeacher ? 'teacher_number' : 'name',
+            primaryValue: isTeacher ? (editingRow?.teacher_number || editingRow?.id) : (editingRow?.name || editingRow?.student_name),
             data: cleanRecord
           })
         });
@@ -378,13 +460,19 @@ export default function DatabaseStudioView() {
     if (isNew) {
       updatedRows = [cleanRecord, ...(currentTbl.rows || [])];
     } else {
+      const origTeacherKey = isTeacher ? (editingRow?.teacher_number || editingRow?.id || editingRow?.name) : null;
       const origName = editingRow?.name || editingRow?.student_name || editingRow?.id;
       const origId = editingRow?.student_id || editingRow?.id;
       updatedRows = (currentTbl.rows || []).map(r => {
-        const rName = r.name || r.student_name;
-        const rId = r.student_id || r.id;
-        if ((origName && rName === origName) || (origId && rId === origId)) {
-          return cleanRecord;
+        if (isTeacher) {
+          const rTKey = r.teacher_number || r.id || r.name;
+          if (origTeacherKey && rTKey === origTeacherKey) return cleanRecord;
+        } else {
+          const rName = r.name || r.student_name;
+          const rId = r.student_id || r.id;
+          if ((origName && rName === origName) || (origId && rId === origId)) {
+            return cleanRecord;
+          }
         }
         return r;
       });
@@ -411,7 +499,8 @@ export default function DatabaseStudioView() {
   };
 
   const handleDeleteRow = async (row) => {
-    const sName = row.name || row.student_name || row.roll_number || row.id;
+    const isTeacher = selectedTable === 'Teacher List' || selectedTable === 'staff_faculty';
+    const sName = isTeacher ? (row.name || row.teacher_number || 'Faculty') : (row.name || row.student_name || row.roll_number || row.id);
     if (!window.confirm(`Are you sure you want to delete record for "${sName}" from ${selectedTable}?`)) {
       return;
     }
@@ -421,8 +510,8 @@ export default function DatabaseStudioView() {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          primaryKey: 'name',
-          primaryValue: sName
+          primaryKey: isTeacher ? 'teacher_number' : 'name',
+          primaryValue: isTeacher ? (row.teacher_number || row.id || row.name) : sName
         })
       });
     } catch (err) {
@@ -431,7 +520,13 @@ export default function DatabaseStudioView() {
 
     const currentDb = getStoredDb();
     const currentTbl = currentDb[selectedTable] || { columns: [], rows: [] };
-    const updatedRows = (currentTbl.rows || []).filter(r => (r.name || r.student_name || r.roll_number || r.id) !== sName);
+    const rowTKey = isTeacher ? (row.teacher_number || row.id || row.name) : null;
+    const updatedRows = (currentTbl.rows || []).filter(r => {
+      if (isTeacher) {
+        return (r.teacher_number || r.id || r.name) !== rowTKey;
+      }
+      return (r.name || r.student_name || r.roll_number || r.id) !== sName;
+    });
     const updatedDb = {
       ...currentDb,
       [selectedTable]: {
@@ -449,8 +544,9 @@ export default function DatabaseStudioView() {
     showToast(`Record for ${sName} deleted from ${selectedTable}!`);
   };
 
-  // Check if active table is Student List
+  // Check if active table is Student List or Teacher List
   const isStudentListTable = selectedTable === 'Student List';
+  const isTeacherListTable = selectedTable === 'Teacher List' || selectedTable === 'staff_faculty';
 
   // Calculate stream options based on selected class
   const classGradeNum = useMemo(() => {
@@ -556,6 +652,8 @@ export default function DatabaseStudioView() {
               <p className="text-xs text-slate-400">
                 {isStudentListTable 
                   ? 'Showing Student Name, Phone Number, Class & Section, and Fee Status with WhatsApp Reminders.'
+                  : isTeacherListTable
+                  ? 'Showing Faculty Profiles, Photos, Aadhaar Numbers, Residential & Permanent Addresses, Bank Details & Payroll.'
                   : 'Click Edit on any row to modify its values, Add Row to insert new records, or export this sheet to Excel.'
                 }
               </p>
@@ -574,11 +672,13 @@ export default function DatabaseStudioView() {
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
               </form>
 
-              {/* Add Student / Row Button */}
+              {/* Add Student / Teacher / Row Button */}
               <button
                 onClick={() => {
                   if (isStudentListTable) {
                     openStudentModal(null);
+                  } else if (isTeacherListTable) {
+                    openTeacherModal(null);
                   } else {
                     const initial = {};
                     tableData.columns.forEach(c => { initial[c.name] = ''; });
@@ -589,7 +689,7 @@ export default function DatabaseStudioView() {
                 className="px-3.5 py-2 rounded-2xl bg-[#00a884] hover:bg-[#009172] text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-[#00a884]/20 cursor-pointer flex-shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>{isStudentListTable ? 'Add Student' : 'Add Row'}</span>
+                <span>{isStudentListTable ? 'Add Student' : (isTeacherListTable ? 'Add Teacher' : 'Add Row')}</span>
               </button>
 
               {/* Reload Button */}
@@ -607,13 +707,13 @@ export default function DatabaseStudioView() {
           {loading ? (
             <div className="py-20 text-center">
               <div className="w-8 h-8 border-3 border-teal-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-xs text-slate-400 font-medium">Loading table rows from SQLite database...</p>
+              <p className="text-xs text-slate-400 font-medium">Loading table rows from database...</p>
             </div>
           ) : tableData.rows.length === 0 ? (
             <div className="py-16 text-center text-slate-400 space-y-2">
               <AlertCircle className="w-8 h-8 mx-auto text-slate-300" />
               <p className="text-xs font-bold">No records found in {selectedTable}</p>
-              <p className="text-[11px]">Click "Add {isStudentListTable ? 'Student' : 'Row'}" to insert the first record.</p>
+              <p className="text-[11px]">Click "Add {isStudentListTable ? 'Student' : (isTeacherListTable ? 'Teacher' : 'Row')}" to insert the first record.</p>
             </div>
           ) : isStudentListTable ? (
             /* SPECIAL DEDICATED VIEW FOR STUDENT LIST TABLE */
@@ -713,6 +813,155 @@ export default function DatabaseStudioView() {
                               </button>
                             </div>
                           )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : isTeacherListTable ? (
+            /* SPECIAL DEDICATED VIEW FOR TEACHER / FACULTY LIST TABLE */
+            <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                  <tr>
+                    <th className="py-3 px-3 w-16 text-center">Actions</th>
+                    <th className="py-3 px-3">Faculty Profile</th>
+                    <th className="py-3 px-3">Department & Role</th>
+                    <th className="py-3 px-3">Contact Details</th>
+                    <th className="py-3 px-3">Aadhaar & Identity</th>
+                    <th className="py-3 px-3">Residential / Permanent Address</th>
+                    <th className="py-3 px-3">Parents & Occupation</th>
+                    <th className="py-3 px-3">Bank Details & CTC</th>
+                    <th className="py-3 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                  {tableData.rows.map((row, idx) => {
+                    const teacherName = row.name || 'Faculty Member';
+                    const photo = row.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100';
+                    const tNum = row.teacher_number || row.id || `TEA 00${idx + 1}`;
+                    const phone = row.phone || '+91 98765 00000';
+                    const email = row.email || `${teacherName.toLowerCase().replace(/\s+/g, '')}@nairee.edu`;
+                    const dept = row.department || 'Mathematics & Science';
+                    const designation = row.designation || 'Senior Faculty Lead';
+                    const aadhaar = row.aadhaar_no || 'Not Configured';
+                    const resAddr = row.residential_address || 'Not Provided';
+                    const permAddr = row.permanent_address || resAddr;
+                    const fatherName = row.father_name || '-';
+                    const fatherOcc = row.father_occupation || '';
+                    const motherName = row.mother_name || '-';
+                    const motherOcc = row.mother_occupation || '';
+                    const bankName = row.bank_name || 'State Bank of India';
+                    const bankAcc = row.bank_account_no ? `••••${String(row.bank_account_no).slice(-4)}` : '••••0000';
+                    const salary = Number(row.monthly_salary) || 60000;
+                    const status = row.status || 'Active';
+
+                    return (
+                      <tr key={idx} className="hover:bg-teal-50/40 transition-colors group">
+                        {/* Action buttons */}
+                        <td className="py-3 px-3 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={() => openTeacherModal(row)}
+                              className="p-1 rounded-lg hover:bg-teal-100 text-teal-700 transition-colors cursor-pointer"
+                              title="Edit Full Faculty Profile & Service Record"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRow(row)}
+                              className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                              title="Delete Faculty Record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* Faculty Profile */}
+                        <td className="py-3 px-3 font-bold text-slate-900 text-xs whitespace-nowrap">
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={photo}
+                              alt={teacherName}
+                              className="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0"
+                            />
+                            <div>
+                              <div className="font-bold text-slate-900">{teacherName}</div>
+                              <div className="text-[10px] font-mono text-teal-700 font-semibold flex items-center gap-1">
+                                <span>{tNum}</span>
+                                {row.gender && <span>&bull; {row.gender}</span>}
+                                {row.blood_group && <span className="text-rose-600 font-bold">({row.blood_group})</span>}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Department & Designation */}
+                        <td className="py-3 px-3 text-xs whitespace-nowrap">
+                          <div className="font-semibold text-slate-800">{designation}</div>
+                          <span className="inline-block mt-0.5 px-2 py-0.5 rounded-md bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold">
+                            {dept}
+                          </span>
+                        </td>
+
+                        {/* Contact */}
+                        <td className="py-3 px-3 text-xs">
+                          <div className="font-mono text-slate-800">{phone}</div>
+                          <div className="text-[10px] text-slate-400 truncate max-w-[140px]">{email}</div>
+                        </td>
+
+                        {/* Aadhaar */}
+                        <td className="py-3 px-3 text-xs whitespace-nowrap">
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] font-bold text-slate-800">
+                            <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                            <span>{aadhaar}</span>
+                          </div>
+                        </td>
+
+                        {/* Address */}
+                        <td className="py-3 px-3 text-xs max-w-[180px]">
+                          <div className="truncate text-[11px] text-slate-700 font-medium" title={resAddr}>
+                            <span className="font-bold text-slate-500 text-[10px]">Res: </span>{resAddr}
+                          </div>
+                          <div className="truncate text-[10px] text-slate-400 mt-0.5" title={permAddr}>
+                            <span className="font-bold text-slate-400 text-[9px]">Perm: </span>{permAddr}
+                          </div>
+                        </td>
+
+                        {/* Parents & Occupation */}
+                        <td className="py-3 px-3 text-xs max-w-[160px]">
+                          <div className="text-[11px] text-slate-800">
+                            <span className="font-bold text-slate-500 text-[10px]">F: </span>{fatherName} {fatherOcc && <span className="text-slate-400 text-[10px]">({fatherOcc})</span>}
+                          </div>
+                          <div className="text-[11px] text-slate-800 mt-0.5">
+                            <span className="font-bold text-slate-500 text-[10px]">M: </span>{motherName} {motherOcc && <span className="text-slate-400 text-[10px]">({motherOcc})</span>}
+                          </div>
+                        </td>
+
+                        {/* Bank Details & Salary */}
+                        <td className="py-3 px-3 text-xs whitespace-nowrap">
+                          <div className="font-bold text-emerald-700 flex items-center gap-1">
+                            <span>₹{salary.toLocaleString()}/mo</span>
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
+                            <CreditCard className="w-3 h-3 text-slate-400" />
+                            <span>{bankName} &bull; {bankAcc}</span>
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                            status === 'Active' 
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                              : 'bg-amber-100 text-amber-800 border border-amber-300'
+                          }`}>
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>{status}</span>
+                          </span>
                         </td>
                       </tr>
                     );
@@ -1688,8 +1937,573 @@ export default function DatabaseStudioView() {
         </div>
       )}
 
+      {/* COMPREHENSIVE TEACHER PROFILE & SERVICE RECORD MODAL (FOR TEACHER LIST) */}
+      {(isCreatingRow || editingRow) && isTeacherListTable && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) { setIsCreatingRow(false); setEditingRow(null); } }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
+            
+            {/* Top Header with Teacher Image, ID & Name */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 flex-shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="relative group">
+                  <img
+                    src={formData.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'}
+                    alt="Teacher"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover ring-4 ring-teal-500/20 shadow-md"
+                  />
+                  <span className="absolute -bottom-1 -right-1 bg-teal-600 text-white text-[9px] font-bold p-1 rounded-full shadow">
+                    <Camera className="w-3 h-3" />
+                  </span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 font-mono text-xs font-black border border-teal-200">
+                      {formData.teacher_number || 'TEA 001'}
+                    </span>
+                    <span className="text-xs text-slate-400 font-bold">
+                      {formData.department || 'Mathematics & Science'}
+                    </span>
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
+                    {formData.name ? formData.name : (isCreatingRow ? 'New Faculty Onboarding Form' : 'Teacher Service Record')}
+                  </h2>
+                  <p className="text-xs text-slate-400 font-medium">
+                    {formData.designation || 'Senior Faculty Lead'} &bull; Status: <span className="font-bold text-emerald-600">{formData.status || 'Active'}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => { setIsCreatingRow(false); setEditingRow(null); }}
+                className="p-2 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Comprehensive Form Sections */}
+            <form onSubmit={handleSaveStudent} className="flex-1 overflow-y-auto pr-2 py-4 space-y-6 text-xs">
+              
+              {/* SECTION 1: PERSONAL & IDENTITY DETAILS */}
+              <div className="p-5 rounded-3xl bg-slate-50/70 border border-slate-200/80 space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <User className="w-4 h-4 text-teal-600" />
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                    1. Faculty Personal & Identity Details
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {/* Teacher Photo Upload */}
+                  <div className="sm:col-span-2 md:col-span-3">
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1.5">
+                      Teacher Profile Photo <span className="text-teal-600 font-semibold">(Upload Image or Avatar URL)</span>
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-center gap-3 p-3 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                      <div className="relative shrink-0">
+                        <img
+                          src={formData.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'}
+                          alt="Teacher Preview"
+                          className="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-sm ring-2 ring-teal-500/20"
+                        />
+                        {formData.photo && (
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, photo: '' })}
+                            className="absolute -top-1.5 -right-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full p-0.5 shadow transition-colors"
+                            title="Remove Photo"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex-1 w-full space-y-1.5">
+                        <label className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-teal-300 bg-teal-50/50 hover:bg-teal-50 text-teal-800 font-bold text-xs cursor-pointer transition-all shadow-sm">
+                          <Upload className="w-4 h-4 text-teal-600" />
+                          <span>Click to Upload Teacher Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  setFormData(prev => ({ ...prev, photo: event.target.result }));
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.photo || ''}
+                          onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
+                          placeholder="Or paste image URL (e.g. https://images.unsplash.com/...)"
+                          className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-[11px] bg-slate-50 font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Faculty Full Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name || ''}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g. Prof. Sarah Jenkins"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  {/* Teacher Code / Number (PK) */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Teacher ID / Code (PK) <span className="text-amber-500 font-mono">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      disabled={!isCreatingRow}
+                      value={formData.teacher_number || ''}
+                      onChange={(e) => setFormData({ ...formData, teacher_number: e.target.value })}
+                      placeholder="e.g. TEA 001"
+                      className={`w-full px-3.5 py-2 rounded-xl border text-xs font-mono font-bold ${
+                        !isCreatingRow ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-900 border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Gender */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Gender</label>
+                    <select
+                      value={formData.gender || 'Female'}
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    >
+                      <option value="Female">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Date of Birth & Calculated Age */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[11px] font-bold text-slate-700">Date of Birth</label>
+                      {formData.dob && (
+                        <span className="text-[10px] text-teal-700 font-bold bg-teal-50 px-2 py-0.5 rounded-md">
+                          {calculateAge(formData.dob)}
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      type="date"
+                      value={formData.dob || ''}
+                      onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Blood Group */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Blood Group</label>
+                    <select
+                      value={formData.blood_group || 'O+'}
+                      onChange={(e) => setFormData({ ...formData, blood_group: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    >
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                    </select>
+                  </div>
+
+                  {/* Aadhaar Card Number */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                      <span>Aadhaar Card Number</span>
+                      <span className="text-emerald-600 text-[10px] font-bold flex items-center gap-0.5">
+                        <ShieldCheck className="w-3 h-3" /> UIDAI Gov
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.aadhaar_no || ''}
+                      onChange={(e) => setFormData({ ...formData, aadhaar_no: e.target.value })}
+                      placeholder="e.g. 5421 8890 1234"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Official / Personal Email</label>
+                    <input
+                      type="email"
+                      value={formData.email || ''}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="e.g. sjenkins@nairee.edu"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Contact Mobile Number</label>
+                    <input
+                      type="tel"
+                      value={formData.phone || ''}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="e.g. +91 98765 43211"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  {/* Highest Qualification */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Highest Qualification & Degrees</label>
+                    <input
+                      type="text"
+                      value={formData.qualification || ''}
+                      onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                      placeholder="e.g. M.Sc. Mathematics, B.Ed, NET"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 2: RESIDENTIAL & PERMANENT ADDRESS */}
+              <div className="p-5 rounded-3xl bg-slate-50/70 border border-slate-200/80 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <div className="flex items-center gap-2">
+                    <Home className="w-4 h-4 text-teal-600" />
+                    <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                      2. Residential & Permanent Address
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (formData.residential_address) {
+                        setFormData({ ...formData, permanent_address: formData.residential_address });
+                        showToast('✅ Copied Residential Address to Permanent Address!');
+                      }
+                    }}
+                    className="px-3 py-1 rounded-xl bg-teal-100 hover:bg-teal-200 text-teal-800 font-bold text-[11px] cursor-pointer transition-colors"
+                  >
+                    ⚡ Same as Residential Address
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Residential Address */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Current / Residential Address
+                    </label>
+                    <textarea
+                      rows="3"
+                      value={formData.residential_address || ''}
+                      onChange={(e) => setFormData({ ...formData, residential_address: e.target.value })}
+                      placeholder="Enter house/flat number, street, landmark, city, state and PIN code..."
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  {/* Permanent Address */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Permanent Home Address
+                    </label>
+                    <textarea
+                      rows="3"
+                      value={formData.permanent_address || ''}
+                      onChange={(e) => setFormData({ ...formData, permanent_address: e.target.value })}
+                      placeholder="Enter permanent domicile / hometown address with PIN code..."
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 3: PARENTS & FAMILY DETAILS */}
+              <div className="p-5 rounded-3xl bg-slate-50/70 border border-slate-200/80 space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <Users className="w-4 h-4 text-teal-600" />
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                    3. Parents & Family Background
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {/* Father's Name */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Father's Full Name</label>
+                    <input
+                      type="text"
+                      value={formData.father_name || ''}
+                      onChange={(e) => setFormData({ ...formData, father_name: e.target.value })}
+                      placeholder="e.g. Arthur Jenkins"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Father's Occupation */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Father's Occupation</label>
+                    <input
+                      type="text"
+                      value={formData.father_occupation || ''}
+                      onChange={(e) => setFormData({ ...formData, father_occupation: e.target.value })}
+                      placeholder="e.g. Retired Civil Architect / Engineer"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Emergency Contact */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Emergency Contact Number</label>
+                    <input
+                      type="tel"
+                      value={formData.emergency_contact_phone || ''}
+                      onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })}
+                      placeholder="e.g. +91 98765 43299"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Mother's Name */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Mother's Full Name</label>
+                    <input
+                      type="text"
+                      value={formData.mother_name || ''}
+                      onChange={(e) => setFormData({ ...formData, mother_name: e.target.value })}
+                      placeholder="e.g. Martha Jenkins"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Mother's Occupation */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Mother's Occupation</label>
+                    <input
+                      type="text"
+                      value={formData.mother_occupation || ''}
+                      onChange={(e) => setFormData({ ...formData, mother_occupation: e.target.value })}
+                      placeholder="e.g. Senior Academician / Professor"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 4: BANK ACCOUNT & STATUTORY DETAILS */}
+              <div className="p-5 rounded-3xl bg-slate-50/70 border border-slate-200/80 space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <CreditCard className="w-4 h-4 text-teal-600" />
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                    4. Bank Account & Statutory Payroll Details
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {/* Bank Name */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank Name</label>
+                    <input
+                      type="text"
+                      value={formData.bank_name || ''}
+                      onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
+                      placeholder="e.g. State Bank of India / HDFC Bank"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Account Number */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank Account Number</label>
+                    <input
+                      type="text"
+                      value={formData.bank_account_no || ''}
+                      onChange={(e) => setFormData({ ...formData, bank_account_no: e.target.value })}
+                      placeholder="e.g. 30492817462"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-slate-900"
+                    />
+                  </div>
+
+                  {/* IFSC Code */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Bank IFSC Code</label>
+                    <input
+                      type="text"
+                      value={formData.bank_ifsc || ''}
+                      onChange={(e) => setFormData({ ...formData, bank_ifsc: e.target.value.toUpperCase() })}
+                      placeholder="e.g. SBIN0004512"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold uppercase text-slate-900"
+                    />
+                  </div>
+
+                  {/* Account Holder Name */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Account Holder Name</label>
+                    <input
+                      type="text"
+                      value={formData.bank_holder_name || ''}
+                      onChange={(e) => setFormData({ ...formData, bank_holder_name: e.target.value })}
+                      placeholder="e.g. Sarah Jenkins"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* PAN Card Number */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">PAN Card Number</label>
+                    <input
+                      type="text"
+                      value={formData.pan_no || ''}
+                      onChange={(e) => setFormData({ ...formData, pan_no: e.target.value.toUpperCase() })}
+                      placeholder="e.g. ABCDE1234F"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold uppercase text-slate-900"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 5: DEPARTMENT, WORKLOAD & REMUNERATION */}
+              <div className="p-5 rounded-3xl bg-slate-50/70 border border-slate-200/80 space-y-4">
+                <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+                  <Briefcase className="w-4 h-4 text-teal-600" />
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-wider">
+                    5. Academic Department, Workload & Remuneration
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {/* Department */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Department</label>
+                    <select
+                      value={formData.department || 'Mathematics & Science'}
+                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    >
+                      <option value="Mathematics & Science">Mathematics & Science</option>
+                      <option value="STEM & Robotics">STEM & Robotics</option>
+                      <option value="Computer Science">Computer Science & AI</option>
+                      <option value="Humanities & English">Humanities & English</option>
+                      <option value="Languages & Sanskrit">Languages & Sanskrit</option>
+                      <option value="Commerce & Economics">Commerce & Economics</option>
+                      <option value="Physical Education & Sports">Physical Education & Sports</option>
+                      <option value="Performing Arts & Music">Performing Arts & Music</option>
+                    </select>
+                  </div>
+
+                  {/* Designation */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Designation / Role</label>
+                    <input
+                      type="text"
+                      value={formData.designation || ''}
+                      onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                      placeholder="e.g. Senior Faculty Lead / PGT Teacher"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Workload Hours */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Weekly Workload (Hours)</label>
+                    <input
+                      type="number"
+                      value={formData.workload_hours || 20}
+                      onChange={(e) => setFormData({ ...formData, workload_hours: Number(e.target.value) })}
+                      placeholder="e.g. 20"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Monthly Salary */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Monthly Salary CTC (₹)</label>
+                    <input
+                      type="number"
+                      value={formData.monthly_salary || 65000}
+                      onChange={(e) => setFormData({ ...formData, monthly_salary: Number(e.target.value) })}
+                      placeholder="e.g. 68000"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold text-emerald-700"
+                    />
+                  </div>
+
+                  {/* Date of Joining */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Date of Joining</label>
+                    <input
+                      type="date"
+                      value={formData.joining_date || '2021-06-01'}
+                      onChange={(e) => setFormData({ ...formData, joining_date: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800"
+                    />
+                  </div>
+
+                  {/* Status */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">Employment Status</label>
+                    <select
+                      value={formData.status || 'Active'}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-800"
+                    >
+                      <option value="Active">Active</option>
+                      <option value="On Leave">On Leave</option>
+                      <option value="Probation">Probation</option>
+                      <option value="Resigned">Resigned</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Action Footer */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 sticky bottom-0 bg-white py-2">
+                <button
+                  type="button"
+                  onClick={() => { setIsCreatingRow(false); setEditingRow(null); }}
+                  className="px-5 py-2.5 rounded-2xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-2xl bg-[#00a884] hover:bg-[#009172] text-white font-bold text-xs shadow-lg shadow-[#00a884]/25 cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{isCreatingRow ? 'Onboard & Save Faculty' : 'Update Faculty Details'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* GENERIC CREATE / EDIT ROW MODAL (FOR OTHER TABLES) */}
-      {(isCreatingRow || editingRow) && !isStudentListTable && (
+      {(isCreatingRow || editingRow) && !isStudentListTable && !isTeacherListTable && (
         <div 
           onClick={(e) => { if (e.target === e.currentTarget) { setIsCreatingRow(false); setEditingRow(null); } }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
@@ -1705,7 +2519,7 @@ export default function DatabaseStudioView() {
                   <h3 className="font-bold text-slate-800 text-sm">
                     {isCreatingRow ? `Insert New Row into ${selectedTable}` : `Edit Row in ${selectedTable}`}
                   </h3>
-                  <p className="text-xs text-slate-400">Changes will be saved directly into SQLite database.</p>
+                  <p className="text-xs text-slate-400">Changes will be saved directly into database.</p>
                 </div>
               </div>
               <button
