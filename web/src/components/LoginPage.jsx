@@ -151,7 +151,7 @@ export default function LoginPage({ onLoginSuccess }) {
                   alt="Nairee" 
                   className="h-11 mx-auto mb-3 object-contain" 
                 />
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Login</h2>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Login</h1>
               </div>
 
               {/* Error Notice */}
