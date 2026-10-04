@@ -821,147 +821,75 @@ export default function DatabaseStudioView() {
               </table>
             </div>
           ) : isTeacherListTable ? (
-            /* SPECIAL DEDICATED VIEW FOR TEACHER / FACULTY LIST TABLE */
+            /* SPECIAL CLEAN DEDICATED VIEW FOR TEACHER / FACULTY LIST TABLE */
             <div className="overflow-x-auto rounded-2xl border border-slate-100 max-h-[550px] overflow-y-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-3 w-16 text-center">Actions</th>
-                    <th className="py-3 px-3">Faculty Profile</th>
-                    <th className="py-3 px-3">Department & Role</th>
-                    <th className="py-3 px-3">Contact Details</th>
-                    <th className="py-3 px-3">Aadhaar & Identity</th>
-                    <th className="py-3 px-3">Residential / Permanent Address</th>
-                    <th className="py-3 px-3">Parents & Occupation</th>
-                    <th className="py-3 px-3">Bank Details & CTC</th>
-                    <th className="py-3 px-3">Status</th>
+                    <th className="py-3 px-4">Teacher Name</th>
+                    <th className="py-3 px-4">Email</th>
+                    <th className="py-3 px-4">Department</th>
+                    <th className="py-3 px-4">Designation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                   {tableData.rows.map((row, idx) => {
                     const teacherName = row.name || 'Faculty Member';
                     const photo = row.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100';
-                    const tNum = row.teacher_number || row.id || `TEA 00${idx + 1}`;
-                    const phone = row.phone || '+91 98765 00000';
                     const email = row.email || `${teacherName.toLowerCase().replace(/\s+/g, '')}@nairee.edu`;
                     const dept = row.department || 'Mathematics & Science';
                     const designation = row.designation || 'Senior Faculty Lead';
-                    const aadhaar = row.aadhaar_no || 'Not Configured';
-                    const resAddr = row.residential_address || 'Not Provided';
-                    const permAddr = row.permanent_address || resAddr;
-                    const fatherName = row.father_name || '-';
-                    const fatherOcc = row.father_occupation || '';
-                    const motherName = row.mother_name || '-';
-                    const motherOcc = row.mother_occupation || '';
-                    const bankName = row.bank_name || 'State Bank of India';
-                    const bankAcc = row.bank_account_no ? `••••${String(row.bank_account_no).slice(-4)}` : '••••0000';
-                    const salary = Number(row.monthly_salary) || 60000;
-                    const status = row.status || 'Active';
 
                     return (
                       <tr key={idx} className="hover:bg-teal-50/40 transition-colors group">
                         {/* Action buttons */}
-                        <td className="py-3 px-3 text-center whitespace-nowrap">
-                          <div className="flex items-center justify-center gap-1">
+                        <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1.5">
                             <button
                               onClick={() => openTeacherModal(row)}
-                              className="p-1 rounded-lg hover:bg-teal-100 text-teal-700 transition-colors cursor-pointer"
-                              title="Edit Full Faculty Profile & Service Record"
+                              className="p-1.5 rounded-lg hover:bg-teal-100 text-teal-700 transition-colors cursor-pointer"
+                              title="Edit Full Faculty Profile (All Details)"
                             >
-                              <Edit3 className="w-3.5 h-3.5" />
+                              <Edit3 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteRow(row)}
-                              className="p-1 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
                               title="Delete Faculty Record"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
 
-                        {/* Faculty Profile */}
-                        <td className="py-3 px-3 font-bold text-slate-900 text-xs whitespace-nowrap">
-                          <div className="flex items-center gap-2.5">
+                        {/* Teacher Name & Photo Avatar */}
+                        <td className="py-3.5 px-4 font-bold text-slate-900 text-xs whitespace-nowrap">
+                          <div className="flex items-center gap-3">
                             <img
                               src={photo}
                               alt={teacherName}
-                              className="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0"
+                              className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0"
                             />
-                            <div>
-                              <div className="font-bold text-slate-900">{teacherName}</div>
-                              <div className="text-[10px] font-mono text-teal-700 font-semibold flex items-center gap-1">
-                                <span>{tNum}</span>
-                                {row.gender && <span>&bull; {row.gender}</span>}
-                                {row.blood_group && <span className="text-rose-600 font-bold">({row.blood_group})</span>}
-                              </div>
-                            </div>
+                            <span className="font-bold text-slate-900 text-xs sm:text-sm">{teacherName}</span>
                           </div>
                         </td>
 
-                        {/* Department & Designation */}
-                        <td className="py-3 px-3 text-xs whitespace-nowrap">
-                          <div className="font-semibold text-slate-800">{designation}</div>
-                          <span className="inline-block mt-0.5 px-2 py-0.5 rounded-md bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold">
+                        {/* Email */}
+                        <td className="py-3.5 px-4 text-xs font-medium text-slate-600">
+                          <span className="text-slate-600">{email}</span>
+                        </td>
+
+                        {/* Department */}
+                        <td className="py-3.5 px-4 text-xs">
+                          <span className="inline-block px-3 py-1 rounded-xl bg-teal-50/80 border border-teal-200/80 text-teal-800 font-bold text-xs">
                             {dept}
                           </span>
                         </td>
 
-                        {/* Contact */}
-                        <td className="py-3 px-3 text-xs">
-                          <div className="font-mono text-slate-800">{phone}</div>
-                          <div className="text-[10px] text-slate-400 truncate max-w-[140px]">{email}</div>
-                        </td>
-
-                        {/* Aadhaar */}
-                        <td className="py-3 px-3 text-xs whitespace-nowrap">
-                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono text-[11px] font-bold text-slate-800">
-                            <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                            <span>{aadhaar}</span>
-                          </div>
-                        </td>
-
-                        {/* Address */}
-                        <td className="py-3 px-3 text-xs max-w-[180px]">
-                          <div className="truncate text-[11px] text-slate-700 font-medium" title={resAddr}>
-                            <span className="font-bold text-slate-500 text-[10px]">Res: </span>{resAddr}
-                          </div>
-                          <div className="truncate text-[10px] text-slate-400 mt-0.5" title={permAddr}>
-                            <span className="font-bold text-slate-400 text-[9px]">Perm: </span>{permAddr}
-                          </div>
-                        </td>
-
-                        {/* Parents & Occupation */}
-                        <td className="py-3 px-3 text-xs max-w-[160px]">
-                          <div className="text-[11px] text-slate-800">
-                            <span className="font-bold text-slate-500 text-[10px]">F: </span>{fatherName} {fatherOcc && <span className="text-slate-400 text-[10px]">({fatherOcc})</span>}
-                          </div>
-                          <div className="text-[11px] text-slate-800 mt-0.5">
-                            <span className="font-bold text-slate-500 text-[10px]">M: </span>{motherName} {motherOcc && <span className="text-slate-400 text-[10px]">({motherOcc})</span>}
-                          </div>
-                        </td>
-
-                        {/* Bank Details & Salary */}
-                        <td className="py-3 px-3 text-xs whitespace-nowrap">
-                          <div className="font-bold text-emerald-700 flex items-center gap-1">
-                            <span>₹{salary.toLocaleString()}/mo</span>
-                          </div>
-                          <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
-                            <CreditCard className="w-3 h-3 text-slate-400" />
-                            <span>{bankName} &bull; {bankAcc}</span>
-                          </div>
-                        </td>
-
-                        {/* Status */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                            status === 'Active' 
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
-                              : 'bg-amber-100 text-amber-800 border border-amber-300'
-                          }`}>
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>{status}</span>
-                          </span>
+                        {/* Designation */}
+                        <td className="py-3.5 px-4 text-xs font-bold text-slate-800">
+                          {designation}
                         </td>
                       </tr>
                     );
