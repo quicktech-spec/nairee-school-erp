@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
-import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
+import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
@@ -291,11 +291,11 @@ export default function DatabaseStudioView() {
       const defaultAadhaar = `9876 5432 109${nextIdx}`;
       setIsCreatingRow(true);
       setFormData({
-        student_id: generateStudentId({
+        student_id: getGuaranteedUniqueStudentId({
           schoolCode: 'NIS',
           admissionYear: new Date().getFullYear(),
           aadhaarNo: defaultAadhaar,
-          sequence: nextIdx
+          startSequence: nextIdx
         }),
         name: '',
         roll_no: newRoll,
@@ -373,11 +373,17 @@ export default function DatabaseStudioView() {
       setIsCreatingRow(false);
     } else {
       const nextNum = (tableData.rows?.length || 0) + 1;
-      const formattedNum = `TEA-${String(nextNum).padStart(3, '0')}`;
+      const defaultAadhaar = `9876 5432 8${String(nextNum).padStart(2, '0')}`;
+      const uniqueTeacherId = getGuaranteedUniqueTeacherId({
+        schoolCode: 'NIS',
+        joiningYear: new Date().getFullYear(),
+        aadhaarNo: defaultAadhaar,
+        startSequence: nextNum
+      });
       setIsCreatingRow(true);
       setEditingRow(null);
       setFormData({
-        teacher_number: formattedNum,
+        teacher_number: uniqueTeacherId,
         name: '',
         photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
         gender: 'Female',
@@ -426,11 +432,29 @@ export default function DatabaseStudioView() {
       status: formData.status || 'Active'
     } : {
       ...formData,
+      student_id: formData.student_id || formData.roll_number || generateStudentId({ sequence: formData.roll_no || 1 }),
       roll_number: formData.student_id || generateStudentId({ sequence: formData.roll_no || 1 }),
-      roll_no: formData.roll_no ? String(formData.roll_no).replace(/\D/g, '') : '101',
+      roll_no: formData.roll_no ? String(formData.roll_no).replace(/\D/g, '') : '01',
       phone: formData.phone || formData.father_phone || '+91 98765 00000',
       fee_status: formData.fee_status || 'Pending'
     };
+
+    // Strict Global Primary ID Uniqueness Validation
+    if (selectedTable === 'Student List') {
+      const targetId = cleanRecord.student_id;
+      const origId = !isNew ? (editingRow?.student_id || editingRow?.roll_number || editingRow?.id) : null;
+      if (!isIdUnique('Student List', targetId, origId)) {
+        showToast(`❌ Duplicate Student ID '${targetId}' already exists! Each student must have a unique ID.`);
+        return;
+      }
+    } else if (isTeacher) {
+      const targetId = cleanRecord.teacher_number;
+      const origId = !isNew ? (editingRow?.teacher_number || editingRow?.id) : null;
+      if (!isIdUnique('Teacher List', targetId, origId)) {
+        showToast(`❌ Duplicate Teacher ID '${targetId}' already exists! Each teacher must have a unique ID.`);
+        return;
+      }
+    }
 
     try {
       if (isNew) {

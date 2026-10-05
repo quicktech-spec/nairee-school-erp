@@ -157,7 +157,6 @@ export function generateStudentId({ schoolCode = 'NIS', admissionDate = '', admi
   } else {
     year = '2024';
   }
-  
   const cleanAadhaar = String(aadhaarNo || '').replace(/\D/g, '');
   const aadhaarLast3 = cleanAadhaar.length >= 3 ? cleanAadhaar.slice(-3) : String(aadhaarNo || '000').slice(-3).padStart(3, '0');
   const seqStr = String(sequence || 1).padStart(3, '0');
@@ -165,8 +164,51 @@ export function generateStudentId({ schoolCode = 'NIS', admissionDate = '', admi
   return `${code}-${year}-${aadhaarLast3}-${seqStr}`;
 }
 
+export function isIdUnique(tableName, idValue, excludeCurrentId = null) {
+  if (!idValue) return false;
+  const db = getStoredDb();
+  const rows = db[tableName]?.rows || [];
+  const pkField = PK_MAP[tableName];
+  if (!pkField) return true;
+
+  const targetId = String(idValue).trim().toLowerCase();
+  const excludeId = excludeCurrentId ? String(excludeCurrentId).trim().toLowerCase() : null;
+
+  return !rows.some(r => {
+    const rowId = String(r[pkField] || r.id || r.admission_no || r.student_id || r.teacher_number || r.teacher_id || '').trim().toLowerCase();
+    if (excludeId && rowId === excludeId) return false;
+    return rowId === targetId;
+  });
+}
+
+// Generate Guaranteed Globally Unique Student ID (Auto-resolves collisions)
+export function getGuaranteedUniqueStudentId({ schoolCode = 'NIS', admissionDate = '', admissionYear = '', aadhaarNo = '', startSequence = 1 } = {}) {
+  let seq = startSequence || 1;
+  while (seq <= 9999) {
+    const candidateId = generateStudentId({ schoolCode, admissionDate, admissionYear, aadhaarNo, sequence: seq });
+    if (isIdUnique('Student List', candidateId)) {
+      return candidateId;
+    }
+    seq++;
+  }
+  return generateStudentId({ schoolCode, admissionDate, admissionYear, aadhaarNo, sequence: Date.now() % 1000 });
+}
+
+// Generate Guaranteed Globally Unique Teacher ID (Auto-resolves collisions)
+export function getGuaranteedUniqueTeacherId({ schoolCode = 'NIS', joiningDate = '', joiningYear = '', aadhaarNo = '', startSequence = 1 } = {}) {
+  let seq = startSequence || 1;
+  while (seq <= 9999) {
+    const candidateId = generateTeacherId({ schoolCode, joiningDate, joiningYear, aadhaarNo, sequence: seq });
+    if (isIdUnique('Teacher List', candidateId)) {
+      return candidateId;
+    }
+    seq++;
+  }
+  return generateTeacherId({ schoolCode, joiningDate, joiningYear, aadhaarNo, sequence: Date.now() % 1000 });
+}
+
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v7_teacher_smart_ids';
+const DB_VERSION_KEY = 'nairee_db_v8_strict_unique_ids';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -616,12 +658,14 @@ export const api = {
     const nextNum = master.length + 1;
     const admissionYear = studentData.admission_year || (studentData.admission_date ? new Date(studentData.admission_date).getFullYear() : '2024');
     const aadhaar = studentData.aadhaar_no || `9876 5432 109${nextNum}`;
-    const newStudentId = studentData.student_id || generateStudentId({
-      schoolCode: studentData.school_code || 'NAIREE',
-      admissionYear: admissionYear,
-      aadhaarNo: aadhaar,
-      sequence: nextNum
-    });
+    const newStudentId = (studentData.student_id && isIdUnique('Student List', studentData.student_id))
+      ? studentData.student_id
+      : getGuaranteedUniqueStudentId({
+          schoolCode: studentData.school_code || 'NIS',
+          admissionYear: admissionYear,
+          aadhaarNo: aadhaar,
+          startSequence: nextNum
+        });
     const newRoll = studentData.roll_no || String(nextNum).padStart(2, '0');
 
     const newStudent = {
@@ -671,6 +715,63 @@ export const api = {
     saveStoredDb(db);
 
     return newStudent;
+  },
+
+  async createTeacher(teacherData) {
+    const data = await safeFetch('/teachers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(teacherData),
+    });
+    if (data) return data;
+
+    const master = getMasterTeachers();
+    const nextNum = master.length + 1;
+    const joiningYear = teacherData.joining_year || (teacherData.joining_date ? new Date(teacherData.joining_date).getFullYear() : '2022');
+    const aadhaar = teacherData.aadhaar_no || `9876 5432 8${nextNum.toString().padStart(2, '0')}`;
+    const newTeacherId = (teacherData.teacher_number && isIdUnique('Teacher List', teacherData.teacher_number))
+      ? teacherData.teacher_number
+      : getGuaranteedUniqueTeacherId({
+          schoolCode: teacherData.school_code || 'NIS',
+          joiningYear: joiningYear,
+          aadhaarNo: aadhaar,
+          startSequence: nextNum
+        });
+
+    const newTeacher = {
+      teacher_number: newTeacherId,
+      name: teacherData.name || teacherData.full_name || 'Faculty Member',
+      photo: teacherData.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+      gender: teacherData.gender || 'Female',
+      dob: teacherData.dob || '1990-05-15',
+      blood_group: teacherData.blood_group || 'O+',
+      aadhaar_no: aadhaar,
+      email: teacherData.email || `${(teacherData.name || 'teacher').toLowerCase().replace(/\s+/g, '')}@nairee.edu`,
+      phone: teacherData.phone || '+91 98765 00000',
+      department: teacherData.department || 'Mathematics & Science',
+      designation: teacherData.designation || 'Faculty Lead',
+      qualification: teacherData.qualification || 'M.Sc., B.Ed',
+      workload_hours: Number(teacherData.workload_hours) || 20,
+      monthly_salary: Number(teacherData.monthly_salary) || 60000,
+      joining_date: teacherData.joining_date || new Date().toISOString().split('T')[0],
+      residential_address: teacherData.residential_address || 'Bengaluru',
+      permanent_address: teacherData.permanent_address || 'Bengaluru',
+      father_name: teacherData.father_name || '',
+      father_occupation: teacherData.father_occupation || '',
+      mother_name: teacherData.mother_name || '',
+      mother_occupation: teacherData.mother_occupation || '',
+      emergency_contact_phone: teacherData.emergency_contact_phone || '+91 98765 00000',
+      bank_name: teacherData.bank_name || 'State Bank of India',
+      bank_account_no: teacherData.bank_account_no || '',
+      bank_ifsc: teacherData.bank_ifsc || '',
+      bank_holder_name: teacherData.bank_holder_name || teacherData.name || '',
+      pan_no: teacherData.pan_no || '',
+      status: teacherData.status || 'Active'
+    };
+
+    const updated = [newTeacher, ...master];
+    saveMasterTeachers(updated);
+    return newTeacher;
   },
 
   // Classes & Batches

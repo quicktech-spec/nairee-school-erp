@@ -27,7 +27,7 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
-import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId } from '../api.js';
+import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
 
 function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => ({
@@ -226,15 +226,17 @@ export default function ClassStaffManagerView() {
 
     const newNum = students.length + 1;
     const defaultAadhaar = `9876 5432 109${newNum}`;
+    const uniqueStudentId = getGuaranteedUniqueStudentId({
+      schoolCode: 'NIS',
+      admissionYear: new Date().getFullYear(),
+      aadhaarNo: defaultAadhaar,
+      startSequence: newNum
+    });
+
     const studentObj = {
-      id: generateStudentId({
-        schoolCode: 'NIS',
-        admissionYear: new Date().getFullYear(),
-        aadhaarNo: defaultAadhaar,
-        sequence: newNum
-      }),
+      id: uniqueStudentId,
       name: newStudent.name.trim(),
-      roll_no: newStudent.roll_no.trim() || String(newNum).padStart(2, '0'),
+      roll_no: newStudent.roll_no.trim() ? String(newStudent.roll_no.trim()).padStart(2, '0') : String(newNum).padStart(2, '0'),
       class_id: targetClass.id,
       class_name: targetClass.name,
       email: newStudent.email || `${newStudent.name.toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
