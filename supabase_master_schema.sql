@@ -384,7 +384,7 @@ CREATE TABLE alumni (
 );
 
 /* ==============================================================================
-   10. INDEXES FOR PERFORMANCE
+   10. INDEXES & REACTIVE CASCADING TRIGGERS
 ============================================================================== */
 CREATE INDEX idx_students_class_section ON students(class, section);
 CREATE INDEX idx_students_roll ON students(roll_no);
@@ -394,6 +394,64 @@ CREATE INDEX idx_marks_student ON exam_marks_entries(student_id);
 CREATE INDEX idx_invoices_student ON student_fee_invoices(student_id);
 CREATE INDEX idx_invoices_status ON student_fee_invoices(status);
 CREATE INDEX idx_teacher_punch_date ON employee_attendance_punch(punch_date);
+
+-- Trigger 1: Automatically recalculate student fee status when fee invoices or payments change
+CREATE OR REPLACE FUNCTION fn_sync_student_fee_status()
+RETURNS TRIGGER AS $$
+DECLARE
+    target_student_id VARCHAR(50);
+    has_unpaid BOOLEAN;
+BEGIN
+    target_student_id := COALESCE(NEW.student_id, OLD.student_id);
+    IF target_student_id IS NOT NULL THEN
+        SELECT EXISTS(
+            SELECT 1 FROM student_fee_invoices 
+            WHERE student_id = target_student_id AND status != 'Paid'
+        ) INTO has_unpaid;
+        
+        UPDATE students 
+        SET fee_status = CASE WHEN has_unpaid THEN 'Pending' ELSE 'Paid' END
+        WHERE admission_no = target_student_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_sync_fee_status ON student_fee_invoices;
+CREATE TRIGGER trg_sync_fee_status
+AFTER INSERT OR UPDATE OR DELETE ON student_fee_invoices
+FOR EACH ROW
+EXECUTE FUNCTION fn_sync_student_fee_status();
+
+-- Trigger 2: Auto-compute grade letter and percentage on exam_marks_entries
+CREATE OR REPLACE FUNCTION fn_calculate_exam_grade()
+RETURNS TRIGGER AS $$
+DECLARE
+    pct DECIMAL(5,2);
+BEGIN
+    IF NEW.maximum_score > 0 THEN
+        pct := ROUND((NEW.score / NEW.maximum_score) * 100, 2);
+    ELSE
+        pct := 0;
+    END IF;
+    
+    IF pct >= 90 THEN NEW.grade := 'A+';
+    ELSIF pct >= 80 THEN NEW.grade := 'A';
+    ELSIF pct >= 70 THEN NEW.grade := 'B+';
+    ELSIF pct >= 60 THEN NEW.grade := 'B';
+    ELSIF pct >= 50 THEN NEW.grade := 'C';
+    ELSE NEW.grade := 'D';
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_calc_exam_grade ON exam_marks_entries;
+CREATE TRIGGER trg_calc_exam_grade
+BEFORE INSERT OR UPDATE OF score, maximum_score ON exam_marks_entries
+FOR EACH ROW
+EXECUTE FUNCTION fn_calculate_exam_grade();
 
 /* ==============================================================================
    11. INITIAL SAMPLE SEED DATA (10 RECORDS PER TABLE)

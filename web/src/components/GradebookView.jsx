@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   BookOpen
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 
 export default function GradebookView() {
   const [plans, setPlans] = useState([]);
@@ -27,7 +27,7 @@ export default function GradebookView() {
     comment: ''
   });
 
-  useEffect(() => {
+  const loadInitialData = () => {
     Promise.all([
       api.getAssessmentPlans(),
       api.getStudents('CLS-10A'),
@@ -36,16 +36,20 @@ export default function GradebookView() {
       setPlans(plansData);
       setStudents(studentsData);
       setCourses(coursesData);
-      if (plansData.length > 0) {
+      if (plansData.length > 0 && !selectedPlan) {
         setSelectedPlan(plansData[0].name);
         setGradeForm(prev => ({
           ...prev,
           assessment_plan: plansData[0].name,
           course: plansData[0].course,
-          student: studentsData[0]?.name || ''
+          student: studentsData[0]?.student_id || studentsData[0]?.name || ''
         }));
       }
     }).catch(console.error);
+  };
+
+  useEffect(() => {
+    loadInitialData();
   }, []);
 
   const loadResults = async () => {
@@ -66,13 +70,25 @@ export default function GradebookView() {
     }
   }, [selectedPlan]);
 
+  // Subscribe to live multi-tab & cross-component database sync events
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      loadResults();
+      api.getStudents('CLS-10A').then(setStudents);
+    });
+    return () => unsub();
+  }, [selectedPlan]);
+
   const handleSubmitGrade = async (e) => {
     e.preventDefault();
     try {
-      const studentObj = students.find(s => s.name === gradeForm.student);
+      const studentObj = students.find(s => s.student_id === gradeForm.student || s.name === gradeForm.student || s.student_name === gradeForm.student);
       await api.submitGrade({
         ...gradeForm,
-        student_name: studentObj ? studentObj.student_name : '',
+        student_id: studentObj ? (studentObj.student_id || studentObj.id) : gradeForm.student,
+        student_name: studentObj ? (studentObj.student_name || studentObj.name) : '',
+        roll_no: studentObj ? studentObj.roll_no : '01',
+        class_batch: studentObj ? (studentObj.class_batch || studentObj.student_batch) : 'Class 10 - Section A',
         student_batch: 'CLS-10A'
       });
       setShowAddGradeModal(false);
@@ -171,8 +187,8 @@ export default function GradebookView() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#edfafa]/80 border-b border-[#cde8e8] text-[11px] font-bold text-swift-muted uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Student</th>
-                  <th className="py-3.5 px-4">DocType Serial</th>
+                  <th className="py-3.5 px-4">Student & ID</th>
+                  <th className="py-3.5 px-4">Roll No & Section</th>
                   <th className="py-3.5 px-4">Score</th>
                   <th className="py-3.5 px-4">Percentage</th>
                   <th className="py-3.5 px-4">Letter Grade</th>
@@ -181,22 +197,29 @@ export default function GradebookView() {
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs text-swift-body">
                 {results.map((r) => (
-                  <tr key={r.name} className="hover:bg-[#edfafa]/50 transition-colors">
+                  <tr key={r.result_id || r.name} className="hover:bg-[#edfafa]/50 transition-colors">
                     <td className="py-3.5 px-4">
                       <p className="font-bold text-swift-dark flex items-center gap-1.5">
                         {r.student_name}
-                        {r.student_name.includes('Nairee') && (
+                        {r.student_name && r.student_name.includes('Nairee') && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                             ★ Top Scorer
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] font-mono text-swift-muted">{r.student}</p>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 inline-block mt-0.5">
+                        {r.student_id || r.student}
+                      </span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <code className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-[#edfafa] text-brand-700 border border-[#cde8e8]">
-                        {r.name}
-                      </code>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-mono font-bold text-slate-800 text-xs px-2 py-0.5 rounded-lg bg-slate-100 border border-slate-200">
+                          Roll #{r.roll_no ? String(r.roll_no).padStart(2, '0') : '01'}
+                        </span>
+                        <span className="text-[11px] font-bold text-teal-700 bg-teal-50/60 px-2 py-0.5 rounded-lg border border-teal-100">
+                          {r.class_batch || r.student_batch || 'Class 10 - Section A'}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-3.5 px-4 font-extrabold text-swift-dark">
                       {r.score} <span className="text-swift-muted font-normal">/ {r.maximum_score}</span>

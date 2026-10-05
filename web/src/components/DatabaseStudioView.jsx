@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
-import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
+import { getStoredDb, saveStoredDb, saveMasterStudents, saveMasterTeachers, syncStudentAcrossAllDatasets, subscribeLiveEvents, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
@@ -520,9 +520,23 @@ export default function DatabaseStudioView() {
     setDbStore(updatedDb);
     setTableData(prev => ({ ...prev, rows: updatedRows, total: updatedRows.length }));
     saveStoredDb(updatedDb);
+
     if (selectedTable === 'Student List') {
       saveMasterStudents(updatedRows);
+    } else if (isTeacher) {
+      saveMasterTeachers(updatedRows);
+    } else if (['Assessment Results', 'Fee Invoices & Ledger', 'Attendance Records', 'Homework Submissions', 'Parent List', 'Transfer Certificates'].includes(selectedTable)) {
+      const stuIdent = cleanRecord.student_id || cleanRecord.student || cleanRecord.student_name || cleanRecord.name;
+      if (stuIdent) {
+        syncStudentAcrossAllDatasets(stuIdent, {
+          student_id: cleanRecord.student_id || cleanRecord.student,
+          name: cleanRecord.student_name || cleanRecord.name,
+          roll_no: cleanRecord.roll_no,
+          class_batch: cleanRecord.class_batch || cleanRecord.student_batch
+        });
+      }
     }
+
     showToast(isNew ? `✅ Record saved to ${selectedTable}!` : `✅ Record updated in ${selectedTable}!`);
     setIsCreatingRow(false);
     setEditingRow(null);
@@ -571,6 +585,8 @@ export default function DatabaseStudioView() {
     saveStoredDb(updatedDb);
     if (selectedTable === 'Student List') {
       saveMasterStudents(updatedRows);
+    } else if (isTeacher) {
+      saveMasterTeachers(updatedRows);
     }
     showToast(`Record for ${sName} deleted from ${selectedTable}!`);
   };

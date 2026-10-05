@@ -470,6 +470,43 @@ export function saveMasterStudents(updatedStudentsList) {
   broadcastLiveEvent('student_cascaded_update', { dbStore: currentDb });
 }
 
+// Bi-directional / Multi-directional Unified Student Synchronizer
+export function syncStudentAcrossAllDatasets(studentIdentifier, studentUpdates = {}) {
+  let db = getStoredDb();
+  const students = [...(db['Student List']?.rows || INITIAL_DB_STORE['Student List'].rows)];
+  const cleanId = String(studentIdentifier || '').toLowerCase().trim();
+
+  let targetStudent = null;
+  const updatedStudents = students.map(s => {
+    const sid = String(s.student_id || s.id || '').toLowerCase().trim();
+    const sname = String(s.name || s.student_name || '').toLowerCase().trim();
+    const sroll = String(s.roll_no || '').toLowerCase().trim();
+
+    if (sid === cleanId || sname === cleanId || sroll === cleanId || (cleanId && (sid.includes(cleanId) || cleanId.includes(sid)))) {
+      targetStudent = {
+        ...s,
+        ...studentUpdates,
+        student_id: studentUpdates.student_id || s.student_id,
+        name: studentUpdates.name || studentUpdates.student_name || s.name,
+        roll_no: studentUpdates.roll_no ? String(studentUpdates.roll_no).replace(/\D/g, '') : s.roll_no,
+        class_batch: studentUpdates.class_batch || studentUpdates.student_batch || s.class_batch
+      };
+      return targetStudent;
+    }
+    return s;
+  });
+
+  if (targetStudent) {
+    db['Student List'].rows = updatedStudents;
+    db = cascadeStudentUpdates(updatedStudents, db);
+    saveStoredDb(db);
+    broadcastLiveEvent('student_updated', { student: targetStudent, students: updatedStudents });
+    broadcastLiveEvent('student_cascaded_update', { dbStore: db });
+  }
+
+  return { success: true, student: targetStudent, dbStore: db };
+}
+
 export function getMasterTeachers() {
   const db = getStoredDb();
   return db['Teacher List']?.rows || INITIAL_DB_STORE['Teacher List'].rows;
