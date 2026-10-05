@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
-import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents } from '../api.js';
+import { getStoredDb, saveStoredDb, saveMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
@@ -246,7 +246,7 @@ export default function DatabaseStudioView() {
     if (studentRow) {
       setEditingRow(studentRow);
       setFormData({
-        student_id: studentRow.student_id || studentRow.roll_number || `STU-${studentRow.roll_no || '101'}`,
+        student_id: studentRow.student_id || studentRow.roll_number || generateStudentId({ sequence: studentRow.roll_no || 1 }),
         name: studentRow.name || studentRow.student_name || '',
         roll_no: studentRow.roll_no || (studentRow.roll_number ? studentRow.roll_number.replace(/\D/g, '') : '101'),
         photo: studentRow.photo || studentRow.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
@@ -288,9 +288,15 @@ export default function DatabaseStudioView() {
       // New Student Entry
       const nextIdx = (tableData.rows?.length || 0) + 1;
       const newRoll = 100 + nextIdx;
+      const defaultAadhaar = `9876 5432 109${nextIdx}`;
       setIsCreatingRow(true);
       setFormData({
-        student_id: `STU-${String(nextIdx).padStart(3, '0')}`,
+        student_id: generateStudentId({
+          schoolCode: 'NAIREE',
+          admissionYear: new Date().getFullYear(),
+          aadhaarNo: defaultAadhaar,
+          sequence: nextIdx
+        }),
         name: '',
         roll_no: String(newRoll),
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
@@ -300,7 +306,7 @@ export default function DatabaseStudioView() {
         blood_group: 'O+',
         class_batch: 'Class 10 - Section A',
         stream: 'Computer Applications & Math',
-        aadhaar_no: '',
+        aadhaar_no: defaultAadhaar,
         gender: 'Male',
         admission_date: new Date().toISOString().split('T')[0],
         residential_address: '',
@@ -420,7 +426,7 @@ export default function DatabaseStudioView() {
       status: formData.status || 'Active'
     } : {
       ...formData,
-      roll_number: formData.student_id || `STU-${formData.roll_no || '101'}`,
+      roll_number: formData.student_id || generateStudentId({ sequence: formData.roll_no || 1 }),
       roll_no: formData.roll_no ? String(formData.roll_no).replace(/\D/g, '') : '101',
       phone: formData.phone || formData.father_phone || '+91 98765 00000',
       fee_status: formData.fee_status || 'Pending'
@@ -770,7 +776,7 @@ export default function DatabaseStudioView() {
                             <div>
                               <span>{studentName}</span>
                               <div className="text-[10px] font-mono text-slate-400 font-normal">
-                                {row.student_id || `STU-${row.roll_no || 101}`} &bull; Roll #{row.roll_no || '101'}
+                                {row.student_id || generateStudentId({ sequence: row.roll_no || 1 })} &bull; Roll #{row.roll_no || '101'}
                               </div>
                             </div>
                           </div>
@@ -1113,7 +1119,7 @@ export default function DatabaseStudioView() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 font-mono text-xs font-black border border-teal-200">
-                      {formData.student_id || 'STU-2026-AUTOGEN'}
+                      {formData.student_id || generateStudentId({ aadhaarNo: formData.aadhaar_no, admissionDate: formData.admission_date, sequence: 1 })}
                     </span>
                     <span className="text-xs text-slate-400 font-bold">
                       Roll #{formData.roll_no ? String(formData.roll_no).replace(/\D/g, '') : '101'}
@@ -1806,7 +1812,7 @@ export default function DatabaseStudioView() {
                         type="text"
                         value={formData.sibling_id || ''}
                         onChange={(e) => setFormData({ ...formData, sibling_id: e.target.value })}
-                        placeholder="e.g. STU-008"
+                        placeholder="e.g. NAIREE-2024-098-008"
                         className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold"
                       />
                     </div>

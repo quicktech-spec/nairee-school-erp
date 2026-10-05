@@ -560,43 +560,43 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 10 STUDENTS
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777771', '11111111-1111-1111-1111-111111111111', 'STU-001', 'ADM-2024-001', 'Nairee Patel', '101', '55555555-5555-5555-5555-555555555551', 'Computer Applications & Math', 'Female', '2011-04-12', '2024-06-15', '+91 98765 00001', 'syalfreelance@gmail.com', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777771', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-091-001', 'ADM-2024-001', 'Nairee Patel', '101', '55555555-5555-5555-5555-555555555551', 'Computer Applications & Math', 'Female', '2011-04-12', '2024-06-15', '+91 98765 00001', 'syalfreelance@gmail.com', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777772', '11111111-1111-1111-1111-111111111111', 'STU-002', 'ADM-2024-002', 'Aarav Sharma', '102', '55555555-5555-5555-5555-555555555551', 'Hindi & Applied Science', 'Male', '2011-08-25', '2024-06-16', '+91 98765 00002', 'aarav.sharma@example.com', 'Koramangala, Bengaluru - 560034', 'Koramangala, Bengaluru - 560034', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777772', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-092-002', 'ADM-2024-002', 'Aarav Sharma', '102', '55555555-5555-5555-5555-555555555551', 'Hindi & Applied Science', 'Male', '2011-08-25', '2024-06-16', '+91 98765 00002', 'aarav.sharma@example.com', 'Koramangala, Bengaluru - 560034', 'Koramangala, Bengaluru - 560034', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777773', '11111111-1111-1111-1111-111111111111', 'STU-003', 'ADM-2024-003', 'Diya Gupta', '103', '55555555-5555-5555-5555-555555555551', 'Sanskrit & Pure Science', 'Female', '2011-11-10', '2024-06-18', '+91 98765 00003', 'diya.gupta@example.com', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Pending', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777773', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-093-003', 'ADM-2024-003', 'Diya Gupta', '103', '55555555-5555-5555-5555-555555555551', 'Sanskrit & Pure Science', 'Female', '2011-11-10', '2024-06-18', '+91 98765 00003', 'diya.gupta@example.com', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Pending', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777774', '11111111-1111-1111-1111-111111111111', 'STU-004', 'ADM-2024-004', 'Rohan Mehta', '104', '55555555-5555-5555-5555-555555555551', 'Physical Education (PE) & Math', 'Male', '2011-02-18', '2024-06-20', '+91 98765 00004', 'rohan.mehta@example.com', 'Malleshwaram, Bengaluru - 560055', 'Malleshwaram, Bengaluru - 560055', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777774', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-094-004', 'ADM-2024-004', 'Rohan Mehta', '104', '55555555-5555-5555-5555-555555555551', 'Physical Education (PE) & Math', 'Male', '2011-02-18', '2024-06-20', '+91 98765 00004', 'rohan.mehta@example.com', 'Malleshwaram, Bengaluru - 560055', 'Malleshwaram, Bengaluru - 560055', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777775', '11111111-1111-1111-1111-111111111111', 'STU-005', 'ADM-2024-005', 'Ananya Iyer', '105', '55555555-5555-5555-5555-555555555551', 'Computer Applications & STEM', 'Female', '2011-09-04', '2024-06-21', '+91 98765 00005', 'ananya.iyer@example.com', 'Murugeshpalya, Bengaluru - 560017', 'Murugeshpalya, Bengaluru - 560017', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777775', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-095-005', 'ADM-2024-005', 'Ananya Iyer', '105', '55555555-5555-5555-5555-555555555551', 'Computer Applications & STEM', 'Female', '2011-09-04', '2024-06-21', '+91 98765 00005', 'ananya.iyer@example.com', 'Murugeshpalya, Bengaluru - 560017', 'Murugeshpalya, Bengaluru - 560017', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777776', '11111111-1111-1111-1111-111111111111', 'STU-006', 'ADM-2024-006', 'Kabir Singh', '106', '55555555-5555-5555-5555-555555555552', 'Physical Education (PE) & Hindi', 'Male', '2011-05-19', '2024-06-22', '+91 98765 00006', 'kabir.singh@example.com', 'Domlur, Bengaluru - 560071', 'Domlur, Bengaluru - 560071', 'Pending', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777776', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-096-006', 'ADM-2024-006', 'Kabir Singh', '106', '55555555-5555-5555-5555-555555555552', 'Physical Education (PE) & Hindi', 'Male', '2011-05-19', '2024-06-22', '+91 98765 00006', 'kabir.singh@example.com', 'Domlur, Bengaluru - 560071', 'Domlur, Bengaluru - 560071', 'Pending', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777777', '11111111-1111-1111-1111-111111111111', 'STU-007', 'ADM-2024-007', 'Sameer Kulkarni', '107', '55555555-5555-5555-5555-555555555552', 'Commerce & Computer Applications', 'Male', '2011-07-30', '2024-06-25', '+91 98765 00007', 'sameer.kulkarni@example.com', 'Sahakar Nagar, Bengaluru - 560092', 'Sahakar Nagar, Bengaluru - 560092', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777777', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-097-007', 'ADM-2024-007', 'Sameer Kulkarni', '107', '55555555-5555-5555-5555-555555555552', 'Commerce & Computer Applications', 'Male', '2011-07-30', '2024-06-25', '+91 98765 00007', 'sameer.kulkarni@example.com', 'Sahakar Nagar, Bengaluru - 560092', 'Sahakar Nagar, Bengaluru - 560092', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777778', '11111111-1111-1111-1111-111111111111', 'STU-008', 'ADM-2024-008', 'Riya Patel', '108', '55555555-5555-5555-5555-555555555560', 'General Science & Arts', 'Female', '2015-02-10', '2024-06-15', '+91 98765 43212', 'riya.patel@student.nairee.edu', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777778', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-098-008', 'ADM-2024-008', 'Riya Patel', '108', '55555555-5555-5555-5555-555555555560', 'General Science & Arts', 'Female', '2015-02-10', '2024-06-15', '+91 98765 43212', 'riya.patel@student.nairee.edu', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777779', '11111111-1111-1111-1111-111111111111', 'STU-009', 'ADM-2024-009', 'Kavya Gupta', '109', '55555555-5555-5555-5555-555555555559', 'Foundational STEM & Sanskrit', 'Female', '2016-06-14', '2024-06-18', '+91 98765 43216', 'kavya.gupta@student.nairee.edu', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777779', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-099-009', 'ADM-2024-009', 'Kavya Gupta', '109', '55555555-5555-5555-5555-555555555559', 'Foundational STEM & Sanskrit', 'Female', '2016-06-14', '2024-06-18', '+91 98765 43216', 'kavya.gupta@student.nairee.edu', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
-VALUES ('77777777-7777-7777-7777-777777777780', '11111111-1111-1111-1111-111111111111', 'STU-010', 'ADM-2024-010', 'Vihaan Reddy', '110', '55555555-5555-5555-5555-555555555553', 'Pure Science & Artificial Intelligence', 'Male', '2010-01-20', '2024-06-10', '+91 98765 00010', 'vihaan.reddy@student.nairee.edu', 'Whitefield, Bengaluru - 560066', 'Whitefield, Bengaluru - 560066', 'Paid', 'Active')
+VALUES ('77777777-7777-7777-7777-777777777780', '11111111-1111-1111-1111-111111111111', 'NAIREE-2024-100-010', 'ADM-2024-010', 'Vihaan Reddy', '110', '55555555-5555-5555-5555-555555555553', 'Pure Science & Artificial Intelligence', 'Male', '2010-01-20', '2024-06-10', '+91 98765 00010', 'vihaan.reddy@student.nairee.edu', 'Whitefield, Bengaluru - 560066', 'Whitefield, Bengaluru - 560066', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 GUARDIANS

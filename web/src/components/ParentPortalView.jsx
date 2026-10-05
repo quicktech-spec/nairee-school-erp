@@ -33,7 +33,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [children, setChildren] = useState(user?.children || []);
   const [selectedChildId, setSelectedChildId] = useState(
-    user?.children && user.children.length > 0 ? (user.children[0].id || user.children[0].name) : 'STU-001'
+    user?.children && user.children.length > 0 ? (user.children[0].id || user.children[0].name) : 'NAIREE-2024-091-001'
   );
   const [childSummary, setChildSummary] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
@@ -100,8 +100,8 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
   }, [selectedChildId]);
 
   const activeChild = children.find(c => c.name === selectedChildId || c.id === selectedChildId) || children[0] || {
-    id: 'STU-001',
-    name: 'STU-001',
+    id: 'NAIREE-2024-091-001',
+    name: 'NAIREE-2024-091-001',
     student_name: 'Nairee Patel',
     roll_no: '101',
     student_batch: 'Class 10 - Section A',
@@ -194,8 +194,8 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                 ))
               ) : (
                 <>
-                  <option value="STU-001">Nairee Patel (Class 10 - Section A)</option>
-                  <option value="STU-008">Riya Patel (Class 6 - Section A)</option>
+                  <option value="NAIREE-2024-091-001">Nairee Patel (Class 10 - Section A)</option>
+                  <option value="NAIREE-2024-098-008">Riya Patel (Class 6 - Section A)</option>
                 </>
               )}
             </select>

@@ -124,8 +124,28 @@ export function subscribeLiveEvents(callback) {
   };
 }
 
+// Central Student ID Generator: [School Code]-[Year of Admission]-[Aadhaar Card Last 3 Digits]-[Sequence]
+export function generateStudentId({ schoolCode = 'NAIREE', admissionDate = '', admissionYear = '', aadhaarNo = '', sequence = 1 } = {}) {
+  const code = (schoolCode || 'NAIREE').toUpperCase().trim();
+  let year = '';
+  if (admissionYear) {
+    year = String(admissionYear).trim();
+  } else if (admissionDate) {
+    const d = new Date(admissionDate);
+    year = !isNaN(d.getFullYear()) ? String(d.getFullYear()) : '2024';
+  } else {
+    year = '2024';
+  }
+  
+  const cleanAadhaar = String(aadhaarNo || '').replace(/\D/g, '');
+  const aadhaarLast3 = cleanAadhaar.length >= 3 ? cleanAadhaar.slice(-3) : String(aadhaarNo || '000').slice(-3).padStart(3, '0');
+  const seqStr = String(sequence || 1).padStart(3, '0');
+
+  return `${code}-${year}-${aadhaarLast3}-${seqStr}`;
+}
+
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v3_unified_ids';
+const DB_VERSION_KEY = 'nairee_db_v4_smart_student_ids';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -425,7 +445,7 @@ export const api = {
       return { user: FALLBACK_DATA.users[0], token: 'mock-jwt-admin' };
     }
 
-    throw new Error('Invalid credentials. Use "admin", "teacher_jenkins", "nairee", or student ID "STU-001".');
+    throw new Error('Invalid credentials. Use "admin", "teacher_jenkins", "nairee", or student ID "NAIREE-2024-091-001".');
   },
 
   // Dashboard Metrics & Live Aggregations
@@ -573,8 +593,15 @@ export const api = {
 
     const master = getMasterStudents();
     const nextNum = master.length + 1;
-    const newStudentId = `STU-${String(nextNum).padStart(3, '0')}`;
-    const newRoll = `10${nextNum}`;
+    const admissionYear = studentData.admission_year || (studentData.admission_date ? new Date(studentData.admission_date).getFullYear() : '2024');
+    const aadhaar = studentData.aadhaar_no || `9876 5432 109${nextNum}`;
+    const newStudentId = studentData.student_id || generateStudentId({
+      schoolCode: studentData.school_code || 'NAIREE',
+      admissionYear: admissionYear,
+      aadhaarNo: aadhaar,
+      sequence: nextNum
+    });
+    const newRoll = studentData.roll_no || `10${nextNum}`;
 
     const newStudent = {
       student_id: newStudentId,
@@ -586,7 +613,7 @@ export const api = {
       gender: studentData.gender || 'Female',
       dob: studentData.date_of_birth || studentData.dob || '2011-05-15',
       blood_group: studentData.blood_group || 'O+',
-      aadhaar_no: studentData.aadhaar_no || `9876 5432 109${nextNum}`,
+      aadhaar_no: aadhaar,
       phone: studentData.phone || studentData.student_mobile_number || '+91 98765 00000',
       email: studentData.email || studentData.student_email_id || `${(studentData.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
       residential_address: studentData.residential_address || studentData.address_line_1 || 'Bengaluru',
@@ -798,7 +825,7 @@ export const api = {
 
     const newResult = {
       result_id: `RES-${Date.now().toString().slice(-4)}`,
-      student_id: data.student || data.student_id || 'STU-001',
+      student_id: data.student || data.student_id || 'NAIREE-2024-091-001',
       student_name: data.student_name || 'Student',
       plan_id: data.assessment_plan || 'PLAN-01',
       assessment_plan: data.assessment_plan_name || data.assessment_plan || 'Mid-Term Exam',
@@ -1112,7 +1139,7 @@ export const api = {
     const newSubm = {
       submission_id: `SUBM-${Date.now().toString().slice(-4)}`,
       homework_id: submissionData.homework_id || 'HW-001',
-      student_id: submissionData.student_id || 'STU-001',
+      student_id: submissionData.student_id || 'NAIREE-2024-091-001',
       student_name: submissionData.student_name || 'Nairee Patel',
       submission_text: submissionData.submission_text || '',
       attachment_url: submissionData.attachment_url || '',

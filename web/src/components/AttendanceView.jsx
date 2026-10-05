@@ -219,7 +219,7 @@ export default function AttendanceView({ onAttendanceSaved }) {
                         <div>
                           <p className="font-bold text-swift-dark flex items-center gap-1.5">
                             {student.student_name}
-                            {(student.name === 'STU-001' || student.student_id === 'STU-001') && (
+                            {(student.name === 'NAIREE-2024-091-001' || student.student_id === 'NAIREE-2024-091-001') && (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                                 Nairee
                               </span>

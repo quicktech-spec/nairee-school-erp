@@ -27,11 +27,11 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
-import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb } from '../api.js';
+import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId } from '../api.js';
 
 function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => ({
-    id: s.student_id || s.id || `STU-${String(idx + 1).padStart(3, '0')}`,
+    id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
     name: s.name || s.student_name,
     roll_no: s.roll_no || `${101 + idx}`,
     class_id: s.batch_id || (s.class_batch?.includes('10B') || s.class_batch?.includes('Section B') ? 'CLS-10B' : 'CLS-10A'),
@@ -225,8 +225,14 @@ export default function ClassStaffManagerView() {
     const due = Math.max(0, total - paid);
 
     const newNum = students.length + 1;
+    const defaultAadhaar = `9876 5432 109${newNum}`;
     const studentObj = {
-      id: `STU-${String(newNum).padStart(3, '0')}`,
+      id: generateStudentId({
+        schoolCode: 'NAIREE',
+        admissionYear: new Date().getFullYear(),
+        aadhaarNo: defaultAadhaar,
+        sequence: newNum
+      }),
       name: newStudent.name.trim(),
       roll_no: newStudent.roll_no.trim() || String(100 + newNum),
       class_id: targetClass.id,

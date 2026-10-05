@@ -134,7 +134,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [newGrade, setNewGrade] = useState({
     assessment_plan: 'ASM-MATH-MID',
     course: 'CRS-MATH-10',
-    student: 'STU-001',
+    student: 'NAIREE-2024-091-001',
     student_name: 'Nairee Patel',
     student_batch: 'CLS-10A',
     score: 95,

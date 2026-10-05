@@ -27,13 +27,13 @@ import {
   Barcode
 } from 'lucide-react';
 import { INITIAL_DB_STORE, FALLBACK_STUDENTS } from '../fallbackData.js';
-import { getMasterStudents, subscribeLiveEvents } from '../api.js';
+import { getMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
 
 function getSynchronizedStudents() {
   const master = getMasterStudents();
   if (master && master.length > 0) {
     return master.map((s, idx) => ({
-      id: s.student_id || s.id || `STU-00${idx + 1}`,
+      id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
       name: s.name || s.student_name,
       student_name: s.name || s.student_name,
       roll_no: s.roll_no ? String(s.roll_no).replace(/\D/g, '') : `${101 + idx}`,
@@ -67,7 +67,7 @@ export default function TransferCertificateView() {
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
     const list = getSynchronizedStudents();
-    return list[0]?.id || 'STU-001';
+    return list[0]?.id || 'NAIREE-2024-091-001';
   });
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
