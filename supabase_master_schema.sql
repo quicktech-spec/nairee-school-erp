@@ -401,7 +401,7 @@ CREATE INDEX idx_invoices_status ON student_fee_invoices(status);
 CREATE INDEX idx_teacher_punch_date ON employee_attendance_punch(punch_date);
 
 /* ==============================================================================
-   11. INITIAL SAMPLE SEED DATA
+   11. INITIAL SAMPLE SEED DATA (10 RECORDS PER TABLE)
 ============================================================================== */
 INSERT INTO schools (id, school_code, name, affiliation_board, contact_phone, contact_email)
 VALUES ('11111111-1111-1111-1111-111111111111', 'NAIREE-01', 'Nairee International School', 'CBSE', '+91 98765 43210', 'admin@nairee.edu')
@@ -411,6 +411,7 @@ INSERT INTO academic_years (id, school_id, year_name, start_date, end_date, is_c
 VALUES ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', '2026-2027', '2026-04-01', '2027-03-31', true)
 ON CONFLICT (id) DO NOTHING;
 
+-- 10 EMPLOYEES / TEACHERS
 INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
 VALUES ('33333333-3333-3333-3333-333333333331', '11111111-1111-1111-1111-111111111111', 'TEA-001', 'Prof. Sarah Jenkins', 'Female', 'sjenkins@nairee.edu', '+91 98765 43211', 'Mathematics & Science', 'Senior Faculty Lead', 68000, 'Active')
 ON CONFLICT (id) DO NOTHING;
@@ -423,12 +424,57 @@ INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone,
 VALUES ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', 'TEA-003', 'Mr. Robert Chen', 'Male', 'rchen@nairee.edu', '+91 98765 23456', 'Computer Science', 'AI Systems Instructor', 62000, 'Active')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333334', '11111111-1111-1111-1111-111111111111', 'TEA-004', 'Ms. Clara Oswald', 'Female', 'coswald@nairee.edu', '+91 98765 12345', 'Humanities & English', 'Literature Lead', 58000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333335', '11111111-1111-1111-1111-111111111111', 'TEA-005', 'Ms. Priya Deshmukh', 'Female', 'pdeshmukh@nairee.edu', '+91 98765 43215', 'Languages & Humanities', 'Hindi & Sanskrit Faculty', 58000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333336', '11111111-1111-1111-1111-111111111111', 'TEA-006', 'Dr. Alok Chatterjee', 'Male', 'achatterjee@nairee.edu', '+91 98765 43230', 'Chemistry & Science', 'Head of Chemistry', 72000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333337', '11111111-1111-1111-1111-111111111111', 'TEA-007', 'Mrs. Meenakshi Sundaram', 'Female', 'msundaram@nairee.edu', '+91 98765 43232', 'Life Sciences', 'Senior Biology Lead', 64000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333338', '11111111-1111-1111-1111-111111111111', 'TEA-008', 'Mr. Vikramaditya Rao', 'Male', 'vrao@nairee.edu', '+91 98765 43234', 'Social Sciences', 'History & Civics Chair', 61000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333339', '11111111-1111-1111-1111-111111111111', 'TEA-009', 'Mr. Arjun Kapoor', 'Male', 'akapoor@nairee.edu', '+91 98765 43236', 'Sports & Physical Education', 'Athletics & Sports Director', 56000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
+VALUES ('33333333-3333-3333-3333-333333333340', '11111111-1111-1111-1111-111111111111', 'TEA-010', 'Ms. Nandini Sen', 'Female', 'nsen@nairee.edu', '+91 98765 43238', 'Commerce & Economics', 'Senior Economics Lead', 66000, 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+-- 10 CLASSES & SECTIONS
 INSERT INTO classes (id, school_id, grade_name, numeric_order)
 VALUES ('44444444-4444-4444-4444-444444444441', '11111111-1111-1111-1111-111111111111', 'Class 10', 10)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO classes (id, school_id, grade_name, numeric_order)
 VALUES ('44444444-4444-4444-4444-444444444442', '11111111-1111-1111-1111-111111111111', 'Class 11', 11)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO classes (id, school_id, grade_name, numeric_order)
+VALUES ('44444444-4444-4444-4444-444444444443', '11111111-1111-1111-1111-111111111111', 'Class 12', 12)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO classes (id, school_id, grade_name, numeric_order)
+VALUES ('44444444-4444-4444-4444-444444444444', '11111111-1111-1111-1111-111111111111', 'Class 9', 9)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO classes (id, school_id, grade_name, numeric_order)
+VALUES ('44444444-4444-4444-4444-444444444445', '11111111-1111-1111-1111-111111111111', 'Class 8', 8)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO classes (id, school_id, grade_name, numeric_order)
+VALUES ('44444444-4444-4444-4444-444444444446', '11111111-1111-1111-1111-111111111111', 'Class 6', 6)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
@@ -439,6 +485,39 @@ INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, c
 VALUES ('55555555-5555-5555-5555-555555555552', '44444444-4444-4444-4444-444444444441', 'CLS 10B', 'Section B', 'Class 10 - Section B', '33333333-3333-3333-3333-333333333332', 'Room 205', 35)
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555553', '44444444-4444-4444-4444-444444444442', 'CLS 11A', 'Section A', 'Class 11 - Section A', '33333333-3333-3333-3333-333333333333', 'Room 301', 30)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555554', '44444444-4444-4444-4444-444444444442', 'CLS 11B', 'Section B', 'Class 11 - Section B', '33333333-3333-3333-3333-333333333336', 'Room 302', 30)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555555', '44444444-4444-4444-4444-444444444443', 'CLS 12A', 'Section A', 'Class 12 - Section A', '33333333-3333-3333-3333-333333333334', 'Room 303', 30)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555556', '44444444-4444-4444-4444-444444444443', 'CLS 12B', 'Section B', 'Class 12 - Section B', '33333333-3333-3333-3333-333333333340', 'Room 304', 30)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555557', '44444444-4444-4444-4444-444444444444', 'CLS 9A', 'Section A', 'Class 9 - Section A', '33333333-3333-3333-3333-333333333335', 'Room 104', 35)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555558', '44444444-4444-4444-4444-444444444444', 'CLS 9B', 'Section B', 'Class 9 - Section B', '33333333-3333-3333-3333-333333333337', 'Room 105', 35)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555559', '44444444-4444-4444-4444-444444444445', 'CLS 8A', 'Section A', 'Class 8 - Section A', '33333333-3333-3333-3333-333333333338', 'Room 102', 35)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
+VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS 6A', 'Section A', 'Class 6 - Section A', '33333333-3333-3333-3333-333333333339', 'Room 101', 35)
+ON CONFLICT (id) DO NOTHING;
+
+-- 10 SUBJECTS
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
 VALUES ('66666666-6666-6666-6666-666666666661', '11111111-1111-1111-1111-111111111111', 'MATH 101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (id) DO NOTHING;
@@ -451,6 +530,35 @@ INSERT INTO subjects (id, school_id, subject_code, subject_name, department, cre
 VALUES ('66666666-6666-6666-6666-666666666663', '11111111-1111-1111-1111-111111111111', 'CS 104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666664', '11111111-1111-1111-1111-111111111111', 'ENG 105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666665', '11111111-1111-1111-1111-111111111111', 'HIN 106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 'CHEM 103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666667', '11111111-1111-1111-1111-111111111111', 'BIO 107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666668', '11111111-1111-1111-1111-111111111111', 'HIST 108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666669', '11111111-1111-1111-1111-111111111111', 'PE 109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('66666666-6666-6666-6666-666666666670', '11111111-1111-1111-1111-111111111111', 'ECON 110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
+ON CONFLICT (id) DO NOTHING;
+
+-- 10 STUDENTS
 INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
 VALUES ('77777777-7777-7777-7777-777777777771', '11111111-1111-1111-1111-111111111111', 'STU-001', 'ADM-2024-001', 'Nairee Patel', '101', '55555555-5555-5555-5555-555555555551', 'Computer Applications & Math', 'Female', '2011-04-12', '2024-06-15', '+91 98765 00001', 'syalfreelance@gmail.com', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
 ON CONFLICT (id) DO NOTHING;
@@ -463,10 +571,76 @@ INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_n
 VALUES ('77777777-7777-7777-7777-777777777773', '11111111-1111-1111-1111-111111111111', 'STU-003', 'ADM-2024-003', 'Diya Gupta', '103', '55555555-5555-5555-5555-555555555551', 'Sanskrit & Pure Science', 'Female', '2011-11-10', '2024-06-18', '+91 98765 00003', 'diya.gupta@example.com', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Pending', 'Active')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777774', '11111111-1111-1111-1111-111111111111', 'STU-004', 'ADM-2024-004', 'Rohan Mehta', '104', '55555555-5555-5555-5555-555555555551', 'Physical Education (PE) & Math', 'Male', '2011-02-18', '2024-06-20', '+91 98765 00004', 'rohan.mehta@example.com', 'Malleshwaram, Bengaluru - 560055', 'Malleshwaram, Bengaluru - 560055', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777775', '11111111-1111-1111-1111-111111111111', 'STU-005', 'ADM-2024-005', 'Ananya Iyer', '105', '55555555-5555-5555-5555-555555555551', 'Computer Applications & STEM', 'Female', '2011-09-04', '2024-06-21', '+91 98765 00005', 'ananya.iyer@example.com', 'Murugeshpalya, Bengaluru - 560017', 'Murugeshpalya, Bengaluru - 560017', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777776', '11111111-1111-1111-1111-111111111111', 'STU-006', 'ADM-2024-006', 'Kabir Singh', '106', '55555555-5555-5555-5555-555555555552', 'Physical Education (PE) & Hindi', 'Male', '2011-05-19', '2024-06-22', '+91 98765 00006', 'kabir.singh@example.com', 'Domlur, Bengaluru - 560071', 'Domlur, Bengaluru - 560071', 'Pending', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777777', '11111111-1111-1111-1111-111111111111', 'STU-007', 'ADM-2024-007', 'Sameer Kulkarni', '107', '55555555-5555-5555-5555-555555555552', 'Commerce & Computer Applications', 'Male', '2011-07-30', '2024-06-25', '+91 98765 00007', 'sameer.kulkarni@example.com', 'Sahakar Nagar, Bengaluru - 560092', 'Sahakar Nagar, Bengaluru - 560092', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777778', '11111111-1111-1111-1111-111111111111', 'STU-008', 'ADM-2024-008', 'Riya Patel', '108', '55555555-5555-5555-5555-555555555560', 'General Science & Arts', 'Female', '2015-02-10', '2024-06-15', '+91 98765 43212', 'riya.patel@student.nairee.edu', 'Indiranagar, Bengaluru - 560038', 'Indiranagar, Bengaluru - 560038', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777779', '11111111-1111-1111-1111-111111111111', 'STU-009', 'ADM-2024-009', 'Kavya Gupta', '109', '55555555-5555-5555-5555-555555555559', 'Foundational STEM & Sanskrit', 'Female', '2016-06-14', '2024-06-18', '+91 98765 43216', 'kavya.gupta@student.nairee.edu', 'Thanisandra, Bengaluru - 560077', 'Thanisandra, Bengaluru - 560077', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO students (id, school_id, student_id_code, admission_no, name, roll_no, section_id, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
+VALUES ('77777777-7777-7777-7777-777777777780', '11111111-1111-1111-1111-111111111111', 'STU-010', 'ADM-2024-010', 'Vihaan Reddy', '110', '55555555-5555-5555-5555-555555555553', 'Pure Science & Artificial Intelligence', 'Male', '2010-01-20', '2024-06-10', '+91 98765 00010', 'vihaan.reddy@student.nairee.edu', 'Whitefield, Bengaluru - 560066', 'Whitefield, Bengaluru - 560066', 'Paid', 'Active')
+ON CONFLICT (id) DO NOTHING;
+
+-- 10 GUARDIANS
 INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
-VALUES ('77777777-7777-7777-7777-777777777771', 'Rajesh Patel', 'Senior Tech Director', '+91 98765 11111', 'Sunita Patel', 'Architect', '+91 98765 22222', 'syalfreelance@gmail.com')
+VALUES ('77777777-7777-7777-7777-777777777771', 'Rajesh Patel', 'Senior Software Director', '+91 98765 43212', 'Meera Patel', 'Professor of Economics', '+91 98765 43213', 'syalfreelance@gmail.com')
 ON CONFLICT DO NOTHING;
 
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777772', 'Suresh Sharma', 'Chartered Accountant', '+91 98765 43214', 'Sunita Sharma', 'Senior Bank Manager', '+91 98765 43215', 'aarav.sharma@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777773', 'Vikram Gupta', 'Civil Infrastructure Engineer', '+91 98765 43216', 'Pooja Gupta', 'Interior Architect', '+91 98765 43217', 'diya.gupta@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777774', 'Manish Mehta', 'Industrial Manufacturer', '+91 98765 43218', 'Nisha Mehta', 'Graphic Designer', '+91 98765 43219', 'rohan.mehta@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777775', 'Karthik Iyer', 'Aviation Consultant', '+91 98765 43220', 'Shalini Iyer', 'Carnatic Music Faculty', '+91 98765 43221', 'ananya.iyer@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777776', 'Harpreet Singh', 'Automobile Dealership Owner', '+91 98765 43222', 'Jaspreet Kaur', 'Nutritionist', '+91 98765 43223', 'kabir.singh@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777777', 'Nitin Kulkarni', 'Investment Banker', '+91 98765 43224', 'Anjali Kulkarni', 'Senior Corporate Lawyer', '+91 98765 43225', 'sameer.kulkarni@example.com')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777778', 'Rajesh Patel', 'Senior Software Director', '+91 98765 43212', 'Meera Patel', 'Professor of Economics', '+91 98765 43213', 'riya.patel@student.nairee.edu')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777779', 'Vikram Gupta', 'Civil Infrastructure Engineer', '+91 98765 43216', 'Pooja Gupta', 'Interior Architect', '+91 98765 43217', 'kavya.gupta@student.nairee.edu')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO guardians (student_id, father_name, father_occupation, father_phone, mother_name, mother_occupation, mother_phone, primary_guardian_email)
+VALUES ('77777777-7777-7777-7777-777777777780', 'Venkat Reddy', 'Fintech Founder', '+91 98765 43226', 'Lakshmi Reddy', 'Pediatric Surgeon', '+91 98765 43227', 'vihaan.reddy@student.nairee.edu')
+ON CONFLICT DO NOTHING;
+
+-- 10 ATTENDANCE RECORDS
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
 VALUES ('77777777-7777-7777-7777-777777777771', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
@@ -479,6 +653,35 @@ INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, s
 VALUES ('77777777-7777-7777-7777-777777777773', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Absent', '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777774', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777775', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777776', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Absent', '33333333-3333-3333-3333-333333333332')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777777', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333332')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777778', '55555555-5555-5555-5555-555555555560', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333339')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777779', '55555555-5555-5555-5555-555555555559', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333338')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
+VALUES ('77777777-7777-7777-7777-777777777780', '55555555-5555-5555-5555-555555555553', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT (student_id, attendance_date) DO NOTHING;
+
+-- 10 EXAM ASSESSMENTS & MARKS
 INSERT INTO exam_terms (id, school_id, plan_code, assessment_name, academic_year_id, start_date, end_date)
 VALUES ('88888888-8888-8888-8888-888888888881', '11111111-1111-1111-1111-111111111111', 'EXAM-T1-2026', 'Mid-Term Examination 2026', '22222222-2222-2222-2222-222222222222', '2026-09-10', '2026-09-25')
 ON CONFLICT (id) DO NOTHING;
@@ -496,34 +699,156 @@ VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-8888888
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777771', 94.0, 100.0, 'A+', 'Outstanding performance in calculus & geometry', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777771', 98.0, 100.0, 'A+', 'Outstanding performance in calculus & geometry', '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999992', '77777777-7777-7777-7777-777777777771', 89.0, 100.0, 'A', 'Strong analytical understanding', '33333333-3333-3333-3333-333333333332')
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777772', 88.0, 100.0, 'A', 'Strong analytical understanding', '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999993', '77777777-7777-7777-7777-777777777771', 98.0, 100.0, 'A+', 'Exceptional coding and system logic', '33333333-3333-3333-3333-333333333333')
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777773', 94.0, 100.0, 'A+', 'Brilliant proofs and algebraic rigor', '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777774', 84.0, 100.0, 'B+', 'Good conceptual clarity, needs speed improvement', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777775', 96.0, 100.0, 'A+', 'Consistently high distinction score', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777776', 78.0, 100.0, 'B', 'Solid effort, recommended remedial guidance', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999991', '77777777-7777-7777-7777-777777777777', 91.0, 100.0, 'A', 'Very thorough calculations', '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999992', '77777777-7777-7777-7777-777777777771', 48.0, 50.0, 'A+', 'Superb lab simulation and data graphing', '33333333-3333-3333-3333-333333333332')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999993', '77777777-7777-7777-7777-777777777771', 99.0, 100.0, 'A+', 'Exceptional algorithm and unit test quality', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
+VALUES ('99999999-9999-9999-9999-999999999993', '77777777-7777-7777-7777-777777777780', 95.0, 100.0, 'A+', 'Superb problem solving speed and clean code', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
+
+-- 10 FEE INVOICES
 INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
-VALUES ('INV-2026-001', '77777777-7777-7777-7777-777777777771', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Paid', '2026-05-10', 'REC-2026-8801')
+VALUES ('INV-2026-001', '77777777-7777-7777-7777-777777777771', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Paid', '2026-09-28', 'REC-2026-9041')
 ON CONFLICT (invoice_code) DO NOTHING;
 
 INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
-VALUES ('INV-2026-002', '77777777-7777-7777-7777-777777777772', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Paid', '2026-05-12', 'REC-2026-8802')
+VALUES ('INV-2026-002', '77777777-7777-7777-7777-777777777772', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Paid', '2026-09-29', 'REC-2026-9042')
 ON CONFLICT (invoice_code) DO NOTHING;
 
 INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
-VALUES ('INV-2026-003', '77777777-7777-7777-7777-777777777773', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 28500.00, '2026-05-15', 'Pending', NULL, NULL)
+VALUES ('INV-2026-003', '77777777-7777-7777-7777-777777777773', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Pending', NULL, NULL)
 ON CONFLICT (invoice_code) DO NOTHING;
 
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-004', '77777777-7777-7777-7777-777777777774', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Paid', '2026-09-30', 'REC-2026-9043')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-005', '77777777-7777-7777-7777-777777777775', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Paid', '2026-09-29', 'REC-2026-9044')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-006', '77777777-7777-7777-7777-777777777776', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Pending', NULL, NULL)
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-007', '77777777-7777-7777-7777-777777777777', 'Term 1 Tuition & Lab Fee', 'Tuition Fee', 35000.00, '2026-10-15', 'Paid', '2026-09-27', 'REC-2026-9045')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-008', '77777777-7777-7777-7777-777777777778', 'Term 1 Junior Primary Fee', 'Tuition Fee', 28000.00, '2026-10-15', 'Paid', '2026-09-28', 'REC-2026-9046')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-009', '77777777-7777-7777-7777-777777777779', 'Term 1 Middle School Fee', 'Tuition Fee', 30000.00, '2026-10-15', 'Paid', '2026-09-28', 'REC-2026-9047')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+INSERT INTO student_fee_invoices (invoice_code, student_id, title, fee_type, amount, due_date, status, payment_date, receipt_no)
+VALUES ('INV-2026-010', '77777777-7777-7777-7777-777777777780', 'Term 1 Senior Science Fee', 'Tuition Fee', 42000.00, '2026-10-15', 'Paid', '2026-09-26', 'REC-2026-9048')
+ON CONFLICT (invoice_code) DO NOTHING;
+
+-- 10 TEACHER ATTENDANCE PUNCHES
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333331', CURRENT_DATE, '07:48 AM', '03:45 PM', 'On Duty', 8.0)
+VALUES ('33333333-3333-3333-3333-333333333331', CURRENT_DATE, '07:48 AM', '04:15 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333332', CURRENT_DATE, '07:55 AM', '04:20 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333333', CURRENT_DATE, '08:02 AM', '04:10 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333334', CURRENT_DATE, '08:12 AM', '04:25 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333335', CURRENT_DATE, '08:05 AM', '04:00 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333336', CURRENT_DATE, '07:50 AM', '04:15 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333337', CURRENT_DATE, '08:10 AM', '04:10 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333338', CURRENT_DATE, '08:15 AM', '04:15 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333339', CURRENT_DATE, '07:30 AM', '04:00 PM', 'On Duty', 8.5)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
+VALUES ('33333333-3333-3333-3333-333333333340', CURRENT_DATE, '08:00 AM', '04:15 PM', 'On Duty', 8.0)
+ON CONFLICT (employee_id, punch_date) DO NOTHING;
+
+-- 10 DAILY CLASS CONDUCTED LOGS
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666661', 'Matrix Inversion & Linear Equations', '08:30 - 09:15', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666661', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333332', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666662', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333333', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666663', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333334', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666664', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333335', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666665', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333336', '55555555-5555-5555-5555-555555555554', '66666666-6666-6666-6666-666666666666', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333337', '55555555-5555-5555-5555-555555555558', '66666666-6666-6666-6666-666666666667', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333338', '55555555-5555-5555-5555-555555555559', '66666666-6666-6666-6666-666666666668', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333339', '55555555-5555-5555-5555-555555555552', '66666666-6666-6666-6666-666666666669', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
+
+INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
+VALUES ('33333333-3333-3333-3333-333333333340', '55555555-5555-5555-5555-555555555556', '66666666-6666-6666-6666-666666666670', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
 
 

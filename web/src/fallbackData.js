@@ -140,7 +140,7 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'STU-009',
         sibling_name: 'Kavya Gupta',
         sibling_class: 'Class 4 - Section B',
-        sibling_roll_no: '104',
+        sibling_roll_no: '109',
         status: 'Active'
       },
       { 
@@ -248,6 +248,40 @@ export const INITIAL_DB_STORE = {
         has_siblings: false,
         status: 'Active'
       },
+      { 
+        student_id: 'STU-007', 
+        name: 'Sameer Kulkarni', 
+        roll_no: '107', 
+        photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+        dob: '2011-07-30',
+        religion: 'Hindu',
+        nationality: 'Indian',
+        blood_group: 'AB-',
+        class_batch: 'Class 10 - Section B',
+        batch_id: 'CLS 10B',
+        stream: 'Commerce & Computer Applications',
+        aadhaar_no: '9876 5432 1097',
+        gender: 'Male',
+        admission_date: '2024-06-25',
+        residential_address: 'Rowhouse 9, Windsor Gardens, Sahakar Nagar, Bengaluru - 560092',
+        permanent_address: 'Rowhouse 9, Windsor Gardens, Sahakar Nagar, Bengaluru - 560092',
+        phone: '+91 98765 00007',
+        email: 'sameer.kulkarni@example.com',
+        fee_status: 'Paid',
+        father_name: 'Nitin Kulkarni',
+        father_occupation: 'Investment Banker',
+        father_phone: '+91 98765 43224',
+        father_photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100',
+        father_address: 'Rowhouse 9, Windsor Gardens, Sahakar Nagar, Bengaluru - 560092',
+        mother_name: 'Anjali Kulkarni',
+        mother_occupation: 'Senior Corporate Lawyer',
+        mother_phone: '+91 98765 43225',
+        mother_photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100',
+        mother_address: 'Rowhouse 9, Windsor Gardens, Sahakar Nagar, Bengaluru - 560092',
+        has_previous_school: false,
+        has_siblings: false,
+        status: 'Active'
+      },
       {
         student_id: 'STU-008',
         name: 'Riya Patel',
@@ -271,15 +305,94 @@ export const INITIAL_DB_STORE = {
         father_name: 'Rajesh Patel',
         father_occupation: 'Senior Software Director',
         father_phone: '+91 98765 43212',
+        father_photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
+        father_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
         mother_name: 'Meera Patel',
         mother_occupation: 'Professor of Economics',
         mother_phone: '+91 98765 43213',
+        mother_photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100',
+        mother_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
         has_previous_school: false,
         has_siblings: true,
         sibling_id: 'STU-001',
         sibling_name: 'Nairee Patel',
         sibling_class: 'Class 10 - Section A',
         sibling_roll_no: '101',
+        status: 'Active'
+      },
+      {
+        student_id: 'STU-009',
+        name: 'Kavya Gupta',
+        roll_no: '109',
+        photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
+        dob: '2016-06-14',
+        religion: 'Hindu',
+        nationality: 'Indian',
+        blood_group: 'A+',
+        class_batch: 'Class 8 - Section A',
+        batch_id: 'CLS 8A',
+        stream: 'Foundational STEM & Sanskrit',
+        aadhaar_no: '9876 5432 1099',
+        gender: 'Female',
+        admission_date: '2024-06-18',
+        residential_address: 'Villa 12, Sobha City Heritage, Thanisandra Main Rd, Bengaluru - 560077',
+        permanent_address: 'Villa 12, Sobha City Heritage, Thanisandra Main Rd, Bengaluru - 560077',
+        phone: '+91 98765 43216',
+        email: 'kavya.gupta@student.nairee.edu',
+        fee_status: 'Paid',
+        father_name: 'Vikram Gupta',
+        father_occupation: 'Civil Infrastructure Engineer',
+        father_phone: '+91 98765 43216',
+        father_photo: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100',
+        father_address: 'Villa 12, Sobha City Heritage, Thanisandra Main Rd, Bengaluru - 560077',
+        mother_name: 'Pooja Gupta',
+        mother_occupation: 'Interior Architect',
+        mother_phone: '+91 98765 43217',
+        mother_photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+        mother_address: 'Villa 12, Sobha City Heritage, Thanisandra Main Rd, Bengaluru - 560077',
+        has_previous_school: false,
+        has_siblings: true,
+        sibling_id: 'STU-003',
+        sibling_name: 'Diya Gupta',
+        sibling_class: 'Class 10 - Section A',
+        sibling_roll_no: '103',
+        status: 'Active'
+      },
+      {
+        student_id: 'STU-010',
+        name: 'Vihaan Reddy',
+        roll_no: '110',
+        photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
+        dob: '2010-01-20',
+        religion: 'Hindu',
+        nationality: 'Indian',
+        blood_group: 'O+',
+        class_batch: 'Class 11 - Section A',
+        batch_id: 'CLS 11A',
+        stream: 'Pure Science & Artificial Intelligence',
+        aadhaar_no: '9876 5432 1100',
+        gender: 'Male',
+        admission_date: '2024-06-10',
+        residential_address: 'Penthouse 14, Total Environment, Whitefield, Bengaluru - 560066',
+        permanent_address: 'Penthouse 14, Total Environment, Whitefield, Bengaluru - 560066',
+        phone: '+91 98765 00010',
+        email: 'vihaan.reddy@student.nairee.edu',
+        fee_status: 'Paid',
+        father_name: 'Venkat Reddy',
+        father_occupation: 'Fintech Founder & Angel Investor',
+        father_phone: '+91 98765 43226',
+        father_photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
+        father_address: 'Penthouse 14, Total Environment, Whitefield, Bengaluru - 560066',
+        mother_name: 'Lakshmi Reddy',
+        mother_occupation: 'Pediatric Surgeon',
+        mother_phone: '+91 98765 43227',
+        mother_photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100',
+        mother_address: 'Penthouse 14, Total Environment, Whitefield, Bengaluru - 560066',
+        has_previous_school: true,
+        prev_school_name: 'Inventure Academy, Sarjapur',
+        prev_school_board: 'IGCSE',
+        prev_studied_class: 'Class 10',
+        has_siblings: false,
         status: 'Active'
       }
     ]
@@ -455,6 +568,156 @@ export const INITIAL_DB_STORE = {
         bank_holder_name: 'Priya Deshmukh',
         pan_no: 'UVWXY7890Z',
         status: 'Active'
+      },
+      {
+        teacher_number: 'TEA 006',
+        name: 'Dr. Alok Chatterjee',
+        photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
+        gender: 'Male',
+        dob: '1984-12-03',
+        blood_group: 'O-',
+        aadhaar_no: '5566 7788 9901',
+        email: 'achatterjee@nairee.edu',
+        phone: '+91 98765 43230',
+        department: 'Chemistry & Science',
+        designation: 'Head of Chemistry',
+        qualification: 'Ph.D Organic Chemistry, IISc Bengaluru',
+        workload_hours: 20,
+        monthly_salary: 72000,
+        joining_date: '2018-09-01',
+        residential_address: 'Villa 88, Adarsh Palm Retreat, Outer Ring Road, Bengaluru - 560103',
+        permanent_address: 'Salt Lake Sector 2, Kolkata, West Bengal - 700091',
+        father_name: 'Subhash Chatterjee',
+        father_occupation: 'Professor of Physics (Retd.)',
+        mother_name: 'Aparna Chatterjee',
+        mother_occupation: 'Botanist',
+        emergency_contact_phone: '+91 98765 43231',
+        bank_name: 'State Bank of India',
+        bank_account_no: '30992817455',
+        bank_ifsc: 'SBIN0006712',
+        bank_holder_name: 'Alok Chatterjee',
+        pan_no: 'BCDEF2345G',
+        status: 'Active'
+      },
+      {
+        teacher_number: 'TEA 007',
+        name: 'Mrs. Meenakshi Sundaram',
+        photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
+        gender: 'Female',
+        dob: '1987-04-28',
+        blood_group: 'A-',
+        aadhaar_no: '6677 8899 0012',
+        email: 'msundaram@nairee.edu',
+        phone: '+91 98765 43232',
+        department: 'Life Sciences',
+        designation: 'Senior Biology Lead',
+        qualification: 'M.Sc. Biotechnology, B.Ed',
+        workload_hours: 18,
+        monthly_salary: 64000,
+        joining_date: '2020-11-15',
+        residential_address: 'Apt 502, Purva Riviera, Marathahalli Bridge, Bengaluru - 560037',
+        permanent_address: 'Alwarpet, Chennai, Tamil Nadu - 600018',
+        father_name: 'R. Sundaram',
+        father_occupation: 'Senior Agronomist',
+        mother_name: 'V. Sundaram',
+        mother_occupation: 'Classical Vocalist',
+        emergency_contact_phone: '+91 98765 43233',
+        bank_name: 'Canara Bank',
+        bank_account_no: '11029384756',
+        bank_ifsc: 'CNRB0001290',
+        bank_holder_name: 'Meenakshi Sundaram',
+        pan_no: 'CDEFG3456H',
+        status: 'Active'
+      },
+      {
+        teacher_number: 'TEA 008',
+        name: 'Mr. Vikramaditya Rao',
+        photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150',
+        gender: 'Male',
+        dob: '1986-07-15',
+        blood_group: 'B-',
+        aadhaar_no: '7788 9900 1123',
+        email: 'vrao@nairee.edu',
+        phone: '+91 98765 43234',
+        department: 'Social Sciences',
+        designation: 'History & Civics Chair',
+        qualification: 'M.A. Modern Indian History, M.Phil',
+        workload_hours: 18,
+        monthly_salary: 61000,
+        joining_date: '2021-03-01',
+        residential_address: 'Flat 203, Godrej Woodsman Estate, Bellary Road, Bengaluru - 560024',
+        permanent_address: 'Banjara Hills, Hyderabad, Telangana - 500034',
+        father_name: 'Krishna Rao',
+        father_occupation: 'IAS Officer (Retd.)',
+        mother_name: 'Radha Rao',
+        mother_occupation: 'Historian & Author',
+        emergency_contact_phone: '+91 98765 43235',
+        bank_name: 'Punjab National Bank',
+        bank_account_no: '098712345678',
+        bank_ifsc: 'PUNB0123400',
+        bank_holder_name: 'Vikramaditya Rao',
+        pan_no: 'DEFGH4567J',
+        status: 'Active'
+      },
+      {
+        teacher_number: 'TEA 009',
+        name: 'Mr. Arjun Kapoor',
+        photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+        gender: 'Male',
+        dob: '1993-01-19',
+        blood_group: 'O+',
+        aadhaar_no: '8899 0011 2234',
+        email: 'akapoor@nairee.edu',
+        phone: '+91 98765 43236',
+        department: 'Sports & Physical Education',
+        designation: 'Athletics & Sports Director',
+        qualification: 'M.P.Ed Physical Education, NIS Certified Coach',
+        workload_hours: 22,
+        monthly_salary: 56000,
+        joining_date: '2022-08-01',
+        residential_address: 'House #71, HSR Layout Sector 2, Bengaluru - 560102',
+        permanent_address: 'Model Town, Ludhiana, Punjab - 141002',
+        father_name: 'Baldev Kapoor',
+        father_occupation: 'National Level Athlete & Coach',
+        mother_name: 'Gurmeet Kapoor',
+        mother_occupation: 'School Administrator',
+        emergency_contact_phone: '+91 98765 43237',
+        bank_name: 'Union Bank of India',
+        bank_account_no: '543209876123',
+        bank_ifsc: 'UBIN0554321',
+        bank_holder_name: 'Arjun Kapoor',
+        pan_no: 'EFGHI5678M',
+        status: 'Active'
+      },
+      {
+        teacher_number: 'TEA 010',
+        name: 'Ms. Nandini Sen',
+        photo: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150',
+        gender: 'Female',
+        dob: '1989-10-10',
+        blood_group: 'AB-',
+        aadhaar_no: '9900 1122 3345',
+        email: 'nsen@nairee.edu',
+        phone: '+91 98765 43238',
+        department: 'Commerce & Economics',
+        designation: 'Senior Economics Lead',
+        qualification: 'M.Sc. Applied Economics, Delhi School of Economics',
+        workload_hours: 18,
+        monthly_salary: 66000,
+        joining_date: '2021-06-01',
+        residential_address: 'Penthouse 3B, Salarpuria Magnificia, Old Madras Road, Bengaluru - 560016',
+        permanent_address: 'Ballygunge Circular Road, Kolkata - 700019',
+        father_name: 'Debashish Sen',
+        father_occupation: 'Economist & Policy Advisor',
+        mother_name: 'Mousumi Sen',
+        mother_occupation: 'University Registrar',
+        emergency_contact_phone: '+91 98765 43239',
+        bank_name: 'IndusInd Bank',
+        bank_account_no: '100098765432',
+        bank_ifsc: 'INDB0000123',
+        bank_holder_name: 'Nandini Sen',
+        pan_no: 'FGHIJ6789N',
+        status: 'Active'
       }
     ]
   },
@@ -471,7 +734,13 @@ export const INITIAL_DB_STORE = {
       { batch_id: 'CLS 10A', batch_name: 'Class 10 - Section A', class_teacher: 'TEA 001', room_no: 'Room 204', capacity: 35 },
       { batch_id: 'CLS 10B', batch_name: 'Class 10 - Section B', class_teacher: 'TEA 002', room_no: 'Room 205', capacity: 35 },
       { batch_id: 'CLS 11A', batch_name: 'Class 11 - Section A', class_teacher: 'TEA 003', room_no: 'Room 301', capacity: 30 },
-      { batch_id: 'CLS 12A', batch_name: 'Class 12 - Section A (Science)', class_teacher: 'TEA 004', room_no: 'Room 302', capacity: 30 }
+      { batch_id: 'CLS 11B', batch_name: 'Class 11 - Section B', class_teacher: 'TEA 006', room_no: 'Room 302', capacity: 30 },
+      { batch_id: 'CLS 12A', batch_name: 'Class 12 - Section A (Science)', class_teacher: 'TEA 004', room_no: 'Room 303', capacity: 30 },
+      { batch_id: 'CLS 12B', batch_name: 'Class 12 - Section B (Commerce)', class_teacher: 'TEA 010', room_no: 'Room 304', capacity: 30 },
+      { batch_id: 'CLS 9A', batch_name: 'Class 9 - Section A', class_teacher: 'TEA 005', room_no: 'Room 104', capacity: 35 },
+      { batch_id: 'CLS 9B', batch_name: 'Class 9 - Section B', class_teacher: 'TEA 007', room_no: 'Room 105', capacity: 35 },
+      { batch_id: 'CLS 8A', batch_name: 'Class 8 - Section A', class_teacher: 'TEA 008', room_no: 'Room 102', capacity: 35 },
+      { batch_id: 'CLS 6A', batch_name: 'Class 6 - Section A', class_teacher: 'TEA 009', room_no: 'Room 101', capacity: 35 }
     ]
   },
 
@@ -489,7 +758,12 @@ export const INITIAL_DB_STORE = {
       { subject_id: 'SUB 002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS 102', teacher: 'TEA 002', credit_hours: 4, department: 'Physics & STEM' },
       { subject_id: 'SUB 003', subject_name: 'Computer Science & AI', subject_code: 'CS 104', teacher: 'TEA 003', credit_hours: 3, department: 'Computer Science' },
       { subject_id: 'SUB 004', subject_name: 'English & World Literature', subject_code: 'ENG 105', teacher: 'TEA 004', credit_hours: 3, department: 'Humanities & English' },
-      { subject_id: 'SUB 005', subject_name: 'Hindi Literature & Grammar', subject_code: 'HIN 106', teacher: 'TEA 005', credit_hours: 3, department: 'Languages & Humanities' }
+      { subject_id: 'SUB 005', subject_name: 'Hindi Literature & Grammar', subject_code: 'HIN 106', teacher: 'TEA 005', credit_hours: 3, department: 'Languages & Humanities' },
+      { subject_id: 'SUB 006', subject_name: 'Organic & Inorganic Chemistry', subject_code: 'CHEM 103', teacher: 'TEA 006', credit_hours: 4, department: 'Chemistry & Science' },
+      { subject_id: 'SUB 007', subject_name: 'Genetics & Cellular Biology', subject_code: 'BIO 107', teacher: 'TEA 007', credit_hours: 4, department: 'Life Sciences' },
+      { subject_id: 'SUB 008', subject_name: 'Modern World History & Civics', subject_code: 'HIST 108', teacher: 'TEA 008', credit_hours: 3, department: 'Social Sciences' },
+      { subject_id: 'SUB 009', subject_name: 'Physical Education & Athletics', subject_code: 'PE 109', teacher: 'TEA 009', credit_hours: 2, department: 'Sports & Physical Education' },
+      { subject_id: 'SUB 010', subject_name: 'Macroeconomics & Financial Markets', subject_code: 'ECON 110', teacher: 'TEA 010', credit_hours: 4, department: 'Commerce & Economics' }
     ]
   },
 
@@ -507,7 +781,13 @@ export const INITIAL_DB_STORE = {
       { plan_id: 'PLAN-01', assessment_name: 'Mid-Term Examinations 2026', course_name: 'Advanced Mathematics', subject: 'Mathematics', maximum_score: 100, date: '2026-10-15', class_batch: 'CLS 10A' },
       { plan_id: 'PLAN-02', assessment_name: 'Lab Dynamics Practical Evaluation', course_name: 'Physics & Dynamics', subject: 'Physics', maximum_score: 50, date: '2026-10-20', class_batch: 'CLS 10A' },
       { plan_id: 'PLAN-03', assessment_name: 'AI & Python Coding Assessment', course_name: 'Computer Science & AI', subject: 'Computer Science', maximum_score: 100, date: '2026-10-28', class_batch: 'CLS 10A' },
-      { plan_id: 'PLAN-04', assessment_name: 'English Essay & Creative Composition', course_name: 'English & World Literature', subject: 'English', maximum_score: 50, date: '2026-11-05', class_batch: 'CLS 10A' }
+      { plan_id: 'PLAN-04', assessment_name: 'English Essay & Creative Composition', course_name: 'English & World Literature', subject: 'English', maximum_score: 50, date: '2026-11-05', class_batch: 'CLS 10A' },
+      { plan_id: 'PLAN-05', assessment_name: 'Periodic Test 1 - Hindi Poetry & Grammar', course_name: 'Hindi Literature & Grammar', subject: 'Hindi', maximum_score: 40, date: '2026-11-08', class_batch: 'CLS 10A' },
+      { plan_id: 'PLAN-06', assessment_name: 'Chemical Titration Practical Assessment', course_name: 'Organic & Inorganic Chemistry', subject: 'Chemistry', maximum_score: 50, date: '2026-11-12', class_batch: 'CLS 11B' },
+      { plan_id: 'PLAN-07', assessment_name: 'Cell Biology & Genetics Unit Assessment', course_name: 'Genetics & Cellular Biology', subject: 'Biology', maximum_score: 50, date: '2026-11-15', class_batch: 'CLS 9B' },
+      { plan_id: 'PLAN-08', assessment_name: 'World History & Constitutional Debates', course_name: 'Modern World History & Civics', subject: 'History', maximum_score: 50, date: '2026-11-18', class_batch: 'CLS 8A' },
+      { plan_id: 'PLAN-09', assessment_name: 'Athletics & Physical Fitness Benchmark', course_name: 'Physical Education & Athletics', subject: 'Physical Education', maximum_score: 50, date: '2026-11-20', class_batch: 'CLS 10B' },
+      { plan_id: 'PLAN-10', assessment_name: 'Macroeconomics Fiscal Policy Case Study', course_name: 'Macroeconomics & Financial Markets', subject: 'Economics', maximum_score: 100, date: '2026-11-25', class_batch: 'CLS 12B' }
     ]
   },
 
@@ -532,8 +812,10 @@ export const INITIAL_DB_STORE = {
       { result_id: 'RES-004', student_id: 'STU-004', student_name: 'Rohan Mehta', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
       { result_id: 'RES-005', student_id: 'STU-005', student_name: 'Ananya Iyer', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
       { result_id: 'RES-006', student_id: 'STU-006', student_name: 'Kabir Singh', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
-      { result_id: 'RES-007', student_id: 'STU-001', student_name: 'Nairee Patel', plan_id: 'PLAN-02', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
-      { result_id: 'RES-008', student_id: 'STU-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-02', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics', score: 44, maximum_score: 50, percentage: 88, grade: 'A', comment: 'Well documented experimental observations.' }
+      { result_id: 'RES-007', student_id: 'STU-007', student_name: 'Sameer Kulkarni', plan_id: 'PLAN-01', assessment_plan: 'Mid-Term Examinations 2026', course: 'Mathematics', score: 91, maximum_score: 100, percentage: 91, grade: 'A', comment: 'Excellent accuracy and neat calculation.' },
+      { result_id: 'RES-008', student_id: 'STU-001', student_name: 'Nairee Patel', plan_id: 'PLAN-02', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
+      { result_id: 'RES-009', student_id: 'STU-001', student_name: 'Nairee Patel', plan_id: 'PLAN-03', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science', score: 99, maximum_score: 100, percentage: 99, grade: 'A+', comment: 'Flawless neural network algorithms and test coverage.' },
+      { result_id: 'RES-010', student_id: 'STU-010', student_name: 'Vihaan Reddy', plan_id: 'PLAN-03', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science', score: 95, maximum_score: 100, percentage: 95, grade: 'A+', comment: 'Superb algorithm optimization and clear code structure.' }
     ]
   },
 
@@ -553,12 +835,10 @@ export const INITIAL_DB_STORE = {
       { attendance_id: 'ATT-004', student_id: 'STU-004', student_name: 'Rohan Mehta', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
       { attendance_id: 'ATT-005', student_id: 'STU-005', student_name: 'Ananya Iyer', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10A' },
       { attendance_id: 'ATT-006', student_id: 'STU-006', student_name: 'Kabir Singh', date: '2026-10-01', status: 'Absent', class_batch: 'CLS 10B' },
-      { attendance_id: 'ATT-007', student_id: 'STU-001', student_name: 'Nairee Patel', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT-008', student_id: 'STU-002', student_name: 'Aarav Sharma', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT-009', student_id: 'STU-003', student_name: 'Diya Gupta', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT-010', student_id: 'STU-004', student_name: 'Rohan Mehta', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT-011', student_id: 'STU-005', student_name: 'Ananya Iyer', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10A' },
-      { attendance_id: 'ATT-012', student_id: 'STU-006', student_name: 'Kabir Singh', date: '2026-10-02', status: 'Present', class_batch: 'CLS 10B' }
+      { attendance_id: 'ATT-007', student_id: 'STU-007', student_name: 'Sameer Kulkarni', date: '2026-10-01', status: 'Present', class_batch: 'CLS 10B' },
+      { attendance_id: 'ATT-008', student_id: 'STU-008', student_name: 'Riya Patel', date: '2026-10-01', status: 'Present', class_batch: 'CLS 6A' },
+      { attendance_id: 'ATT-009', student_id: 'STU-009', student_name: 'Kavya Gupta', date: '2026-10-01', status: 'Present', class_batch: 'CLS 8A' },
+      { attendance_id: 'ATT-010', student_id: 'STU-010', student_name: 'Vihaan Reddy', date: '2026-10-01', status: 'Present', class_batch: 'CLS 11A' }
     ]
   },
 
@@ -574,10 +854,16 @@ export const INITIAL_DB_STORE = {
       { name: 'hours_recorded', type: 'DECIMAL(4,2)', pk: 0 }
     ],
     rows: [
-      { punch_id: 'TP-001', teacher_number: 'TEA 001', name: 'Prof. Sarah Jenkins', date: '2026-10-04', punch_in: '08:15 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-002', teacher_number: 'TEA 002', name: 'Dr. Evelyn Reed', date: '2026-10-04', punch_in: '08:20 AM', punch_out: '04:20 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-003', teacher_number: 'TEA 003', name: 'Mr. Robert Chen', date: '2026-10-04', punch_in: '08:10 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-004', teacher_number: 'TEA 004', name: 'Ms. Clara Oswald', date: '2026-10-04', punch_in: '08:25 AM', punch_out: '04:25 PM', status: 'On Duty', hours_recorded: 8.0 }
+      { punch_id: 'TP-001', teacher_number: 'TEA 001', name: 'Prof. Sarah Jenkins', date: '2026-10-05', punch_in: '07:48 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-002', teacher_number: 'TEA 002', name: 'Dr. Evelyn Reed', date: '2026-10-05', punch_in: '07:55 AM', punch_out: '04:20 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-003', teacher_number: 'TEA 003', name: 'Mr. Robert Chen', date: '2026-10-05', punch_in: '08:02 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-004', teacher_number: 'TEA 004', name: 'Ms. Clara Oswald', date: '2026-10-05', punch_in: '08:12 AM', punch_out: '04:25 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-005', teacher_number: 'TEA 005', name: 'Ms. Priya Deshmukh', date: '2026-10-05', punch_in: '08:05 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-006', teacher_number: 'TEA 006', name: 'Dr. Alok Chatterjee', date: '2026-10-05', punch_in: '07:50 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-007', teacher_number: 'TEA 007', name: 'Mrs. Meenakshi Sundaram', date: '2026-10-05', punch_in: '08:10 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-008', teacher_number: 'TEA 008', name: 'Mr. Vikramaditya Rao', date: '2026-10-05', punch_in: '08:15 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-009', teacher_number: 'TEA 009', name: 'Mr. Arjun Kapoor', date: '2026-10-05', punch_in: '07:30 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.5 },
+      { punch_id: 'TP-010', teacher_number: 'TEA 010', name: 'Ms. Nandini Sen', date: '2026-10-05', punch_in: '08:00 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 }
     ]
   },
 
@@ -593,8 +879,16 @@ export const INITIAL_DB_STORE = {
       { name: 'date', type: 'DATE', pk: 0 }
     ],
     rows: [
-      { log_id: 'LOG-001', teacher_number: 'TEA 001', teacher_name: 'Prof. Sarah Jenkins', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', topic_covered: 'Quadratic Polynomial Factorization & Real Roots', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-04' },
-      { log_id: 'LOG-002', teacher_number: 'TEA 002', teacher_name: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Physics & Dynamics', topic_covered: 'Electromagnetic Inductance & Faraday Law Verification', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-04' }
+      { log_id: 'LOG-001', teacher_number: 'TEA 001', teacher_name: 'Prof. Sarah Jenkins', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', topic_covered: 'Quadratic Polynomial Factorization & Real Roots', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
+      { log_id: 'LOG-002', teacher_number: 'TEA 002', teacher_name: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Physics & Dynamics', topic_covered: 'Electromagnetic Inductance & Faraday Law Verification', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
+      { log_id: 'LOG-003', teacher_number: 'TEA 003', teacher_name: 'Mr. Robert Chen', class_batch: 'CLS 10A', subject: 'Computer Science & AI', topic_covered: 'Neural Network Architecture & Backpropagation', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-004', teacher_number: 'TEA 004', teacher_name: 'Ms. Clara Oswald', class_batch: 'CLS 10A', subject: 'English & World Literature', topic_covered: 'Shakespearean Sonnets & Metaphorical Analysis', period_slot: '12:00 PM - 01:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-005', teacher_number: 'TEA 005', teacher_name: 'Ms. Priya Deshmukh', class_batch: 'CLS 10A', subject: 'Hindi Literature & Grammar', topic_covered: 'Samas & Sandhi Applications in Modern Prose', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' },
+      { log_id: 'LOG-006', teacher_number: 'TEA 006', teacher_name: 'Dr. Alok Chatterjee', class_batch: 'CLS 11B', subject: 'Organic & Inorganic Chemistry', topic_covered: 'Benzene Ring Resonance & Electrophilic Substitution', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
+      { log_id: 'LOG-007', teacher_number: 'TEA 007', teacher_name: 'Mrs. Meenakshi Sundaram', class_batch: 'CLS 9B', subject: 'Genetics & Cellular Biology', topic_covered: 'Mendelian Genetics & Monohybrid Cross Experiments', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
+      { log_id: 'LOG-008', teacher_number: 'TEA 008', teacher_name: 'Mr. Vikramaditya Rao', class_batch: 'CLS 8A', subject: 'Modern World History & Civics', topic_covered: 'The French Revolution & Drafting of Human Rights', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-009', teacher_number: 'TEA 009', teacher_name: 'Mr. Arjun Kapoor', class_batch: 'CLS 10B', subject: 'Physical Education & Athletics', topic_covered: 'Track Athletics Sprint Mechanics & High Jump Technique', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-05' },
+      { log_id: 'LOG-010', teacher_number: 'TEA 010', teacher_name: 'Ms. Nandini Sen', class_batch: 'CLS 12B', subject: 'Macroeconomics & Financial Markets', topic_covered: 'RBI Monetary Policies, Repo Rates & Inflation Control', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' }
     ]
   },
 
@@ -611,7 +905,16 @@ export const INITIAL_DB_STORE = {
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { sub_id: 'SUBST-001', original_teacher: 'Prof. Sarah Jenkins', substitute_teacher: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', period_slot: '02:00 PM - 03:00 PM', date: '2026-10-05', reason: 'CBSE Mathematics Workshop Attendance', status: 'Approved' }
+      { sub_id: 'SUBST-001', original_teacher: 'Prof. Sarah Jenkins', substitute_teacher: 'Dr. Evelyn Reed', class_batch: 'CLS 10A', subject: 'Advanced Mathematics', period_slot: '02:00 PM - 03:00 PM', date: '2026-10-05', reason: 'CBSE Mathematics Workshop Attendance', status: 'Approved' },
+      { sub_id: 'SUBST-002', original_teacher: 'Dr. Alok Chatterjee', substitute_teacher: 'Mrs. Meenakshi Sundaram', class_batch: 'CLS 11B', subject: 'Organic & Inorganic Chemistry', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-06', reason: 'Science Olympiad State Jury Duty', status: 'Approved' },
+      { sub_id: 'SUBST-003', original_teacher: 'Ms. Clara Oswald', substitute_teacher: 'Ms. Priya Deshmukh', class_batch: 'CLS 12A', subject: 'English & World Literature', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-06', reason: 'Inter-School Debate Championship Judge', status: 'Approved' },
+      { sub_id: 'SUBST-004', original_teacher: 'Mr. Robert Chen', substitute_teacher: 'Prof. Sarah Jenkins', class_batch: 'CLS 11A', subject: 'Computer Science & AI', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-07', reason: 'AI Ethics Symposium Keynote Speaker', status: 'Approved' },
+      { sub_id: 'SUBST-005', original_teacher: 'Mr. Vikramaditya Rao', substitute_teacher: 'Ms. Nandini Sen', class_batch: 'CLS 8A', subject: 'Modern World History & Civics', period_slot: '10:00 AM - 11:00 AM', date: '2026-10-07', reason: 'Heritage Council Annual Summit', status: 'Approved' },
+      { sub_id: 'SUBST-006', original_teacher: 'Mr. Arjun Kapoor', substitute_teacher: 'Mr. Robert Chen', class_batch: 'CLS 10B', subject: 'Physical Education & Athletics', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-08', reason: 'State Athletics Selection Trials', status: 'Approved' },
+      { sub_id: 'SUBST-007', original_teacher: 'Ms. Nandini Sen', substitute_teacher: 'Mr. Vikramaditya Rao', class_batch: 'CLS 12B', subject: 'Macroeconomics & Financial Markets', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-08', reason: 'Commerce Department Curriculum Review', status: 'Approved' },
+      { sub_id: 'SUBST-008', original_teacher: 'Ms. Priya Deshmukh', substitute_teacher: 'Ms. Clara Oswald', class_batch: 'CLS 9A', subject: 'Hindi Literature & Grammar', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-09', reason: 'State Sahitya Parishad Convention', status: 'Approved' },
+      { sub_id: 'SUBST-009', original_teacher: 'Mrs. Meenakshi Sundaram', substitute_teacher: 'Dr. Alok Chatterjee', class_batch: 'CLS 9B', subject: 'Genetics & Cellular Biology', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-09', reason: 'Biotech Lab Certification Inspection', status: 'Approved' },
+      { sub_id: 'SUBST-010', original_teacher: 'Dr. Evelyn Reed', substitute_teacher: 'Prof. Sarah Jenkins', class_batch: 'CLS 10B', subject: 'Physics & Dynamics', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-10', reason: 'Robotics Team National Mentorship Session', status: 'Approved' }
     ]
   },
 
@@ -630,13 +933,15 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { invoice_id: 'INV-2026-001', student_id: 'STU-001', student_name: 'Nairee Patel', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
-      { invoice_id: 'INV-2026-002', student_id: 'STU-001', student_name: 'Nairee Patel', title: 'STEM & Robotics Lab Instrumentation Fee', fee_type: 'Laboratory Fee', amount: 8500, due_date: '2026-10-25', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9042' },
-      { invoice_id: 'INV-2026-003', student_id: 'STU-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9043' },
-      { invoice_id: 'INV-2026-004', student_id: 'STU-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-005', student_id: 'STU-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9044' },
-      { invoice_id: 'INV-2026-006', student_id: 'STU-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9045' },
-      { invoice_id: 'INV-2026-007', student_id: 'STU-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-008', student_id: 'STU-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' }
+      { invoice_id: 'INV-2026-002', student_id: 'STU-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9042' },
+      { invoice_id: 'INV-2026-003', student_id: 'STU-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-004', student_id: 'STU-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9043' },
+      { invoice_id: 'INV-2026-005', student_id: 'STU-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9044' },
+      { invoice_id: 'INV-2026-006', student_id: 'STU-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-007', student_id: 'STU-007', student_name: 'Sameer Kulkarni', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-27', receipt_no: 'REC-2026-9045' },
+      { invoice_id: 'INV-2026-008', student_id: 'STU-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' },
+      { invoice_id: 'INV-2026-009', student_id: 'STU-009', student_name: 'Kavya Gupta', title: 'Term 1 Middle School Academic Fee', fee_type: 'Tuition Fee', amount: 30000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9047' },
+      { invoice_id: 'INV-2026-010', student_id: 'STU-010', student_name: 'Vihaan Reddy', title: 'Term 1 Senior Secondary Science & AI Fee', fee_type: 'Tuition Fee', amount: 42000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-26', receipt_no: 'REC-2026-9048' }
     ]
   },
 
@@ -653,7 +958,14 @@ export const INITIAL_DB_STORE = {
     rows: [
       { homework_id: 'HW 001', class_batch: 'CLS 10A', subject: 'SUB 001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step by step proofs.', due_date: 'Tomorrow 5:00 PM', assigned_by: 'TEA 001' },
       { homework_id: 'HW 002', class_batch: 'CLS 10A', subject: 'SUB 002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday 11:59 PM', assigned_by: 'TEA 002' },
-      { homework_id: 'HW 003', class_batch: 'CLS 10A', subject: 'SUB 003', title: 'Python Recursion & Linked Lists Exercise', instructions: 'Write recursive solutions for binary tree traversal and submit code file.', due_date: 'Monday 10:00 AM', assigned_by: 'TEA 003' }
+      { homework_id: 'HW 003', class_batch: 'CLS 10A', subject: 'SUB 003', title: 'Python Recursion & Linked Lists Exercise', instructions: 'Write recursive solutions for binary tree traversal and submit code file.', due_date: 'Monday 10:00 AM', assigned_by: 'TEA 003' },
+      { homework_id: 'HW 004', class_batch: 'CLS 10A', subject: 'SUB 004', title: 'Critical Essay on Victorian Romantic Literature', instructions: 'Write a 600-word essay on themes of nature and industrialization.', due_date: 'Wednesday 5:00 PM', assigned_by: 'TEA 004' },
+      { homework_id: 'HW 005', class_batch: 'CLS 10A', subject: 'SUB 005', title: 'Premchand Short Stories Analysis & Rasa Identification', instructions: 'Analyze characters and moral conflicts in story Godaan.', due_date: 'Thursday 4:00 PM', assigned_by: 'TEA 005' },
+      { homework_id: 'HW 006', class_batch: 'CLS 11B', subject: 'SUB 006', title: 'Periodic Table Trends & Redox Reactions Worksheet', instructions: 'Balance all 10 oxidation-reduction chemical equations.', due_date: 'Friday 6:00 PM', assigned_by: 'TEA 006' },
+      { homework_id: 'HW 007', class_batch: 'CLS 9B', subject: 'SUB 007', title: 'Human Circulatory & Respiratory Systems Diagram', instructions: 'Draw neat labeled diagram of heart and trace oxygen flow.', due_date: 'Saturday 12:00 PM', assigned_by: 'TEA 007' },
+      { homework_id: 'HW 008', class_batch: 'CLS 8A', subject: 'SUB 008', title: 'Indian Independence Movement Timeline 1857-1947', instructions: 'Construct chronological milestone chart with key leaders.', due_date: 'Monday 5:00 PM', assigned_by: 'TEA 008' },
+      { homework_id: 'HW 009', class_batch: 'CLS 10B', subject: 'SUB 009', title: 'Nutritional Calorie Counter & Fitness Log', instructions: 'Track daily macro nutrients and cardiovascular workout metrics.', due_date: 'Tuesday 8:00 AM', assigned_by: 'TEA 009' },
+      { homework_id: 'HW 010', class_batch: 'CLS 12B', subject: 'SUB 010', title: 'National Income Calculation & GDP Multiplier Cases', instructions: 'Solve numerical case studies for Real vs Nominal GDP.', due_date: 'Wednesday 6:00 PM', assigned_by: 'TEA 010' }
     ]
   },
 
@@ -672,7 +984,15 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { submission_id: 'SUBM-001', homework_id: 'HW 001', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Attached solved PDF for Trigonometric Integrals Exercise 4.2 with verified derivatives.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_ex_4_2_nairee.pdf', submitted_at: '2026-10-03 04:30 PM', status: 'Graded', marks_awarded: 100, teacher_feedback: 'Flawless proofs and neat layout!' },
-      { submission_id: 'SUBM-002', homework_id: 'HW 002', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Completed interactive simulation friction parameter table.', attachment_url: 'https://cdn.nairee.edu/uploads/newtonian_sim_nairee.pdf', submitted_at: '2026-10-04 02:15 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' }
+      { submission_id: 'SUBM-002', homework_id: 'HW 002', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Completed interactive simulation friction parameter table.', attachment_url: 'https://cdn.nairee.edu/uploads/newtonian_sim_nairee.pdf', submitted_at: '2026-10-04 02:15 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
+      { submission_id: 'SUBM-003', homework_id: 'HW 003', student_id: 'STU-001', student_name: 'Nairee Patel', submission_text: 'Python recursive binary tree traversal script with pytest assertions.', attachment_url: 'https://cdn.nairee.edu/uploads/binary_tree_nairee.py', submitted_at: '2026-10-04 06:00 PM', status: 'Graded', marks_awarded: 98, teacher_feedback: 'Clean code architecture and optimal time complexity.' },
+      { submission_id: 'SUBM-004', homework_id: 'HW 001', student_id: 'STU-002', student_name: 'Aarav Sharma', submission_text: 'Trigonometric Integrals step-by-step solutions.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_aarav.pdf', submitted_at: '2026-10-03 08:20 PM', status: 'Graded', marks_awarded: 90, teacher_feedback: 'Well attempted, check formula in Question 12.' },
+      { submission_id: 'SUBM-005', homework_id: 'HW 001', student_id: 'STU-003', student_name: 'Diya Gupta', submission_text: 'Full exercise 4.2 solutions with graphical curve sketch.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_diya.pdf', submitted_at: '2026-10-03 05:45 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Excellent integration substitutions.' },
+      { submission_id: 'SUBM-006', homework_id: 'HW 003', student_id: 'STU-005', student_name: 'Ananya Iyer', submission_text: 'Recursion homework submitted with edge case handling.', attachment_url: 'https://cdn.nairee.edu/uploads/recursion_ananya.py', submitted_at: '2026-10-04 05:10 PM', status: 'Graded', marks_awarded: 96, teacher_feedback: 'Very elegant recursion base conditions.' },
+      { submission_id: 'SUBM-007', homework_id: 'HW 004', student_id: 'STU-004', student_name: 'Rohan Mehta', submission_text: 'Victorian Romantic Literature comparative essay.', attachment_url: 'https://cdn.nairee.edu/uploads/essay_rohan.pdf', submitted_at: '2026-10-04 09:00 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
+      { submission_id: 'SUBM-008', homework_id: 'HW 006', student_id: 'STU-010', student_name: 'Vihaan Reddy', submission_text: 'Balanced redox equations with oxidation state notations.', attachment_url: 'https://cdn.nairee.edu/uploads/redox_vihaan.pdf', submitted_at: '2026-10-04 03:30 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Spot on ion-electron balancing.' },
+      { submission_id: 'SUBM-009', homework_id: 'HW 007', student_id: 'STU-009', student_name: 'Kavya Gupta', submission_text: 'Heart anatomy labeled diagram with double circulation chart.', attachment_url: 'https://cdn.nairee.edu/uploads/bio_kavya.pdf', submitted_at: '2026-10-04 01:20 PM', status: 'Graded', marks_awarded: 92, teacher_feedback: 'Beautiful artistic presentation and accurate labeling.' },
+      { submission_id: 'SUBM-010', homework_id: 'HW 008', student_id: 'STU-008', student_name: 'Riya Patel', submission_text: 'Freedom movement milestone poster with historic quotes.', attachment_url: 'https://cdn.nairee.edu/uploads/history_riya.pdf', submitted_at: '2026-10-04 04:00 PM', status: 'Graded', marks_awarded: 94, teacher_feedback: 'Impressive historical detail and neat design.' }
     ]
   },
 
@@ -688,7 +1008,14 @@ export const INITIAL_DB_STORE = {
     rows: [
       { parent_id: 'PAR 001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'STU-001', relationship: 'Father', children_ids: ['STU-001', 'STU-008'] },
       { parent_id: 'PAR 002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'STU-002', relationship: 'Mother', children_ids: ['STU-002'] },
-      { parent_id: 'PAR 003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'STU-003', relationship: 'Father', children_ids: ['STU-003'] }
+      { parent_id: 'PAR 003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'STU-003', relationship: 'Father', children_ids: ['STU-003', 'STU-009'] },
+      { parent_id: 'PAR 004', name: 'Manish Mehta', phone: '+91 98765 43218', email: 'manish.mehta@family.com', child: 'STU-004', relationship: 'Father', children_ids: ['STU-004'] },
+      { parent_id: 'PAR 005', name: 'Karthik Iyer', phone: '+91 98765 43220', email: 'karthik.iyer@family.com', child: 'STU-005', relationship: 'Father', children_ids: ['STU-005'] },
+      { parent_id: 'PAR 006', name: 'Harpreet Singh', phone: '+91 98765 43222', email: 'harpreet.singh@family.com', child: 'STU-006', relationship: 'Father', children_ids: ['STU-006'] },
+      { parent_id: 'PAR 007', name: 'Nitin Kulkarni', phone: '+91 98765 43224', email: 'nitin.kulkarni@family.com', child: 'STU-007', relationship: 'Father', children_ids: ['STU-007'] },
+      { parent_id: 'PAR 008', name: 'Meera Patel', phone: '+91 98765 43213', email: 'meera.patel@family.com', child: 'STU-008', relationship: 'Mother', children_ids: ['STU-001', 'STU-008'] },
+      { parent_id: 'PAR 009', name: 'Pooja Gupta', phone: '+91 98765 43217', email: 'pooja.gupta@family.com', child: 'STU-009', relationship: 'Mother', children_ids: ['STU-003', 'STU-009'] },
+      { parent_id: 'PAR 010', name: 'Venkat Reddy', phone: '+91 98765 43226', email: 'venkat.reddy@family.com', child: 'STU-010', relationship: 'Father', children_ids: ['STU-010'] }
     ]
   },
 
@@ -702,7 +1029,15 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { admin_id: 'ADM 001', name: 'Dr. Marcus Vance', email: 'admin@nairee.edu', role: 'Principal', designation: 'Executive Principal & Academic Director' },
-      { admin_id: 'ADM 002', name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar' }
+      { admin_id: 'ADM 002', name: 'Anita Verma', email: 'accounts@nairee.edu', role: 'Accountant', designation: 'Chief Financial Officer & Bursar' },
+      { admin_id: 'ADM 003', name: 'Dr. Shalini Swaminathan', email: 'viceprincipal@nairee.edu', role: 'Vice Principal', designation: 'Dean of Student Affairs & Discipline' },
+      { admin_id: 'ADM 004', name: 'Rajeshwar Hegde', email: 'registrar@nairee.edu', role: 'Registrar', designation: 'Head of Admissions & Statutory Compliance' },
+      { admin_id: 'ADM 005', name: 'Siddharth Roy', email: 'it.admin@nairee.edu', role: 'IT Director', designation: 'Head of Cloud Systems & Campus Technology' },
+      { admin_id: 'ADM 006', name: 'Deepa Nambiar', email: 'examcontroller@nairee.edu', role: 'Exam Controller', designation: 'Controller of CBSE & Internal Examinations' },
+      { admin_id: 'ADM 007', name: 'Col. Ranjit Bakshi (Retd.)', email: 'campus.admin@nairee.edu', role: 'Campus Director', designation: 'Head of Campus Operations & Security' },
+      { admin_id: 'ADM 008', name: 'Rashmi Sen', email: 'library@nairee.edu', role: 'Head Librarian', designation: 'Chief Information & Media Resources Officer' },
+      { admin_id: 'ADM 009', name: 'Gurinder Dhillon', email: 'transport@nairee.edu', role: 'Transport Incharge', designation: 'Director of Fleet & Student Logistics' },
+      { admin_id: 'ADM 010', name: 'Dr. Pallavi Menon', email: 'counselor@nairee.edu', role: 'Senior Counselor', designation: 'Head of Child Psychology & Student Wellness' }
     ]
   },
 
@@ -718,7 +1053,16 @@ export const INITIAL_DB_STORE = {
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { tc_id: 'TC-2026-001', student_id: 'STU-007', student_name: 'Sameer Kulkarni', class_batch: 'Class 10 - Section B', leaving_date: '2026-08-30', reason: 'Parent Relocated to Mumbai', conduct: 'Exemplary', status: 'Issued' }
+      { tc_id: 'TC-2026-001', student_id: 'STU-007', student_name: 'Sameer Kulkarni', class_batch: 'Class 10 - Section B', leaving_date: '2026-08-30', reason: 'Parent Relocated to Mumbai', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-002', student_id: 'STU-901', student_name: 'Aaditya Bhattacharya', class_batch: 'Class 12 - Section A', leaving_date: '2026-06-15', reason: 'Completed Senior Secondary Course', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-003', student_id: 'STU-902', student_name: 'Meghna Kapoor', class_batch: 'Class 12 - Section B', leaving_date: '2026-06-15', reason: 'Higher Studies in London', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-004', student_id: 'STU-903', student_name: 'Pranav Menon', class_batch: 'Class 9 - Section A', leaving_date: '2026-07-20', reason: 'Family Relocation to Singapore', conduct: 'Good', status: 'Issued' },
+      { tc_id: 'TC-2026-005', student_id: 'STU-904', student_name: 'Sanya Mirza', class_batch: 'Class 11 - Section A', leaving_date: '2026-08-05', reason: 'Admission to National Sports Academy', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-006', student_id: 'STU-905', student_name: 'Devansh Singhania', class_batch: 'Class 10 - Section A', leaving_date: '2026-08-12', reason: 'Father Transferred to New Delhi', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-007', student_id: 'STU-906', student_name: 'Isha Nair', class_batch: 'Class 8 - Section A', leaving_date: '2026-08-22', reason: 'Parent Employment Shift', conduct: 'Good', status: 'Issued' },
+      { tc_id: 'TC-2026-008', student_id: 'STU-907', student_name: 'Arya Vardhan', class_batch: 'Class 11 - Section B', leaving_date: '2026-09-01', reason: 'Transfer to Boarding School', conduct: 'Good', status: 'Issued' },
+      { tc_id: 'TC-2026-009', student_id: 'STU-908', student_name: 'Gauri Shankar', class_batch: 'Class 6 - Section A', leaving_date: '2026-09-10', reason: 'Relocated to Hyderabad', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-010', student_id: 'STU-909', student_name: 'Yuvraj Chawla', class_batch: 'Class 12 - Section A', leaving_date: '2026-09-18', reason: 'International Baccalaureate Enrollment', conduct: 'Exemplary', status: 'Issued' }
     ]
   },
 
@@ -732,8 +1076,16 @@ export const INITIAL_DB_STORE = {
       { name: 'email', type: 'VARCHAR(255)', pk: 0 }
     ],
     rows: [
-      { alumni_id: 'ALUM-2025-01', name: 'Tanvi Deshmukh', passing_year: 'Batch of 2025', higher_education: 'B.Tech Computer Science, IIT Bombay', current_profession: 'AI Research Intern', email: 'tanvi.deshmukh@alumni.nairee.edu' },
-      { alumni_id: 'ALUM-2024-02', name: 'Karan Mehra', passing_year: 'Batch of 2024', higher_education: 'MBBS, AIIMS New Delhi', current_profession: 'Medical Scholar', email: 'karan.mehra@alumni.nairee.edu' }
+      { alumni_id: 'ALUM-2025-01', name: 'Tanvi Deshmukh', passing_year: 'Batch of 2025', higher_education: 'B.Tech Computer Science, IIT Bombay', current_profession: 'AI Research Scholar', email: 'tanvi.deshmukh@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2024-02', name: 'Karan Mehra', passing_year: 'Batch of 2024', higher_education: 'MBBS, AIIMS New Delhi', current_profession: 'Resident Medical Officer', email: 'karan.mehra@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2023-03', name: 'Sneha Chawla', passing_year: 'Batch of 2023', higher_education: 'B.A. Economics (Hons), Shri Ram College of Commerce (SRCC)', current_profession: 'Investment Analyst, Morgan Stanley', email: 'sneha.chawla@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2022-04', name: 'Aditya Narayan', passing_year: 'Batch of 2022', higher_education: 'B.S. Aerospace Engineering, MIT USA', current_profession: 'Propulsion Research Engineer, NASA JPL', email: 'aditya.narayan@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2021-05', name: 'Pooja Hegde', passing_year: 'Batch of 2021', higher_education: 'B.Arch, School of Planning and Architecture (SPA) Delhi', current_profession: 'Lead Urban Architect, Foster + Partners', email: 'pooja.hegde@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2020-06', name: 'Vikramaditya Seth', passing_year: 'Batch of 2020', higher_education: 'B.A. LL.B (Hons), National Law School of India (NLSIU)', current_profession: 'Corporate Advocate, Supreme Court of India', email: 'vikram.seth@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2019-07', name: 'Ananya Roy', passing_year: 'Batch of 2019', higher_education: 'M.Sc. Data Science, Stanford University', current_profession: 'Senior Machine Learning Scientist, Google DeepMind', email: 'ananya.roy@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2018-08', name: 'Harshvardhan Goel', passing_year: 'Batch of 2018', higher_education: 'MBA, Indian Institute of Management (IIM) Ahmedabad', current_profession: 'Venture Capital Partner, Peak XV Partners', email: 'harsh.goel@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2017-09', name: 'Natasha Wadia', passing_year: 'Batch of 2017', higher_education: 'M.D. Pediatrics, Johns Hopkins University', current_profession: 'Pediatric Cardiologist', email: 'natasha.wadia@alumni.nairee.edu' },
+      { alumni_id: 'ALUM-2016-10', name: 'Rishabh Bajaj', passing_year: 'Batch of 2016', higher_education: 'B.Tech Electrical Engineering, IIT Madras', current_profession: 'Founder & CEO, Quantum Clean Energy', email: 'rishabh.bajaj@alumni.nairee.edu' }
     ]
   }
 };
@@ -764,6 +1116,8 @@ export const FALLBACK_DATA = {
   users: [
     { id: 'admin 1', username: 'admin', full_name: 'Dr. Marcus Vance', role: 'admin', email: 'admin@nairee.edu', status: 'Active', department: 'Executive Board', phone: '+91 98765 43210' },
     { id: 'teacher 1', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'TEA 001' },
+    { id: 'teacher 2', username: 'teacher_reed', full_name: 'Dr. Evelyn Reed', role: 'teacher', email: 'ereed@nairee.edu', status: 'Active', department: 'STEM & Robotics', phone: '+91 98765 34567', teacher_number: 'TEA 002' },
+    { id: 'teacher 3', username: 'teacher_chen', full_name: 'Mr. Robert Chen', role: 'teacher', email: 'rchen@nairee.edu', status: 'Active', department: 'Computer Science', phone: '+91 98765 23456', teacher_number: 'TEA 003' },
     { id: 'STU-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '101', student_id: 'STU-001' },
     { id: 'STU-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '102', student_id: 'STU-002' },
     { id: 'parent 1', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212', children: [{ id: 'STU-001', name: 'Nairee Patel', class_batch: 'Class 10 - Section A' }, { id: 'STU-008', name: 'Riya Patel', class_batch: 'Class 6 - Section A' }] }

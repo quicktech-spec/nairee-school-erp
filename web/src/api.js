@@ -125,19 +125,68 @@ export function subscribeLiveEvents(callback) {
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
+const DB_VERSION_KEY = 'nairee_db_v2_10_records';
+
+const PK_MAP = {
+  'Student List': 'student_id',
+  'Teacher List': 'teacher_number',
+  'Class & Batch List': 'batch_id',
+  'Subjects List': 'subject_id',
+  'Assessment Plans': 'plan_id',
+  'Assessment Results': 'result_id',
+  'Attendance Records': 'attendance_id',
+  'Teacher Attendance': 'punch_id',
+  'Classes Conducted Log': 'log_id',
+  'Teacher Substitution': 'sub_id',
+  'Fee Invoices & Ledger': 'invoice_id',
+  'Homework List': 'homework_id',
+  'Homework Submissions': 'submission_id',
+  'Parent List': 'parent_id',
+  'Admin List': 'admin_id',
+  'Transfer Certificates': 'tc_id',
+  'Alumni Network': 'alumni_id'
+};
+
 export function getStoredDb() {
   if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
   try {
     const saved = localStorage.getItem('nairee_db_store');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Merge with initial schema to ensure any newly added tables are always present
       const merged = { ...INITIAL_DB_STORE };
-      Object.keys(parsed).forEach(k => {
-        if (parsed[k] && parsed[k].rows) {
-          merged[k] = parsed[k];
+      
+      Object.keys(INITIAL_DB_STORE).forEach(tableName => {
+        const initTable = INITIAL_DB_STORE[tableName];
+        const savedTable = parsed[tableName];
+        const pkField = PK_MAP[tableName];
+
+        if (savedTable && Array.isArray(savedTable.rows) && pkField) {
+          // Merge: Keep user modifications/creations, and add missing initial rows
+          const savedRowsMap = new Map();
+          savedTable.rows.forEach(r => {
+            if (r && r[pkField]) savedRowsMap.set(String(r[pkField]), r);
+          });
+
+          // Ensure every initial row is present
+          const finalRows = [...savedTable.rows];
+          if (initTable && Array.isArray(initTable.rows)) {
+            initTable.rows.forEach(initRow => {
+              if (initRow && initRow[pkField] && !savedRowsMap.has(String(initRow[pkField]))) {
+                finalRows.push(initRow);
+              }
+            });
+          }
+
+          merged[tableName] = {
+            ...initTable,
+            columns: initTable?.columns || savedTable.columns,
+            rows: finalRows
+          };
+        } else if (savedTable && savedTable.rows) {
+          merged[tableName] = savedTable;
         }
       });
+
       return merged;
     }
   } catch (e) {
