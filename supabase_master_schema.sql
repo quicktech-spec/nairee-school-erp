@@ -514,44 +514,18 @@ VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-4444444
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 SUBJECTS
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4, '33333333-3333-3333-3333-333333333332')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('CS-104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('ENG-105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('HIST-108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
-ON CONFLICT (subject_code) DO NOTHING;
-
-INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours)
+VALUES 
+('MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4),
+('PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4),
+('CS-104', 'Computer Science & AI', 'Computer Science', 3),
+('ENG-105', 'English & World Literature', 'Humanities & English', 3),
+('HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3),
+('CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4),
+('BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4),
+('HIST-108', 'Modern World History & Civics', 'Social Sciences', 3),
+('PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2),
+('ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4)
 ON CONFLICT (subject_code) DO NOTHING;
 
 -- 10 STUDENTS
