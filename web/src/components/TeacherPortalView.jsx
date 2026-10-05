@@ -67,7 +67,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     try {
       localStorage.setItem('nairee_teacher_punch', nextStatus);
       localStorage.setItem('nairee_teacher_punch_time', timeStr);
-      await api.punchTeacher(user?.teacher_number || user?.id || 'TEA-001', user?.full_name || 'Prof. Sarah Jenkins');
+      await api.punchTeacher(user?.teacher_number || user?.id || 'NIS-2020-811-001', user?.full_name || 'Prof. Sarah Jenkins');
     } catch {}
     if (nextStatus === 'out') {
       showToast(`Punched Out at ${timeStr}. Shift recorded to Principal overview.`);
@@ -277,7 +277,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
       await api.createHomework({
         ...newHomework,
         student_batch: newHomework.student_batch || selectedBatch,
-        faculty: user?.teacher_number || user?.faculty_id || user?.id || 'TEA-001',
+        faculty: user?.teacher_number || user?.faculty_id || user?.id || 'NIS-2020-811-001',
         faculty_name: user?.full_name || 'Prof. Sarah Jenkins'
       });
       showToast('Homework assigned! Students and parents have been notified.');

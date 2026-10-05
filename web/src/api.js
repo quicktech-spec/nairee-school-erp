@@ -125,6 +125,27 @@ export function subscribeLiveEvents(callback) {
 }
 
 // Central Student ID Generator: [School Code]-[Year of Admission]-[Aadhaar Card Last 3 Digits]-[Sequence]
+
+// Central Teacher ID Generator: [School Code]-[Year of Employment]-[Aadhaar Card Last 3 Digits]-[Sequence]
+export function generateTeacherId({ schoolCode = 'NIS', joiningDate = '', joiningYear = '', aadhaarNo = '', sequence = 1 } = {}) {
+  const code = (schoolCode || 'NIS').toUpperCase().trim();
+  let year = '';
+  if (joiningYear) {
+    year = String(joiningYear).trim();
+  } else if (joiningDate) {
+    const d = new Date(joiningDate);
+    year = !isNaN(d.getFullYear()) ? String(d.getFullYear()) : '2022';
+  } else {
+    year = '2022';
+  }
+  
+  const cleanAadhaar = String(aadhaarNo || '').replace(/\D/g, '');
+  const aadhaarLast3 = cleanAadhaar.length >= 3 ? cleanAadhaar.slice(-3) : String(aadhaarNo || '800').slice(-3).padStart(3, '0');
+  const seqStr = String(sequence || 1).padStart(3, '0');
+
+  return `${code}-${year}-${aadhaarLast3}-${seqStr}`;
+}
+
 export function generateStudentId({ schoolCode = 'NIS', admissionDate = '', admissionYear = '', aadhaarNo = '', sequence = 1 } = {}) {
   const code = (schoolCode || 'NIS').toUpperCase().trim();
   let year = '';
@@ -145,7 +166,7 @@ export function generateStudentId({ schoolCode = 'NIS', admissionDate = '', admi
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v6_school_shortcode';
+const DB_VERSION_KEY = 'nairee_db_v7_teacher_smart_ids';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -997,7 +1018,7 @@ export const api = {
     const today = new Date().toISOString().split('T')[0];
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const cleanTNum = String(teacherNumber || 'TEA-001').toUpperCase().trim();
+    const cleanTNum = String(teacherNumber || 'NIS-2020-811-001').toUpperCase().trim();
     const existingIdx = currentRows.findIndex(r => r.teacher_number === cleanTNum && r.date === today);
 
     let status = 'On Duty';

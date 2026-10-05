@@ -2,7 +2,7 @@
 // Single Source of Truth for all Portals, Database Studio, and Management Views
 // Unified Person & Entity Primary Key ID Convention:
 // - Students: NIS-2024-091-001 through NIS-2024-100-010
-// - Teachers: TEA-001 through TEA-010
+// - Teachers: NIS-2020-811-001 through NIS-2021-820-010
 // - Parents:  PAR-001 through PAR-010
 // - Admins:   ADM-001 through ADM-010
 // - Classes:  CLS-10A, CLS-10B, CLS-11A, CLS-11B, CLS-12A, CLS-12B, CLS-09A, CLS-09B, CLS-08A, CLS-06A
@@ -447,7 +447,7 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { 
-        teacher_number: 'TEA-001', 
+        teacher_number: 'NIS-2020-811-001', 
         name: 'Prof. Sarah Jenkins', 
         photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
         gender: 'Female',
@@ -477,7 +477,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active' 
       },
       { 
-        teacher_number: 'TEA-002', 
+        teacher_number: 'NIS-2019-812-002', 
         name: 'Dr. Evelyn Reed', 
         photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
         gender: 'Female',
@@ -507,7 +507,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active' 
       },
       { 
-        teacher_number: 'TEA-003', 
+        teacher_number: 'NIS-2021-813-003', 
         name: 'Mr. Robert Chen', 
         photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
         gender: 'Male',
@@ -537,7 +537,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active' 
       },
       { 
-        teacher_number: 'TEA-004', 
+        teacher_number: 'NIS-2022-814-004', 
         name: 'Ms. Clara Oswald', 
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         gender: 'Female',
@@ -567,7 +567,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active' 
       },
       {
-        teacher_number: 'TEA-005',
+        teacher_number: 'NIS-2021-815-005',
         name: 'Ms. Priya Deshmukh',
         photo: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150',
         gender: 'Female',
@@ -597,7 +597,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        teacher_number: 'TEA-006',
+        teacher_number: 'NIS-2018-816-006',
         name: 'Dr. Alok Chatterjee',
         photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
         gender: 'Male',
@@ -627,7 +627,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        teacher_number: 'TEA-007',
+        teacher_number: 'NIS-2020-817-007',
         name: 'Mrs. Meenakshi Sundaram',
         photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
         gender: 'Female',
@@ -657,7 +657,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        teacher_number: 'TEA-008',
+        teacher_number: 'NIS-2019-818-008',
         name: 'Mr. Vikramaditya Rao',
         photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150',
         gender: 'Male',
@@ -687,7 +687,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        teacher_number: 'TEA-009',
+        teacher_number: 'NIS-2023-819-009',
         name: 'Mr. Arjun Kapoor',
         photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
         gender: 'Male',
@@ -717,7 +717,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        teacher_number: 'TEA-010',
+        teacher_number: 'NIS-2021-820-010',
         name: 'Ms. Nandini Sen',
         photo: 'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150',
         gender: 'Female',
@@ -753,21 +753,21 @@ export const INITIAL_DB_STORE = {
     columns: [
       { name: 'batch_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'batch_name', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'class_teacher', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
+      { name: 'class_teacher', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
       { name: 'room_no', type: 'VARCHAR(50)', pk: 0 },
       { name: 'capacity', type: 'INT', pk: 0 }
     ],
     rows: [
-      { batch_id: 'CLS-10A', batch_name: 'Class 10 - Section A', class_teacher: 'TEA-001', room_no: 'Room 204', capacity: 35 },
-      { batch_id: 'CLS-10B', batch_name: 'Class 10 - Section B', class_teacher: 'TEA-002', room_no: 'Room 205', capacity: 35 },
-      { batch_id: 'CLS-11A', batch_name: 'Class 11 - Section A', class_teacher: 'TEA-003', room_no: 'Room 301', capacity: 30 },
-      { batch_id: 'CLS-11B', batch_name: 'Class 11 - Section B', class_teacher: 'TEA-006', room_no: 'Room 302', capacity: 30 },
-      { batch_id: 'CLS-12A', batch_name: 'Class 12 - Section A (Science)', class_teacher: 'TEA-004', room_no: 'Room 303', capacity: 30 },
-      { batch_id: 'CLS-12B', batch_name: 'Class 12 - Section B (Commerce)', class_teacher: 'TEA-010', room_no: 'Room 304', capacity: 30 },
-      { batch_id: 'CLS-09A', batch_name: 'Class 9 - Section A', class_teacher: 'TEA-005', room_no: 'Room 104', capacity: 35 },
-      { batch_id: 'CLS-09B', batch_name: 'Class 9 - Section B', class_teacher: 'TEA-007', room_no: 'Room 105', capacity: 35 },
-      { batch_id: 'CLS-08A', batch_name: 'Class 8 - Section A', class_teacher: 'TEA-008', room_no: 'Room 102', capacity: 35 },
-      { batch_id: 'CLS-06A', batch_name: 'Class 6 - Section A', class_teacher: 'TEA-009', room_no: 'Room 101', capacity: 35 }
+      { batch_id: 'CLS-10A', batch_name: 'Class 10 - Section A', class_teacher: 'NIS-2020-811-001', room_no: 'Room 204', capacity: 35 },
+      { batch_id: 'CLS-10B', batch_name: 'Class 10 - Section B', class_teacher: 'NIS-2019-812-002', room_no: 'Room 205', capacity: 35 },
+      { batch_id: 'CLS-11A', batch_name: 'Class 11 - Section A', class_teacher: 'NIS-2021-813-003', room_no: 'Room 301', capacity: 30 },
+      { batch_id: 'CLS-11B', batch_name: 'Class 11 - Section B', class_teacher: 'NIS-2018-816-006', room_no: 'Room 302', capacity: 30 },
+      { batch_id: 'CLS-12A', batch_name: 'Class 12 - Section A (Science)', class_teacher: 'NIS-2022-814-004', room_no: 'Room 303', capacity: 30 },
+      { batch_id: 'CLS-12B', batch_name: 'Class 12 - Section B (Commerce)', class_teacher: 'NIS-2021-820-010', room_no: 'Room 304', capacity: 30 },
+      { batch_id: 'CLS-09A', batch_name: 'Class 9 - Section A', class_teacher: 'NIS-2021-815-005', room_no: 'Room 104', capacity: 35 },
+      { batch_id: 'CLS-09B', batch_name: 'Class 9 - Section B', class_teacher: 'NIS-2020-817-007', room_no: 'Room 105', capacity: 35 },
+      { batch_id: 'CLS-08A', batch_name: 'Class 8 - Section A', class_teacher: 'NIS-2019-818-008', room_no: 'Room 102', capacity: 35 },
+      { batch_id: 'CLS-06A', batch_name: 'Class 6 - Section A', class_teacher: 'NIS-2023-819-009', room_no: 'Room 101', capacity: 35 }
     ]
   },
 
@@ -776,21 +776,21 @@ export const INITIAL_DB_STORE = {
       { name: 'subject_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'subject_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'subject_code', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'teacher', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
+      { name: 'teacher', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
       { name: 'credit_hours', type: 'INT', pk: 0 },
       { name: 'department', type: 'VARCHAR(255)', pk: 0 }
     ],
     rows: [
-      { subject_id: 'SUB-001', subject_name: 'Advanced Mathematics', subject_code: 'MATH-101', teacher: 'TEA-001', credit_hours: 4, department: 'Mathematics & Science' },
-      { subject_id: 'SUB-002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS-102', teacher: 'TEA-002', credit_hours: 4, department: 'Physics & STEM' },
-      { subject_id: 'SUB-003', subject_name: 'Computer Science & AI', subject_code: 'CS-104', teacher: 'TEA-003', credit_hours: 3, department: 'Computer Science' },
-      { subject_id: 'SUB-004', subject_name: 'English & World Literature', subject_code: 'ENG-105', teacher: 'TEA-004', credit_hours: 3, department: 'Humanities & English' },
-      { subject_id: 'SUB-005', subject_name: 'Hindi Literature & Grammar', subject_code: 'HIN-106', teacher: 'TEA-005', credit_hours: 3, department: 'Languages & Humanities' },
-      { subject_id: 'SUB-006', subject_name: 'Organic & Inorganic Chemistry', subject_code: 'CHEM-103', teacher: 'TEA-006', credit_hours: 4, department: 'Chemistry & Science' },
-      { subject_id: 'SUB-007', subject_name: 'Genetics & Cellular Biology', subject_code: 'BIO-107', teacher: 'TEA-007', credit_hours: 4, department: 'Life Sciences' },
-      { subject_id: 'SUB-008', subject_name: 'Modern World History & Civics', subject_code: 'HIST-108', teacher: 'TEA-008', credit_hours: 3, department: 'Social Sciences' },
-      { subject_id: 'SUB-009', subject_name: 'Physical Education & Athletics', subject_code: 'PE-109', teacher: 'TEA-009', credit_hours: 2, department: 'Sports & Physical Education' },
-      { subject_id: 'SUB-010', subject_name: 'Macroeconomics & Financial Markets', subject_code: 'ECON-110', teacher: 'TEA-010', credit_hours: 4, department: 'Commerce & Economics' }
+      { subject_id: 'SUB-001', subject_name: 'Advanced Mathematics', subject_code: 'MATH-101', teacher: 'NIS-2020-811-001', credit_hours: 4, department: 'Mathematics & Science' },
+      { subject_id: 'SUB-002', subject_name: 'Physics & Dynamics', subject_code: 'PHYS-102', teacher: 'NIS-2019-812-002', credit_hours: 4, department: 'Physics & STEM' },
+      { subject_id: 'SUB-003', subject_name: 'Computer Science & AI', subject_code: 'CS-104', teacher: 'NIS-2021-813-003', credit_hours: 3, department: 'Computer Science' },
+      { subject_id: 'SUB-004', subject_name: 'English & World Literature', subject_code: 'ENG-105', teacher: 'NIS-2022-814-004', credit_hours: 3, department: 'Humanities & English' },
+      { subject_id: 'SUB-005', subject_name: 'Hindi Literature & Grammar', subject_code: 'HIN-106', teacher: 'NIS-2021-815-005', credit_hours: 3, department: 'Languages & Humanities' },
+      { subject_id: 'SUB-006', subject_name: 'Organic & Inorganic Chemistry', subject_code: 'CHEM-103', teacher: 'NIS-2018-816-006', credit_hours: 4, department: 'Chemistry & Science' },
+      { subject_id: 'SUB-007', subject_name: 'Genetics & Cellular Biology', subject_code: 'BIO-107', teacher: 'NIS-2020-817-007', credit_hours: 4, department: 'Life Sciences' },
+      { subject_id: 'SUB-008', subject_name: 'Modern World History & Civics', subject_code: 'HIST-108', teacher: 'NIS-2019-818-008', credit_hours: 3, department: 'Social Sciences' },
+      { subject_id: 'SUB-009', subject_name: 'Physical Education & Athletics', subject_code: 'PE-109', teacher: 'NIS-2023-819-009', credit_hours: 2, department: 'Sports & Physical Education' },
+      { subject_id: 'SUB-010', subject_name: 'Macroeconomics & Financial Markets', subject_code: 'ECON-110', teacher: 'NIS-2021-820-010', credit_hours: 4, department: 'Commerce & Economics' }
     ]
   },
 
@@ -872,7 +872,7 @@ export const INITIAL_DB_STORE = {
   'Teacher Attendance': {
     columns: [
       { name: 'punch_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
+      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
       { name: 'name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'date', type: 'DATE', pk: 0 },
       { name: 'punch_in', type: 'VARCHAR(20)', pk: 0 },
@@ -881,23 +881,23 @@ export const INITIAL_DB_STORE = {
       { name: 'hours_recorded', type: 'DECIMAL(4,2)', pk: 0 }
     ],
     rows: [
-      { punch_id: 'TP-001', teacher_number: 'TEA-001', name: 'Prof. Sarah Jenkins', date: '2026-10-05', punch_in: '07:48 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-002', teacher_number: 'TEA-002', name: 'Dr. Evelyn Reed', date: '2026-10-05', punch_in: '07:55 AM', punch_out: '04:20 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-003', teacher_number: 'TEA-003', name: 'Mr. Robert Chen', date: '2026-10-05', punch_in: '08:02 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-004', teacher_number: 'TEA-004', name: 'Ms. Clara Oswald', date: '2026-10-05', punch_in: '08:12 AM', punch_out: '04:25 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-005', teacher_number: 'TEA-005', name: 'Ms. Priya Deshmukh', date: '2026-10-05', punch_in: '08:05 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-006', teacher_number: 'TEA-006', name: 'Dr. Alok Chatterjee', date: '2026-10-05', punch_in: '07:50 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-007', teacher_number: 'TEA-007', name: 'Mrs. Meenakshi Sundaram', date: '2026-10-05', punch_in: '08:10 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-008', teacher_number: 'TEA-008', name: 'Mr. Vikramaditya Rao', date: '2026-10-05', punch_in: '08:15 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
-      { punch_id: 'TP-009', teacher_number: 'TEA-009', name: 'Mr. Arjun Kapoor', date: '2026-10-05', punch_in: '07:30 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.5 },
-      { punch_id: 'TP-010', teacher_number: 'TEA-010', name: 'Ms. Nandini Sen', date: '2026-10-05', punch_in: '08:00 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 }
+      { punch_id: 'TP-001', teacher_number: 'NIS-2020-811-001', name: 'Prof. Sarah Jenkins', date: '2026-10-05', punch_in: '07:48 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-002', teacher_number: 'NIS-2019-812-002', name: 'Dr. Evelyn Reed', date: '2026-10-05', punch_in: '07:55 AM', punch_out: '04:20 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-003', teacher_number: 'NIS-2021-813-003', name: 'Mr. Robert Chen', date: '2026-10-05', punch_in: '08:02 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-004', teacher_number: 'NIS-2022-814-004', name: 'Ms. Clara Oswald', date: '2026-10-05', punch_in: '08:12 AM', punch_out: '04:25 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-005', teacher_number: 'NIS-2021-815-005', name: 'Ms. Priya Deshmukh', date: '2026-10-05', punch_in: '08:05 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-006', teacher_number: 'NIS-2018-816-006', name: 'Dr. Alok Chatterjee', date: '2026-10-05', punch_in: '07:50 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-007', teacher_number: 'NIS-2020-817-007', name: 'Mrs. Meenakshi Sundaram', date: '2026-10-05', punch_in: '08:10 AM', punch_out: '04:10 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-008', teacher_number: 'NIS-2019-818-008', name: 'Mr. Vikramaditya Rao', date: '2026-10-05', punch_in: '08:15 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 },
+      { punch_id: 'TP-009', teacher_number: 'NIS-2023-819-009', name: 'Mr. Arjun Kapoor', date: '2026-10-05', punch_in: '07:30 AM', punch_out: '04:00 PM', status: 'On Duty', hours_recorded: 8.5 },
+      { punch_id: 'TP-010', teacher_number: 'NIS-2021-820-010', name: 'Ms. Nandini Sen', date: '2026-10-05', punch_in: '08:00 AM', punch_out: '04:15 PM', status: 'On Duty', hours_recorded: 8.0 }
     ]
   },
 
   'Classes Conducted Log': {
     columns: [
       { name: 'log_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
+      { name: 'teacher_number', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
       { name: 'teacher_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 },
       { name: 'subject', type: 'VARCHAR(50) [Link to Subjects List: SUB-001..SUB-010]', pk: 0 },
@@ -906,24 +906,24 @@ export const INITIAL_DB_STORE = {
       { name: 'date', type: 'DATE', pk: 0 }
     ],
     rows: [
-      { log_id: 'LOG-001', teacher_number: 'TEA-001', teacher_name: 'Prof. Sarah Jenkins', class_batch: 'CLS-10A', subject: 'SUB-001', topic_covered: 'Quadratic Polynomial Factorization & Real Roots', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
-      { log_id: 'LOG-002', teacher_number: 'TEA-002', teacher_name: 'Dr. Evelyn Reed', class_batch: 'CLS-10A', subject: 'SUB-002', topic_covered: 'Electromagnetic Inductance & Faraday Law Verification', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
-      { log_id: 'LOG-003', teacher_number: 'TEA-003', teacher_name: 'Mr. Robert Chen', class_batch: 'CLS-10A', subject: 'SUB-003', topic_covered: 'Neural Network Architecture & Backpropagation', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
-      { log_id: 'LOG-004', teacher_number: 'TEA-004', teacher_name: 'Ms. Clara Oswald', class_batch: 'CLS-10A', subject: 'SUB-004', topic_covered: 'Shakespearean Sonnets & Metaphorical Analysis', period_slot: '12:00 PM - 01:00 PM', date: '2026-10-05' },
-      { log_id: 'LOG-005', teacher_number: 'TEA-005', teacher_name: 'Ms. Priya Deshmukh', class_batch: 'CLS-10A', subject: 'SUB-005', topic_covered: 'Samas & Sandhi Applications in Modern Prose', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' },
-      { log_id: 'LOG-006', teacher_number: 'TEA-006', teacher_name: 'Dr. Alok Chatterjee', class_batch: 'CLS-11B', subject: 'SUB-006', topic_covered: 'Benzene Ring Resonance & Electrophilic Substitution', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
-      { log_id: 'LOG-007', teacher_number: 'TEA-007', teacher_name: 'Mrs. Meenakshi Sundaram', class_batch: 'CLS-09B', subject: 'SUB-007', topic_covered: 'Mendelian Genetics & Monohybrid Cross Experiments', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
-      { log_id: 'LOG-008', teacher_number: 'TEA-008', teacher_name: 'Mr. Vikramaditya Rao', class_batch: 'CLS-08A', subject: 'SUB-008', topic_covered: 'The French Revolution & Drafting of Human Rights', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
-      { log_id: 'LOG-009', teacher_number: 'TEA-009', teacher_name: 'Mr. Arjun Kapoor', class_batch: 'CLS-10B', subject: 'SUB-009', topic_covered: 'Track Athletics Sprint Mechanics & High Jump Technique', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-05' },
-      { log_id: 'LOG-010', teacher_number: 'TEA-010', teacher_name: 'Ms. Nandini Sen', class_batch: 'CLS-12B', subject: 'SUB-010', topic_covered: 'RBI Monetary Policies, Repo Rates & Inflation Control', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' }
+      { log_id: 'LOG-001', teacher_number: 'NIS-2020-811-001', teacher_name: 'Prof. Sarah Jenkins', class_batch: 'CLS-10A', subject: 'SUB-001', topic_covered: 'Quadratic Polynomial Factorization & Real Roots', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
+      { log_id: 'LOG-002', teacher_number: 'NIS-2019-812-002', teacher_name: 'Dr. Evelyn Reed', class_batch: 'CLS-10A', subject: 'SUB-002', topic_covered: 'Electromagnetic Inductance & Faraday Law Verification', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
+      { log_id: 'LOG-003', teacher_number: 'NIS-2021-813-003', teacher_name: 'Mr. Robert Chen', class_batch: 'CLS-10A', subject: 'SUB-003', topic_covered: 'Neural Network Architecture & Backpropagation', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-004', teacher_number: 'NIS-2022-814-004', teacher_name: 'Ms. Clara Oswald', class_batch: 'CLS-10A', subject: 'SUB-004', topic_covered: 'Shakespearean Sonnets & Metaphorical Analysis', period_slot: '12:00 PM - 01:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-005', teacher_number: 'NIS-2021-815-005', teacher_name: 'Ms. Priya Deshmukh', class_batch: 'CLS-10A', subject: 'SUB-005', topic_covered: 'Samas & Sandhi Applications in Modern Prose', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' },
+      { log_id: 'LOG-006', teacher_number: 'NIS-2018-816-006', teacher_name: 'Dr. Alok Chatterjee', class_batch: 'CLS-11B', subject: 'SUB-006', topic_covered: 'Benzene Ring Resonance & Electrophilic Substitution', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-05' },
+      { log_id: 'LOG-007', teacher_number: 'NIS-2020-817-007', teacher_name: 'Mrs. Meenakshi Sundaram', class_batch: 'CLS-09B', subject: 'SUB-007', topic_covered: 'Mendelian Genetics & Monohybrid Cross Experiments', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-05' },
+      { log_id: 'LOG-008', teacher_number: 'NIS-2019-818-008', teacher_name: 'Mr. Vikramaditya Rao', class_batch: 'CLS-08A', subject: 'SUB-008', topic_covered: 'The French Revolution & Drafting of Human Rights', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-05' },
+      { log_id: 'LOG-009', teacher_number: 'NIS-2023-819-009', teacher_name: 'Mr. Arjun Kapoor', class_batch: 'CLS-10B', subject: 'SUB-009', topic_covered: 'Track Athletics Sprint Mechanics & High Jump Technique', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-05' },
+      { log_id: 'LOG-010', teacher_number: 'NIS-2021-820-010', teacher_name: 'Ms. Nandini Sen', class_batch: 'CLS-12B', subject: 'SUB-010', topic_covered: 'RBI Monetary Policies, Repo Rates & Inflation Control', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-05' }
     ]
   },
 
   'Teacher Substitution': {
     columns: [
       { name: 'sub_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'original_teacher', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
-      { name: 'substitute_teacher', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 },
+      { name: 'original_teacher', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
+      { name: 'substitute_teacher', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 },
       { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 },
       { name: 'subject', type: 'VARCHAR(50) [Link to Subjects List: SUB-001..SUB-010]', pk: 0 },
       { name: 'period_slot', type: 'VARCHAR(50)', pk: 0 },
@@ -932,16 +932,16 @@ export const INITIAL_DB_STORE = {
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { sub_id: 'SUBST-001', original_teacher: 'TEA-001', substitute_teacher: 'TEA-002', class_batch: 'CLS-10A', subject: 'SUB-001', period_slot: '02:00 PM - 03:00 PM', date: '2026-10-05', reason: 'CBSE Mathematics Workshop Attendance', status: 'Approved' },
-      { sub_id: 'SUBST-002', original_teacher: 'TEA-006', substitute_teacher: 'TEA-007', class_batch: 'CLS-11B', subject: 'SUB-006', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-06', reason: 'Science Olympiad State Jury Duty', status: 'Approved' },
-      { sub_id: 'SUBST-003', original_teacher: 'TEA-004', substitute_teacher: 'TEA-005', class_batch: 'CLS-12A', subject: 'SUB-004', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-06', reason: 'Inter-School Debate Championship Judge', status: 'Approved' },
-      { sub_id: 'SUBST-004', original_teacher: 'TEA-003', substitute_teacher: 'TEA-001', class_batch: 'CLS-11A', subject: 'SUB-003', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-07', reason: 'AI Ethics Symposium Keynote Speaker', status: 'Approved' },
-      { sub_id: 'SUBST-005', original_teacher: 'TEA-008', substitute_teacher: 'TEA-010', class_batch: 'CLS-08A', subject: 'SUB-008', period_slot: '10:00 AM - 11:00 AM', date: '2026-10-07', reason: 'Heritage Council Annual Summit', status: 'Approved' },
-      { sub_id: 'SUBST-006', original_teacher: 'TEA-009', substitute_teacher: 'TEA-003', class_batch: 'CLS-10B', subject: 'SUB-009', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-08', reason: 'State Athletics Selection Trials', status: 'Approved' },
-      { sub_id: 'SUBST-007', original_teacher: 'TEA-010', substitute_teacher: 'TEA-008', class_batch: 'CLS-12B', subject: 'SUB-010', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-08', reason: 'Commerce Department Curriculum Review', status: 'Approved' },
-      { sub_id: 'SUBST-008', original_teacher: 'TEA-005', substitute_teacher: 'TEA-004', class_batch: 'CLS-09A', subject: 'SUB-005', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-09', reason: 'State Sahitya Parishad Convention', status: 'Approved' },
-      { sub_id: 'SUBST-009', original_teacher: 'TEA-007', substitute_teacher: 'TEA-006', class_batch: 'CLS-09B', subject: 'SUB-007', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-09', reason: 'Biotech Lab Certification Inspection', status: 'Approved' },
-      { sub_id: 'SUBST-010', original_teacher: 'TEA-002', substitute_teacher: 'TEA-001', class_batch: 'CLS-10B', subject: 'SUB-002', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-10', reason: 'Robotics Team National Mentorship Session', status: 'Approved' }
+      { sub_id: 'SUBST-001', original_teacher: 'NIS-2020-811-001', substitute_teacher: 'NIS-2019-812-002', class_batch: 'CLS-10A', subject: 'SUB-001', period_slot: '02:00 PM - 03:00 PM', date: '2026-10-05', reason: 'CBSE Mathematics Workshop Attendance', status: 'Approved' },
+      { sub_id: 'SUBST-002', original_teacher: 'NIS-2018-816-006', substitute_teacher: 'NIS-2020-817-007', class_batch: 'CLS-11B', subject: 'SUB-006', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-06', reason: 'Science Olympiad State Jury Duty', status: 'Approved' },
+      { sub_id: 'SUBST-003', original_teacher: 'NIS-2022-814-004', substitute_teacher: 'NIS-2021-815-005', class_batch: 'CLS-12A', subject: 'SUB-004', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-06', reason: 'Inter-School Debate Championship Judge', status: 'Approved' },
+      { sub_id: 'SUBST-004', original_teacher: 'NIS-2021-813-003', substitute_teacher: 'NIS-2020-811-001', class_batch: 'CLS-11A', subject: 'SUB-003', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-07', reason: 'AI Ethics Symposium Keynote Speaker', status: 'Approved' },
+      { sub_id: 'SUBST-005', original_teacher: 'NIS-2019-818-008', substitute_teacher: 'NIS-2021-820-010', class_batch: 'CLS-08A', subject: 'SUB-008', period_slot: '10:00 AM - 11:00 AM', date: '2026-10-07', reason: 'Heritage Council Annual Summit', status: 'Approved' },
+      { sub_id: 'SUBST-006', original_teacher: 'NIS-2023-819-009', substitute_teacher: 'NIS-2021-813-003', class_batch: 'CLS-10B', subject: 'SUB-009', period_slot: '02:30 PM - 03:30 PM', date: '2026-10-08', reason: 'State Athletics Selection Trials', status: 'Approved' },
+      { sub_id: 'SUBST-007', original_teacher: 'NIS-2021-820-010', substitute_teacher: 'NIS-2019-818-008', class_batch: 'CLS-12B', subject: 'SUB-010', period_slot: '08:30 AM - 09:30 AM', date: '2026-10-08', reason: 'Commerce Department Curriculum Review', status: 'Approved' },
+      { sub_id: 'SUBST-008', original_teacher: 'NIS-2021-815-005', substitute_teacher: 'NIS-2022-814-004', class_batch: 'CLS-09A', subject: 'SUB-005', period_slot: '11:00 AM - 12:00 PM', date: '2026-10-09', reason: 'State Sahitya Parishad Convention', status: 'Approved' },
+      { sub_id: 'SUBST-009', original_teacher: 'NIS-2020-817-007', substitute_teacher: 'NIS-2018-816-006', class_batch: 'CLS-09B', subject: 'SUB-007', period_slot: '01:30 PM - 02:30 PM', date: '2026-10-09', reason: 'Biotech Lab Certification Inspection', status: 'Approved' },
+      { sub_id: 'SUBST-010', original_teacher: 'NIS-2019-812-002', substitute_teacher: 'NIS-2020-811-001', class_batch: 'CLS-10B', subject: 'SUB-002', period_slot: '09:40 AM - 10:40 AM', date: '2026-10-10', reason: 'Robotics Team National Mentorship Session', status: 'Approved' }
     ]
   },
 
@@ -980,19 +980,19 @@ export const INITIAL_DB_STORE = {
       { name: 'title', type: 'VARCHAR(255)', pk: 0 },
       { name: 'instructions', type: 'TEXT', pk: 0 },
       { name: 'due_date', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'assigned_by', type: 'VARCHAR(50) [Link to Teacher List: TEA-001..TEA-010]', pk: 0 }
+      { name: 'assigned_by', type: 'VARCHAR(50) [Link to Teacher List: NIS-2020-811-001..NIS-2021-820-010]', pk: 0 }
     ],
     rows: [
-      { homework_id: 'HW-001', class_batch: 'CLS-10A', subject: 'SUB-001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step by step proofs.', due_date: 'Tomorrow 5:00 PM', assigned_by: 'TEA-001' },
-      { homework_id: 'HW-002', class_batch: 'CLS-10A', subject: 'SUB-002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday 11:59 PM', assigned_by: 'TEA-002' },
-      { homework_id: 'HW-003', class_batch: 'CLS-10A', subject: 'SUB-003', title: 'Python Recursion & Linked Lists Exercise', instructions: 'Write recursive solutions for binary tree traversal and submit code file.', due_date: 'Monday 10:00 AM', assigned_by: 'TEA-003' },
-      { homework_id: 'HW-004', class_batch: 'CLS-10A', subject: 'SUB-004', title: 'Critical Essay on Victorian Romantic Literature', instructions: 'Write a 600-word essay on themes of nature and industrialization.', due_date: 'Wednesday 5:00 PM', assigned_by: 'TEA-004' },
-      { homework_id: 'HW-005', class_batch: 'CLS-10A', subject: 'SUB-005', title: 'Premchand Short Stories Analysis & Rasa Identification', instructions: 'Analyze characters and moral conflicts in story Godaan.', due_date: 'Thursday 4:00 PM', assigned_by: 'TEA-005' },
-      { homework_id: 'HW-006', class_batch: 'CLS-11B', subject: 'SUB-006', title: 'Periodic Table Trends & Redox Reactions Worksheet', instructions: 'Balance all 10 oxidation-reduction chemical equations.', due_date: 'Friday 6:00 PM', assigned_by: 'TEA-006' },
-      { homework_id: 'HW-007', class_batch: 'CLS-09B', subject: 'SUB-007', title: 'Human Circulatory & Respiratory Systems Diagram', instructions: 'Draw neat labeled diagram of heart and trace oxygen flow.', due_date: 'Saturday 12:00 PM', assigned_by: 'TEA-007' },
-      { homework_id: 'HW-008', class_batch: 'CLS-08A', subject: 'SUB-008', title: 'Indian Independence Movement Timeline 1857-1947', instructions: 'Construct chronological milestone chart with key leaders.', due_date: 'Monday 5:00 PM', assigned_by: 'TEA-008' },
-      { homework_id: 'HW-009', class_batch: 'CLS-10B', subject: 'SUB-009', title: 'Nutritional Calorie Counter & Fitness Log', instructions: 'Track daily macro nutrients and cardiovascular workout metrics.', due_date: 'Tuesday 8:00 AM', assigned_by: 'TEA-009' },
-      { homework_id: 'HW-010', class_batch: 'CLS-12B', subject: 'SUB-010', title: 'National Income Calculation & GDP Multiplier Cases', instructions: 'Solve numerical case studies for Real vs Nominal GDP.', due_date: 'Wednesday 6:00 PM', assigned_by: 'TEA-010' }
+      { homework_id: 'HW-001', class_batch: 'CLS-10A', subject: 'SUB-001', title: 'Calculus Trigonometric Integrals Exercise 4.2', instructions: 'Solve problems 1 through 15 with step by step proofs.', due_date: 'Tomorrow 5:00 PM', assigned_by: 'NIS-2020-811-001' },
+      { homework_id: 'HW-002', class_batch: 'CLS-10A', subject: 'SUB-002', title: 'Newtonian Dynamics Mechanics Simulation', instructions: 'Complete virtual lab friction parameters chart.', due_date: 'Friday 11:59 PM', assigned_by: 'NIS-2019-812-002' },
+      { homework_id: 'HW-003', class_batch: 'CLS-10A', subject: 'SUB-003', title: 'Python Recursion & Linked Lists Exercise', instructions: 'Write recursive solutions for binary tree traversal and submit code file.', due_date: 'Monday 10:00 AM', assigned_by: 'NIS-2021-813-003' },
+      { homework_id: 'HW-004', class_batch: 'CLS-10A', subject: 'SUB-004', title: 'Critical Essay on Victorian Romantic Literature', instructions: 'Write a 600-word essay on themes of nature and industrialization.', due_date: 'Wednesday 5:00 PM', assigned_by: 'NIS-2022-814-004' },
+      { homework_id: 'HW-005', class_batch: 'CLS-10A', subject: 'SUB-005', title: 'Premchand Short Stories Analysis & Rasa Identification', instructions: 'Analyze characters and moral conflicts in story Godaan.', due_date: 'Thursday 4:00 PM', assigned_by: 'NIS-2021-815-005' },
+      { homework_id: 'HW-006', class_batch: 'CLS-11B', subject: 'SUB-006', title: 'Periodic Table Trends & Redox Reactions Worksheet', instructions: 'Balance all 10 oxidation-reduction chemical equations.', due_date: 'Friday 6:00 PM', assigned_by: 'NIS-2018-816-006' },
+      { homework_id: 'HW-007', class_batch: 'CLS-09B', subject: 'SUB-007', title: 'Human Circulatory & Respiratory Systems Diagram', instructions: 'Draw neat labeled diagram of heart and trace oxygen flow.', due_date: 'Saturday 12:00 PM', assigned_by: 'NIS-2020-817-007' },
+      { homework_id: 'HW-008', class_batch: 'CLS-08A', subject: 'SUB-008', title: 'Indian Independence Movement Timeline 1857-1947', instructions: 'Construct chronological milestone chart with key leaders.', due_date: 'Monday 5:00 PM', assigned_by: 'NIS-2019-818-008' },
+      { homework_id: 'HW-009', class_batch: 'CLS-10B', subject: 'SUB-009', title: 'Nutritional Calorie Counter & Fitness Log', instructions: 'Track daily macro nutrients and cardiovascular workout metrics.', due_date: 'Tuesday 8:00 AM', assigned_by: 'NIS-2023-819-009' },
+      { homework_id: 'HW-010', class_batch: 'CLS-12B', subject: 'SUB-010', title: 'National Income Calculation & GDP Multiplier Cases', instructions: 'Solve numerical case studies for Real vs Nominal GDP.', due_date: 'Wednesday 6:00 PM', assigned_by: 'NIS-2021-820-010' }
     ]
   },
 
@@ -1143,9 +1143,9 @@ export const FALLBACK_DATA = {
   users: [
     { id: 'ADM-001', username: 'admin', full_name: 'Dr. Marcus Vance', role: 'admin', email: 'admin@nairee.edu', status: 'Active', department: 'Executive Board', phone: '+91 98765 43210' },
     { id: 'ADM-002', username: 'accounts', full_name: 'Anita Verma', role: 'admin', email: 'accounts@nairee.edu', status: 'Active', department: 'Finance & Accounts', phone: '+91 98765 43211' },
-    { id: 'TEA-001', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'TEA-001' },
-    { id: 'TEA-002', username: 'teacher_reed', full_name: 'Dr. Evelyn Reed', role: 'teacher', email: 'ereed@nairee.edu', status: 'Active', department: 'STEM & Robotics', phone: '+91 98765 34567', teacher_number: 'TEA-002' },
-    { id: 'TEA-003', username: 'teacher_chen', full_name: 'Mr. Robert Chen', role: 'teacher', email: 'rchen@nairee.edu', status: 'Active', department: 'Computer Science', phone: '+91 98765 23456', teacher_number: 'TEA-003' },
+    { id: 'NIS-2020-811-001', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'NIS-2020-811-001' },
+    { id: 'NIS-2019-812-002', username: 'teacher_reed', full_name: 'Dr. Evelyn Reed', role: 'teacher', email: 'ereed@nairee.edu', status: 'Active', department: 'STEM & Robotics', phone: '+91 98765 34567', teacher_number: 'NIS-2019-812-002' },
+    { id: 'NIS-2021-813-003', username: 'teacher_chen', full_name: 'Mr. Robert Chen', role: 'teacher', email: 'rchen@nairee.edu', status: 'Active', department: 'Computer Science', phone: '+91 98765 23456', teacher_number: 'NIS-2021-813-003' },
     { id: 'NIS-2024-091-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '01', student_id: 'NIS-2024-091-001' },
     { id: 'NIS-2024-092-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '02', student_id: 'NIS-2024-092-002' },
     { id: 'NIS-2024-093-003', username: 'diya', full_name: 'Diya Gupta', role: 'student', email: 'diya.gupta@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '03', student_id: 'NIS-2024-093-003' },
@@ -1161,9 +1161,9 @@ export const FALLBACK_DATA = {
     pending_homework: 3
   },
   schedule: [
-    { id: 'SCH-01', day: 'Monday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Advanced Mathematics', instructor: 'Prof. Sarah Jenkins', instructor_id: 'TEA-001', room: 'Room 204' },
-    { id: 'SCH-02', day: 'Monday', time_slot: '09:40 AM to 10:40 AM', course_name: 'Physics & Dynamics', instructor: 'Dr. Evelyn Reed', instructor_id: 'TEA-002', room: 'Lab 2' },
-    { id: 'SCH-03', day: 'Tuesday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Computer Science & AI', instructor: 'Mr. Robert Chen', instructor_id: 'TEA-003', room: 'Lab 1' }
+    { id: 'SCH-01', day: 'Monday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Advanced Mathematics', instructor: 'Prof. Sarah Jenkins', instructor_id: 'NIS-2020-811-001', room: 'Room 204' },
+    { id: 'SCH-02', day: 'Monday', time_slot: '09:40 AM to 10:40 AM', course_name: 'Physics & Dynamics', instructor: 'Dr. Evelyn Reed', instructor_id: 'NIS-2019-812-002', room: 'Lab 2' },
+    { id: 'SCH-03', day: 'Tuesday', time_slot: '08:30 AM to 09:30 AM', course_name: 'Computer Science & AI', instructor: 'Mr. Robert Chen', instructor_id: 'NIS-2021-813-003', room: 'Lab 1' }
   ],
   syllabus: [
     { id: 'SYL-01', subject: 'Advanced Mathematics', subject_id: 'SUB-001', topic: 'Quadratic Equations & Polynomials', total_topics: 10, completed_topics: 8, status: 'In Progress' },
@@ -1188,7 +1188,7 @@ export const FALLBACK_DATA = {
     { id: 'ANN-001', title: 'Urgent Update: Science Olympiad registrations extended till Sunday & Inter School Sports Trials', category: 'Urgent Circular', created_at: '2 hours ago', sender: 'Principal Office', content: 'Registrations are now open for all students Grade 6 to 12. Contact the sports coordinator for trial slots.' }
   ],
   messages: [
-    { id: 'MSG-01', sender: 'Prof. Sarah Jenkins', sender_id: 'TEA-001', content: 'Great effort on the recent Mathematics assignment test!', timestamp: '10:30 AM' }
+    { id: 'MSG-01', sender: 'Prof. Sarah Jenkins', sender_id: 'NIS-2020-811-001', content: 'Great effort on the recent Mathematics assignment test!', timestamp: '10:30 AM' }
   ]
 };
 

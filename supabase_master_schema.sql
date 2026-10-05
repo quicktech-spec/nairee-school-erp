@@ -114,7 +114,7 @@ CREATE TABLE sections (
     batch_code VARCHAR(50) UNIQUE NOT NULL,
     section_name VARCHAR(50) NOT NULL,
     full_batch_name VARCHAR(100) NOT NULL,
-    class_teacher_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+    class_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
     room_no VARCHAR(50),
     capacity INT DEFAULT 35,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -126,7 +126,7 @@ CREATE TABLE subjects (
     subject_name VARCHAR(255) NOT NULL,
     department VARCHAR(100),
     credit_hours INT DEFAULT 4,
-    default_teacher_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+    default_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -135,7 +135,7 @@ CREATE TABLE section_subject_teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
-    teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     UNIQUE(section_id, subject_id, teacher_id)
 );
 
@@ -199,7 +199,7 @@ CREATE TABLE student_daily_attendance (
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     attendance_date DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
-    marked_by_employee_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+    marked_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(student_id, attendance_date)
 );
@@ -207,7 +207,7 @@ CREATE TABLE student_daily_attendance (
 -- 4.2 EMPLOYEE / TEACHER PUNCH LOGS
 CREATE TABLE employee_attendance_punch (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    employee_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     punch_date DATE NOT NULL,
     punch_in_time VARCHAR(20),
     punch_out_time VARCHAR(20),
@@ -254,7 +254,7 @@ CREATE TABLE exam_marks_entries (
     percentage DECIMAL(5,2) GENERATED ALWAYS AS (ROUND((score / maximum_score) * 100, 2)) STORED,
     grade VARCHAR(10) NOT NULL,
     teacher_comment TEXT,
-    graded_by_employee_id UUID REFERENCES employees(id) ON DELETE SET NULL,
+    graded_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(exam_schedule_id, student_id)
 );
@@ -302,13 +302,13 @@ CREATE TABLE timetable_slots (
     start_time VARCHAR(20) NOT NULL,
     end_time VARCHAR(20) NOT NULL,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
-    teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     room_no VARCHAR(50)
 );
 
 CREATE TABLE daily_class_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     topic_covered VARCHAR(255) NOT NULL,
@@ -319,8 +319,8 @@ CREATE TABLE daily_class_logs (
 
 CREATE TABLE teacher_substitutions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    original_teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
-    substitute_teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    original_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    substitute_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     period_slot VARCHAR(50),
@@ -342,7 +342,7 @@ CREATE TABLE homework_assignments (
     title VARCHAR(255) NOT NULL,
     instructions TEXT,
     due_date VARCHAR(50) NOT NULL,
-    assigned_by_employee_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    assigned_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -408,45 +408,45 @@ VALUES ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-1111111
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 EMPLOYEES / TEACHERS
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333331', '11111111-1111-1111-1111-111111111111', 'TEA-001', 'Prof. Sarah Jenkins', 'Female', 'sjenkins@nairee.edu', '+91 98765 43211', 'Mathematics & Science', 'Senior Faculty Lead', 68000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2020-811-001', 'Prof. Sarah Jenkins', 'Female', 'sjenkins@nairee.edu', '+91 98765 43211', 'Mathematics & Science', 'Senior Faculty Lead', 68000, '8765 4321 0811', '2020-06-15', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333332', '11111111-1111-1111-1111-111111111111', 'TEA-002', 'Dr. Evelyn Reed', 'Female', 'ereed@nairee.edu', '+91 98765 34567', 'STEM & Robotics', 'Head of STEM Academics', 75000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2019-812-002', 'Dr. Evelyn Reed', 'Female', 'ereed@nairee.edu', '+91 98765 34567', 'STEM & Robotics', 'Head of STEM Academics', 75000, '8765 4321 0812', '2019-07-01', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', 'TEA-003', 'Mr. Robert Chen', 'Male', 'rchen@nairee.edu', '+91 98765 23456', 'Computer Science', 'AI Systems Instructor', 62000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2021-813-003', 'Mr. Robert Chen', 'Male', 'rchen@nairee.edu', '+91 98765 23456', 'Computer Science', 'AI Systems Instructor', 62000, '8765 4321 0813', '2021-08-10', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333334', '11111111-1111-1111-1111-111111111111', 'TEA-004', 'Ms. Clara Oswald', 'Female', 'coswald@nairee.edu', '+91 98765 12345', 'Humanities & English', 'Literature Lead', 58000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2022-814-004', 'Ms. Clara Oswald', 'Female', 'coswald@nairee.edu', '+91 98765 12345', 'Humanities & English', 'Literature Lead', 58000, '8765 4321 0814', '2022-04-12', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333335', '11111111-1111-1111-1111-111111111111', 'TEA-005', 'Ms. Priya Deshmukh', 'Female', 'pdeshmukh@nairee.edu', '+91 98765 43215', 'Languages & Humanities', 'Hindi & Sanskrit Faculty', 58000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2021-815-005', 'Ms. Priya Deshmukh', 'Female', 'pdeshmukh@nairee.edu', '+91 98765 43215', 'Languages & Humanities', 'Hindi & Sanskrit Faculty', 58000, '8765 4321 0815', '2021-06-18', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333336', '11111111-1111-1111-1111-111111111111', 'TEA-006', 'Dr. Alok Chatterjee', 'Male', 'achatterjee@nairee.edu', '+91 98765 43230', 'Chemistry & Science', 'Head of Chemistry', 72000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2018-816-006', 'Dr. Alok Chatterjee', 'Male', 'achatterjee@nairee.edu', '+91 98765 43230', 'Chemistry & Science', 'Head of Chemistry', 72000, '8765 4321 0816', '2018-03-20', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333337', '11111111-1111-1111-1111-111111111111', 'TEA-007', 'Mrs. Meenakshi Sundaram', 'Female', 'msundaram@nairee.edu', '+91 98765 43232', 'Life Sciences', 'Senior Biology Lead', 64000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2020-817-007', 'Mrs. Meenakshi Sundaram', 'Female', 'msundaram@nairee.edu', '+91 98765 43232', 'Life Sciences', 'Senior Biology Lead', 64000, '8765 4321 0817', '2020-09-05', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333338', '11111111-1111-1111-1111-111111111111', 'TEA-008', 'Mr. Vikramaditya Rao', 'Male', 'vrao@nairee.edu', '+91 98765 43234', 'Social Sciences', 'History & Civics Chair', 61000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2019-818-008', 'Mr. Vikramaditya Rao', 'Male', 'vrao@nairee.edu', '+91 98765 43234', 'Social Sciences', 'History & Civics Chair', 61000, '8765 4321 0818', '2019-11-15', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333339', '11111111-1111-1111-1111-111111111111', 'TEA-009', 'Mr. Arjun Kapoor', 'Male', 'akapoor@nairee.edu', '+91 98765 43236', 'Sports & Physical Education', 'Athletics & Sports Director', 56000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2023-819-009', 'Mr. Arjun Kapoor', 'Male', 'akapoor@nairee.edu', '+91 98765 43236', 'Sports & Physical Education', 'Athletics & Sports Director', 56000, '8765 4321 0819', '2023-01-10', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
-INSERT INTO employees (id, school_id, employee_code, name, gender, email, phone, department, designation, monthly_salary, status)
-VALUES ('33333333-3333-3333-3333-333333333340', '11111111-1111-1111-1111-111111111111', 'TEA-010', 'Ms. Nandini Sen', 'Female', 'nsen@nairee.edu', '+91 98765 43238', 'Commerce & Economics', 'Senior Economics Lead', 66000, 'Active')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO employees (teacher_id, name, gender, email, phone, department, designation, monthly_salary, aadhaar_no, joining_date, status)
+VALUES ('NIS-2021-820-010', 'Mrs. Anita Desai', 'Female', 'adesai@nairee.edu', '+91 98765 43238', 'Commerce & Economics', 'Senior Commerce Faculty', 60000, '8765 4321 0820', '2021-05-25', 'Active')
+ON CONFLICT (teacher_id) DO NOTHING;
 
 -- 10 CLASSES & SECTIONS
 INSERT INTO classes (id, school_id, grade_name, numeric_order)
@@ -474,43 +474,43 @@ VALUES ('44444444-4444-4444-4444-444444444446', '11111111-1111-1111-1111-1111111
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555551', '44444444-4444-4444-4444-444444444441', 'CLS-10A', 'Section A', 'Class 10 - Section A', '33333333-3333-3333-3333-333333333331', 'Room 204', 35)
+VALUES ('55555555-5555-5555-5555-555555555551', '44444444-4444-4444-4444-444444444441', 'CLS-10A', 'Section A', 'Class 10 - Section A', 'NIS-2020-811-001', 'Room 204', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555552', '44444444-4444-4444-4444-444444444441', 'CLS-10B', 'Section B', 'Class 10 - Section B', '33333333-3333-3333-3333-333333333332', 'Room 205', 35)
+VALUES ('55555555-5555-5555-5555-555555555552', '44444444-4444-4444-4444-444444444441', 'CLS-10B', 'Section B', 'Class 10 - Section B', 'NIS-2019-812-002', 'Room 205', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555553', '44444444-4444-4444-4444-444444444442', 'CLS-11A', 'Section A', 'Class 11 - Section A', '33333333-3333-3333-3333-333333333333', 'Room 301', 30)
+VALUES ('55555555-5555-5555-5555-555555555553', '44444444-4444-4444-4444-444444444442', 'CLS-11A', 'Section A', 'Class 11 - Section A', 'NIS-2021-813-003', 'Room 301', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555554', '44444444-4444-4444-4444-444444444442', 'CLS-11B', 'Section B', 'Class 11 - Section B', '33333333-3333-3333-3333-333333333336', 'Room 302', 30)
+VALUES ('55555555-5555-5555-5555-555555555554', '44444444-4444-4444-4444-444444444442', 'CLS-11B', 'Section B', 'Class 11 - Section B', 'NIS-2018-816-006', 'Room 302', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555555', '44444444-4444-4444-4444-444444444443', 'CLS-12A', 'Section A', 'Class 12 - Section A', '33333333-3333-3333-3333-333333333334', 'Room 303', 30)
+VALUES ('55555555-5555-5555-5555-555555555555', '44444444-4444-4444-4444-444444444443', 'CLS-12A', 'Section A', 'Class 12 - Section A', 'NIS-2022-814-004', 'Room 303', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555556', '44444444-4444-4444-4444-444444444443', 'CLS-12B', 'Section B', 'Class 12 - Section B', '33333333-3333-3333-3333-333333333340', 'Room 304', 30)
+VALUES ('55555555-5555-5555-5555-555555555556', '44444444-4444-4444-4444-444444444443', 'CLS-12B', 'Section B', 'Class 12 - Section B', 'NIS-2021-820-010', 'Room 304', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555557', '44444444-4444-4444-4444-444444444444', 'CLS-09A', 'Section A', 'Class 9 - Section A', '33333333-3333-3333-3333-333333333335', 'Room 104', 35)
+VALUES ('55555555-5555-5555-5555-555555555557', '44444444-4444-4444-4444-444444444444', 'CLS-09A', 'Section A', 'Class 9 - Section A', 'NIS-2021-815-005', 'Room 104', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555558', '44444444-4444-4444-4444-444444444444', 'CLS-09B', 'Section B', 'Class 9 - Section B', '33333333-3333-3333-3333-333333333337', 'Room 105', 35)
+VALUES ('55555555-5555-5555-5555-555555555558', '44444444-4444-4444-4444-444444444444', 'CLS-09B', 'Section B', 'Class 9 - Section B', 'NIS-2020-817-007', 'Room 105', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555559', '44444444-4444-4444-4444-444444444445', 'CLS-08A', 'Section A', 'Class 8 - Section A', '33333333-3333-3333-3333-333333333338', 'Room 102', 35)
+VALUES ('55555555-5555-5555-5555-555555555559', '44444444-4444-4444-4444-444444444445', 'CLS-08A', 'Section A', 'Class 8 - Section A', 'NIS-2019-818-008', 'Room 102', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS-06A', 'Section A', 'Class 6 - Section A', '33333333-3333-3333-3333-333333333339', 'Room 101', 35)
+VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS-06A', 'Section A', 'Class 6 - Section A', 'NIS-2023-819-009', 'Room 101', 35)
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 SUBJECTS
@@ -612,43 +612,43 @@ ON CONFLICT DO NOTHING;
 
 -- 10 ATTENDANCE RECORDS
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-091-001', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+VALUES ('NIS-2024-091-001', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', 'NIS-2020-811-001')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-092-002', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+VALUES ('NIS-2024-092-002', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', 'NIS-2020-811-001')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-093-003', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Absent', '33333333-3333-3333-3333-333333333331')
+VALUES ('NIS-2024-093-003', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Absent', 'NIS-2020-811-001')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-094-004', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+VALUES ('NIS-2024-094-004', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', 'NIS-2020-811-001')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-095-005', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333331')
+VALUES ('NIS-2024-095-005', '55555555-5555-5555-5555-555555555551', CURRENT_DATE, 'Present', 'NIS-2020-811-001')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-096-006', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Absent', '33333333-3333-3333-3333-333333333332')
+VALUES ('NIS-2024-096-006', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Absent', 'NIS-2019-812-002')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-097-007', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333332')
+VALUES ('NIS-2024-097-007', '55555555-5555-5555-5555-555555555552', CURRENT_DATE, 'Present', 'NIS-2019-812-002')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-098-008', '55555555-5555-5555-5555-555555555560', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333339')
+VALUES ('NIS-2024-098-008', '55555555-5555-5555-5555-555555555560', CURRENT_DATE, 'Present', 'NIS-2023-819-009')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-099-009', '55555555-5555-5555-5555-555555555559', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333338')
+VALUES ('NIS-2024-099-009', '55555555-5555-5555-5555-555555555559', CURRENT_DATE, 'Present', 'NIS-2019-818-008')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 INSERT INTO student_daily_attendance (student_id, section_id, attendance_date, status, marked_by_employee_id)
-VALUES ('NIS-2024-100-010', '55555555-5555-5555-5555-555555555553', CURRENT_DATE, 'Present', '33333333-3333-3333-3333-333333333333')
+VALUES ('NIS-2024-100-010', '55555555-5555-5555-5555-555555555553', CURRENT_DATE, 'Present', 'NIS-2021-813-003')
 ON CONFLICT (student_id, attendance_date) DO NOTHING;
 
 -- 10 EXAM ASSESSMENTS & MARKS
@@ -669,43 +669,43 @@ VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-8888888
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-091-001', 98.0, 100.0, 'A+', 'Outstanding performance in calculus & geometry', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-091-001', 98.0, 100.0, 'A+', 'Outstanding performance in calculus & geometry', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-092-002', 88.0, 100.0, 'A', 'Strong analytical understanding', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-092-002', 88.0, 100.0, 'A', 'Strong analytical understanding', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-093-003', 94.0, 100.0, 'A+', 'Brilliant proofs and algebraic rigor', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-093-003', 94.0, 100.0, 'A+', 'Brilliant proofs and algebraic rigor', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-094-004', 84.0, 100.0, 'B+', 'Good conceptual clarity, needs speed improvement', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-094-004', 84.0, 100.0, 'B+', 'Good conceptual clarity, needs speed improvement', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-095-005', 96.0, 100.0, 'A+', 'Consistently high distinction score', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-095-005', 96.0, 100.0, 'A+', 'Consistently high distinction score', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-096-006', 78.0, 100.0, 'B', 'Solid effort, recommended remedial guidance', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-096-006', 78.0, 100.0, 'B', 'Solid effort, recommended remedial guidance', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-097-007', 91.0, 100.0, 'A', 'Very thorough calculations', '33333333-3333-3333-3333-333333333331')
+VALUES ('99999999-9999-9999-9999-999999999991', 'NIS-2024-097-007', 91.0, 100.0, 'A', 'Very thorough calculations', 'NIS-2020-811-001')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999992', 'NIS-2024-091-001', 48.0, 50.0, 'A+', 'Superb lab simulation and data graphing', '33333333-3333-3333-3333-333333333332')
+VALUES ('99999999-9999-9999-9999-999999999992', 'NIS-2024-091-001', 48.0, 50.0, 'A+', 'Superb lab simulation and data graphing', 'NIS-2019-812-002')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999993', 'NIS-2024-091-001', 99.0, 100.0, 'A+', 'Exceptional algorithm and unit test quality', '33333333-3333-3333-3333-333333333333')
+VALUES ('99999999-9999-9999-9999-999999999993', 'NIS-2024-091-001', 99.0, 100.0, 'A+', 'Exceptional algorithm and unit test quality', 'NIS-2021-813-003')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
-VALUES ('99999999-9999-9999-9999-999999999993', 'NIS-2024-100-010', 95.0, 100.0, 'A+', 'Superb problem solving speed and clean code', '33333333-3333-3333-3333-333333333333')
+VALUES ('99999999-9999-9999-9999-999999999993', 'NIS-2024-100-010', 95.0, 100.0, 'A+', 'Superb problem solving speed and clean code', 'NIS-2021-813-003')
 ON CONFLICT (exam_schedule_id, student_id) DO NOTHING;
 
 -- 10 FEE INVOICES
@@ -751,74 +751,74 @@ ON CONFLICT (invoice_code) DO NOTHING;
 
 -- 10 TEACHER ATTENDANCE PUNCHES
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333331', CURRENT_DATE, '07:48 AM', '04:15 PM', 'On Duty', 8.0)
+VALUES ('NIS-2020-811-001', CURRENT_DATE, '07:48 AM', '04:15 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333332', CURRENT_DATE, '07:55 AM', '04:20 PM', 'On Duty', 8.0)
+VALUES ('NIS-2019-812-002', CURRENT_DATE, '07:55 AM', '04:20 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333333', CURRENT_DATE, '08:02 AM', '04:10 PM', 'On Duty', 8.0)
+VALUES ('NIS-2021-813-003', CURRENT_DATE, '08:02 AM', '04:10 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333334', CURRENT_DATE, '08:12 AM', '04:25 PM', 'On Duty', 8.0)
+VALUES ('NIS-2022-814-004', CURRENT_DATE, '08:12 AM', '04:25 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333335', CURRENT_DATE, '08:05 AM', '04:00 PM', 'On Duty', 8.0)
+VALUES ('NIS-2021-815-005', CURRENT_DATE, '08:05 AM', '04:00 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333336', CURRENT_DATE, '07:50 AM', '04:15 PM', 'On Duty', 8.0)
+VALUES ('NIS-2018-816-006', CURRENT_DATE, '07:50 AM', '04:15 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333337', CURRENT_DATE, '08:10 AM', '04:10 PM', 'On Duty', 8.0)
+VALUES ('NIS-2020-817-007', CURRENT_DATE, '08:10 AM', '04:10 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333338', CURRENT_DATE, '08:15 AM', '04:15 PM', 'On Duty', 8.0)
+VALUES ('NIS-2019-818-008', CURRENT_DATE, '08:15 AM', '04:15 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333339', CURRENT_DATE, '07:30 AM', '04:00 PM', 'On Duty', 8.5)
+VALUES ('NIS-2023-819-009', CURRENT_DATE, '07:30 AM', '04:00 PM', 'On Duty', 8.5)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 INSERT INTO employee_attendance_punch (employee_id, punch_date, punch_in_time, punch_out_time, status, hours_worked)
-VALUES ('33333333-3333-3333-3333-333333333340', CURRENT_DATE, '08:00 AM', '04:15 PM', 'On Duty', 8.0)
+VALUES ('NIS-2021-820-010', CURRENT_DATE, '08:00 AM', '04:15 PM', 'On Duty', 8.0)
 ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 -- 10 DAILY CLASS CONDUCTED LOGS
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', 'MATH-101', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('NIS-2020-811-001', '55555555-5555-5555-5555-555555555551', 'MATH-101', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333332', '55555555-5555-5555-5555-555555555551', 'PHYS-102', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('NIS-2019-812-002', '55555555-5555-5555-5555-555555555551', 'PHYS-102', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333333', '55555555-5555-5555-5555-555555555551', 'CS-104', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('NIS-2021-813-003', '55555555-5555-5555-5555-555555555551', 'CS-104', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333334', '55555555-5555-5555-5555-555555555551', 'ENG-105', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
+VALUES ('NIS-2022-814-004', '55555555-5555-5555-5555-555555555551', 'ENG-105', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333335', '55555555-5555-5555-5555-555555555551', 'HIN-106', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('NIS-2021-815-005', '55555555-5555-5555-5555-555555555551', 'HIN-106', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333336', '55555555-5555-5555-5555-555555555554', 'CHEM-103', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('NIS-2018-816-006', '55555555-5555-5555-5555-555555555554', 'CHEM-103', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333337', '55555555-5555-5555-5555-555555555558', 'BIO-107', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('NIS-2020-817-007', '55555555-5555-5555-5555-555555555558', 'BIO-107', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333338', '55555555-5555-5555-5555-555555555559', 'HIST-108', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('NIS-2019-818-008', '55555555-5555-5555-5555-555555555559', 'HIST-108', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333339', '55555555-5555-5555-5555-555555555552', 'PE-109', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
+VALUES ('NIS-2023-819-009', '55555555-5555-5555-5555-555555555552', 'PE-109', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333340', '55555555-5555-5555-5555-555555555556', 'ECON-110', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('NIS-2021-820-010', '55555555-5555-5555-5555-555555555556', 'ECON-110', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
 
 

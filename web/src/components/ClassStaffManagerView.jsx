@@ -57,7 +57,7 @@ function getClassesFromDb() {
     grade: b.batch_name.split('-')[0]?.trim() || 'Class 10',
     section: b.batch_name.split('Section')[1]?.trim() || 'A',
     room: b.room_no || 'Room 204',
-    class_teacher_id: b.class_teacher_id || 'TEA-001',
+    class_teacher_id: b.class_teacher_id || 'NIS-2020-811-001',
     class_teacher_name: b.class_teacher || 'Prof. Sarah Jenkins',
     capacity: Number(b.capacity) || 35,
     subjects: [
@@ -111,7 +111,7 @@ export default function ClassStaffManagerView() {
     grade: 'Grade 10',
     section: 'C',
     room: 'Room 206',
-    teacher_id: 'TEA-001',
+    teacher_id: 'NIS-2020-811-001',
     capacity: 35
   });
 
