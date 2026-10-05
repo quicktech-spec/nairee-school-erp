@@ -292,7 +292,7 @@ export default function DatabaseStudioView() {
       setIsCreatingRow(true);
       setFormData({
         student_id: generateStudentId({
-          schoolCode: 'NAIREE',
+          schoolCode: 'NIS',
           admissionYear: new Date().getFullYear(),
           aadhaarNo: defaultAadhaar,
           sequence: nextIdx
@@ -1812,7 +1812,7 @@ export default function DatabaseStudioView() {
                         type="text"
                         value={formData.sibling_id || ''}
                         onChange={(e) => setFormData({ ...formData, sibling_id: e.target.value })}
-                        placeholder="e.g. NAIREE-2024-098-008"
+                        placeholder="e.g. NIS-2024-098-008"
                         className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-mono font-bold"
                       />
                     </div>

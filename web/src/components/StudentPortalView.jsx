@@ -69,7 +69,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
-  const studentId = user?.student_id || user?.student?.name || 'NAIREE-2024-091-001';
+  const studentId = user?.student_id || user?.student?.name || 'NIS-2024-091-001';
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -268,7 +268,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
                 {/* Student ID Badge */}
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 text-xs font-mono font-bold shadow-sm">
                   <User className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>ID: {student.student_id || student.id || student.name || 'NAIREE-2024-091-001'}</span>
+                  <span>ID: {student.student_id || student.id || student.name || 'NIS-2024-091-001'}</span>
                 </span>
 
                 {/* Roll Number */}

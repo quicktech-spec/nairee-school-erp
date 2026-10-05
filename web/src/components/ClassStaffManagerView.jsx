@@ -228,7 +228,7 @@ export default function ClassStaffManagerView() {
     const defaultAadhaar = `9876 5432 109${newNum}`;
     const studentObj = {
       id: generateStudentId({
-        schoolCode: 'NAIREE',
+        schoolCode: 'NIS',
         admissionYear: new Date().getFullYear(),
         aadhaarNo: defaultAadhaar,
         sequence: newNum

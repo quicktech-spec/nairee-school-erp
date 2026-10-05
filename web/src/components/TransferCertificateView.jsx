@@ -67,7 +67,7 @@ export default function TransferCertificateView() {
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
     const list = getSynchronizedStudents();
-    return list[0]?.id || 'NAIREE-2024-091-001';
+    return list[0]?.id || 'NIS-2024-091-001';
   });
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);

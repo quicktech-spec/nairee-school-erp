@@ -1,7 +1,7 @@
 // Master Centralized Relational Database Store for Nairee School ERP
 // Single Source of Truth for all Portals, Database Studio, and Management Views
 // Unified Person & Entity Primary Key ID Convention:
-// - Students: NAIREE-2024-091-001 through NAIREE-2024-100-010
+// - Students: NIS-2024-091-001 through NIS-2024-100-010
 // - Teachers: TEA-001 through TEA-010
 // - Parents:  PAR-001 through PAR-010
 // - Admins:   ADM-001 through ADM-010
@@ -39,7 +39,7 @@ export const INITIAL_DB_STORE = {
     ],
     rows: [
       { 
-        student_id: 'NAIREE-2024-091-001', 
+        student_id: 'NIS-2024-091-001', 
         name: 'Nairee Patel', 
         roll_no: '01', 
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
@@ -74,14 +74,14 @@ export const INITIAL_DB_STORE = {
         prev_school_board: 'CBSE',
         prev_studied_class: 'Class 9',
         has_siblings: true,
-        sibling_id: 'NAIREE-2024-098-008',
+        sibling_id: 'NIS-2024-098-008',
         sibling_name: 'Riya Patel',
         sibling_class: 'Class 6 - Section A',
         sibling_roll_no: '08',
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-092-002', 
+        student_id: 'NIS-2024-092-002', 
         name: 'Aarav Sharma', 
         roll_no: '02', 
         photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
@@ -116,7 +116,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-093-003', 
+        student_id: 'NIS-2024-093-003', 
         name: 'Diya Gupta', 
         roll_no: '03', 
         photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
@@ -151,14 +151,14 @@ export const INITIAL_DB_STORE = {
         prev_school_board: 'ICSE',
         prev_studied_class: 'Class 9',
         has_siblings: true,
-        sibling_id: 'NAIREE-2024-099-009',
+        sibling_id: 'NIS-2024-099-009',
         sibling_name: 'Kavya Gupta',
         sibling_class: 'Class 8 - Section A',
         sibling_roll_no: '09',
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-094-004', 
+        student_id: 'NIS-2024-094-004', 
         name: 'Rohan Mehta', 
         roll_no: '04', 
         photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
@@ -193,7 +193,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-095-005', 
+        student_id: 'NIS-2024-095-005', 
         name: 'Ananya Iyer', 
         roll_no: '05', 
         photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150',
@@ -228,7 +228,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-096-006', 
+        student_id: 'NIS-2024-096-006', 
         name: 'Kabir Singh', 
         roll_no: '06', 
         photo: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150',
@@ -266,7 +266,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       { 
-        student_id: 'NAIREE-2024-097-007', 
+        student_id: 'NIS-2024-097-007', 
         name: 'Sameer Kulkarni', 
         roll_no: '07', 
         photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
@@ -301,7 +301,7 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-098-008', 
+        student_id: 'NIS-2024-098-008', 
         class: 'Class 6',
         section: 'Section A',
         name: 'Riya Patel',
@@ -335,14 +335,14 @@ export const INITIAL_DB_STORE = {
         mother_address: 'Flat 402, Green Meadows Residency, 14th Main, Indiranagar, Bengaluru - 560038',
         has_previous_school: false,
         has_siblings: true,
-        sibling_id: 'NAIREE-2024-091-001',
+        sibling_id: 'NIS-2024-091-001',
         sibling_name: 'Nairee Patel',
         sibling_class: 'Class 10 - Section A',
         sibling_roll_no: '01',
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-099-009', 
+        student_id: 'NIS-2024-099-009', 
         class: 'Class 8',
         section: 'Section A',
         name: 'Kavya Gupta',
@@ -376,14 +376,14 @@ export const INITIAL_DB_STORE = {
         mother_address: 'Villa 12, Sobha City Heritage, Thanisandra Main Rd, Bengaluru - 560077',
         has_previous_school: false,
         has_siblings: true,
-        sibling_id: 'NAIREE-2024-093-003',
+        sibling_id: 'NIS-2024-093-003',
         sibling_name: 'Diya Gupta',
         sibling_class: 'Class 10 - Section A',
         sibling_roll_no: '03',
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-100-010', 
+        student_id: 'NIS-2024-100-010', 
         class: 'Class 11',
         section: 'Section A',
         name: 'Vihaan Reddy',
@@ -821,7 +821,7 @@ export const INITIAL_DB_STORE = {
   'Assessment Results': {
     columns: [
       { name: 'result_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'plan_id', type: 'VARCHAR(50) [Link to Assessment Plans: PLAN-001..PLAN-010]', pk: 0 },
       { name: 'assessment_plan', type: 'VARCHAR(255)', pk: 0 },
@@ -833,39 +833,39 @@ export const INITIAL_DB_STORE = {
       { name: 'comment', type: 'TEXT', pk: 0 }
     ],
     rows: [
-      { result_id: 'RES-001', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional mathematical rigor and step-by-step proofs.' },
-      { result_id: 'RES-002', student_id: 'NAIREE-2024-092-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 88, maximum_score: 100, percentage: 88, grade: 'A', comment: 'Strong analytical skills, minor accuracy slip in trigonometry.' },
-      { result_id: 'RES-003', student_id: 'NAIREE-2024-093-003', student_name: 'Diya Gupta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Brilliant conceptual grasp across algebra and calculus.' },
-      { result_id: 'RES-004', student_id: 'NAIREE-2024-094-004', student_name: 'Rohan Mehta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
-      { result_id: 'RES-005', student_id: 'NAIREE-2024-095-005', student_name: 'Ananya Iyer', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
-      { result_id: 'RES-006', student_id: 'NAIREE-2024-096-006', student_name: 'Kabir Singh', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
-      { result_id: 'RES-007', student_id: 'NAIREE-2024-097-007', student_name: 'Sameer Kulkarni', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 91, maximum_score: 100, percentage: 91, grade: 'A', comment: 'Excellent accuracy and neat calculation.' },
-      { result_id: 'RES-008', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-002', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics & Dynamics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
-      { result_id: 'RES-009', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 99, maximum_score: 100, percentage: 99, grade: 'A+', comment: 'Flawless neural network algorithms and test coverage.' },
-      { result_id: 'RES-010', student_id: 'NAIREE-2024-100-010', student_name: 'Vihaan Reddy', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 95, maximum_score: 100, percentage: 95, grade: 'A+', comment: 'Superb algorithm optimization and clear code structure.' }
+      { result_id: 'RES-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional mathematical rigor and step-by-step proofs.' },
+      { result_id: 'RES-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 88, maximum_score: 100, percentage: 88, grade: 'A', comment: 'Strong analytical skills, minor accuracy slip in trigonometry.' },
+      { result_id: 'RES-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Brilliant conceptual grasp across algebra and calculus.' },
+      { result_id: 'RES-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
+      { result_id: 'RES-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
+      { result_id: 'RES-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
+      { result_id: 'RES-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 91, maximum_score: 100, percentage: 91, grade: 'A', comment: 'Excellent accuracy and neat calculation.' },
+      { result_id: 'RES-008', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-002', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics & Dynamics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
+      { result_id: 'RES-009', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 99, maximum_score: 100, percentage: 99, grade: 'A+', comment: 'Flawless neural network algorithms and test coverage.' },
+      { result_id: 'RES-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 95, maximum_score: 100, percentage: 95, grade: 'A+', comment: 'Superb algorithm optimization and clear code structure.' }
     ]
   },
 
   'Attendance Records': {
     columns: [
       { name: 'attendance_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'date', type: 'DATE', pk: 0 },
       { name: 'status', type: 'VARCHAR(50)', pk: 0 },
       { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 }
     ],
     rows: [
-      { attendance_id: 'ATT-001', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-002', student_id: 'NAIREE-2024-092-002', student_name: 'Aarav Sharma', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-003', student_id: 'NAIREE-2024-093-003', student_name: 'Diya Gupta', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-004', student_id: 'NAIREE-2024-094-004', student_name: 'Rohan Mehta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-005', student_id: 'NAIREE-2024-095-005', student_name: 'Ananya Iyer', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-006', student_id: 'NAIREE-2024-096-006', student_name: 'Kabir Singh', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10B' },
-      { attendance_id: 'ATT-007', student_id: 'NAIREE-2024-097-007', student_name: 'Sameer Kulkarni', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10B' },
-      { attendance_id: 'ATT-008', student_id: 'NAIREE-2024-098-008', student_name: 'Riya Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-06A' },
-      { attendance_id: 'ATT-009', student_id: 'NAIREE-2024-099-009', student_name: 'Kavya Gupta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-08A' },
-      { attendance_id: 'ATT-010', student_id: 'NAIREE-2024-100-010', student_name: 'Vihaan Reddy', date: '2026-10-05', status: 'Present', class_batch: 'CLS-11A' }
+      { attendance_id: 'ATT-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
+      { attendance_id: 'ATT-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10B' },
+      { attendance_id: 'ATT-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10B' },
+      { attendance_id: 'ATT-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-06A' },
+      { attendance_id: 'ATT-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-08A' },
+      { attendance_id: 'ATT-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', date: '2026-10-05', status: 'Present', class_batch: 'CLS-11A' }
     ]
   },
 
@@ -948,7 +948,7 @@ export const INITIAL_DB_STORE = {
   'Fee Invoices & Ledger': {
     columns: [
       { name: 'invoice_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'title', type: 'VARCHAR(255)', pk: 0 },
       { name: 'fee_type', type: 'VARCHAR(100)', pk: 0 },
@@ -959,16 +959,16 @@ export const INITIAL_DB_STORE = {
       { name: 'receipt_no', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { invoice_id: 'INV-2026-001', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
-      { invoice_id: 'INV-2026-002', student_id: 'NAIREE-2024-092-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9042' },
-      { invoice_id: 'INV-2026-003', student_id: 'NAIREE-2024-093-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-004', student_id: 'NAIREE-2024-094-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9043' },
-      { invoice_id: 'INV-2026-005', student_id: 'NAIREE-2024-095-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9044' },
-      { invoice_id: 'INV-2026-006', student_id: 'NAIREE-2024-096-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-007', student_id: 'NAIREE-2024-097-007', student_name: 'Sameer Kulkarni', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-27', receipt_no: 'REC-2026-9045' },
-      { invoice_id: 'INV-2026-008', student_id: 'NAIREE-2024-098-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' },
-      { invoice_id: 'INV-2026-009', student_id: 'NAIREE-2024-099-009', student_name: 'Kavya Gupta', title: 'Term 1 Middle School Academic Fee', fee_type: 'Tuition Fee', amount: 30000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9047' },
-      { invoice_id: 'INV-2026-010', student_id: 'NAIREE-2024-100-010', student_name: 'Vihaan Reddy', title: 'Term 1 Senior Secondary Science & AI Fee', fee_type: 'Tuition Fee', amount: 42000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-26', receipt_no: 'REC-2026-9048' }
+      { invoice_id: 'INV-2026-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
+      { invoice_id: 'INV-2026-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9042' },
+      { invoice_id: 'INV-2026-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9043' },
+      { invoice_id: 'INV-2026-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9044' },
+      { invoice_id: 'INV-2026-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-27', receipt_no: 'REC-2026-9045' },
+      { invoice_id: 'INV-2026-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' },
+      { invoice_id: 'INV-2026-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', title: 'Term 1 Middle School Academic Fee', fee_type: 'Tuition Fee', amount: 30000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9047' },
+      { invoice_id: 'INV-2026-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', title: 'Term 1 Senior Secondary Science & AI Fee', fee_type: 'Tuition Fee', amount: 42000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-26', receipt_no: 'REC-2026-9048' }
     ]
   },
 
@@ -1000,7 +1000,7 @@ export const INITIAL_DB_STORE = {
     columns: [
       { name: 'submission_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'homework_id', type: 'VARCHAR(50) [Link to Homework List: HW-001..HW-010]', pk: 0 },
-      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'submission_text', type: 'TEXT', pk: 0 },
       { name: 'attachment_url', type: 'VARCHAR(255)', pk: 0 },
@@ -1010,16 +1010,16 @@ export const INITIAL_DB_STORE = {
       { name: 'teacher_feedback', type: 'TEXT', pk: 0 }
     ],
     rows: [
-      { submission_id: 'SUBM-001', homework_id: 'HW-001', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Attached solved PDF for Trigonometric Integrals Exercise 4.2 with verified derivatives.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_ex_4_2_nairee.pdf', submitted_at: '2026-10-03 04:30 PM', status: 'Graded', marks_awarded: 100, teacher_feedback: 'Flawless proofs and neat layout!' },
-      { submission_id: 'SUBM-002', homework_id: 'HW-002', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Completed interactive simulation friction parameter table.', attachment_url: 'https://cdn.nairee.edu/uploads/newtonian_sim_nairee.pdf', submitted_at: '2026-10-04 02:15 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
-      { submission_id: 'SUBM-003', homework_id: 'HW-003', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Python recursive binary tree traversal script with pytest assertions.', attachment_url: 'https://cdn.nairee.edu/uploads/binary_tree_nairee.py', submitted_at: '2026-10-04 06:00 PM', status: 'Graded', marks_awarded: 98, teacher_feedback: 'Clean code architecture and optimal time complexity.' },
-      { submission_id: 'SUBM-004', homework_id: 'HW-001', student_id: 'NAIREE-2024-092-002', student_name: 'Aarav Sharma', submission_text: 'Trigonometric Integrals step-by-step solutions.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_aarav.pdf', submitted_at: '2026-10-03 08:20 PM', status: 'Graded', marks_awarded: 90, teacher_feedback: 'Well attempted, check formula in Question 12.' },
-      { submission_id: 'SUBM-005', homework_id: 'HW-001', student_id: 'NAIREE-2024-093-003', student_name: 'Diya Gupta', submission_text: 'Full exercise 4.2 solutions with graphical curve sketch.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_diya.pdf', submitted_at: '2026-10-03 05:45 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Excellent integration substitutions.' },
-      { submission_id: 'SUBM-006', homework_id: 'HW-003', student_id: 'NAIREE-2024-095-005', student_name: 'Ananya Iyer', submission_text: 'Recursion homework submitted with edge case handling.', attachment_url: 'https://cdn.nairee.edu/uploads/recursion_ananya.py', submitted_at: '2026-10-04 05:10 PM', status: 'Graded', marks_awarded: 96, teacher_feedback: 'Very elegant recursion base conditions.' },
-      { submission_id: 'SUBM-007', homework_id: 'HW-004', student_id: 'NAIREE-2024-094-004', student_name: 'Rohan Mehta', submission_text: 'Victorian Romantic Literature comparative essay.', attachment_url: 'https://cdn.nairee.edu/uploads/essay_rohan.pdf', submitted_at: '2026-10-04 09:00 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
-      { submission_id: 'SUBM-008', homework_id: 'HW-006', student_id: 'NAIREE-2024-100-010', student_name: 'Vihaan Reddy', submission_text: 'Balanced redox equations with oxidation state notations.', attachment_url: 'https://cdn.nairee.edu/uploads/redox_vihaan.pdf', submitted_at: '2026-10-04 03:30 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Spot on ion-electron balancing.' },
-      { submission_id: 'SUBM-009', homework_id: 'HW-007', student_id: 'NAIREE-2024-099-009', student_name: 'Kavya Gupta', submission_text: 'Heart anatomy labeled diagram with double circulation chart.', attachment_url: 'https://cdn.nairee.edu/uploads/bio_kavya.pdf', submitted_at: '2026-10-04 01:20 PM', status: 'Graded', marks_awarded: 92, teacher_feedback: 'Beautiful artistic presentation and accurate labeling.' },
-      { submission_id: 'SUBM-010', homework_id: 'HW-008', student_id: 'NAIREE-2024-098-008', student_name: 'Riya Patel', submission_text: 'Freedom movement milestone poster with historic quotes.', attachment_url: 'https://cdn.nairee.edu/uploads/history_riya.pdf', submitted_at: '2026-10-04 04:00 PM', status: 'Graded', marks_awarded: 94, teacher_feedback: 'Impressive historical detail and neat design.' }
+      { submission_id: 'SUBM-001', homework_id: 'HW-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Attached solved PDF for Trigonometric Integrals Exercise 4.2 with verified derivatives.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_ex_4_2_nairee.pdf', submitted_at: '2026-10-03 04:30 PM', status: 'Graded', marks_awarded: 100, teacher_feedback: 'Flawless proofs and neat layout!' },
+      { submission_id: 'SUBM-002', homework_id: 'HW-002', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Completed interactive simulation friction parameter table.', attachment_url: 'https://cdn.nairee.edu/uploads/newtonian_sim_nairee.pdf', submitted_at: '2026-10-04 02:15 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
+      { submission_id: 'SUBM-003', homework_id: 'HW-003', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', submission_text: 'Python recursive binary tree traversal script with pytest assertions.', attachment_url: 'https://cdn.nairee.edu/uploads/binary_tree_nairee.py', submitted_at: '2026-10-04 06:00 PM', status: 'Graded', marks_awarded: 98, teacher_feedback: 'Clean code architecture and optimal time complexity.' },
+      { submission_id: 'SUBM-004', homework_id: 'HW-001', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', submission_text: 'Trigonometric Integrals step-by-step solutions.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_aarav.pdf', submitted_at: '2026-10-03 08:20 PM', status: 'Graded', marks_awarded: 90, teacher_feedback: 'Well attempted, check formula in Question 12.' },
+      { submission_id: 'SUBM-005', homework_id: 'HW-001', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', submission_text: 'Full exercise 4.2 solutions with graphical curve sketch.', attachment_url: 'https://cdn.nairee.edu/uploads/trig_diya.pdf', submitted_at: '2026-10-03 05:45 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Excellent integration substitutions.' },
+      { submission_id: 'SUBM-006', homework_id: 'HW-003', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', submission_text: 'Recursion homework submitted with edge case handling.', attachment_url: 'https://cdn.nairee.edu/uploads/recursion_ananya.py', submitted_at: '2026-10-04 05:10 PM', status: 'Graded', marks_awarded: 96, teacher_feedback: 'Very elegant recursion base conditions.' },
+      { submission_id: 'SUBM-007', homework_id: 'HW-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', submission_text: 'Victorian Romantic Literature comparative essay.', attachment_url: 'https://cdn.nairee.edu/uploads/essay_rohan.pdf', submitted_at: '2026-10-04 09:00 PM', status: 'Submitted', marks_awarded: null, teacher_feedback: '' },
+      { submission_id: 'SUBM-008', homework_id: 'HW-006', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', submission_text: 'Balanced redox equations with oxidation state notations.', attachment_url: 'https://cdn.nairee.edu/uploads/redox_vihaan.pdf', submitted_at: '2026-10-04 03:30 PM', status: 'Graded', marks_awarded: 95, teacher_feedback: 'Spot on ion-electron balancing.' },
+      { submission_id: 'SUBM-009', homework_id: 'HW-007', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', submission_text: 'Heart anatomy labeled diagram with double circulation chart.', attachment_url: 'https://cdn.nairee.edu/uploads/bio_kavya.pdf', submitted_at: '2026-10-04 01:20 PM', status: 'Graded', marks_awarded: 92, teacher_feedback: 'Beautiful artistic presentation and accurate labeling.' },
+      { submission_id: 'SUBM-010', homework_id: 'HW-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', submission_text: 'Freedom movement milestone poster with historic quotes.', attachment_url: 'https://cdn.nairee.edu/uploads/history_riya.pdf', submitted_at: '2026-10-04 04:00 PM', status: 'Graded', marks_awarded: 94, teacher_feedback: 'Impressive historical detail and neat design.' }
     ]
   },
 
@@ -1029,20 +1029,20 @@ export const INITIAL_DB_STORE = {
       { name: 'name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
       { name: 'email', type: 'VARCHAR(255)', pk: 0 },
-      { name: 'child', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'child', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'relationship', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { parent_id: 'PAR-001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'NAIREE-2024-091-001', relationship: 'Father', children_ids: ['NAIREE-2024-091-001', 'NAIREE-2024-098-008'] },
-      { parent_id: 'PAR-002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'NAIREE-2024-092-002', relationship: 'Mother', children_ids: ['NAIREE-2024-092-002'] },
-      { parent_id: 'PAR-003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'NAIREE-2024-093-003', relationship: 'Father', children_ids: ['NAIREE-2024-093-003', 'NAIREE-2024-099-009'] },
-      { parent_id: 'PAR-004', name: 'Manish Mehta', phone: '+91 98765 43218', email: 'manish.mehta@family.com', child: 'NAIREE-2024-094-004', relationship: 'Father', children_ids: ['NAIREE-2024-094-004'] },
-      { parent_id: 'PAR-005', name: 'Karthik Iyer', phone: '+91 98765 43220', email: 'karthik.iyer@family.com', child: 'NAIREE-2024-095-005', relationship: 'Father', children_ids: ['NAIREE-2024-095-005'] },
-      { parent_id: 'PAR-006', name: 'Harpreet Singh', phone: '+91 98765 43222', email: 'harpreet.singh@family.com', child: 'NAIREE-2024-096-006', relationship: 'Father', children_ids: ['NAIREE-2024-096-006'] },
-      { parent_id: 'PAR-007', name: 'Nitin Kulkarni', phone: '+91 98765 43224', email: 'nitin.kulkarni@family.com', child: 'NAIREE-2024-097-007', relationship: 'Father', children_ids: ['NAIREE-2024-097-007'] },
-      { parent_id: 'PAR-008', name: 'Meera Patel', phone: '+91 98765 43213', email: 'meera.patel@family.com', child: 'NAIREE-2024-098-008', relationship: 'Mother', children_ids: ['NAIREE-2024-091-001', 'NAIREE-2024-098-008'] },
-      { parent_id: 'PAR-009', name: 'Pooja Gupta', phone: '+91 98765 43217', email: 'pooja.gupta@family.com', child: 'NAIREE-2024-099-009', relationship: 'Mother', children_ids: ['NAIREE-2024-093-003', 'NAIREE-2024-099-009'] },
-      { parent_id: 'PAR-010', name: 'Venkat Reddy', phone: '+91 98765 43226', email: 'venkat.reddy@family.com', child: 'NAIREE-2024-100-010', relationship: 'Father', children_ids: ['NAIREE-2024-100-010'] }
+      { parent_id: 'PAR-001', name: 'Rajesh Patel', phone: '+91 98765 43212', email: 'rpatel@family.com', child: 'NIS-2024-091-001', relationship: 'Father', children_ids: ['NIS-2024-091-001', 'NIS-2024-098-008'] },
+      { parent_id: 'PAR-002', name: 'Sunita Sharma', phone: '+91 98765 43215', email: 'sunita.sharma@family.com', child: 'NIS-2024-092-002', relationship: 'Mother', children_ids: ['NIS-2024-092-002'] },
+      { parent_id: 'PAR-003', name: 'Vikram Gupta', phone: '+91 98765 43216', email: 'vikram.gupta@family.com', child: 'NIS-2024-093-003', relationship: 'Father', children_ids: ['NIS-2024-093-003', 'NIS-2024-099-009'] },
+      { parent_id: 'PAR-004', name: 'Manish Mehta', phone: '+91 98765 43218', email: 'manish.mehta@family.com', child: 'NIS-2024-094-004', relationship: 'Father', children_ids: ['NIS-2024-094-004'] },
+      { parent_id: 'PAR-005', name: 'Karthik Iyer', phone: '+91 98765 43220', email: 'karthik.iyer@family.com', child: 'NIS-2024-095-005', relationship: 'Father', children_ids: ['NIS-2024-095-005'] },
+      { parent_id: 'PAR-006', name: 'Harpreet Singh', phone: '+91 98765 43222', email: 'harpreet.singh@family.com', child: 'NIS-2024-096-006', relationship: 'Father', children_ids: ['NIS-2024-096-006'] },
+      { parent_id: 'PAR-007', name: 'Nitin Kulkarni', phone: '+91 98765 43224', email: 'nitin.kulkarni@family.com', child: 'NIS-2024-097-007', relationship: 'Father', children_ids: ['NIS-2024-097-007'] },
+      { parent_id: 'PAR-008', name: 'Meera Patel', phone: '+91 98765 43213', email: 'meera.patel@family.com', child: 'NIS-2024-098-008', relationship: 'Mother', children_ids: ['NIS-2024-091-001', 'NIS-2024-098-008'] },
+      { parent_id: 'PAR-009', name: 'Pooja Gupta', phone: '+91 98765 43217', email: 'pooja.gupta@family.com', child: 'NIS-2024-099-009', relationship: 'Mother', children_ids: ['NIS-2024-093-003', 'NIS-2024-099-009'] },
+      { parent_id: 'PAR-010', name: 'Venkat Reddy', phone: '+91 98765 43226', email: 'venkat.reddy@family.com', child: 'NIS-2024-100-010', relationship: 'Father', children_ids: ['NIS-2024-100-010'] }
     ]
   },
 
@@ -1071,7 +1071,7 @@ export const INITIAL_DB_STORE = {
   'Transfer Certificates': {
     columns: [
       { name: 'tc_id', type: 'VARCHAR(50)', pk: 1 },
-      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NAIREE-2024-091-001..NAIREE-2024-100-010]', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 },
       { name: 'leaving_date', type: 'DATE', pk: 0 },
@@ -1080,16 +1080,16 @@ export const INITIAL_DB_STORE = {
       { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { tc_id: 'TC-2026-001', student_id: 'NAIREE-2024-097-007', student_name: 'Sameer Kulkarni', class_batch: 'CLS-10B', leaving_date: '2026-08-30', reason: 'Parent Relocated to Mumbai', conduct: 'Exemplary', status: 'Issued' },
-      { tc_id: 'TC-2026-002', student_id: 'NAIREE-2024-091-001', student_name: 'Nairee Patel (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-06-15', reason: 'Course Completion Verification', conduct: 'Exemplary', status: 'Archived' },
-      { tc_id: 'TC-2026-003', student_id: 'NAIREE-2024-092-002', student_name: 'Aarav Sharma (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-06-15', reason: 'Higher Studies Certification', conduct: 'Exemplary', status: 'Archived' },
-      { tc_id: 'TC-2026-004', student_id: 'NAIREE-2024-093-003', student_name: 'Diya Gupta (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-07-20', reason: 'State Academic Council Validation', conduct: 'Good', status: 'Archived' },
-      { tc_id: 'TC-2026-005', student_id: 'NAIREE-2024-094-004', student_name: 'Rohan Mehta (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-08-05', reason: 'National Sports Academy Verification', conduct: 'Exemplary', status: 'Archived' },
-      { tc_id: 'TC-2026-006', student_id: 'NAIREE-2024-095-005', student_name: 'Ananya Iyer (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-08-12', reason: 'Olympiad Scholar Registry', conduct: 'Exemplary', status: 'Archived' },
-      { tc_id: 'TC-2026-007', student_id: 'NAIREE-2024-096-006', student_name: 'Kabir Singh (Provisional)', class_batch: 'CLS-10B', leaving_date: '2026-08-22', reason: 'Athletic Board Enrollment Record', conduct: 'Good', status: 'Archived' },
-      { tc_id: 'TC-2026-008', student_id: 'NAIREE-2024-098-008', student_name: 'Riya Patel (Provisional)', class_batch: 'CLS-06A', leaving_date: '2026-09-01', reason: 'Primary Course Progression Certificate', conduct: 'Good', status: 'Archived' },
-      { tc_id: 'TC-2026-009', student_id: 'NAIREE-2024-099-009', student_name: 'Kavya Gupta (Provisional)', class_batch: 'CLS-08A', leaving_date: '2026-09-10', reason: 'Middle School Merit Transition Record', conduct: 'Exemplary', status: 'Archived' },
-      { tc_id: 'TC-2026-010', student_id: 'NAIREE-2024-100-010', student_name: 'Vihaan Reddy (Provisional)', class_batch: 'CLS-11A', leaving_date: '2026-09-18', reason: 'Advanced Robotics International Registry', conduct: 'Exemplary', status: 'Archived' }
+      { tc_id: 'TC-2026-001', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', class_batch: 'CLS-10B', leaving_date: '2026-08-30', reason: 'Parent Relocated to Mumbai', conduct: 'Exemplary', status: 'Issued' },
+      { tc_id: 'TC-2026-002', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-06-15', reason: 'Course Completion Verification', conduct: 'Exemplary', status: 'Archived' },
+      { tc_id: 'TC-2026-003', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-06-15', reason: 'Higher Studies Certification', conduct: 'Exemplary', status: 'Archived' },
+      { tc_id: 'TC-2026-004', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-07-20', reason: 'State Academic Council Validation', conduct: 'Good', status: 'Archived' },
+      { tc_id: 'TC-2026-005', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-08-05', reason: 'National Sports Academy Verification', conduct: 'Exemplary', status: 'Archived' },
+      { tc_id: 'TC-2026-006', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer (Provisional)', class_batch: 'CLS-10A', leaving_date: '2026-08-12', reason: 'Olympiad Scholar Registry', conduct: 'Exemplary', status: 'Archived' },
+      { tc_id: 'TC-2026-007', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh (Provisional)', class_batch: 'CLS-10B', leaving_date: '2026-08-22', reason: 'Athletic Board Enrollment Record', conduct: 'Good', status: 'Archived' },
+      { tc_id: 'TC-2026-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel (Provisional)', class_batch: 'CLS-06A', leaving_date: '2026-09-01', reason: 'Primary Course Progression Certificate', conduct: 'Good', status: 'Archived' },
+      { tc_id: 'TC-2026-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta (Provisional)', class_batch: 'CLS-08A', leaving_date: '2026-09-10', reason: 'Middle School Merit Transition Record', conduct: 'Exemplary', status: 'Archived' },
+      { tc_id: 'TC-2026-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy (Provisional)', class_batch: 'CLS-11A', leaving_date: '2026-09-18', reason: 'Advanced Robotics International Registry', conduct: 'Exemplary', status: 'Archived' }
     ]
   },
 
@@ -1146,11 +1146,11 @@ export const FALLBACK_DATA = {
     { id: 'TEA-001', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'TEA-001' },
     { id: 'TEA-002', username: 'teacher_reed', full_name: 'Dr. Evelyn Reed', role: 'teacher', email: 'ereed@nairee.edu', status: 'Active', department: 'STEM & Robotics', phone: '+91 98765 34567', teacher_number: 'TEA-002' },
     { id: 'TEA-003', username: 'teacher_chen', full_name: 'Mr. Robert Chen', role: 'teacher', email: 'rchen@nairee.edu', status: 'Active', department: 'Computer Science', phone: '+91 98765 23456', teacher_number: 'TEA-003' },
-    { id: 'NAIREE-2024-091-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '01', student_id: 'NAIREE-2024-091-001' },
-    { id: 'NAIREE-2024-092-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '02', student_id: 'NAIREE-2024-092-002' },
-    { id: 'NAIREE-2024-093-003', username: 'diya', full_name: 'Diya Gupta', role: 'student', email: 'diya.gupta@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '03', student_id: 'NAIREE-2024-093-003' },
-    { id: 'PAR-001', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212', children: [{ id: 'NAIREE-2024-091-001', name: 'Nairee Patel', class_batch: 'Class 10 - Section A' }, { id: 'NAIREE-2024-098-008', name: 'Riya Patel', class_batch: 'Class 6 - Section A' }] },
-    { id: 'PAR-002', username: 'parent_sharma', full_name: 'Sunita Sharma', role: 'parent', email: 'sunita.sharma@family.com', status: 'Active', phone: '+91 98765 43215', children: [{ id: 'NAIREE-2024-092-002', name: 'Aarav Sharma', class_batch: 'Class 10 - Section A' }] }
+    { id: 'NIS-2024-091-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '01', student_id: 'NIS-2024-091-001' },
+    { id: 'NIS-2024-092-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '02', student_id: 'NIS-2024-092-002' },
+    { id: 'NIS-2024-093-003', username: 'diya', full_name: 'Diya Gupta', role: 'student', email: 'diya.gupta@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '03', student_id: 'NIS-2024-093-003' },
+    { id: 'PAR-001', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212', children: [{ id: 'NIS-2024-091-001', name: 'Nairee Patel', class_batch: 'Class 10 - Section A' }, { id: 'NIS-2024-098-008', name: 'Riya Patel', class_batch: 'Class 6 - Section A' }] },
+    { id: 'PAR-002', username: 'parent_sharma', full_name: 'Sunita Sharma', role: 'parent', email: 'sunita.sharma@family.com', status: 'Active', phone: '+91 98765 43215', children: [{ id: 'NIS-2024-092-002', name: 'Aarav Sharma', class_batch: 'Class 10 - Section A' }] }
   ],
   stats: {
     total_students: 840,

@@ -125,8 +125,8 @@ export function subscribeLiveEvents(callback) {
 }
 
 // Central Student ID Generator: [School Code]-[Year of Admission]-[Aadhaar Card Last 3 Digits]-[Sequence]
-export function generateStudentId({ schoolCode = 'NAIREE', admissionDate = '', admissionYear = '', aadhaarNo = '', sequence = 1 } = {}) {
-  const code = (schoolCode || 'NAIREE').toUpperCase().trim();
+export function generateStudentId({ schoolCode = 'NIS', admissionDate = '', admissionYear = '', aadhaarNo = '', sequence = 1 } = {}) {
+  const code = (schoolCode || 'NIS').toUpperCase().trim();
   let year = '';
   if (admissionYear) {
     year = String(admissionYear).trim();
@@ -145,7 +145,7 @@ export function generateStudentId({ schoolCode = 'NAIREE', admissionDate = '', a
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v5_2digit_roll_no';
+const DB_VERSION_KEY = 'nairee_db_v6_school_shortcode';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -445,7 +445,7 @@ export const api = {
       return { user: FALLBACK_DATA.users[0], token: 'mock-jwt-admin' };
     }
 
-    throw new Error('Invalid credentials. Use "admin", "teacher_jenkins", "nairee", or student ID "NAIREE-2024-091-001".');
+    throw new Error('Invalid credentials. Use "admin", "teacher_jenkins", "nairee", or student ID "NIS-2024-091-001".');
   },
 
   // Dashboard Metrics & Live Aggregations
@@ -825,7 +825,7 @@ export const api = {
 
     const newResult = {
       result_id: `RES-${Date.now().toString().slice(-4)}`,
-      student_id: data.student || data.student_id || 'NAIREE-2024-091-001',
+      student_id: data.student || data.student_id || 'NIS-2024-091-001',
       student_name: data.student_name || 'Student',
       plan_id: data.assessment_plan || 'PLAN-01',
       assessment_plan: data.assessment_plan_name || data.assessment_plan || 'Mid-Term Exam',
@@ -1139,7 +1139,7 @@ export const api = {
     const newSubm = {
       submission_id: `SUBM-${Date.now().toString().slice(-4)}`,
       homework_id: submissionData.homework_id || 'HW-001',
-      student_id: submissionData.student_id || 'NAIREE-2024-091-001',
+      student_id: submissionData.student_id || 'NIS-2024-091-001',
       student_name: submissionData.student_name || 'Nairee Patel',
       submission_text: submissionData.submission_text || '',
       attachment_url: submissionData.attachment_url || '',
