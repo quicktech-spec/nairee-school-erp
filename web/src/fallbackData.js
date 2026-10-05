@@ -39,7 +39,7 @@ export const INITIAL_DB_STORE = {
       { 
         student_id: 'NAIREE-2024-091-001', 
         name: 'Nairee Patel', 
-        roll_no: '101', 
+        roll_no: '01', 
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         dob: '2011-04-12',
         religion: 'Hindu',
@@ -75,13 +75,13 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'NAIREE-2024-098-008',
         sibling_name: 'Riya Patel',
         sibling_class: 'Class 6 - Section A',
-        sibling_roll_no: '108',
+        sibling_roll_no: '08',
         status: 'Active'
       },
       { 
         student_id: 'NAIREE-2024-092-002', 
         name: 'Aarav Sharma', 
-        roll_no: '102', 
+        roll_no: '02', 
         photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
         dob: '2011-08-25',
         religion: 'Hindu',
@@ -116,7 +116,7 @@ export const INITIAL_DB_STORE = {
       { 
         student_id: 'NAIREE-2024-093-003', 
         name: 'Diya Gupta', 
-        roll_no: '103', 
+        roll_no: '03', 
         photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
         dob: '2011-11-10',
         religion: 'Hindu',
@@ -152,13 +152,13 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'NAIREE-2024-099-009',
         sibling_name: 'Kavya Gupta',
         sibling_class: 'Class 8 - Section A',
-        sibling_roll_no: '109',
+        sibling_roll_no: '09',
         status: 'Active'
       },
       { 
         student_id: 'NAIREE-2024-094-004', 
         name: 'Rohan Mehta', 
-        roll_no: '104', 
+        roll_no: '04', 
         photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
         dob: '2011-02-18',
         religion: 'Jain',
@@ -193,7 +193,7 @@ export const INITIAL_DB_STORE = {
       { 
         student_id: 'NAIREE-2024-095-005', 
         name: 'Ananya Iyer', 
-        roll_no: '105', 
+        roll_no: '05', 
         photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150',
         dob: '2011-09-04',
         religion: 'Hindu',
@@ -228,7 +228,7 @@ export const INITIAL_DB_STORE = {
       { 
         student_id: 'NAIREE-2024-096-006', 
         name: 'Kabir Singh', 
-        roll_no: '106', 
+        roll_no: '06', 
         photo: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150',
         dob: '2011-05-19',
         religion: 'Sikh',
@@ -266,7 +266,7 @@ export const INITIAL_DB_STORE = {
       { 
         student_id: 'NAIREE-2024-097-007', 
         name: 'Sameer Kulkarni', 
-        roll_no: '107', 
+        roll_no: '07', 
         photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
         dob: '2011-07-30',
         religion: 'Hindu',
@@ -301,7 +301,7 @@ export const INITIAL_DB_STORE = {
       {
         student_id: 'NAIREE-2024-098-008',
         name: 'Riya Patel',
-        roll_no: '108',
+        roll_no: '08',
         photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
         dob: '2015-02-10',
         religion: 'Hindu',
@@ -334,13 +334,13 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'NAIREE-2024-091-001',
         sibling_name: 'Nairee Patel',
         sibling_class: 'Class 10 - Section A',
-        sibling_roll_no: '101',
+        sibling_roll_no: '01',
         status: 'Active'
       },
       {
         student_id: 'NAIREE-2024-099-009',
         name: 'Kavya Gupta',
-        roll_no: '109',
+        roll_no: '09',
         photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
         dob: '2016-06-14',
         religion: 'Hindu',
@@ -373,13 +373,13 @@ export const INITIAL_DB_STORE = {
         sibling_id: 'NAIREE-2024-093-003',
         sibling_name: 'Diya Gupta',
         sibling_class: 'Class 10 - Section A',
-        sibling_roll_no: '103',
+        sibling_roll_no: '03',
         status: 'Active'
       },
       {
         student_id: 'NAIREE-2024-100-010',
         name: 'Vihaan Reddy',
-        roll_no: '110',
+        roll_no: '10',
         photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
         dob: '2010-01-20',
         religion: 'Hindu',
@@ -1138,9 +1138,9 @@ export const FALLBACK_DATA = {
     { id: 'TEA-001', username: 'teacher_jenkins', full_name: 'Prof. Sarah Jenkins', role: 'teacher', email: 'sjenkins@nairee.edu', status: 'Active', department: 'Mathematics & Science', phone: '+91 98765 43211', teacher_number: 'TEA-001' },
     { id: 'TEA-002', username: 'teacher_reed', full_name: 'Dr. Evelyn Reed', role: 'teacher', email: 'ereed@nairee.edu', status: 'Active', department: 'STEM & Robotics', phone: '+91 98765 34567', teacher_number: 'TEA-002' },
     { id: 'TEA-003', username: 'teacher_chen', full_name: 'Mr. Robert Chen', role: 'teacher', email: 'rchen@nairee.edu', status: 'Active', department: 'Computer Science', phone: '+91 98765 23456', teacher_number: 'TEA-003' },
-    { id: 'NAIREE-2024-091-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '101', student_id: 'NAIREE-2024-091-001' },
-    { id: 'NAIREE-2024-092-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '102', student_id: 'NAIREE-2024-092-002' },
-    { id: 'NAIREE-2024-093-003', username: 'diya', full_name: 'Diya Gupta', role: 'student', email: 'diya.gupta@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '103', student_id: 'NAIREE-2024-093-003' },
+    { id: 'NAIREE-2024-091-001', username: 'nairee', full_name: 'Nairee Patel', role: 'student', email: 'syalfreelance@gmail.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '01', student_id: 'NAIREE-2024-091-001' },
+    { id: 'NAIREE-2024-092-002', username: 'aarav', full_name: 'Aarav Sharma', role: 'student', email: 'aarav.sharma@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '02', student_id: 'NAIREE-2024-092-002' },
+    { id: 'NAIREE-2024-093-003', username: 'diya', full_name: 'Diya Gupta', role: 'student', email: 'diya.gupta@example.com', status: 'Active', batch_name: 'Class 10 - Section A', roll_number: '03', student_id: 'NAIREE-2024-093-003' },
     { id: 'PAR-001', username: 'parent_patel', full_name: 'Rajesh Patel', role: 'parent', email: 'rpatel@family.com', status: 'Active', phone: '+91 98765 43212', children: [{ id: 'NAIREE-2024-091-001', name: 'Nairee Patel', class_batch: 'Class 10 - Section A' }, { id: 'NAIREE-2024-098-008', name: 'Riya Patel', class_batch: 'Class 6 - Section A' }] },
     { id: 'PAR-002', username: 'parent_sharma', full_name: 'Sunita Sharma', role: 'parent', email: 'sunita.sharma@family.com', status: 'Active', phone: '+91 98765 43215', children: [{ id: 'NAIREE-2024-092-002', name: 'Aarav Sharma', class_batch: 'Class 10 - Section A' }] }
   ],

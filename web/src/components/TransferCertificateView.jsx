@@ -36,7 +36,7 @@ function getSynchronizedStudents() {
       id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
       name: s.name || s.student_name,
       student_name: s.name || s.student_name,
-      roll_no: s.roll_no ? String(s.roll_no).replace(/\D/g, '') : `${101 + idx}`,
+      roll_no: s.roll_no ? String(s.roll_no).replace(/\D/g, '') : String(idx + 1).padStart(2, '0'),
       student_batch: s.class_batch || 'Class 10 - Section A',
       class_batch: s.class_batch || 'Class 10 - Section A',
       stream: s.stream || 'Science & Advanced Mathematics',

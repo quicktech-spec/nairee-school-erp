@@ -33,7 +33,7 @@ function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => ({
     id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
     name: s.name || s.student_name,
-    roll_no: s.roll_no || `${101 + idx}`,
+    roll_no: s.roll_no || String(idx + 1).padStart(2, '0'),
     class_id: s.batch_id || (s.class_batch?.includes('10B') || s.class_batch?.includes('Section B') ? 'CLS-10B' : 'CLS-10A'),
     class_name: s.class_batch || 'Class 10 - Section A',
     email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
@@ -234,7 +234,7 @@ export default function ClassStaffManagerView() {
         sequence: newNum
       }),
       name: newStudent.name.trim(),
-      roll_no: newStudent.roll_no.trim() || String(100 + newNum),
+      roll_no: newStudent.roll_no.trim() || String(newNum).padStart(2, '0'),
       class_id: targetClass.id,
       class_name: targetClass.name,
       email: newStudent.email || `${newStudent.name.toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
@@ -255,7 +255,7 @@ export default function ClassStaffManagerView() {
     const newMasterRow = {
       student_id: studentObj.id,
       name: studentObj.name,
-      roll_no: studentObj.roll_no.replace(/\D/g, '') || '108',
+      roll_no: studentObj.roll_no.replace(/\D/g, '') || '01',
       class_batch: targetClass.name,
       batch_id: targetClass.id,
       phone: studentObj.phone,

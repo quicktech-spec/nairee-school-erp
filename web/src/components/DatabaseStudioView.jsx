@@ -287,7 +287,7 @@ export default function DatabaseStudioView() {
     } else {
       // New Student Entry
       const nextIdx = (tableData.rows?.length || 0) + 1;
-      const newRoll = 100 + nextIdx;
+      const newRoll = String(nextIdx).padStart(2, '0');
       const defaultAadhaar = `9876 5432 109${nextIdx}`;
       setIsCreatingRow(true);
       setFormData({
@@ -298,7 +298,7 @@ export default function DatabaseStudioView() {
           sequence: nextIdx
         }),
         name: '',
-        roll_no: String(newRoll),
+        roll_no: newRoll,
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         dob: '2011-01-01',
         religion: 'Hindu',
@@ -776,7 +776,7 @@ export default function DatabaseStudioView() {
                             <div>
                               <span>{studentName}</span>
                               <div className="text-[10px] font-mono text-slate-400 font-normal">
-                                {row.student_id || generateStudentId({ sequence: row.roll_no || 1 })} &bull; Roll #{row.roll_no || '101'}
+                                {row.student_id || generateStudentId({ sequence: row.roll_no || 1 })} &bull; Roll #{row.roll_no || '01'}
                               </div>
                             </div>
                           </div>

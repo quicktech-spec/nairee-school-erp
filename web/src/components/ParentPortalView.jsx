@@ -103,7 +103,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
     id: 'NAIREE-2024-091-001',
     name: 'NAIREE-2024-091-001',
     student_name: 'Nairee Patel',
-    roll_no: '101',
+    roll_no: '01',
     student_batch: 'Class 10 - Section A',
     batch_id: 'CLS-10A'
   };

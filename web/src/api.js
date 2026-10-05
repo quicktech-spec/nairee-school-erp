@@ -145,7 +145,7 @@ export function generateStudentId({ schoolCode = 'NAIREE', admissionDate = '', a
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v4_smart_student_ids';
+const DB_VERSION_KEY = 'nairee_db_v5_2digit_roll_no';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -403,7 +403,7 @@ export const api = {
         status: matchedStudent.status || 'Active',
         batch_name: matchedStudent.class_batch || 'Class 10 - Section A',
         student_batch: matchedStudent.class_batch || 'Class 10 - Section A',
-        roll_number: matchedStudent.roll_no || '101',
+        roll_number: matchedStudent.roll_no || '01',
         fee_status: feeInfo.fee_status,
         balance_due: feeInfo.totalDue,
         student: {
@@ -601,7 +601,7 @@ export const api = {
       aadhaarNo: aadhaar,
       sequence: nextNum
     });
-    const newRoll = studentData.roll_no || `10${nextNum}`;
+    const newRoll = studentData.roll_no || String(nextNum).padStart(2, '0');
 
     const newStudent = {
       student_id: newStudentId,
