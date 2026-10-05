@@ -7,7 +7,7 @@ import {
   Save, 
   Sparkles
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 
 export default function AttendanceView({ onAttendanceSaved }) {
   const [batches, setBatches] = useState([]);
@@ -26,7 +26,7 @@ export default function AttendanceView({ onAttendanceSaved }) {
     try {
       setLoading(true);
       const data = await api.getAttendance(selectedBatch, selectedDate);
-      setStudents(data.students);
+      setStudents(data.students || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -38,6 +38,21 @@ export default function AttendanceView({ onAttendanceSaved }) {
     if (selectedBatch && selectedDate) {
       loadAttendance();
     }
+  }, [selectedBatch, selectedDate]);
+
+  // Live Reactive Multi-Tab & Relational Cascade Sync
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      if (
+        event.type === 'student_updated' ||
+        event.type === 'student_cascaded_update' ||
+        event.type === 'student_transferred' ||
+        event.type === 'db_store_updated'
+      ) {
+        loadAttendance();
+      }
+    });
+    return () => unsub();
   }, [selectedBatch, selectedDate]);
 
   const handleStatusChange = (studentId, status) => {

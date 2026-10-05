@@ -69,7 +69,8 @@ CREATE TABLE academic_years (
 CREATE TABLE employees (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
-    employee_code VARCHAR(50) UNIQUE NOT NULL,
+    teacher_id VARCHAR(50) UNIQUE NOT NULL,
+    employee_code VARCHAR(50),
     name VARCHAR(255) NOT NULL,
     gender VARCHAR(20),
     dob DATE,
@@ -166,14 +167,14 @@ CREATE TABLE students (
     fee_status VARCHAR(50) DEFAULT 'Pending',
     status VARCHAR(50) DEFAULT 'Active',
     has_siblings BOOLEAN DEFAULT FALSE,
-    sibling_student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE SET NULL,
+    sibling_student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 3.2 GUARDIANS / PARENTS
 CREATE TABLE guardians (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     father_name VARCHAR(255),
     father_occupation VARCHAR(255),
     father_phone VARCHAR(50),
@@ -195,7 +196,7 @@ CREATE TABLE guardians (
 -- 4.1 STUDENT DAILY ATTENDANCE
 CREATE TABLE student_daily_attendance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     attendance_date DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
@@ -248,7 +249,7 @@ CREATE TABLE exam_schedules (
 CREATE TABLE exam_marks_entries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     exam_schedule_id UUID REFERENCES exam_schedules(id) ON DELETE CASCADE,
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     score DECIMAL(5,2) NOT NULL,
     maximum_score DECIMAL(5,2) DEFAULT 100.0,
     percentage DECIMAL(5,2) GENERATED ALWAYS AS (ROUND((score / maximum_score) * 100, 2)) STORED,
@@ -267,7 +268,7 @@ CREATE TABLE exam_marks_entries (
 CREATE TABLE student_fee_invoices (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     invoice_code VARCHAR(50) UNIQUE NOT NULL,
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     fee_type VARCHAR(100) DEFAULT 'Tuition Fee',
     amount DECIMAL(12,2) NOT NULL,
@@ -282,7 +283,7 @@ CREATE TABLE student_fee_invoices (
 CREATE TABLE fee_payment_transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     invoice_id UUID REFERENCES student_fee_invoices(id) ON DELETE CASCADE,
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     receipt_no VARCHAR(50) UNIQUE NOT NULL,
     amount_paid DECIMAL(12,2) NOT NULL,
     payment_mode VARCHAR(50) NOT NULL,
@@ -349,7 +350,7 @@ CREATE TABLE homework_assignments (
 CREATE TABLE homework_submissions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     homework_id UUID REFERENCES homework_assignments(id) ON DELETE CASCADE,
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     submission_text TEXT,
     attachment_url TEXT,
     submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -365,7 +366,7 @@ CREATE TABLE homework_submissions (
 CREATE TABLE transfer_certificates (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tc_number VARCHAR(50) UNIQUE NOT NULL,
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE CASCADE,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     leaving_date DATE NOT NULL,
     reason VARCHAR(255),
     conduct VARCHAR(50) DEFAULT 'Exemplary',
@@ -375,7 +376,7 @@ CREATE TABLE transfer_certificates (
 
 CREATE TABLE alumni (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    student_id VARCHAR(50) REFERENCES students(admission_no) ON DELETE SET NULL,
+    student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     passing_year VARCHAR(50) NOT NULL,
     higher_education VARCHAR(255),

@@ -208,7 +208,7 @@ export function getGuaranteedUniqueTeacherId({ schoolCode = 'NIS', joiningDate =
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v8_strict_unique_ids';
+const DB_VERSION_KEY = 'nairee_db_v9_relational_cascade';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -305,6 +305,143 @@ export function saveStoredDb(newDbStore, shouldBroadcast = true) {
   }
 }
 
+// Cascading Relational Trigger Engine for Students:
+// When any student detail (id, name, roll_no, class_batch) updates, it triggers
+// instantaneous cascading updates across Attendance, Invoices, Results, and Portals.
+export function cascadeStudentUpdates(updatedStudentsList, dbStore) {
+  if (!dbStore || !Array.isArray(updatedStudentsList)) return dbStore;
+
+  const studentMap = new Map();
+  updatedStudentsList.forEach(s => {
+    if (s && (s.student_id || s.id)) {
+      const sid = String(s.student_id || s.id).trim();
+      const sname = String(s.name || s.student_name || '').trim();
+      const roll = String(s.roll_no || '').padStart(2, '0');
+      const classBatch = s.class_batch || s.student_batch || 'Class 10 - Section A';
+      
+      const payload = {
+        student_id: sid,
+        student_name: sname,
+        roll_no: roll,
+        class_batch: classBatch,
+        batch_id: s.batch_id || 'CLS-10A'
+      };
+
+      studentMap.set(sid.toLowerCase(), payload);
+      if (sname) studentMap.set(sname.toLowerCase(), payload);
+    }
+  });
+
+  // 1. Cascade to Attendance Records
+  if (dbStore['Attendance Records'] && Array.isArray(dbStore['Attendance Records'].rows)) {
+    dbStore['Attendance Records'].rows = dbStore['Attendance Records'].rows.map(att => {
+      const sid = String(att.student_id || att.student || '').toLowerCase().trim();
+      const sname = String(att.student_name || '').toLowerCase().trim();
+      const matched = studentMap.get(sid) || studentMap.get(sname);
+      if (matched) {
+        return {
+          ...att,
+          student_id: matched.student_id,
+          student_name: matched.student_name,
+          roll_no: matched.roll_no || att.roll_no,
+          class_batch: matched.class_batch || att.class_batch
+        };
+      }
+      return att;
+    });
+  }
+
+  // 2. Cascade to Fee Invoices & Ledger
+  if (dbStore['Fee Invoices & Ledger'] && Array.isArray(dbStore['Fee Invoices & Ledger'].rows)) {
+    dbStore['Fee Invoices & Ledger'].rows = dbStore['Fee Invoices & Ledger'].rows.map(inv => {
+      const sid = String(inv.student_id || inv.student || '').toLowerCase().trim();
+      const sname = String(inv.student_name || '').toLowerCase().trim();
+      const matched = studentMap.get(sid) || studentMap.get(sname);
+      if (matched) {
+        return {
+          ...inv,
+          student_id: matched.student_id,
+          student_name: matched.student_name,
+          roll_no: matched.roll_no || inv.roll_no,
+          class_batch: matched.class_batch || inv.class_batch
+        };
+      }
+      return inv;
+    });
+  }
+
+  // 3. Cascade to Assessment Results (Marks)
+  if (dbStore['Assessment Results'] && Array.isArray(dbStore['Assessment Results'].rows)) {
+    dbStore['Assessment Results'].rows = dbStore['Assessment Results'].rows.map(res => {
+      const sid = String(res.student_id || res.student || '').toLowerCase().trim();
+      const sname = String(res.student_name || '').toLowerCase().trim();
+      const matched = studentMap.get(sid) || studentMap.get(sname);
+      if (matched) {
+        return {
+          ...res,
+          student_id: matched.student_id,
+          student_name: matched.student_name,
+          roll_no: matched.roll_no || res.roll_no,
+          class_batch: matched.class_batch || res.class_batch
+        };
+      }
+      return res;
+    });
+  }
+
+  // 4. Cascade to Homework Submissions
+  if (dbStore['Homework Submissions'] && Array.isArray(dbStore['Homework Submissions'].rows)) {
+    dbStore['Homework Submissions'].rows = dbStore['Homework Submissions'].rows.map(sub => {
+      const sid = String(sub.student_id || sub.student || '').toLowerCase().trim();
+      const sname = String(sub.student_name || '').toLowerCase().trim();
+      const matched = studentMap.get(sid) || studentMap.get(sname);
+      if (matched) {
+        return {
+          ...sub,
+          student_id: matched.student_id,
+          student_name: matched.student_name
+        };
+      }
+      return sub;
+    });
+  }
+
+  // 5. Cascade to Parent List
+  if (dbStore['Parent List'] && Array.isArray(dbStore['Parent List'].rows)) {
+    dbStore['Parent List'].rows = dbStore['Parent List'].rows.map(par => {
+      const childId = String(par.child || '').toLowerCase().trim();
+      const matched = studentMap.get(childId);
+      if (matched) {
+        return {
+          ...par,
+          child: matched.student_id
+        };
+      }
+      return par;
+    });
+  }
+
+  // 6. Cascade to Transfer Certificates
+  if (dbStore['Transfer Certificates'] && Array.isArray(dbStore['Transfer Certificates'].rows)) {
+    dbStore['Transfer Certificates'].rows = dbStore['Transfer Certificates'].rows.map(tc => {
+      const sid = String(tc.student_id || '').toLowerCase().trim();
+      const sname = String(tc.student_name || '').toLowerCase().trim();
+      const matched = studentMap.get(sid) || studentMap.get(sname);
+      if (matched) {
+        return {
+          ...tc,
+          student_id: matched.student_id,
+          student_name: matched.student_name,
+          class_batch: matched.class_batch || tc.class_batch
+        };
+      }
+      return tc;
+    });
+  }
+
+  return dbStore;
+}
+
 // Master Helpers for Students & Teachers
 export function getMasterStudents() {
   const db = getStoredDb();
@@ -312,17 +449,22 @@ export function getMasterStudents() {
 }
 
 export function saveMasterStudents(updatedStudentsList) {
-  const currentDb = getStoredDb();
+  let currentDb = getStoredDb();
   const currentTbl = currentDb['Student List'] || INITIAL_DB_STORE['Student List'];
-  const updatedDb = {
+  currentDb = {
     ...currentDb,
     'Student List': {
       ...currentTbl,
       rows: updatedStudentsList
     }
   };
-  saveStoredDb(updatedDb);
+
+  // Trigger Automatic Cascading Updates Across All Dependent Relational Sections
+  currentDb = cascadeStudentUpdates(updatedStudentsList, currentDb);
+
+  saveStoredDb(currentDb);
   broadcastLiveEvent('student_updated', { students: updatedStudentsList });
+  broadcastLiveEvent('student_cascaded_update', { dbStore: currentDb });
 }
 
 export function getMasterTeachers() {
@@ -841,12 +983,53 @@ export const api = {
 
     const db = getStoredDb();
     const records = db['Attendance Records']?.rows || [];
-    const targetDate = date || '2026-10-01';
-    return records.filter(r => {
+    const masterStudents = getMasterStudents();
+    const targetDate = date || '2026-10-05';
+
+    // Filter students belonging to this batch/class
+    const filteredStudents = masterStudents.filter(s => {
+      if (!batch || batch === 'all') return true;
+      const bLower = batch.toLowerCase().trim();
+      const sBatchId = (s.batch_id || '').toLowerCase().trim();
+      const sClassBatch = (s.class_batch || '').toLowerCase().trim();
+      return sBatchId === bLower || sClassBatch === bLower || sClassBatch.includes(bLower) || bLower.includes(sBatchId);
+    });
+
+    const studentsWithAttendance = filteredStudents.map(s => {
+      const sid = s.student_id;
+      const existing = records.find(
+        r => (r.student_id === sid || r.student_name === s.name) && r.date === targetDate
+      );
+
+      return {
+        id: s.student_id,
+        name: s.student_id,
+        student: s.student_id,
+        student_id: s.student_id,
+        student_name: s.name,
+        roll_no: s.roll_no || '01',
+        roll_number: s.roll_no || '01',
+        class_batch: s.class_batch || 'Class 10 - Section A',
+        batch_id: s.batch_id || 'CLS-10A',
+        image: s.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
+        status: existing ? existing.status : 'Present',
+        remarks: existing?.remarks || ''
+      };
+    });
+
+    const matchedRecords = records.filter(r => {
       const matchBatch = !batch || batch === 'all' || r.class_batch === batch || r.class_batch?.includes(batch);
       const matchDate = !date || r.date === targetDate;
       return matchBatch && matchDate;
     });
+
+    return {
+      students: studentsWithAttendance,
+      records: matchedRecords,
+      total: studentsWithAttendance.length,
+      present_count: studentsWithAttendance.filter(s => s.status === 'Present').length,
+      absent_count: studentsWithAttendance.filter(s => s.status === 'Absent').length
+    };
   },
 
   async submitBulkAttendance(batch, date, records) {
@@ -861,6 +1044,7 @@ export const api = {
     const attTbl = db['Attendance Records'] || { rows: [], columns: [] };
     const currentRows = [...(attTbl.rows || [])];
     const targetDate = date || new Date().toISOString().split('T')[0];
+    const masterStudents = getMasterStudents();
 
     if (Array.isArray(records)) {
       records.forEach(r => {
@@ -869,20 +1053,40 @@ export const api = {
         const status = r.status || 'Present';
         const cleanSid = String(studentId).toLowerCase().trim();
 
+        // Match student in master to ensure accurate roll_no and class_batch
+        const matchedStudent = masterStudents.find(
+          s => String(s.student_id).toLowerCase().trim() === cleanSid || String(s.name).toLowerCase().trim() === String(studentName).toLowerCase().trim()
+        );
+
+        const rollNo = matchedStudent ? matchedStudent.roll_no : (r.roll_no || '01');
+        const classBatch = matchedStudent ? matchedStudent.class_batch : (r.class_batch || batch || 'Class 10 - Section A');
+        const finalStudentId = matchedStudent ? matchedStudent.student_id : studentId;
+        const finalStudentName = matchedStudent ? matchedStudent.name : studentName;
+
         const existingIdx = currentRows.findIndex(
-          row => String(row.student_id).toLowerCase().trim() === cleanSid && row.date === targetDate
+          row => (String(row.student_id).toLowerCase().trim() === cleanSid || String(row.student_name).toLowerCase().trim() === String(finalStudentName).toLowerCase().trim()) && row.date === targetDate
         );
 
         if (existingIdx >= 0) {
-          currentRows[existingIdx].status = status;
+          currentRows[existingIdx] = {
+            ...currentRows[existingIdx],
+            student_id: finalStudentId,
+            student_name: finalStudentName,
+            roll_no: rollNo,
+            class_batch: classBatch,
+            status,
+            remarks: r.remarks || currentRows[existingIdx].remarks || ''
+          };
         } else {
           currentRows.push({
             attendance_id: `ATT-${Date.now().toString().slice(-4)}-${Math.floor(Math.random()*100)}`,
-            student_id: studentId,
-            student_name: studentName,
+            student_id: finalStudentId,
+            student_name: finalStudentName,
+            roll_no: rollNo,
+            class_batch: classBatch,
             date: targetDate,
             status,
-            class_batch: batch || 'CLS-10A'
+            remarks: r.remarks || ''
           });
         }
       });
@@ -914,12 +1118,37 @@ export const api = {
 
     const db = getStoredDb();
     const rows = db['Assessment Results']?.rows || [];
+    const masterStudents = getMasterStudents();
     const planFilter = params.plan;
 
+    let filtered = rows;
     if (planFilter && planFilter !== 'all') {
-      return rows.filter(r => r.plan_id === planFilter || r.assessment_plan === planFilter);
+      filtered = rows.filter(r => r.plan_id === planFilter || r.assessment_plan === planFilter);
     }
-    return rows;
+
+    return filtered.map(r => {
+      const matchedStudent = masterStudents.find(
+        s => String(s.student_id).toLowerCase().trim() === String(r.student_id).toLowerCase().trim() ||
+             String(s.name).toLowerCase().trim() === String(r.student_name).toLowerCase().trim()
+      );
+
+      const rollNo = matchedStudent ? matchedStudent.roll_no : (r.roll_no || '01');
+      const classBatch = matchedStudent ? matchedStudent.class_batch : (r.class_batch || 'Class 10 - Section A');
+      const studentName = matchedStudent ? matchedStudent.name : r.student_name;
+      const studentId = matchedStudent ? matchedStudent.student_id : r.student_id;
+
+      return {
+        ...r,
+        id: r.result_id,
+        name: r.result_id,
+        student_id: studentId,
+        student: studentId,
+        student_name: studentName,
+        roll_no: rollNo,
+        class_batch: classBatch,
+        student_batch: classBatch
+      };
+    });
   },
 
   async submitGrade(data) {
@@ -933,6 +1162,18 @@ export const api = {
     const db = getStoredDb();
     const resTbl = db['Assessment Results'] || { rows: [], columns: [] };
     const currentRows = [...(resTbl.rows || [])];
+    const masterStudents = getMasterStudents();
+
+    const studentId = data.student || data.student_id || 'NIS-2024-091-001';
+    const matchedStudent = masterStudents.find(
+      s => String(s.student_id).toLowerCase().trim() === String(studentId).toLowerCase().trim() ||
+           String(s.name).toLowerCase().trim() === String(data.student_name || '').toLowerCase().trim()
+    );
+
+    const finalStudentId = matchedStudent ? matchedStudent.student_id : studentId;
+    const finalStudentName = matchedStudent ? matchedStudent.name : (data.student_name || 'Student');
+    const rollNo = matchedStudent ? matchedStudent.roll_no : (data.roll_no || '01');
+    const classBatch = matchedStudent ? matchedStudent.class_batch : (data.class_batch || 'Class 10 - Section A');
 
     const score = Number(data.score) || 0;
     const maxScore = Number(data.maximum_score) || 100;
@@ -947,10 +1188,12 @@ export const api = {
 
     const newResult = {
       result_id: `RES-${Date.now().toString().slice(-4)}`,
-      student_id: data.student || data.student_id || 'NIS-2024-091-001',
-      student_name: data.student_name || 'Student',
-      plan_id: data.assessment_plan || 'PLAN-01',
-      assessment_plan: data.assessment_plan_name || data.assessment_plan || 'Mid-Term Exam',
+      student_id: finalStudentId,
+      student_name: finalStudentName,
+      roll_no: rollNo,
+      class_batch: classBatch,
+      plan_id: data.assessment_plan || 'PLAN-001',
+      assessment_plan: data.assessment_plan_name || data.assessment_plan || 'Mid-Term Examinations 2026',
       course: data.course || 'Mathematics',
       score,
       maximum_score: maxScore,
@@ -960,7 +1203,7 @@ export const api = {
     };
 
     const existingIdx = currentRows.findIndex(
-      r => r.student_id === newResult.student_id && r.plan_id === newResult.plan_id
+      r => r.student_id === finalStudentId && r.plan_id === newResult.plan_id
     );
 
     if (existingIdx >= 0) {
@@ -983,18 +1226,42 @@ export const api = {
 
     const db = getStoredDb();
     const invoices = db['Fee Invoices & Ledger']?.rows || [];
+    const masterStudents = getMasterStudents();
     const statusFilter = params.status;
 
+    let filtered = invoices;
     if (statusFilter && statusFilter !== 'all') {
-      return invoices.filter(i => i.status === statusFilter);
+      filtered = invoices.filter(i => i.status === statusFilter);
     }
-    return invoices.map(i => ({
-      ...i,
-      id: i.invoice_id,
-      name: i.invoice_id,
-      grand_total: Number(i.amount) || 0,
-      outstanding_amount: i.status === 'Paid' ? 0 : (Number(i.amount) || 0)
-    }));
+
+    return filtered.map(i => {
+      const matchedStudent = masterStudents.find(
+        s => String(s.student_id).toLowerCase().trim() === String(i.student_id).toLowerCase().trim() ||
+             String(s.name).toLowerCase().trim() === String(i.student_name).toLowerCase().trim()
+      );
+
+      const rollNo = matchedStudent ? matchedStudent.roll_no : (i.roll_no || '01');
+      const classBatch = matchedStudent ? matchedStudent.class_batch : (i.class_batch || 'Class 10 - Section A');
+      const studentName = matchedStudent ? matchedStudent.name : i.student_name;
+      const studentId = matchedStudent ? matchedStudent.student_id : i.student_id;
+
+      return {
+        ...i,
+        id: i.invoice_id,
+        name: i.invoice_id,
+        student_id: studentId,
+        student: studentId,
+        student_name: studentName,
+        roll_no: rollNo,
+        student_batch: classBatch,
+        class_batch: classBatch,
+        grand_total: Number(i.amount) || 0,
+        outstanding_amount: i.status === 'Paid' ? 0 : (Number(i.amount) || 0),
+        components: [
+          { id: 'FC-1', fee_category: i.fee_type || 'Tuition Fee', amount: Number(i.amount) || 35000 }
+        ]
+      };
+    });
   },
 
   async payFee(invoiceId, paymentMethod = 'Online Gateway / UPI') {

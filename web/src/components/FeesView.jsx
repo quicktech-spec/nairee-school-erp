@@ -34,7 +34,13 @@ export default function FeesView({ onPaymentCompleted }) {
   useEffect(() => {
     loadFees();
     const unsubscribe = subscribeLiveEvents((event) => {
-      if (event.type === 'fee_updated') {
+      if (
+        event.type === 'fee_updated' ||
+        event.type === 'student_updated' ||
+        event.type === 'student_cascaded_update' ||
+        event.type === 'student_transferred' ||
+        event.type === 'db_store_updated'
+      ) {
         loadFees();
       }
     });
@@ -149,12 +155,19 @@ export default function FeesView({ onPaymentCompleted }) {
                       {fee.name || fee.id}
                     </td>
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-swift-dark">{fee.student_name}</p>
-                      <p className="text-[11px] text-swift-muted">{fee.student}</p>
+                      <p className="font-bold text-swift-dark flex items-center gap-1.5">
+                        <span>{fee.student_name}</span>
+                        {fee.roll_no && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
+                            Roll #{fee.roll_no}
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-[11px] font-mono text-swift-muted">{fee.student_id || fee.student}</p>
                     </td>
                     <td className="py-3.5 px-4">
                       <p className="font-semibold text-swift-dark">{fee.academic_term || 'Term 1'}</p>
-                      <p className="text-[11px] text-swift-muted">{fee.student_batch || 'Grade 10-A'}</p>
+                      <p className="text-[11px] font-bold text-teal-800">{fee.class_batch || fee.student_batch || 'Class 10 - Section A'}</p>
                     </td>
                     <td className="py-3.5 px-4 text-swift-muted font-medium">
                       {fee.due_date}

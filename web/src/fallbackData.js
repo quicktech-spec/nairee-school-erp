@@ -823,6 +823,8 @@ export const INITIAL_DB_STORE = {
       { name: 'result_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'roll_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(100) [Link to Class & Batch List]', pk: 0 },
       { name: 'plan_id', type: 'VARCHAR(50) [Link to Assessment Plans: PLAN-001..PLAN-010]', pk: 0 },
       { name: 'assessment_plan', type: 'VARCHAR(255)', pk: 0 },
       { name: 'course', type: 'VARCHAR(255)', pk: 0 },
@@ -833,16 +835,16 @@ export const INITIAL_DB_STORE = {
       { name: 'comment', type: 'TEXT', pk: 0 }
     ],
     rows: [
-      { result_id: 'RES-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional mathematical rigor and step-by-step proofs.' },
-      { result_id: 'RES-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 88, maximum_score: 100, percentage: 88, grade: 'A', comment: 'Strong analytical skills, minor accuracy slip in trigonometry.' },
-      { result_id: 'RES-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Brilliant conceptual grasp across algebra and calculus.' },
-      { result_id: 'RES-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
-      { result_id: 'RES-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
-      { result_id: 'RES-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
-      { result_id: 'RES-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 91, maximum_score: 100, percentage: 91, grade: 'A', comment: 'Excellent accuracy and neat calculation.' },
-      { result_id: 'RES-008', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-002', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics & Dynamics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
-      { result_id: 'RES-009', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 99, maximum_score: 100, percentage: 99, grade: 'A+', comment: 'Flawless neural network algorithms and test coverage.' },
-      { result_id: 'RES-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 95, maximum_score: 100, percentage: 95, grade: 'A+', comment: 'Superb algorithm optimization and clear code structure.' }
+      { result_id: 'RES-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', roll_no: '01', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 98, maximum_score: 100, percentage: 98, grade: 'A+', comment: 'Exceptional mathematical rigor and step-by-step proofs.' },
+      { result_id: 'RES-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', roll_no: '02', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 88, maximum_score: 100, percentage: 88, grade: 'A', comment: 'Strong analytical skills, minor accuracy slip in trigonometry.' },
+      { result_id: 'RES-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', roll_no: '03', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 94, maximum_score: 100, percentage: 94, grade: 'A+', comment: 'Brilliant conceptual grasp across algebra and calculus.' },
+      { result_id: 'RES-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', roll_no: '04', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 84, maximum_score: 100, percentage: 84, grade: 'B+', comment: 'Good effort, needs further practice in geometric proofs.' },
+      { result_id: 'RES-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', roll_no: '05', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 96, maximum_score: 100, percentage: 96, grade: 'A+', comment: 'Outstanding performance, consistent distinction scorer.' },
+      { result_id: 'RES-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', roll_no: '06', class_batch: 'Class 10 - Section B', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 78, maximum_score: 100, percentage: 78, grade: 'B', comment: 'Solid foundation, recommended remedial session for quadratic equations.' },
+      { result_id: 'RES-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', roll_no: '07', class_batch: 'Class 10 - Section B', plan_id: 'PLAN-001', assessment_plan: 'Mid-Term Examinations 2026', course: 'Advanced Mathematics', score: 91, maximum_score: 100, percentage: 91, grade: 'A', comment: 'Excellent accuracy and neat calculation.' },
+      { result_id: 'RES-008', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', roll_no: '01', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-002', assessment_plan: 'Lab Dynamics Practical Evaluation', course: 'Physics & Dynamics', score: 48, maximum_score: 50, percentage: 96, grade: 'A+', comment: 'Precise circuit assembly and accurate data plotting.' },
+      { result_id: 'RES-009', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', roll_no: '01', class_batch: 'Class 10 - Section A', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 99, maximum_score: 100, percentage: 99, grade: 'A+', comment: 'Flawless neural network algorithms and test coverage.' },
+      { result_id: 'RES-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', roll_no: '10', class_batch: 'Class 11 - Section A', plan_id: 'PLAN-003', assessment_plan: 'AI & Python Coding Assessment', course: 'Computer Science & AI', score: 95, maximum_score: 100, percentage: 95, grade: 'A+', comment: 'Superb algorithm optimization and clear code structure.' }
     ]
   },
 
@@ -851,21 +853,22 @@ export const INITIAL_DB_STORE = {
       { name: 'attendance_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'roll_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(100) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 },
       { name: 'date', type: 'DATE', pk: 0 },
-      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
-      { name: 'class_batch', type: 'VARCHAR(50) [Link to Class & Batch List: CLS-10A..CLS-12B]', pk: 0 }
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { attendance_id: 'ATT-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10A' },
-      { attendance_id: 'ATT-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', date: '2026-10-05', status: 'Absent', class_batch: 'CLS-10B' },
-      { attendance_id: 'ATT-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', date: '2026-10-05', status: 'Present', class_batch: 'CLS-10B' },
-      { attendance_id: 'ATT-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', date: '2026-10-05', status: 'Present', class_batch: 'CLS-06A' },
-      { attendance_id: 'ATT-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', date: '2026-10-05', status: 'Present', class_batch: 'CLS-08A' },
-      { attendance_id: 'ATT-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', date: '2026-10-05', status: 'Present', class_batch: 'CLS-11A' }
+      { attendance_id: 'ATT-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', roll_no: '01', class_batch: 'Class 10 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', roll_no: '02', class_batch: 'Class 10 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', roll_no: '03', class_batch: 'Class 10 - Section A', date: '2026-10-05', status: 'Absent' },
+      { attendance_id: 'ATT-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', roll_no: '04', class_batch: 'Class 10 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', roll_no: '05', class_batch: 'Class 10 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', roll_no: '06', class_batch: 'Class 10 - Section B', date: '2026-10-05', status: 'Absent' },
+      { attendance_id: 'ATT-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', roll_no: '07', class_batch: 'Class 10 - Section B', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', roll_no: '08', class_batch: 'Class 6 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', roll_no: '09', class_batch: 'Class 8 - Section A', date: '2026-10-05', status: 'Present' },
+      { attendance_id: 'ATT-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', roll_no: '10', class_batch: 'Class 11 - Section A', date: '2026-10-05', status: 'Present' }
     ]
   },
 
@@ -950,6 +953,8 @@ export const INITIAL_DB_STORE = {
       { name: 'invoice_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'student_id', type: 'VARCHAR(50) [Link to Student List: NIS-2024-091-001..NIS-2024-100-010]', pk: 0 },
       { name: 'student_name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'roll_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class_batch', type: 'VARCHAR(100) [Link to Class & Batch List]', pk: 0 },
       { name: 'title', type: 'VARCHAR(255)', pk: 0 },
       { name: 'fee_type', type: 'VARCHAR(100)', pk: 0 },
       { name: 'amount', type: 'DECIMAL(10,2)', pk: 0 },
@@ -959,16 +964,16 @@ export const INITIAL_DB_STORE = {
       { name: 'receipt_no', type: 'VARCHAR(50)', pk: 0 }
     ],
     rows: [
-      { invoice_id: 'INV-2026-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
-      { invoice_id: 'INV-2026-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9042' },
-      { invoice_id: 'INV-2026-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9043' },
-      { invoice_id: 'INV-2026-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9044' },
-      { invoice_id: 'INV-2026-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
-      { invoice_id: 'INV-2026-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-27', receipt_no: 'REC-2026-9045' },
-      { invoice_id: 'INV-2026-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' },
-      { invoice_id: 'INV-2026-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', title: 'Term 1 Middle School Academic Fee', fee_type: 'Tuition Fee', amount: 30000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9047' },
-      { invoice_id: 'INV-2026-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', title: 'Term 1 Senior Secondary Science & AI Fee', fee_type: 'Tuition Fee', amount: 42000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-26', receipt_no: 'REC-2026-9048' }
+      { invoice_id: 'INV-2026-001', student_id: 'NIS-2024-091-001', student_name: 'Nairee Patel', roll_no: '01', class_batch: 'Class 10 - Section A', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9041' },
+      { invoice_id: 'INV-2026-002', student_id: 'NIS-2024-092-002', student_name: 'Aarav Sharma', roll_no: '02', class_batch: 'Class 10 - Section A', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9042' },
+      { invoice_id: 'INV-2026-003', student_id: 'NIS-2024-093-003', student_name: 'Diya Gupta', roll_no: '03', class_batch: 'Class 10 - Section A', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-004', student_id: 'NIS-2024-094-004', student_name: 'Rohan Mehta', roll_no: '04', class_batch: 'Class 10 - Section A', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-30', receipt_no: 'REC-2026-9043' },
+      { invoice_id: 'INV-2026-005', student_id: 'NIS-2024-095-005', student_name: 'Ananya Iyer', roll_no: '05', class_batch: 'Class 10 - Section A', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-29', receipt_no: 'REC-2026-9044' },
+      { invoice_id: 'INV-2026-006', student_id: 'NIS-2024-096-006', student_name: 'Kabir Singh', roll_no: '06', class_batch: 'Class 10 - Section B', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Pending', payment_date: null, receipt_no: null },
+      { invoice_id: 'INV-2026-007', student_id: 'NIS-2024-097-007', student_name: 'Sameer Kulkarni', roll_no: '07', class_batch: 'Class 10 - Section B', title: 'Term 1 Tuition & Academic Fee', fee_type: 'Tuition Fee', amount: 35000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-27', receipt_no: 'REC-2026-9045' },
+      { invoice_id: 'INV-2026-008', student_id: 'NIS-2024-098-008', student_name: 'Riya Patel', roll_no: '08', class_batch: 'Class 6 - Section A', title: 'Term 1 Junior Primary Fee', fee_type: 'Tuition Fee', amount: 28000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9046' },
+      { invoice_id: 'INV-2026-009', student_id: 'NIS-2024-099-009', student_name: 'Kavya Gupta', roll_no: '09', class_batch: 'Class 8 - Section A', title: 'Term 1 Middle School Academic Fee', fee_type: 'Tuition Fee', amount: 30000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-28', receipt_no: 'REC-2026-9047' },
+      { invoice_id: 'INV-2026-010', student_id: 'NIS-2024-100-010', student_name: 'Vihaan Reddy', roll_no: '10', class_batch: 'Class 11 - Section A', title: 'Term 1 Senior Secondary Science & AI Fee', fee_type: 'Tuition Fee', amount: 42000, due_date: '2026-10-15', status: 'Paid', payment_date: '2026-09-26', receipt_no: 'REC-2026-9048' }
     ]
   },
 
