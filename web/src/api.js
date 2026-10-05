@@ -125,7 +125,7 @@ export function subscribeLiveEvents(callback) {
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v2_10_records';
+const DB_VERSION_KEY = 'nairee_db_v3_unified_ids';
 
 const PK_MAP = {
   'Student List': 'student_id',
@@ -150,6 +150,19 @@ const PK_MAP = {
 export function getStoredDb() {
   if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
   try {
+    const currentVersion = localStorage.getItem('nairee_db_version');
+    if (currentVersion !== DB_VERSION_KEY) {
+      // Clear legacy/stale browser storage caches
+      localStorage.removeItem('nairee_db_store');
+      localStorage.removeItem('nairee_mgmt_classes');
+      localStorage.removeItem('nairee_mgmt_teachers');
+      localStorage.removeItem('nairee_mgmt_students');
+      localStorage.removeItem('nairee_fallback_students');
+      localStorage.setItem('nairee_db_version', DB_VERSION_KEY);
+      localStorage.setItem('nairee_db_store', JSON.stringify(INITIAL_DB_STORE));
+      return INITIAL_DB_STORE;
+    }
+
     const saved = localStorage.getItem('nairee_db_store');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -568,7 +581,7 @@ export const api = {
       name: studentData.student_name || studentData.full_name || `${studentData.first_name || 'New'} ${studentData.last_name || 'Student'}`.trim(),
       roll_no: studentData.roll_no || newRoll,
       class_batch: studentData.class_batch || studentData.student_batch || 'Class 10 - Section A',
-      batch_id: 'CLS 10A',
+      batch_id: 'CLS-10A',
       stream: studentData.stream || 'Computer Applications & Math',
       gender: studentData.gender || 'Female',
       dob: studentData.date_of_birth || studentData.dob || '2011-05-15',
@@ -670,7 +683,7 @@ export const api = {
   },
 
   // Attendance Records & Bulk Marking
-  async getAttendance(batch = 'CLS 10A', date = '') {
+  async getAttendance(batch = 'CLS-10A', date = '') {
     const params = new URLSearchParams();
     if (batch) params.append('batch', batch);
     if (date) params.append('date', date);
@@ -720,7 +733,7 @@ export const api = {
             student_name: studentName,
             date: targetDate,
             status,
-            class_batch: batch || 'CLS 10A'
+            class_batch: batch || 'CLS-10A'
           });
         }
       });
@@ -957,7 +970,7 @@ export const api = {
     const today = new Date().toISOString().split('T')[0];
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const cleanTNum = String(teacherNumber || 'TEA 001').toUpperCase().trim();
+    const cleanTNum = String(teacherNumber || 'TEA-001').toUpperCase().trim();
     const existingIdx = currentRows.findIndex(r => r.teacher_number === cleanTNum && r.date === today);
 
     let status = 'On Duty';
@@ -1098,7 +1111,7 @@ export const api = {
 
     const newSubm = {
       submission_id: `SUBM-${Date.now().toString().slice(-4)}`,
-      homework_id: submissionData.homework_id || 'HW 001',
+      homework_id: submissionData.homework_id || 'HW-001',
       student_id: submissionData.student_id || 'STU-001',
       student_name: submissionData.student_name || 'Nairee Patel',
       submission_text: submissionData.submission_text || '',

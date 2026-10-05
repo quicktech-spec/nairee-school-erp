@@ -69,7 +69,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
-  const studentId = user?.student_id || user?.student?.name || 'EDU-STU-2026-00001';
+  const studentId = user?.student_id || user?.student?.name || 'STU-001';
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -97,7 +97,7 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
       const sData = await api.getStudentDetail(studentId);
       setStudent(sData);
 
-      const batch = sData.student_batch || 'BATCH-10A-2026';
+      const batch = sData.batch_id || sData.student_batch || 'CLS-10A';
       const [scData, sylData, hwData, matData, annData, trData] = await Promise.all([
         api.getSchedule(batch).catch(() => []),
         api.getSyllabus({ batch }).catch(() => []),

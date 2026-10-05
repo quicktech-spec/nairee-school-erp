@@ -33,7 +33,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [children, setChildren] = useState(user?.children || []);
   const [selectedChildId, setSelectedChildId] = useState(
-    user?.children && user.children.length > 0 ? user.children[0].name : 'EDU-STU-2026-00001'
+    user?.children && user.children.length > 0 ? (user.children[0].id || user.children[0].name) : 'STU-001'
   );
   const [childSummary, setChildSummary] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
@@ -99,11 +99,13 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
     return () => unsub();
   }, [selectedChildId]);
 
-  const activeChild = children.find(c => c.name === selectedChildId) || children[0] || {
-    name: 'EDU-STU-2026-00001',
+  const activeChild = children.find(c => c.name === selectedChildId || c.id === selectedChildId) || children[0] || {
+    id: 'STU-001',
+    name: 'STU-001',
     student_name: 'Nairee Patel',
     roll_no: '101',
-    student_batch: 'BATCH-10A-2026'
+    student_batch: 'Class 10 - Section A',
+    batch_id: 'CLS-10A'
   };
 
   const handlePayFee = async (e) => {
@@ -135,7 +137,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
         recipient_username: 'teacher_jenkins',
         recipient_name: 'Prof. Sarah Jenkins (Head of Mathematics)',
         recipient_role: 'teacher',
-        student_batch: activeChild.student_batch || 'BATCH-10A-2026',
+        student_batch: activeChild.student_batch || 'Class 10 - Section A',
         subject: replyMessage.subject || `Inquiry regarding ${activeChild.student_name}`,
         message: replyMessage.message
       });
@@ -186,14 +188,14 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
             >
               {children && children.length > 0 ? (
                 children.map((ch) => (
-                  <option key={ch.name} value={ch.name}>
-                    {ch.student_name} ({ch.student_batch})
+                  <option key={ch.id || ch.name} value={ch.id || ch.name}>
+                    {ch.name || ch.student_name} ({ch.class_batch || ch.student_batch || 'Class 10 - Section A'})
                   </option>
                 ))
               ) : (
                 <>
-                  <option value="EDU-STU-2026-00001">Nairee Patel (Grade 10-A Honors)</option>
-                  <option value="EDU-STU-2026-00007">Rohan Patel (Grade 10-B Standard)</option>
+                  <option value="STU-001">Nairee Patel (Class 10 - Section A)</option>
+                  <option value="STU-008">Riya Patel (Class 6 - Section A)</option>
                 </>
               )}
             </select>

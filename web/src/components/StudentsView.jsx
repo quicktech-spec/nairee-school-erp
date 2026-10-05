@@ -36,7 +36,7 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
     date_of_birth: '2010-05-15',
     gender: 'Female',
     blood_group: 'O+',
-    student_batch: 'BATCH-10A-2026',
+    student_batch: 'CLS-10A',
     address_line_1: '',
     city: 'Springfield',
     pincode: '62704'
@@ -99,7 +99,7 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
         date_of_birth: '2010-05-15',
         gender: 'Female',
         blood_group: 'O+',
-        student_batch: 'BATCH-10A-2026',
+        student_batch: 'CLS-10A',
         address_line_1: '',
         city: 'Springfield',
         pincode: '62704'

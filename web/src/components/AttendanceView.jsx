@@ -11,7 +11,7 @@ import { api } from '../api.js';
 
 export default function AttendanceView({ onAttendanceSaved }) {
   const [batches, setBatches] = useState([]);
-  const [selectedBatch, setSelectedBatch] = useState('BATCH-10A-2026');
+  const [selectedBatch, setSelectedBatch] = useState('CLS-10A');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -219,7 +219,7 @@ export default function AttendanceView({ onAttendanceSaved }) {
                         <div>
                           <p className="font-bold text-swift-dark flex items-center gap-1.5">
                             {student.student_name}
-                            {student.name === 'EDU-STU-2026-00001' && (
+                            {(student.name === 'STU-001' || student.student_id === 'STU-001') && (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                                 Nairee
                               </span>

@@ -144,7 +144,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
     full_name: '',
     email: '',
     phone: '',
-    batch: 'BATCH-10A-2026',
+    batch: 'CLS-10A',
     department: 'Science',
     designation: 'Faculty Instructor',
     parent_name: '',
@@ -731,8 +731,10 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <option value="all">All Class Batches</option>
-                <option value="BATCH-10A-2026">Grade 10-A (Honors)</option>
-                <option value="BATCH-10B-2026">Grade 10-B (Standard)</option>
+                <option value="CLS-10A">Class 10 - Section A</option>
+                <option value="CLS-10B">Class 10 - Section B</option>
+                <option value="CLS-11A">Class 11 - Section A</option>
+                <option value="CLS-12A">Class 12 - Section A</option>
               </select>
 
               <button
@@ -1225,9 +1227,10 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                         onChange={(e) => setNewAccount({ ...newAccount, batch: e.target.value })}
                         className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold"
                       >
-                        <option value="BATCH-10A-2026">Grade 10-A (Honors STEM)</option>
-                        <option value="BATCH-10B-2026">Grade 10-B (Standard)</option>
-                        <option value="BATCH-11A-2026">Grade 11-A (Advanced)</option>
+                        <option value="CLS-10A">Class 10 - Section A</option>
+                        <option value="CLS-10B">Class 10 - Section B</option>
+                        <option value="CLS-11A">Class 11 - Section A</option>
+                        <option value="CLS-12A">Class 12 - Section A</option>
                       </select>
                     </div>
 

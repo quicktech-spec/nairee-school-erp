@@ -43,13 +43,13 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [assessmentPlans, setAssessmentPlans] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedBatch, setSelectedBatch] = useState('BATCH-10A-2026');
+  const [selectedBatch, setSelectedBatch] = useState('CLS-10A');
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [batches, setBatches] = useState([
-    { name: 'BATCH-10A-2026', batch_name: 'Grade 10 Section A' },
-    { name: 'BATCH-10B-2026', batch_name: 'Grade 10 Section B' },
-    { name: 'BATCH-11A-2026', batch_name: 'Grade 11 Section A' },
-    { name: 'BATCH-12A-2026', batch_name: 'Grade 12 Section A (Science)' }
+    { name: 'CLS-10A', batch_name: 'Class 10 - Section A' },
+    { name: 'CLS-10B', batch_name: 'Class 10 - Section B' },
+    { name: 'CLS-11A', batch_name: 'Class 11 - Section A' },
+    { name: 'CLS-12A', batch_name: 'Class 12 - Section A' }
   ]);
   const [toastMessage, setToastMessage] = useState('');
   const [punchStatus, setPunchStatus] = useState(() => {
@@ -67,7 +67,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     try {
       localStorage.setItem('nairee_teacher_punch', nextStatus);
       localStorage.setItem('nairee_teacher_punch_time', timeStr);
-      await api.punchTeacher(user?.teacher_number || user?.id || 'TEA 001', user?.full_name || 'Prof. Sarah Jenkins');
+      await api.punchTeacher(user?.teacher_number || user?.id || 'TEA-001', user?.full_name || 'Prof. Sarah Jenkins');
     } catch {}
     if (nextStatus === 'out') {
       showToast(`Punched Out at ${timeStr}. Shift recorded to Principal overview.`);
@@ -115,7 +115,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     title: '',
     course: 'CRS-MATH-10',
     subject: 'Mathematics',
-    student_batch: 'BATCH-10A-2026',
+    student_batch: 'CLS-10A',
     due_date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
     instructions: '',
     max_points: 100
@@ -125,7 +125,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     title: '',
     course: 'CRS-MATH-10',
     subject: 'Mathematics',
-    student_batch: 'BATCH-10A-2026',
+    student_batch: 'CLS-10A',
     material_type: 'PDF',
     url: '',
     description: ''
@@ -134,9 +134,9 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [newGrade, setNewGrade] = useState({
     assessment_plan: 'ASM-MATH-MID',
     course: 'CRS-MATH-10',
-    student: 'EDU-STU-2026-00001',
+    student: 'STU-001',
     student_name: 'Nairee Patel',
-    student_batch: 'BATCH-10A-2026',
+    student_batch: 'CLS-10A',
     score: 95,
     maximum_score: 100,
     comment: 'Exceptional analytical proofs and thorough presentation.'
@@ -146,7 +146,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
     recipient_username: 'parent_patel',
     recipient_name: 'Rajesh Patel (Nairee\'s Father)',
     recipient_role: 'parent',
-    student_batch: 'BATCH-10A-2026',
+    student_batch: 'CLS-10A',
     subject: '',
     message: ''
   });
@@ -277,7 +277,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
       await api.createHomework({
         ...newHomework,
         student_batch: newHomework.student_batch || selectedBatch,
-        faculty: user?.faculty_id || 'EDU-FAC-2026-00002',
+        faculty: user?.teacher_number || user?.faculty_id || user?.id || 'TEA-001',
         faculty_name: user?.full_name || 'Prof. Sarah Jenkins'
       });
       showToast('Homework assigned! Students and parents have been notified.');
@@ -383,7 +383,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
         recipient_username: 'parent_patel',
         recipient_name: 'Rajesh Patel (Nairee\'s Father)',
         recipient_role: 'parent',
-        student_batch: 'BATCH-10A-2026',
+        student_batch: 'CLS-10A',
         subject: '',
         message: ''
       });
@@ -964,8 +964,10 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                   onChange={(e) => setSelectedBatch(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
-                  <option value="BATCH-10A-2026">Grade 10-A (Honors STEM)</option>
-                  <option value="BATCH-10B-2026">Grade 10-B (Standard)</option>
+                  <option value="CLS-10A">Class 10 - Section A</option>
+                  <option value="CLS-10B">Class 10 - Section B</option>
+                  <option value="CLS-11A">Class 11 - Section A</option>
+                  <option value="CLS-12A">Class 12 - Section A</option>
                 </select>
               </div>
 
@@ -1349,10 +1351,10 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
               <div className="flex flex-wrap items-center gap-1.5">
                 {[
                   { id: 'all', label: 'All Classes' },
-                  { id: 'BATCH-10A-2026', label: 'Grade 10-A' },
-                  { id: 'BATCH-10B-2026', label: 'Grade 10-B' },
-                  { id: 'BATCH-11A-2026', label: 'Grade 11-A' },
-                  { id: 'BATCH-12A-2026', label: 'Grade 12-Science' },
+                  { id: 'CLS-10A', label: 'Class 10-A' },
+                  { id: 'CLS-10B', label: 'Class 10-B' },
+                  { id: 'CLS-11A', label: 'Class 11-A' },
+                  { id: 'CLS-12A', label: 'Class 12-A' },
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -1374,11 +1376,11 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
               {homeworkList
                 .filter(hw => {
                   if (homeworkClassTab === 'all') return true;
-                  if (hw.student_batch === homeworkClassTab) return true;
-                  if (homeworkClassTab === 'BATCH-10A-2026' && (hw.student_batch === 'Grade 10-A' || hw.student_batch === 'BATCH-10A-2026' || hw.course?.includes('10') || hw.title?.toLowerCase().includes('10-a') || hw.title?.toLowerCase().includes('math') || hw.title?.toLowerCase().includes('science'))) return true;
-                  if (homeworkClassTab === 'BATCH-10B-2026' && (hw.student_batch === 'Grade 10-B' || hw.student_batch === 'BATCH-10B-2026' || hw.title?.toLowerCase().includes('10-b') || hw.title?.toLowerCase().includes('english') || hw.title?.toLowerCase().includes('mechanics'))) return true;
-                  if (homeworkClassTab === 'BATCH-11A-2026' && (hw.student_batch === 'Grade 11-A' || hw.student_batch === 'BATCH-11A-2026' || hw.title?.toLowerCase().includes('11-a') || hw.title?.toLowerCase().includes('calculus') || hw.title?.toLowerCase().includes('algebra'))) return true;
-                  if (homeworkClassTab === 'BATCH-12A-2026' && (hw.student_batch === 'Grade 12-Science' || hw.student_batch === 'BATCH-12A-2026' || hw.title?.toLowerCase().includes('12') || hw.title?.toLowerCase().includes('physics'))) return true;
+                  if (hw.student_batch === homeworkClassTab || hw.batch_id === homeworkClassTab) return true;
+                  if (homeworkClassTab === 'CLS-10A' && (hw.student_batch === 'Class 10 - Section A' || hw.student_batch === 'Grade 10-A' || hw.course?.includes('10') || hw.title?.toLowerCase().includes('10-a') || hw.title?.toLowerCase().includes('math') || hw.title?.toLowerCase().includes('science'))) return true;
+                  if (homeworkClassTab === 'CLS-10B' && (hw.student_batch === 'Class 10 - Section B' || hw.student_batch === 'Grade 10-B' || hw.title?.toLowerCase().includes('10-b') || hw.title?.toLowerCase().includes('english') || hw.title?.toLowerCase().includes('mechanics'))) return true;
+                  if (homeworkClassTab === 'CLS-11A' && (hw.student_batch === 'Class 11 - Section A' || hw.student_batch === 'Grade 11-A' || hw.title?.toLowerCase().includes('11-a') || hw.title?.toLowerCase().includes('calculus') || hw.title?.toLowerCase().includes('algebra'))) return true;
+                  if (homeworkClassTab === 'CLS-12A' && (hw.student_batch === 'Class 12 - Section A' || hw.student_batch === 'Grade 12-Science' || hw.title?.toLowerCase().includes('12') || hw.title?.toLowerCase().includes('physics'))) return true;
                   return false;
                 })
                 .map((hw) => (

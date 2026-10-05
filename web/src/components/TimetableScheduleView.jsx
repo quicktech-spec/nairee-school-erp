@@ -13,7 +13,7 @@ import { api } from '../api.js';
 
 export default function TimetableScheduleView() {
   const [batches, setBatches] = useState([]);
-  const [selectedBatch, setSelectedBatch] = useState('BATCH-10A-2026');
+  const [selectedBatch, setSelectedBatch] = useState('CLS-10A');
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState('All');

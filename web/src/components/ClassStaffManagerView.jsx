@@ -27,14 +27,14 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
-import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents } from '../api.js';
+import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb } from '../api.js';
 
 function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => ({
-    id: s.student_id || s.id || `EDU-STU-2026-0000${idx + 1}`,
+    id: s.student_id || s.id || `STU-${String(idx + 1).padStart(3, '0')}`,
     name: s.name || s.student_name,
-    roll_no: s.roll_no ? `${s.class_batch?.includes('10 - Section B') || s.class_batch?.includes('10B') ? '10B' : '10A'}-${s.roll_no}` : `10A-0${idx + 1}`,
-    class_id: (s.class_batch?.includes('Section B') || s.class_batch?.includes('10B')) ? 'BATCH-10B-2026' : (s.class_batch?.includes('11') ? 'BATCH-11A-2026' : 'BATCH-10A-2026'),
+    roll_no: s.roll_no || `${101 + idx}`,
+    class_id: s.batch_id || (s.class_batch?.includes('10B') || s.class_batch?.includes('Section B') ? 'CLS-10B' : 'CLS-10A'),
     class_name: s.class_batch || 'Class 10 - Section A',
     email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
     phone: s.phone || '+91 98765 00000',
@@ -48,256 +48,52 @@ function mapMasterToMgmtStudents(masterList) {
   }));
 }
 
-// Default initial data for Class & Staff Manager
-const DEFAULT_CLASSES = [
-  {
-    id: 'BATCH-10A-2026',
-    name: 'Grade 10 - Section A',
-    grade: 'Grade 10',
-    section: 'A',
-    room: 'Room 204',
-    class_teacher_id: 'FAC-001',
-    class_teacher_name: 'Prof. Sarah Jenkins',
-    capacity: 35,
+function getClassesFromDb() {
+  const db = getStoredDb();
+  const rows = db['Class & Batch List']?.rows || [];
+  return rows.map(b => ({
+    id: b.batch_id,
+    name: b.batch_name,
+    grade: b.batch_name.split('-')[0]?.trim() || 'Class 10',
+    section: b.batch_name.split('Section')[1]?.trim() || 'A',
+    room: b.room_no || 'Room 204',
+    class_teacher_id: b.class_teacher_id || 'TEA-001',
+    class_teacher_name: b.class_teacher || 'Prof. Sarah Jenkins',
+    capacity: Number(b.capacity) || 35,
     subjects: [
-      { subject: 'Mathematics', teacher: 'Prof. Sarah Jenkins' },
-      { subject: 'Physics & Lab Dynamics', teacher: 'Dr. Marcus Vance' },
-      { subject: 'Chemistry', teacher: 'Dr. Marcus Vance' },
-      { subject: 'Computer Science', teacher: 'Prof. Sarah Jenkins' }
+      { subject: 'Advanced Mathematics', teacher: 'Prof. Sarah Jenkins' },
+      { subject: 'Physics & Dynamics', teacher: 'Dr. Evelyn Reed' },
+      { subject: 'Computer Science & AI', teacher: 'Mr. Robert Chen' }
     ]
-  },
-  {
-    id: 'BATCH-10B-2026',
-    name: 'Grade 10 - Section B',
-    grade: 'Grade 10',
-    section: 'B',
-    room: 'Room 205',
-    class_teacher_id: 'FAC-002',
-    class_teacher_name: 'Dr. Marcus Vance',
-    capacity: 35,
-    subjects: [
-      { subject: 'Mathematics', teacher: 'Prof. Sarah Jenkins' },
-      { subject: 'Physics', teacher: 'Dr. Marcus Vance' },
-      { subject: 'Biology & Life Sciences', teacher: 'Dr. Marcus Vance' },
-      { subject: 'English Literature', teacher: 'Prof. Sarah Jenkins' }
-    ]
-  },
-  {
-    id: 'BATCH-11A-2026',
-    name: 'Grade 11 - Section A (Science)',
-    grade: 'Grade 11',
-    section: 'A',
-    room: 'STEM Lab 1',
-    class_teacher_id: 'FAC-001',
-    class_teacher_name: 'Prof. Sarah Jenkins',
-    capacity: 30,
-    subjects: [
-      { subject: 'Advanced Calculus', teacher: 'Prof. Sarah Jenkins' },
-      { subject: 'Quantum Physics', teacher: 'Dr. Marcus Vance' }
-    ]
-  }
-];
+  }));
+}
 
-const DEFAULT_TEACHERS = [
-  {
-    id: 'FAC-001',
-    name: 'Prof. Sarah Jenkins',
-    department: 'Mathematics & STEM',
-    email: 'sjenkins@nairee.edu',
-    phone: '+91 98765 43211',
-    base_salary: 68000,
+function getTeachersFromDb() {
+  const masterT = getMasterTeachers();
+  return masterT.map(t => ({
+    id: t.teacher_number || t.id,
+    name: t.name,
+    department: t.department,
+    email: t.email,
+    phone: t.phone,
+    base_salary: Number(t.monthly_salary) || 65000,
     bonus: 5000,
     deductions: 2500,
     salary_status: 'Paid',
     paid_date: '2026-09-30',
-    assigned_classes: ['Grade 10 - Section A', 'Grade 11 - Section A']
-  },
-  {
-    id: 'FAC-002',
-    name: 'Dr. Marcus Vance',
-    department: 'Physics & Applied Sciences',
-    email: 'admin@nairee.edu',
-    phone: '+91 98765 43210',
-    base_salary: 75000,
-    bonus: 7000,
-    deductions: 3000,
-    salary_status: 'Pending',
-    paid_date: null,
-    assigned_classes: ['Grade 10 - Section B', 'Grade 11 - Section A']
-  },
-  {
-    id: 'FAC-003',
-    name: 'Ms. Priya Deshmukh',
-    department: 'Languages & Humanities',
-    email: 'pdeshmukh@nairee.edu',
-    phone: '+91 98765 43215',
-    base_salary: 58000,
-    bonus: 3000,
-    deductions: 1800,
-    salary_status: 'Paid',
-    paid_date: '2026-09-28',
-    assigned_classes: ['Grade 10 - Section B']
-  }
-];
-
-const DEFAULT_STUDENTS = [
-  {
-    id: 'EDU-STU-2026-00001',
-    name: 'Nairee Patel',
-    roll_no: '10A-01',
-    class_id: 'BATCH-10A-2026',
-    class_name: 'Grade 10 - Section A',
-    email: 'syalfreelance@gmail.com',
-    phone: '+91 98765 00001',
-    parent_name: 'Rajesh Patel',
-    parent_phone: '+91 98765 43212',
-    attendance: 97.5,
-    fee_total: 43500,
-    fee_paid: 43500,
-    fee_due: 0,
-    fee_status: 'Paid'
-  },
-  {
-    id: 'EDU-STU-2026-00002',
-    name: 'Aarav Sharma',
-    roll_no: '10A-02',
-    class_id: 'BATCH-10A-2026',
-    class_name: 'Grade 10 - Section A',
-    email: 'aarav.sharma@example.com',
-    phone: '+91 98765 00002',
-    parent_name: 'Suresh Sharma',
-    parent_phone: '+91 98765 43213',
-    attendance: 94.0,
-    fee_total: 43500,
-    fee_paid: 43500,
-    fee_due: 0,
-    fee_status: 'Paid'
-  },
-  {
-    id: 'EDU-STU-2026-00003',
-    name: 'Diya Gupta',
-    roll_no: '10A-03',
-    class_id: 'BATCH-10A-2026',
-    class_name: 'Grade 10 - Section A',
-    email: 'diya.gupta@example.com',
-    phone: '+91 98765 00003',
-    parent_name: 'Manish Gupta',
-    parent_phone: '+91 98765 43214',
-    attendance: 98.2,
-    fee_total: 43500,
-    fee_paid: 31000,
-    fee_due: 12500,
-    fee_status: 'Pending'
-  },
-  {
-    id: 'EDU-STU-2026-00004',
-    name: 'Rohan Mehta',
-    roll_no: '10A-04',
-    class_id: 'BATCH-10A-2026',
-    class_name: 'Grade 10 - Section A',
-    email: 'rohan.mehta@example.com',
-    phone: '+91 98765 00004',
-    parent_name: 'Alok Mehta',
-    parent_phone: '+91 98765 43215',
-    attendance: 91.5,
-    fee_total: 43500,
-    fee_paid: 43500,
-    fee_due: 0,
-    fee_status: 'Paid'
-  },
-  {
-    id: 'EDU-STU-2026-00005',
-    name: 'Ananya Iyer',
-    roll_no: '10A-05',
-    class_id: 'BATCH-10A-2026',
-    class_name: 'Grade 10 - Section A',
-    email: 'ananya.iyer@example.com',
-    phone: '+91 98765 00005',
-    parent_name: 'Karthik Iyer',
-    parent_phone: '+91 98765 43216',
-    attendance: 99.0,
-    fee_total: 43500,
-    fee_paid: 43500,
-    fee_due: 0,
-    fee_status: 'Paid'
-  },
-  {
-    id: 'EDU-STU-2026-00006',
-    name: 'Kabir Singh',
-    roll_no: '10B-01',
-    class_id: 'BATCH-10B-2026',
-    class_name: 'Grade 10 - Section B',
-    email: 'kabir.singh@example.com',
-    phone: '+91 98765 00006',
-    parent_name: 'Gurpreet Singh',
-    parent_phone: '+91 98765 43217',
-    attendance: 93.4,
-    fee_total: 43500,
-    fee_paid: 25000,
-    fee_due: 18500,
-    fee_status: 'Pending'
-  },
-  {
-    id: 'EDU-STU-2026-00007',
-    name: 'Meera Nambiar',
-    roll_no: '10B-02',
-    class_id: 'BATCH-10B-2026',
-    class_name: 'Grade 10 - Section B',
-    email: 'meera.nambiar@example.com',
-    phone: '+91 98765 00007',
-    parent_name: 'Ravi Nambiar',
-    parent_phone: '+91 98765 43218',
-    attendance: 96.0,
-    fee_total: 43500,
-    fee_paid: 43500,
-    fee_due: 0,
-    fee_status: 'Paid'
-  }
-];
+    assigned_classes: ['Class 10 - Section A']
+  }));
+}
 
 export default function ClassStaffManagerView() {
   const [activeSubTab, setActiveSubTab] = useState('classes'); // 'classes' | 'students' | 'payroll'
   
   // Persistent State
-  const [classes, setClasses] = useState(() => {
-    try {
-      const saved = localStorage.getItem('nairee_mgmt_classes');
-      return saved ? JSON.parse(saved) : DEFAULT_CLASSES;
-    } catch { return DEFAULT_CLASSES; }
-  });
+  const [classes, setClasses] = useState(() => getClassesFromDb());
+  const [teachers, setTeachers] = useState(() => getTeachersFromDb());
+  const [students, setStudents] = useState(() => mapMasterToMgmtStudents(getMasterStudents()));
 
-  const [teachers, setTeachers] = useState(() => {
-    const masterT = getMasterTeachers();
-    if (masterT && masterT.length > 0) {
-      return masterT.map(t => ({
-        id: t.teacher_number || t.id,
-        name: t.name,
-        department: t.department,
-        email: t.email,
-        phone: t.phone,
-        base_salary: Number(t.monthly_salary) || 65000,
-        bonus: 5000,
-        deductions: 2500,
-        salary_status: 'Paid',
-        paid_date: '2026-09-30',
-        assigned_classes: ['Grade 10 - Section A']
-      }));
-    }
-    return DEFAULT_TEACHERS;
-  });
-
-  const [students, setStudents] = useState(() => {
-    const master = getMasterStudents();
-    if (master && master.length > 0) {
-      return mapMasterToMgmtStudents(master);
-    }
-    try {
-      const saved = localStorage.getItem('nairee_mgmt_students');
-      return saved ? JSON.parse(saved) : DEFAULT_STUDENTS;
-    } catch { return DEFAULT_STUDENTS; }
-  });
-
-  const [selectedClassId, setSelectedClassId] = useState('BATCH-10A-2026');
+  const [selectedClassId, setSelectedClassId] = useState('CLS-10A');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState('');
 
@@ -315,14 +111,14 @@ export default function ClassStaffManagerView() {
     grade: 'Grade 10',
     section: 'C',
     room: 'Room 206',
-    teacher_id: 'FAC-001',
+    teacher_id: 'TEA-001',
     capacity: 35
   });
 
   const [newStudent, setNewStudent] = useState({
     name: '',
     roll_no: '',
-    class_id: 'BATCH-10A-2026',
+    class_id: 'CLS-10A',
     email: '',
     phone: '',
     parent_name: '',
@@ -369,7 +165,7 @@ export default function ClassStaffManagerView() {
     const classTeacher = teachers.find(t => t.id === newClass.teacher_id) || teachers[0];
     const className = `${newClass.grade} - Section ${newClass.section}`;
     const newClassObj = {
-      id: `BATCH-${newClass.grade.replace(/\D/g, '')}${newClass.section}-${Date.now().toString().slice(-4)}`,
+      id: `CLS-${newClass.grade.replace(/\D/g, '')}${newClass.section}`,
       name: className,
       grade: newClass.grade,
       section: newClass.section,
@@ -428,10 +224,11 @@ export default function ClassStaffManagerView() {
     const paid = Number(newStudent.fee_paid) || 0;
     const due = Math.max(0, total - paid);
 
+    const newNum = students.length + 1;
     const studentObj = {
-      id: `EDU-STU-2026-${Date.now().toString().slice(-5)}`,
+      id: `STU-${String(newNum).padStart(3, '0')}`,
       name: newStudent.name.trim(),
-      roll_no: newStudent.roll_no.trim() || `${targetClass.section}-${Date.now().toString().slice(-2)}`,
+      roll_no: newStudent.roll_no.trim() || String(100 + newNum),
       class_id: targetClass.id,
       class_name: targetClass.name,
       email: newStudent.email || `${newStudent.name.toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,

@@ -30,7 +30,7 @@ export default function GradebookView() {
   useEffect(() => {
     Promise.all([
       api.getAssessmentPlans(),
-      api.getStudents('BATCH-10A-2026'),
+      api.getStudents('CLS-10A'),
       api.getCourses()
     ]).then(([plansData, studentsData, coursesData]) => {
       setPlans(plansData);
@@ -73,7 +73,7 @@ export default function GradebookView() {
       await api.submitGrade({
         ...gradeForm,
         student_name: studentObj ? studentObj.student_name : '',
-        student_batch: 'BATCH-10A-2026'
+        student_batch: 'CLS-10A'
       });
       setShowAddGradeModal(false);
       loadResults();

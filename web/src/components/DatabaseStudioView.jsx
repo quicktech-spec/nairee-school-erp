@@ -286,12 +286,13 @@ export default function DatabaseStudioView() {
       });
     } else {
       // New Student Entry
-      const newIdNum = (tableData.rows?.length || 0) + 107;
+      const nextIdx = (tableData.rows?.length || 0) + 1;
+      const newRoll = 100 + nextIdx;
       setIsCreatingRow(true);
       setFormData({
-        student_id: `STU-2026-0${newIdNum}`,
+        student_id: `STU-${String(nextIdx).padStart(3, '0')}`,
         name: '',
-        roll_no: String(newIdNum),
+        roll_no: String(newRoll),
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         dob: '2011-01-01',
         religion: 'Hindu',
@@ -334,7 +335,7 @@ export default function DatabaseStudioView() {
     if (teacherRow) {
       setEditingRow(teacherRow);
       setFormData({
-        teacher_number: teacherRow.teacher_number || teacherRow.id || `TEA 001`,
+        teacher_number: teacherRow.teacher_number || teacherRow.id || 'TEA-001',
         name: teacherRow.name || '',
         photo: teacherRow.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
         gender: teacherRow.gender || 'Female',
@@ -366,7 +367,7 @@ export default function DatabaseStudioView() {
       setIsCreatingRow(false);
     } else {
       const nextNum = (tableData.rows?.length || 0) + 1;
-      const formattedNum = `TEA ${String(nextNum).padStart(3, '0')}`;
+      const formattedNum = `TEA-${String(nextNum).padStart(3, '0')}`;
       setIsCreatingRow(true);
       setEditingRow(null);
       setFormData({
@@ -410,7 +411,7 @@ export default function DatabaseStudioView() {
 
     const cleanRecord = isTeacher ? {
       ...formData,
-      teacher_number: formData.teacher_number || `TEA ${String((tableData.rows || []).length + 1).padStart(3, '0')}`,
+      teacher_number: formData.teacher_number || `TEA-${String((tableData.rows || []).length + 1).padStart(3, '0')}`,
       name: formData.name || 'Faculty Member',
       phone: formData.phone || '+91 98765 00000',
       email: formData.email || `${(formData.name || 'teacher').toLowerCase().replace(/\s+/g, '')}@nairee.edu`,
@@ -1889,7 +1890,7 @@ export default function DatabaseStudioView() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 font-mono text-xs font-black border border-teal-200">
-                      {formData.teacher_number || 'TEA 001'}
+                      {formData.teacher_number || 'TEA-001'}
                     </span>
                     <span className="text-xs text-slate-400 font-bold">
                       {formData.department || 'Mathematics & Science'}
@@ -2004,7 +2005,7 @@ export default function DatabaseStudioView() {
                       disabled={!isCreatingRow}
                       value={formData.teacher_number || ''}
                       onChange={(e) => setFormData({ ...formData, teacher_number: e.target.value })}
-                      placeholder="e.g. TEA 001"
+                      placeholder="e.g. TEA-001"
                       className={`w-full px-3.5 py-2 rounded-xl border text-xs font-mono font-bold ${
                         !isCreatingRow ? 'bg-slate-100 text-slate-500 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-900 border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500'
                       }`}
