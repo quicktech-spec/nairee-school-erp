@@ -14,6 +14,8 @@ export const INITIAL_DB_STORE = {
       { name: 'student_id', type: 'VARCHAR(50)', pk: 1 },
       { name: 'name', type: 'VARCHAR(255)', pk: 0 },
       { name: 'roll_no', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'class', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'section', type: 'VARCHAR(20)', pk: 0 },
       { name: 'class_batch', type: 'VARCHAR(100) [Link to Class & Batch List]', pk: 0 },
       { name: 'batch_id', type: 'VARCHAR(50) [Link to Class & Batch List]', pk: 0 },
       { name: 'parent_id', type: 'VARCHAR(50) [Link to Parent List]', pk: 0 },
@@ -299,7 +301,9 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-098-008',
+        student_id: 'NAIREE-2024-098-008', 
+        class: 'Class 6',
+        section: 'Section A',
         name: 'Riya Patel',
         roll_no: '08',
         photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
@@ -338,7 +342,9 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-099-009',
+        student_id: 'NAIREE-2024-099-009', 
+        class: 'Class 8',
+        section: 'Section A',
         name: 'Kavya Gupta',
         roll_no: '09',
         photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
@@ -377,7 +383,9 @@ export const INITIAL_DB_STORE = {
         status: 'Active'
       },
       {
-        student_id: 'NAIREE-2024-100-010',
+        student_id: 'NAIREE-2024-100-010', 
+        class: 'Class 11',
+        section: 'Section A',
         name: 'Vihaan Reddy',
         roll_no: '10',
         photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
