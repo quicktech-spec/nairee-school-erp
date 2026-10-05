@@ -208,7 +208,7 @@ export function getGuaranteedUniqueTeacherId({ schoolCode = 'NIS', joiningDate =
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v10_teacher_id_standardized';
+const DB_VERSION_KEY = 'nairee_db_v11_cbse_subjects_standardized';
 
 const PK_MAP = {
   'Student List': 'student_id',

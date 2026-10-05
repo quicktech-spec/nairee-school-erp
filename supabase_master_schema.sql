@@ -570,20 +570,85 @@ INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, c
 VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS-06A', 'Section A', 'Class 6 - Section A', 'NIS-2023-819-009', 'Room 101', 35)
 ON CONFLICT (id) DO NOTHING;
 
--- 10 SUBJECTS
+-- 72 STANDARDIZED CBSE CLASS-X SUBJECTS
 INSERT INTO subjects (subject_code, subject_name, department, credit_hours)
 VALUES 
-('MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4),
-('PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4),
-('CS-104', 'Computer Science & AI', 'Computer Science', 3),
-('ENG-105', 'English & World Literature', 'Humanities & English', 3),
-('HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3),
-('CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4),
-('BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4),
-('HIST-108', 'Modern World History & Civics', 'Social Sciences', 3),
-('PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2),
-('ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4)
-ON CONFLICT (subject_code) DO NOTHING;
+('002', 'HINDI COURSE-A', 'Languages & Humanities', 4),
+('003', 'URDU COURSE-A', 'Languages & Humanities', 4),
+('004', 'PUNJABI', 'Languages & Humanities', 4),
+('005', 'BENGALI', 'Languages & Humanities', 4),
+('006', 'TAMIL', 'Languages & Humanities', 4),
+('007', 'TELUGU', 'Languages & Humanities', 4),
+('008', 'SINDHI', 'Languages & Humanities', 4),
+('009', 'MARATHI', 'Languages & Humanities', 4),
+('010', 'GUJARATI', 'Languages & Humanities', 4),
+('011', 'MANIPURI', 'Languages & Humanities', 4),
+('012', 'MALAYALAM', 'Languages & Humanities', 4),
+('013', 'ODIA', 'Languages & Humanities', 4),
+('014', 'ASSAMESE', 'Languages & Humanities', 4),
+('015', 'KANNADA', 'Languages & Humanities', 4),
+('016', 'ARABIC', 'Languages & Humanities', 4),
+('017', 'TIBETAN', 'Languages & Humanities', 4),
+('018', 'FRENCH', 'Languages & Humanities', 4),
+('020', 'GERMAN', 'Languages & Humanities', 4),
+('021', 'RUSSIAN', 'Languages & Humanities', 4),
+('023', 'PERSIAN', 'Languages & Humanities', 4),
+('024', 'NEPALI', 'Languages & Humanities', 4),
+('025', 'LIMBOO', 'Languages & Humanities', 4),
+('026', 'LEPCHA', 'Languages & Humanities', 4),
+('031', 'CARNATIC MUSIC VOC', 'Performing Arts & Music', 3),
+('032', 'CAR. MUSIC MEL INS', 'Performing Arts & Music', 3),
+('034', 'HIND.MUSIC VOCAL', 'Performing Arts & Music', 3),
+('035', 'HIND.MUSIC MEL.INS', 'Performing Arts & Music', 3),
+('036', 'HIND MUSIC.PER.INS', 'Performing Arts & Music', 3),
+('041', 'MATHEMATICS', 'Mathematics & Science', 4),
+('049', 'PAINTING', 'Fine Arts', 3),
+('064', 'HOME SCIENCE', 'Home Science & Nutrition', 3),
+('076', 'NATIONAL CADET COR', 'Defense & Cadet Corps', 2),
+('085', 'HINDI COURSE-B', 'Languages & Humanities', 4),
+('086', 'SCIENCE-THEORY', 'Science & STEM', 4),
+('087', 'SOCIAL SCIENCE', 'Social Sciences', 4),
+('089', 'TELUGU - TELANGANA', 'Languages & Humanities', 4),
+('090', 'SCIENCE WITHOUT PR', 'Science & STEM', 4),
+('092', 'BODO', 'Languages & Humanities', 4),
+('093', 'TANGKHUL', 'Languages & Humanities', 4),
+('094', 'JAPANESE', 'Languages & Humanities', 4),
+('095', 'BHUTIA', 'Languages & Humanities', 4),
+('096', 'SPANISH', 'Languages & Humanities', 4),
+('098', 'MIZO', 'Languages & Humanities', 4),
+('099', 'BAHASA MELAYU', 'Languages & Humanities', 4),
+('101', 'ENGLISH COMM.', 'Humanities & English', 4),
+('122', 'COMM. SANSKRIT', 'Languages & Humanities', 4),
+('131', 'RAI', 'Languages & Humanities', 4),
+('132', 'GURUNG', 'Languages & Humanities', 4),
+('133', 'TAMANG', 'Languages & Humanities', 4),
+('134', 'SHERPA', 'Languages & Humanities', 4),
+('154', 'ELEM. OF BUSINESS', 'Commerce & Economics', 4),
+('165', 'FOUNDATION OF I T', 'Computer Science & AI', 3),
+('166', 'INFO. & COMM. TECH', 'Computer Science & AI', 3),
+('184', 'ENGLISH LNG & LIT.', 'Humanities & English', 4),
+('254', 'ELEM BOOK-K & ACCY', 'Commerce & Economics', 4),
+('303', 'URDU COURSE-B', 'Languages & Humanities', 4),
+('354', 'e-PUBLISHING -ENG', 'Vocational & Skill Education', 3),
+('401', 'DYNAMICS OF RET(O)', 'Vocational & Skill Education', 3),
+('402', 'INFO TECHNOLOGY(O)', 'Computer Science & AI', 3),
+('403', 'SECURITY(O)', 'Vocational & Skill Education', 3),
+('404', 'AUTOMOBILE TECH(O)', 'Vocational & STEM', 3),
+('405', 'INTR TO FMG (O)', 'Commerce & Economics', 3),
+('406', 'INTR TO TOURISM(O)', 'Vocational & Skill Education', 3),
+('407', 'BEAUTY & WELLN(O)', 'Vocational & Health Science', 3),
+('454', 'e-PUBLISHING -HIN', 'Vocational & Skill Education', 3),
+('461', 'DYNAMICS OF RET(C)', 'Vocational & Skill Education', 3),
+('462', 'INFO TECHNOLOGY(C)', 'Computer Science & AI', 3),
+('463', 'SECURITY(C)', 'Vocational & Skill Education', 3),
+('464', 'AUTOMOBILE TECH(C)', 'Vocational & STEM', 3),
+('465', 'INTR TO FMG (C)', 'Commerce & Economics', 3),
+('466', 'INTR TO TOURISM(C)', 'Vocational & Skill Education', 3),
+('467', 'BEAUTY & WELLN(C)', 'Vocational & Health Science', 3)
+ON CONFLICT (subject_code) DO UPDATE 
+SET subject_name = EXCLUDED.subject_name,
+    department = EXCLUDED.department,
+    credit_hours = EXCLUDED.credit_hours;
 
 -- 10 STUDENTS
 INSERT INTO students (admission_no, name, roll_no, class, section, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
@@ -714,15 +779,15 @@ VALUES ('88888888-8888-8888-8888-888888888881', '11111111-1111-1111-1111-1111111
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999991', '88888888-8888-8888-8888-888888888881', 'MATH-101', '44444444-4444-4444-4444-444444444441', '2026-09-15', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999991', '88888888-8888-8888-8888-888888888881', '041', '44444444-4444-4444-4444-444444444441', '2026-09-15', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999992', '88888888-8888-8888-8888-888888888881', 'PHYS-102', '44444444-4444-4444-4444-444444444441', '2026-09-18', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999992', '88888888-8888-8888-8888-888888888881', '086', '44444444-4444-4444-4444-444444444441', '2026-09-18', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-888888888881', 'CS-104', '44444444-4444-4444-4444-444444444441', '2026-09-21', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-888888888881', '165', '44444444-4444-4444-4444-444444444441', '2026-09-21', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
@@ -849,33 +914,33 @@ ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 -- 10 DAILY CLASS CONDUCTED LOGS
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2020-811-001', '55555555-5555-5555-5555-555555555551', 'MATH-101', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('NIS-2020-811-001', '55555555-5555-5555-5555-555555555551', '041', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2019-812-002', '55555555-5555-5555-5555-555555555551', 'PHYS-102', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('NIS-2019-812-002', '55555555-5555-5555-5555-555555555551', '086', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2021-813-003', '55555555-5555-5555-5555-555555555551', 'CS-104', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('NIS-2021-813-003', '55555555-5555-5555-5555-555555555551', '165', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2022-814-004', '55555555-5555-5555-5555-555555555551', 'ENG-105', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
+VALUES ('NIS-2022-814-004', '55555555-5555-5555-5555-555555555551', '101', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2021-815-005', '55555555-5555-5555-5555-555555555551', 'HIN-106', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('NIS-2021-815-005', '55555555-5555-5555-5555-555555555551', '002', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2018-816-006', '55555555-5555-5555-5555-555555555554', 'CHEM-103', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('NIS-2018-816-006', '55555555-5555-5555-5555-555555555554', '090', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2020-817-007', '55555555-5555-5555-5555-555555555558', 'BIO-107', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('NIS-2020-817-007', '55555555-5555-5555-5555-555555555558', '064', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2019-818-008', '55555555-5555-5555-5555-555555555559', 'HIST-108', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('NIS-2019-818-008', '55555555-5555-5555-5555-555555555559', '087', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2023-819-009', '55555555-5555-5555-5555-555555555552', 'PE-109', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
+VALUES ('NIS-2023-819-009', '55555555-5555-5555-5555-555555555552', '076', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('NIS-2021-820-010', '55555555-5555-5555-5555-555555555556', 'ECON-110', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('NIS-2021-820-010', '55555555-5555-5555-5555-555555555556', '154', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
 
 
