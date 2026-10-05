@@ -478,84 +478,84 @@ VALUES ('44444444-4444-4444-4444-444444444446', '11111111-1111-1111-1111-1111111
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555551', '44444444-4444-4444-4444-444444444441', 'CLS 10A', 'Section A', 'Class 10 - Section A', '33333333-3333-3333-3333-333333333331', 'Room 204', 35)
+VALUES ('55555555-5555-5555-5555-555555555551', '44444444-4444-4444-4444-444444444441', 'CLS-10A', 'Section A', 'Class 10 - Section A', '33333333-3333-3333-3333-333333333331', 'Room 204', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555552', '44444444-4444-4444-4444-444444444441', 'CLS 10B', 'Section B', 'Class 10 - Section B', '33333333-3333-3333-3333-333333333332', 'Room 205', 35)
+VALUES ('55555555-5555-5555-5555-555555555552', '44444444-4444-4444-4444-444444444441', 'CLS-10B', 'Section B', 'Class 10 - Section B', '33333333-3333-3333-3333-333333333332', 'Room 205', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555553', '44444444-4444-4444-4444-444444444442', 'CLS 11A', 'Section A', 'Class 11 - Section A', '33333333-3333-3333-3333-333333333333', 'Room 301', 30)
+VALUES ('55555555-5555-5555-5555-555555555553', '44444444-4444-4444-4444-444444444442', 'CLS-11A', 'Section A', 'Class 11 - Section A', '33333333-3333-3333-3333-333333333333', 'Room 301', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555554', '44444444-4444-4444-4444-444444444442', 'CLS 11B', 'Section B', 'Class 11 - Section B', '33333333-3333-3333-3333-333333333336', 'Room 302', 30)
+VALUES ('55555555-5555-5555-5555-555555555554', '44444444-4444-4444-4444-444444444442', 'CLS-11B', 'Section B', 'Class 11 - Section B', '33333333-3333-3333-3333-333333333336', 'Room 302', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555555', '44444444-4444-4444-4444-444444444443', 'CLS 12A', 'Section A', 'Class 12 - Section A', '33333333-3333-3333-3333-333333333334', 'Room 303', 30)
+VALUES ('55555555-5555-5555-5555-555555555555', '44444444-4444-4444-4444-444444444443', 'CLS-12A', 'Section A', 'Class 12 - Section A', '33333333-3333-3333-3333-333333333334', 'Room 303', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555556', '44444444-4444-4444-4444-444444444443', 'CLS 12B', 'Section B', 'Class 12 - Section B', '33333333-3333-3333-3333-333333333340', 'Room 304', 30)
+VALUES ('55555555-5555-5555-5555-555555555556', '44444444-4444-4444-4444-444444444443', 'CLS-12B', 'Section B', 'Class 12 - Section B', '33333333-3333-3333-3333-333333333340', 'Room 304', 30)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555557', '44444444-4444-4444-4444-444444444444', 'CLS 9A', 'Section A', 'Class 9 - Section A', '33333333-3333-3333-3333-333333333335', 'Room 104', 35)
+VALUES ('55555555-5555-5555-5555-555555555557', '44444444-4444-4444-4444-444444444444', 'CLS-09A', 'Section A', 'Class 9 - Section A', '33333333-3333-3333-3333-333333333335', 'Room 104', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555558', '44444444-4444-4444-4444-444444444444', 'CLS 9B', 'Section B', 'Class 9 - Section B', '33333333-3333-3333-3333-333333333337', 'Room 105', 35)
+VALUES ('55555555-5555-5555-5555-555555555558', '44444444-4444-4444-4444-444444444444', 'CLS-09B', 'Section B', 'Class 9 - Section B', '33333333-3333-3333-3333-333333333337', 'Room 105', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555559', '44444444-4444-4444-4444-444444444445', 'CLS 8A', 'Section A', 'Class 8 - Section A', '33333333-3333-3333-3333-333333333338', 'Room 102', 35)
+VALUES ('55555555-5555-5555-5555-555555555559', '44444444-4444-4444-4444-444444444445', 'CLS-08A', 'Section A', 'Class 8 - Section A', '33333333-3333-3333-3333-333333333338', 'Room 102', 35)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sections (id, class_id, batch_code, section_name, full_batch_name, class_teacher_id, room_no, capacity)
-VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS 6A', 'Section A', 'Class 6 - Section A', '33333333-3333-3333-3333-333333333339', 'Room 101', 35)
+VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-444444444446', 'CLS-06A', 'Section A', 'Class 6 - Section A', '33333333-3333-3333-3333-333333333339', 'Room 101', 35)
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 SUBJECTS
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666661', '11111111-1111-1111-1111-111111111111', 'MATH 101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
+VALUES ('66666666-6666-6666-6666-666666666661', '11111111-1111-1111-1111-111111111111', 'MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666662', '11111111-1111-1111-1111-111111111111', 'PHYS 102', 'Physics & Dynamics', 'Physics & STEM', 4, '33333333-3333-3333-3333-333333333332')
+VALUES ('66666666-6666-6666-6666-666666666662', '11111111-1111-1111-1111-111111111111', 'PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4, '33333333-3333-3333-3333-333333333332')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666663', '11111111-1111-1111-1111-111111111111', 'CS 104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
+VALUES ('66666666-6666-6666-6666-666666666663', '11111111-1111-1111-1111-111111111111', 'CS-104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666664', '11111111-1111-1111-1111-111111111111', 'ENG 105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
+VALUES ('66666666-6666-6666-6666-666666666664', '11111111-1111-1111-1111-111111111111', 'ENG-105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666665', '11111111-1111-1111-1111-111111111111', 'HIN 106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
+VALUES ('66666666-6666-6666-6666-666666666665', '11111111-1111-1111-1111-111111111111', 'HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 'CHEM 103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
+VALUES ('66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 'CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666667', '11111111-1111-1111-1111-111111111111', 'BIO 107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
+VALUES ('66666666-6666-6666-6666-666666666667', '11111111-1111-1111-1111-111111111111', 'BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666668', '11111111-1111-1111-1111-111111111111', 'HIST 108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
+VALUES ('66666666-6666-6666-6666-666666666668', '11111111-1111-1111-1111-111111111111', 'HIST-108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666669', '11111111-1111-1111-1111-111111111111', 'PE 109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
+VALUES ('66666666-6666-6666-6666-666666666669', '11111111-1111-1111-1111-111111111111', 'PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666670', '11111111-1111-1111-1111-111111111111', 'ECON 110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
+VALUES ('66666666-6666-6666-6666-666666666670', '11111111-1111-1111-1111-111111111111', 'ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 STUDENTS
