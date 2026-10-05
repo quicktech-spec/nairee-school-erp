@@ -122,9 +122,7 @@ CREATE TABLE sections (
 
 -- 2.6 SUBJECTS
 CREATE TABLE subjects (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
-    subject_code VARCHAR(50) UNIQUE NOT NULL,
+    subject_code VARCHAR(50) PRIMARY KEY,
     subject_name VARCHAR(255) NOT NULL,
     department VARCHAR(100),
     credit_hours INT DEFAULT 4,
@@ -136,7 +134,7 @@ CREATE TABLE subjects (
 CREATE TABLE section_subject_teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
     UNIQUE(section_id, subject_id, teacher_id)
 );
@@ -238,7 +236,7 @@ CREATE TABLE exam_terms (
 CREATE TABLE exam_schedules (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     exam_term_id UUID REFERENCES exam_terms(id) ON DELETE CASCADE,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
     exam_date DATE NOT NULL,
     maximum_score DECIMAL(5,2) DEFAULT 100.0,
@@ -303,7 +301,7 @@ CREATE TABLE timetable_slots (
     period_number INT NOT NULL,
     start_time VARCHAR(20) NOT NULL,
     end_time VARCHAR(20) NOT NULL,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
     room_no VARCHAR(50)
 );
@@ -312,7 +310,7 @@ CREATE TABLE daily_class_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     topic_covered VARCHAR(255) NOT NULL,
     period_slot VARCHAR(50),
     log_date DATE NOT NULL,
@@ -324,7 +322,7 @@ CREATE TABLE teacher_substitutions (
     original_teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
     substitute_teacher_id UUID REFERENCES employees(id) ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     period_slot VARCHAR(50),
     substitution_date DATE NOT NULL,
     reason TEXT,
@@ -340,7 +338,7 @@ CREATE TABLE homework_assignments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     homework_code VARCHAR(50) UNIQUE NOT NULL,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
-    subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
+    subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     instructions TEXT,
     due_date VARCHAR(50) NOT NULL,
@@ -516,45 +514,45 @@ VALUES ('55555555-5555-5555-5555-555555555560', '44444444-4444-4444-4444-4444444
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 SUBJECTS
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666661', '11111111-1111-1111-1111-111111111111', 'MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('MATH-101', 'Advanced Mathematics', 'Mathematics & Science', 4, '33333333-3333-3333-3333-333333333331')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666662', '11111111-1111-1111-1111-111111111111', 'PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4, '33333333-3333-3333-3333-333333333332')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('PHYS-102', 'Physics & Dynamics', 'Physics & STEM', 4, '33333333-3333-3333-3333-333333333332')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666663', '11111111-1111-1111-1111-111111111111', 'CS-104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('CS-104', 'Computer Science & AI', 'Computer Science', 3, '33333333-3333-3333-3333-333333333333')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666664', '11111111-1111-1111-1111-111111111111', 'ENG-105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('ENG-105', 'English & World Literature', 'Humanities & English', 3, '33333333-3333-3333-3333-333333333334')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666665', '11111111-1111-1111-1111-111111111111', 'HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('HIN-106', 'Hindi Literature & Grammar', 'Languages & Humanities', 3, '33333333-3333-3333-3333-333333333335')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 'CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('CHEM-103', 'Organic & Inorganic Chemistry', 'Chemistry & Science', 4, '33333333-3333-3333-3333-333333333336')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666667', '11111111-1111-1111-1111-111111111111', 'BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('BIO-107', 'Genetics & Cellular Biology', 'Life Sciences', 4, '33333333-3333-3333-3333-333333333337')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666668', '11111111-1111-1111-1111-111111111111', 'HIST-108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('HIST-108', 'Modern World History & Civics', 'Social Sciences', 3, '33333333-3333-3333-3333-333333333338')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666669', '11111111-1111-1111-1111-111111111111', 'PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('PE-109', 'Physical Education & Athletics', 'Sports & Physical Education', 2, '33333333-3333-3333-3333-333333333339')
+ON CONFLICT (subject_code) DO NOTHING;
 
-INSERT INTO subjects (id, school_id, subject_code, subject_name, department, credit_hours, default_teacher_id)
-VALUES ('66666666-6666-6666-6666-666666666670', '11111111-1111-1111-1111-111111111111', 'ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO subjects (subject_code, subject_name, department, credit_hours, default_teacher_id)
+VALUES ('ECON-110', 'Macroeconomics & Financial Markets', 'Commerce & Economics', 4, '33333333-3333-3333-3333-333333333340')
+ON CONFLICT (subject_code) DO NOTHING;
 
 -- 10 STUDENTS
 INSERT INTO students (admission_no, name, roll_no, class, section, stream, gender, dob, admission_date, phone, email, residential_address, permanent_address, fee_status, status)
@@ -685,15 +683,15 @@ VALUES ('88888888-8888-8888-8888-888888888881', '11111111-1111-1111-1111-1111111
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999991', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666661', '44444444-4444-4444-4444-444444444441', '2026-09-15', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999991', '88888888-8888-8888-8888-888888888881', 'MATH-101', '44444444-4444-4444-4444-444444444441', '2026-09-15', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999992', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666662', '44444444-4444-4444-4444-444444444441', '2026-09-18', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999992', '88888888-8888-8888-8888-888888888881', 'PHYS-102', '44444444-4444-4444-4444-444444444441', '2026-09-18', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_schedules (id, exam_term_id, subject_id, class_id, exam_date, maximum_score, passing_score)
-VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-888888888881', '66666666-6666-6666-6666-666666666663', '44444444-4444-4444-4444-444444444441', '2026-09-21', 100.0, 40.0)
+VALUES ('99999999-9999-9999-9999-999999999993', '88888888-8888-8888-8888-888888888881', 'CS-104', '44444444-4444-4444-4444-444444444441', '2026-09-21', 100.0, 40.0)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO exam_marks_entries (exam_schedule_id, student_id, score, maximum_score, grade, teacher_comment, graded_by_employee_id)
@@ -820,33 +818,33 @@ ON CONFLICT (employee_id, punch_date) DO NOTHING;
 
 -- 10 DAILY CLASS CONDUCTED LOGS
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666661', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333331', '55555555-5555-5555-5555-555555555551', 'MATH-101', 'Quadratic Polynomial Factorization & Real Roots', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333332', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666662', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333332', '55555555-5555-5555-5555-555555555551', 'PHYS-102', 'Electromagnetic Inductance & Faraday Law', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333333', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666663', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333333', '55555555-5555-5555-5555-555555555551', 'CS-104', 'Neural Network Architecture & Backpropagation', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333334', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666664', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333334', '55555555-5555-5555-5555-555555555551', 'ENG-105', 'Shakespearean Sonnets & Metaphorical Analysis', '12:00 - 01:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333335', '55555555-5555-5555-5555-555555555551', '66666666-6666-6666-6666-666666666665', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333335', '55555555-5555-5555-5555-555555555551', 'HIN-106', 'Samas & Sandhi Applications in Modern Prose', '01:30 - 02:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333336', '55555555-5555-5555-5555-555555555554', '66666666-6666-6666-6666-666666666666', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333336', '55555555-5555-5555-5555-555555555554', 'CHEM-103', 'Benzene Ring Resonance & Electrophilic Substitution', '08:30 - 09:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333337', '55555555-5555-5555-5555-555555555558', '66666666-6666-6666-6666-666666666667', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333337', '55555555-5555-5555-5555-555555555558', 'BIO-107', 'Mendelian Genetics & Monohybrid Cross Experiments', '09:40 - 10:40', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333338', '55555555-5555-5555-5555-555555555559', '66666666-6666-6666-6666-666666666668', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333338', '55555555-5555-5555-5555-555555555559', 'HIST-108', 'The French Revolution & Drafting of Human Rights', '11:00 - 12:00', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333339', '55555555-5555-5555-5555-555555555552', '66666666-6666-6666-6666-666666666669', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333339', '55555555-5555-5555-5555-555555555552', 'PE-109', 'Track Athletics Sprint Mechanics & High Jump', '02:30 - 03:30', CURRENT_DATE);
 
 INSERT INTO daily_class_logs (teacher_id, section_id, subject_id, topic_covered, period_slot, log_date)
-VALUES ('33333333-3333-3333-3333-333333333340', '55555555-5555-5555-5555-555555555556', '66666666-6666-6666-6666-666666666670', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
+VALUES ('33333333-3333-3333-3333-333333333340', '55555555-5555-5555-5555-555555555556', 'ECON-110', 'RBI Monetary Policies, Repo Rates & Inflation Control', '01:30 - 02:30', CURRENT_DATE);
 
 
