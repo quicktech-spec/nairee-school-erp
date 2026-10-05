@@ -858,6 +858,7 @@ export default function DatabaseStudioView() {
                 <thead className="bg-slate-50 sticky top-0 z-10 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-3 w-16 text-center">Actions</th>
+                    <th className="py-3 px-4">Staff / Teacher Code</th>
                     <th className="py-3 px-4">Teacher Name</th>
                     <th className="py-3 px-4">Email</th>
                     <th className="py-3 px-4">Department</th>
@@ -866,6 +867,7 @@ export default function DatabaseStudioView() {
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                   {tableData.rows.map((row, idx) => {
+                    const teacherCode = row.teacher_number || row.teacher_id || row.staff_code || row.id || 'NIS-2020-811-001';
                     const teacherName = row.name || 'Faculty Member';
                     const photo = row.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100';
                     const email = row.email || `${teacherName.toLowerCase().replace(/\s+/g, '')}@nairee.edu`;
@@ -892,6 +894,13 @@ export default function DatabaseStudioView() {
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
+                        </td>
+
+                        {/* Staff / Teacher Code (PK Badge) */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <span className="px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 font-mono text-xs font-black">
+                            {teacherCode}
+                          </span>
                         </td>
 
                         {/* Teacher Name & Photo Avatar */}

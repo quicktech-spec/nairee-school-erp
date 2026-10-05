@@ -208,11 +208,14 @@ export function getGuaranteedUniqueTeacherId({ schoolCode = 'NIS', joiningDate =
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v9_relational_cascade';
+const DB_VERSION_KEY = 'nairee_db_v10_teacher_id_standardized';
 
 const PK_MAP = {
   'Student List': 'student_id',
   'Teacher List': 'teacher_number',
+  'staff_faculty': 'teacher_number',
+  'Staff & Faculty': 'teacher_number',
+  'employees': 'teacher_number',
   'Class & Batch List': 'batch_id',
   'Subjects List': 'subject_id',
   'Assessment Plans': 'plan_id',
@@ -472,18 +475,123 @@ export function getMasterTeachers() {
   return db['Teacher List']?.rows || INITIAL_DB_STORE['Teacher List'].rows;
 }
 
+export function cascadeTeacherUpdates(updatedTeachersList, dbStore) {
+  if (!dbStore || !Array.isArray(updatedTeachersList)) return dbStore;
+
+  const teacherMap = new Map();
+  updatedTeachersList.forEach(t => {
+    const tid = String(t.teacher_number || t.teacher_id || t.id || '').toLowerCase().trim();
+    const tname = String(t.name || t.full_name || '').toLowerCase().trim();
+    const data = {
+      teacher_id: t.teacher_number || t.teacher_id || t.id,
+      teacher_name: t.name || t.full_name,
+      department: t.department || ''
+    };
+    if (tid) teacherMap.set(tid, data);
+    if (tname) teacherMap.set(tname, data);
+  });
+
+  // 1. Cascade to Class & Batch List
+  if (dbStore['Class & Batch List'] && Array.isArray(dbStore['Class & Batch List'].rows)) {
+    dbStore['Class & Batch List'].rows = dbStore['Class & Batch List'].rows.map(b => {
+      const tid = String(b.class_teacher_id || '').toLowerCase().trim();
+      const tname = String(b.class_teacher || '').toLowerCase().trim();
+      const matched = teacherMap.get(tid) || teacherMap.get(tname);
+      if (matched) {
+        return {
+          ...b,
+          class_teacher_id: matched.teacher_id,
+          class_teacher: matched.teacher_name
+        };
+      }
+      return b;
+    });
+  }
+
+  // 2. Cascade to Subjects List
+  if (dbStore['Subjects List'] && Array.isArray(dbStore['Subjects List'].rows)) {
+    dbStore['Subjects List'].rows = dbStore['Subjects List'].rows.map(sub => {
+      const tid = String(sub.default_teacher_id || '').toLowerCase().trim();
+      const tname = String(sub.teacher || sub.teacher_name || '').toLowerCase().trim();
+      const matched = teacherMap.get(tid) || teacherMap.get(tname);
+      if (matched) {
+        return {
+          ...sub,
+          default_teacher_id: matched.teacher_id,
+          teacher: matched.teacher_name
+        };
+      }
+      return sub;
+    });
+  }
+
+  // 3. Cascade to Teacher Attendance
+  if (dbStore['Teacher Attendance'] && Array.isArray(dbStore['Teacher Attendance'].rows)) {
+    dbStore['Teacher Attendance'].rows = dbStore['Teacher Attendance'].rows.map(att => {
+      const tid = String(att.teacher_number || '').toLowerCase().trim();
+      const tname = String(att.teacher_name || '').toLowerCase().trim();
+      const matched = teacherMap.get(tid) || teacherMap.get(tname);
+      if (matched) {
+        return {
+          ...att,
+          teacher_number: matched.teacher_id,
+          teacher_name: matched.teacher_name
+        };
+      }
+      return att;
+    });
+  }
+
+  // 4. Cascade to Teacher Substitution
+  if (dbStore['Teacher Substitution'] && Array.isArray(dbStore['Teacher Substitution'].rows)) {
+    dbStore['Teacher Substitution'].rows = dbStore['Teacher Substitution'].rows.map(s => {
+      const orig = String(s.original_teacher || '').toLowerCase().trim();
+      const subst = String(s.substitute_teacher || '').toLowerCase().trim();
+      const matchOrig = teacherMap.get(orig);
+      const matchSub = teacherMap.get(subst);
+      return {
+        ...s,
+        original_teacher: matchOrig ? matchOrig.teacher_id : s.original_teacher,
+        substitute_teacher: matchSub ? matchSub.teacher_id : s.substitute_teacher
+      };
+    });
+  }
+
+  // 5. Cascade to Homework List
+  if (dbStore['Homework List'] && Array.isArray(dbStore['Homework List'].rows)) {
+    dbStore['Homework List'].rows = dbStore['Homework List'].rows.map(hw => {
+      const assigned = String(hw.assigned_by || '').toLowerCase().trim();
+      const matched = teacherMap.get(assigned);
+      if (matched) {
+        return {
+          ...hw,
+          assigned_by: matched.teacher_id
+        };
+      }
+      return hw;
+    });
+  }
+
+  return dbStore;
+}
+
 export function saveMasterTeachers(updatedTeachersList) {
-  const currentDb = getStoredDb();
+  let currentDb = getStoredDb();
   const currentTbl = currentDb['Teacher List'] || INITIAL_DB_STORE['Teacher List'];
-  const updatedDb = {
+  currentDb = {
     ...currentDb,
     'Teacher List': {
       ...currentTbl,
       rows: updatedTeachersList
     }
   };
-  saveStoredDb(updatedDb);
+
+  // Trigger Automatic Cascading Updates Across All Dependent Relational Sections
+  currentDb = cascadeTeacherUpdates(updatedTeachersList, currentDb);
+
+  saveStoredDb(currentDb);
   broadcastLiveEvent('teacher_updated', { teachers: updatedTeachersList });
+  broadcastLiveEvent('teacher_cascaded_update', { dbStore: currentDb });
 }
 
 export function transferStudentClass(studentIdentifier, newClassId, newClassName) {

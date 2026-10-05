@@ -65,12 +65,10 @@ CREATE TABLE academic_years (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2.3 EMPLOYEES / TEACHERS / STAFF
+-- 2.3 EMPLOYEES / TEACHERS / STAFF FACULTY
 CREATE TABLE employees (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    teacher_id VARCHAR(50) PRIMARY KEY,
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
-    teacher_id VARCHAR(50) UNIQUE NOT NULL,
-    employee_code VARCHAR(50),
     name VARCHAR(255) NOT NULL,
     gender VARCHAR(20),
     dob DATE,
@@ -115,7 +113,7 @@ CREATE TABLE sections (
     batch_code VARCHAR(50) UNIQUE NOT NULL,
     section_name VARCHAR(50) NOT NULL,
     full_batch_name VARCHAR(100) NOT NULL,
-    class_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
+    class_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE SET NULL,
     room_no VARCHAR(50),
     capacity INT DEFAULT 35,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -127,7 +125,7 @@ CREATE TABLE subjects (
     subject_name VARCHAR(255) NOT NULL,
     department VARCHAR(100),
     credit_hours INT DEFAULT 4,
-    default_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
+    default_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -136,7 +134,7 @@ CREATE TABLE section_subject_teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
-    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     UNIQUE(section_id, subject_id, teacher_id)
 );
 
@@ -200,7 +198,7 @@ CREATE TABLE student_daily_attendance (
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     attendance_date DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
-    marked_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
+    marked_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(student_id, attendance_date)
 );
@@ -208,7 +206,7 @@ CREATE TABLE student_daily_attendance (
 -- 4.2 EMPLOYEE / TEACHER PUNCH LOGS
 CREATE TABLE employee_attendance_punch (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     punch_date DATE NOT NULL,
     punch_in_time VARCHAR(20),
     punch_out_time VARCHAR(20),
@@ -255,7 +253,7 @@ CREATE TABLE exam_marks_entries (
     percentage DECIMAL(5,2) GENERATED ALWAYS AS (ROUND((score / maximum_score) * 100, 2)) STORED,
     grade VARCHAR(10) NOT NULL,
     teacher_comment TEXT,
-    graded_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE SET NULL,
+    graded_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     UNIQUE(exam_schedule_id, student_id)
 );
@@ -303,13 +301,13 @@ CREATE TABLE timetable_slots (
     start_time VARCHAR(20) NOT NULL,
     end_time VARCHAR(20) NOT NULL,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
-    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     room_no VARCHAR(50)
 );
 
 CREATE TABLE daily_class_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     topic_covered VARCHAR(255) NOT NULL,
@@ -320,8 +318,8 @@ CREATE TABLE daily_class_logs (
 
 CREATE TABLE teacher_substitutions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    original_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
-    substitute_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    original_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    substitute_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     period_slot VARCHAR(50),
@@ -343,7 +341,7 @@ CREATE TABLE homework_assignments (
     title VARCHAR(255) NOT NULL,
     instructions TEXT,
     due_date VARCHAR(50) NOT NULL,
-    assigned_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON DELETE CASCADE,
+    assigned_by_employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

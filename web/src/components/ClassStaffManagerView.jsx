@@ -821,7 +821,12 @@ export default function ClassStaffManagerView() {
                               {teacher.name.charAt(0)}
                             </div>
                             <div>
-                              <p className="font-bold text-slate-900">{teacher.name}</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-bold text-slate-900">{teacher.name}</p>
+                                <span className="px-1.5 py-0.5 rounded-md bg-teal-50 text-teal-800 font-mono text-[10px] font-black border border-teal-200">
+                                  {teacher.id || teacher.teacher_number}
+                                </span>
+                              </div>
                               <p className="text-[11px] text-slate-400">{teacher.department}</p>
                             </div>
                           </div>
