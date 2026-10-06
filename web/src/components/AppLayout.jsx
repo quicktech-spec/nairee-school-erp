@@ -115,53 +115,123 @@ const NAV_CONFIG = {
 };
 
 const SAMPLE_NOTIFICATIONS = [
+  // Nairee International School (tenant-default)
   {
-    id: 1,
+    id: 'sn-nis-1',
+    tenant_id: 'tenant-default',
     title: 'Due to heavy rainfall next 2 days (December 10 & 11) holidays',
     category: 'Weather Circular',
     time: '2 hours ago',
     unread: true
   },
   {
-    id: 2,
+    id: 'sn-nis-2',
+    tenant_id: 'tenant-default',
     title: 'Mid-term examination schedule released for Grades 9 through 12',
     category: 'Academics',
     time: '5 hours ago',
     unread: true
   },
   {
-    id: 3,
+    id: 'sn-nis-3',
+    tenant_id: 'tenant-default',
     title: 'Parent-Teacher interactive conference registrations open',
     category: 'Administration',
     time: '1 day ago',
     unread: true
   },
   {
-    id: 4,
+    id: 'sn-nis-4',
+    tenant_id: 'tenant-default',
     title: 'Annual Science Exhibition & STEM robotics project entries due',
     category: 'Events',
     time: '2 days ago',
     unread: false
   },
   {
-    id: 5,
+    id: 'sn-nis-5',
+    tenant_id: 'tenant-default',
     title: 'New homework assigned in Mathematics & English literature',
     category: 'Homework',
     time: '3 days ago',
     unread: false
   },
   {
-    id: 6,
+    id: 'sn-nis-6',
+    tenant_id: 'tenant-default',
     title: 'North City Express Route 04 school bus timing updated',
     category: 'Transport',
     time: '3 days ago',
     unread: false
   },
   {
-    id: 7,
+    id: 'sn-nis-7',
+    tenant_id: 'tenant-default',
     title: 'Term 1 tuition fee remittance window closes this Friday',
     category: 'Finance',
     time: '4 days ago',
+    unread: false
+  },
+
+  // Delhi Public School, Ranchi (dps-ranchi)
+  {
+    id: 'sn-dps-1',
+    tenant_id: 'dps-ranchi',
+    title: 'DPS Ranchi: Annual Athletic Meet & Inter-House Football Trials this Friday',
+    category: 'Sports Circular',
+    time: '1 hour ago',
+    unread: true
+  },
+  {
+    id: 'sn-dps-2',
+    tenant_id: 'dps-ranchi',
+    title: 'DPS Ranchi: CBSE Class 10 & 12 Pre-Board Timetable and Project Guidelines Released',
+    category: 'Academics',
+    time: '3 hours ago',
+    unread: true
+  },
+  {
+    id: 'sn-dps-3',
+    tenant_id: 'dps-ranchi',
+    title: 'DPS Ranchi: School Bus Route 08 (Dhurwa & Sail Township) Morning Timing Revised',
+    category: 'Transport',
+    time: '1 day ago',
+    unread: false
+  },
+
+  // St. Xavier's Senior Academy (st-xaviers)
+  {
+    id: 'sn-sxa-1',
+    tenant_id: 'st-xaviers',
+    title: 'St. Xavier\'s: Annual Diocesan Cultural Festival & Carol Choir Auditions Open',
+    category: 'Cultural Circular',
+    time: '2 hours ago',
+    unread: true
+  },
+  {
+    id: 'sn-sxa-2',
+    tenant_id: 'st-xaviers',
+    title: 'St. Xavier\'s: ICSE & ISC Laboratory Practical Assessment Schedule Published',
+    category: 'Academics',
+    time: '5 hours ago',
+    unread: false
+  },
+
+  // Greenfield Global School (greenfield-global)
+  {
+    id: 'sn-ggs-1',
+    tenant_id: 'greenfield-global',
+    title: 'Greenfield Global: Cambridge IGCSE Mock Assessment Series Timetable Announced',
+    category: 'Cambridge Academics',
+    time: '1 hour ago',
+    unread: true
+  },
+  {
+    id: 'sn-ggs-2',
+    tenant_id: 'greenfield-global',
+    title: 'Greenfield Global: STEM Innovation Robotics Expo & Global University Fair',
+    category: 'STEM & Career Hub',
+    time: '1 day ago',
     unread: false
   }
 ];
@@ -185,7 +255,14 @@ const saveAllReadNotifIds = (ids) => {
   }
 };
 
-const isNotificationForUser = (item, currentUser) => {
+const isNotificationForUser = (item, currentUser, currentTenant) => {
+  // 0. Tenant Data Isolation: Verify announcement belongs strictly to active tenant
+  const activeTenantId = currentTenant?.tenant_id || 'tenant-default';
+  const itemTenantId = item.tenant_id || 'tenant-default';
+  if (itemTenantId !== 'all_tenants' && itemTenantId !== activeTenantId) {
+    return false;
+  }
+
   if (!currentUser) return true;
   const userRole = (currentUser.role || '').toLowerCase();
   const userName = (currentUser.full_name || currentUser.student_name || '').toLowerCase();
@@ -256,7 +333,7 @@ export default function AppLayout({
     return SAMPLE_NOTIFICATIONS.map(s => ({
       ...s,
       unread: !readIds.includes(String(s.id)) && s.unread
-    })).filter(n => isNotificationForUser(n, user));
+    })).filter(n => isNotificationForUser(n, user, tenant));
   });
   const dropdownRef = useRef(null);
 
@@ -269,15 +346,20 @@ export default function AppLayout({
     return isFeatureEnabled(featureKey);
   });
 
-  // Sync live announcements into notifications with strict user privacy filters
+  // Sync live announcements into notifications with strict user privacy & tenant isolation filters
   const loadLiveNotifications = async () => {
     try {
       const readIds = getReadNotifIds();
-      const annList = await api.getAnnouncements(user?.role || 'all').catch(() => []);
-      const combined = (annList && annList.length > 0 ? annList : FALLBACK_DATA.announcements).map((ann, idx) => {
+      const currentTenantId = tenant?.tenant_id || 'tenant-default';
+      const annList = await api.getAnnouncements(user?.role || 'all', currentTenantId).catch(() => []);
+      const fallbackList = (FALLBACK_DATA.announcements || []).filter(a => (a.tenant_id || 'tenant-default') === currentTenantId || a.tenant_id === 'all_tenants');
+      const activeList = annList && annList.length > 0 ? annList : fallbackList;
+
+      const combined = activeList.map((ann, idx) => {
         const id = ann.id || `ann_${idx}`;
         return {
           id: id,
+          tenant_id: ann.tenant_id || currentTenantId,
           title: ann.title,
           content: ann.content || '',
           category: ann.category || 'Announcement',
@@ -288,7 +370,7 @@ export default function AppLayout({
         };
       });
 
-      const samples = SAMPLE_NOTIFICATIONS.map(s => ({
+      const samples = SAMPLE_NOTIFICATIONS.filter(s => (s.tenant_id || 'tenant-default') === currentTenantId).map(s => ({
         ...s,
         unread: !readIds.includes(String(s.id)) && s.unread
       }));
@@ -298,8 +380,8 @@ export default function AppLayout({
         ...samples.filter(s => !combined.some(c => c.title === s.title))
       ];
 
-      // Filter strictly for the logged-in user's role and personal identity
-      const userFiltered = allMerged.filter(item => isNotificationForUser(item, user));
+      // Filter strictly for the logged-in user's role and personal identity and active tenant
+      const userFiltered = allMerged.filter(item => isNotificationForUser(item, user, tenant));
 
       // If a new unread notice for this user drops in real-time, show animated live toast!
       if (!isInitialLoadRef.current) {
@@ -327,17 +409,21 @@ export default function AppLayout({
   useEffect(() => {
     loadLiveNotifications();
 
-    // 1. Subscribe to real-time events across tabs & in-app
+    // 1. Subscribe to real-time events across tabs & in-app with tenant check
     const unsubscribe = subscribeLiveEvents((event) => {
       loadLiveNotifications();
       if (event?.type === 'announcement_created' && event?.payload) {
-        setLiveToast({
-          title: event.payload.title,
-          category: event.payload.category || 'Broadcast Circular',
-          content: event.payload.content || '',
-          id: event.payload.id
-        });
-        setTimeout(() => setLiveToast(null), 7000);
+        const currentTenantId = tenant?.tenant_id || 'tenant-default';
+        const noticeTenantId = event.payload.tenant_id || 'tenant-default';
+        if (noticeTenantId === currentTenantId || noticeTenantId === 'all_tenants') {
+          setLiveToast({
+            title: event.payload.title,
+            category: event.payload.category || 'Broadcast Circular',
+            content: event.payload.content || '',
+            id: event.payload.id
+          });
+          setTimeout(() => setLiveToast(null), 7000);
+        }
       }
     });
 
@@ -350,7 +436,7 @@ export default function AppLayout({
       unsubscribe();
       clearInterval(pollTimer);
     };
-  }, [user]);
+  }, [user, tenant]);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -376,13 +462,15 @@ export default function AppLayout({
       '🏆 SPORTS: Annual Athletic Meet selections start Friday at Main Ground'
     ];
     const pickedTitle = titles[Math.floor(Math.random() * titles.length)];
+    const currentTenantId = tenant?.tenant_id || 'tenant-default';
     const newNotice = {
       id: `ANN-LIVE-${Date.now()}`,
+      tenant_id: currentTenantId,
       title: pickedTitle,
       content: 'Official circular broadcasted live from Principal Office. All students, teachers, and parents please take note.',
       category: 'Live Broadcast',
       created_at: 'Just now',
-      sender: 'Office of the Principal'
+      sender: `Office of the Principal (${tenant?.school_name || 'School'})`
     };
 
     // Add to API and broadcast across tabs

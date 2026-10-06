@@ -1734,22 +1734,46 @@ export const api = {
     };
   },
 
-  async getAnnouncements(targetRole = '') {
-    return FALLBACK_DATA.announcements;
+  async getAnnouncements(targetRole = '', tenantId = '') {
+    const activeTenantId = tenantId || (typeof localStorage !== 'undefined' ? localStorage.getItem('nairee_active_tenant_id') : 'tenant-default') || 'tenant-default';
+    let list = (FALLBACK_DATA.announcements || []).filter(a => {
+      const aTenant = a.tenant_id || 'tenant-default';
+      return aTenant === activeTenantId || aTenant === 'all_tenants';
+    });
+
+    if (targetRole && targetRole !== 'all' && targetRole !== 'All') {
+      const tr = targetRole.toLowerCase();
+      list = list.filter(a => {
+        if (!a.target_role || a.target_role === 'All' || a.target_role === 'all') return true;
+        if (Array.isArray(a.target_role)) return a.target_role.map(r => r.toLowerCase()).includes(tr);
+        return a.target_role.toLowerCase() === tr;
+      });
+    }
+
+    return list;
   },
 
   async postAnnouncement(notice) {
+    const activeTenantId = notice.tenant_id || (typeof localStorage !== 'undefined' ? localStorage.getItem('nairee_active_tenant_id') : 'tenant-default') || 'tenant-default';
     const newNotice = {
-      id: `ANN-${Date.now().toString().slice(-4)}`,
+      id: notice.id || `ANN-${Date.now().toString().slice(-4)}`,
+      tenant_id: activeTenantId,
       title: notice.title,
       content: notice.content,
       category: notice.category || 'General',
+      target_role: notice.target_role || 'All',
+      target_student: notice.target_student || notice.student_name || null,
       created_at: 'Just now',
-      sender: 'Principal Office'
+      sender: notice.posted_by || notice.sender || 'Principal Office'
     };
+    if (!FALLBACK_DATA.announcements) FALLBACK_DATA.announcements = [];
     FALLBACK_DATA.announcements.unshift(newNotice);
     broadcastLiveEvent('announcement_created', newNotice);
     return { success: true, announcement: newNotice };
+  },
+
+  async createAnnouncement(notice) {
+    return this.postAnnouncement(notice);
   },
 
   async getMessages(username, role) {

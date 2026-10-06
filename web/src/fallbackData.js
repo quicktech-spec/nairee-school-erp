@@ -1256,8 +1256,22 @@ export const FALLBACK_DATA = {
     status: 'On Route Approaching Stop 3'
   },
   announcements: [
-    { id: 'ANN-999', title: 'LIVE ALERT: Annual Inter School Tech & Sports Championship dates officially declared', category: 'Breaking Announcement', created_at: 'Just now', sender: 'Executive Principal Office', content: 'Championship trials begin this Friday. All house captains and student athletes are invited to submit team rosters today.' },
-    { id: 'ANN-001', title: 'Urgent Update: Science Olympiad registrations extended till Sunday & Inter School Sports Trials', category: 'Urgent Circular', created_at: '2 hours ago', sender: 'Principal Office', content: 'Registrations are now open for all students Grade 6 to 12. Contact the sports coordinator for trial slots.' }
+    // Nairee International School (tenant-default)
+    { id: 'ANN-NIS-01', tenant_id: 'tenant-default', title: 'LIVE ALERT: Annual Inter School Tech & Sports Championship dates officially declared', category: 'Breaking Announcement', created_at: 'Just now', sender: 'Office of the Principal', content: 'Championship trials begin this Friday. All house captains and student athletes are invited to submit team rosters today.' },
+    { id: 'ANN-NIS-02', tenant_id: 'tenant-default', title: 'Urgent Update: Science Olympiad registrations extended till Sunday & Inter School Sports Trials', category: 'Urgent Circular', created_at: '2 hours ago', sender: 'Office of the Principal', content: 'Registrations are now open for all students Grade 6 to 12. Contact the sports coordinator for trial slots.' },
+    
+    // Delhi Public School, Ranchi (dps-ranchi)
+    { id: 'ANN-DPS-01', tenant_id: 'dps-ranchi', title: 'DPS Ranchi: Annual Athletic Meet & Inter-House Football Trials this Friday', category: 'Sports Circular', created_at: '1 hour ago', sender: 'DPS Principal Office', content: 'Inter-house athletic trials for Grades 6 through 12 commence Friday 7:30 AM at Main Athletic Ground.' },
+    { id: 'ANN-DPS-02', tenant_id: 'dps-ranchi', title: 'DPS Ranchi: CBSE Class 10 & 12 Pre-Board Timetable and Project Guidelines Released', category: 'Academics', created_at: '3 hours ago', sender: 'DPS Academic Directorate', content: 'Detailed date sheets for December Pre-Board examinations and CBSE practical project submissions are now available.' },
+    { id: 'ANN-DPS-03', tenant_id: 'dps-ranchi', title: 'DPS Ranchi: School Bus Route 08 (Dhurwa & Sail Township) Morning Timing Revised', category: 'Transport', created_at: 'Yesterday', sender: 'DPS Transport Department', content: 'Morning pickup times for Route 08 will operate 10 minutes earlier starting Monday due to road maintenance.' },
+
+    // St. Xavier's Senior Academy (st-xaviers)
+    { id: 'ANN-SXA-01', tenant_id: 'st-xaviers', title: 'St. Xavier\'s: Annual Diocesan Cultural Festival & Carol Choir Auditions Open', category: 'Cultural Circular', created_at: '2 hours ago', sender: 'Headmaster Office', content: 'Auditions for the annual senior choir and stage play will be held in the Academy Auditorium.' },
+    { id: 'ANN-SXA-02', tenant_id: 'st-xaviers', title: 'St. Xavier\'s: ICSE & ISC Laboratory Practical Assessment Schedule Published', category: 'Academics', created_at: '5 hours ago', sender: 'Science Faculty Lead', content: 'Physics, Chemistry, and Biology practical evaluations begin next Tuesday.' },
+
+    // Greenfield Global School (greenfield-global)
+    { id: 'ANN-GGS-01', tenant_id: 'greenfield-global', title: 'Greenfield Global: Cambridge IGCSE Mock Assessment Series Timetable Announced', category: 'Cambridge Academics', created_at: '1 hour ago', sender: 'IGCSE Coordinator', content: 'The Mock Examination series for Grade 10 & 11 Cambridge students begins on November 15th.' },
+    { id: 'ANN-GGS-02', tenant_id: 'greenfield-global', title: 'Greenfield Global: STEM Innovation Robotics Expo & Global University Fair', category: 'STEM & Career Hub', created_at: 'Yesterday', sender: 'STEM Department', content: 'Over 20 international university admissions representatives will visit our campus on Wednesday.' }
   ],
   messages: [
     { id: 'MSG-01', sender: 'Prof. Sarah Jenkins', sender_id: 'NIS-2020-811-001', content: 'Great effort on the recent Mathematics assignment test!', timestamp: '10:30 AM' }

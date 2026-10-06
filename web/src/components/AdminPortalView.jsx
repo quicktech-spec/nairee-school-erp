@@ -36,6 +36,7 @@ import {
   Eye
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
+import { useTenant } from '../context/TenantContext.jsx';
 import ClassStaffManagerView from './ClassStaffManagerView.jsx';
 import FinancialPnLView from './FinancialPnLView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
@@ -43,6 +44,7 @@ import InventoryAssetsView from './InventoryAssetsView.jsx';
 import AlumniNetworkView from './AlumniNetworkView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
+  const { tenant } = useTenant();
   const [internalTab, setInternalTab] = useState('overview');
   const activeTabRaw = propTab !== undefined ? propTab : internalTab;
   const activeTab = activeTabRaw === 'dashboard' ? 'overview' : activeTabRaw;
@@ -193,12 +195,13 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   const loadAllData = async () => {
     setIsLoading(true);
     try {
+      const currentTenantId = tenant?.tenant_id || 'tenant-default';
       const [sData, uData, tData, stData, aData, fData] = await Promise.all([
         api.getDashboardStats().catch(() => null),
         api.getUsers().catch(() => []),
         api.getTeacherPerformance().catch(() => []),
         api.getStudentPerformance(selectedBatch).catch(() => []),
-        api.getAnnouncements().catch(() => []),
+        api.getAnnouncements('all', currentTenantId).catch(() => []),
         api.getFees().catch(() => [])
       ]);
       setStats(sData);
@@ -229,17 +232,21 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
 
   useEffect(() => {
     loadAllData();
-  }, [selectedBatch]);
+  }, [selectedBatch, tenant]);
 
   // Real-time synchronization across admin dashboard, P&L fee settlements, and notice broadcasts
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
       if (event?.type === 'fee_updated' || event?.type === 'announcement_created' || event?.type === 'attendance_updated') {
-        loadAllData();
+        const currentTenantId = tenant?.tenant_id || 'tenant-default';
+        const eventTenantId = event?.payload?.tenant_id || 'tenant-default';
+        if (eventTenantId === currentTenantId || eventTenantId === 'all_tenants') {
+          loadAllData();
+        }
       }
     });
     return () => unsub();
-  }, [selectedBatch]);
+  }, [selectedBatch, tenant]);
 
   const handleToggleUserStatus = async (userId, currentStatus) => {
     const nextStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
@@ -268,11 +275,13 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   const handlePostNotice = async (e) => {
     e.preventDefault();
     try {
+      const currentTenantId = tenant?.tenant_id || 'tenant-default';
       await api.createAnnouncement({
         ...newNotice,
-        posted_by: user?.full_name || 'Principal Dr. Marcus Vance'
+        tenant_id: currentTenantId,
+        posted_by: user?.full_name || `Principal (${tenant?.school_name || 'Nairee'})`
       });
-      showToast('Announcement broadcasted to portals successfully!');
+      showToast('Announcement broadcasted to school portal successfully!');
       setShowPostNoticeModal(false);
       setNewNotice({
         title: '',
@@ -282,7 +291,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
         student_batch: 'All',
         priority: 'Normal'
       });
-      api.getAnnouncements().then(setAnnouncements);
+      api.getAnnouncements('all', currentTenantId).then(setAnnouncements);
     } catch (err) {
       showToast(err.message || 'Failed to post announcement');
     }
