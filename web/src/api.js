@@ -358,57 +358,37 @@ const PK_MAP = {
 export function getStoredDb() {
   if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
   try {
-    const currentVersion = localStorage.getItem('nairee_db_version');
-    if (currentVersion !== DB_VERSION_KEY) {
-      // Clear legacy/stale browser storage caches
-      localStorage.removeItem('nairee_db_store');
-      localStorage.removeItem('nairee_mgmt_classes');
-      localStorage.removeItem('nairee_mgmt_teachers');
-      localStorage.removeItem('nairee_mgmt_students');
-      localStorage.removeItem('nairee_fallback_students');
-      localStorage.setItem('nairee_db_version', DB_VERSION_KEY);
-      localStorage.setItem('nairee_db_store', JSON.stringify(INITIAL_DB_STORE));
-      return INITIAL_DB_STORE;
-    }
-
     const saved = localStorage.getItem('nairee_db_store');
     if (saved) {
       const parsed = JSON.parse(saved);
-      const merged = { ...INITIAL_DB_STORE };
-      
-      Object.keys(INITIAL_DB_STORE).forEach(tableName => {
-        const initTable = INITIAL_DB_STORE[tableName];
-        const savedTable = parsed[tableName];
-        const pkField = PK_MAP[tableName];
+      if (parsed && typeof parsed === 'object') {
+        const merged = { ...INITIAL_DB_STORE };
+        
+        // Use user saved tables as authoritative single source of truth
+        Object.keys(INITIAL_DB_STORE).forEach(tableName => {
+          const initTable = INITIAL_DB_STORE[tableName];
+          const savedTable = parsed[tableName];
 
-        if (savedTable && Array.isArray(savedTable.rows) && pkField) {
-          // Merge: Keep user modifications/creations, and add missing initial rows
-          const savedRowsMap = new Map();
-          savedTable.rows.forEach(r => {
-            if (r && r[pkField]) savedRowsMap.set(String(r[pkField]), r);
-          });
-
-          // Ensure every initial row is present
-          const finalRows = [...savedTable.rows];
-          if (initTable && Array.isArray(initTable.rows)) {
-            initTable.rows.forEach(initRow => {
-              if (initRow && initRow[pkField] && !savedRowsMap.has(String(initRow[pkField]))) {
-                finalRows.push(initRow);
-              }
-            });
+          if (savedTable && Array.isArray(savedTable.rows)) {
+            merged[tableName] = {
+              ...initTable,
+              columns: savedTable.columns || initTable?.columns || [],
+              rows: savedTable.rows
+            };
+          } else {
+            merged[tableName] = initTable;
           }
+        });
 
-          merged[tableName] = {
-            ...initTable,
-            columns: initTable?.columns || savedTable.columns,
-            rows: finalRows
-          };
-        } else if (savedTable && savedTable.rows) {
-          merged[tableName] = savedTable;
-        }
-      });
+        // Retain any newly created custom tables
+        Object.keys(parsed).forEach(tableName => {
+          if (!merged[tableName] && parsed[tableName]) {
+            merged[tableName] = parsed[tableName];
+          }
+        });
 
-      return merged;
+        return merged;
+      }
     }
   } catch (e) {
     console.warn('Error reading nairee_db_store:', e);
@@ -1236,6 +1216,45 @@ export const api = {
     broadcastLiveEvent('student_created', newStudent);
 
     return newStudent;
+  },
+
+  async updateStudent(studentId, updates) {
+    const data = await safeFetch(`/students/${studentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (data) return data;
+
+    const res = syncStudentAcrossAllDatasets(studentId, updates);
+    return res.student;
+  },
+
+  async updateTeacher(teacherId, updates) {
+    const data = await safeFetch(`/teachers/${teacherId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (data) return data;
+
+    const master = getMasterTeachers();
+    const cleanId = String(teacherId || '').toLowerCase().trim();
+    let targetTeacher = null;
+    const updated = master.map(t => {
+      const tid = String(t.teacher_number || t.teacher_id || t.id || '').toLowerCase().trim();
+      const tname = String(t.name || '').toLowerCase().trim();
+      if (tid === cleanId || tname === cleanId || tid.includes(cleanId) || cleanId.includes(tid)) {
+        targetTeacher = { ...t, ...updates };
+        return targetTeacher;
+      }
+      return t;
+    });
+
+    if (targetTeacher) {
+      saveMasterTeachers(updated);
+    }
+    return targetTeacher;
   },
 
   async createTeacher(teacherData) {

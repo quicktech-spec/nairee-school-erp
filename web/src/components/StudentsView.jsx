@@ -13,9 +13,13 @@ import {
   Receipt, 
   Clock,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Edit3,
+  CheckCircle2,
+  Save,
+  ArrowRightLeft
 } from 'lucide-react';
-import { api, subscribeLiveEvents } from '../api.js';
+import { api, subscribeLiveEvents, normalizeBatchAndClass } from '../api.js';
 
 export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
   const [students, setStudents] = useState([]);
@@ -27,6 +31,8 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
   const [detailLoading, setDetailLoading] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState('profile');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -41,6 +47,31 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
     city: 'Springfield',
     pincode: '62704'
   });
+
+  const [editData, setEditData] = useState({
+    student_id: '',
+    name: '',
+    roll_no: '',
+    class_batch: 'Class 10 - Section A',
+    batch_id: 'CLS-10A',
+    dob: '2010-05-15',
+    gender: 'Female',
+    blood_group: 'O+',
+    phone: '',
+    email: '',
+    father_name: '',
+    father_phone: '',
+    mother_name: '',
+    mother_phone: '',
+    residential_address: '',
+    fee_status: 'Paid',
+    balance_due: 0
+  });
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 4000);
+  };
 
   const loadData = async () => {
     try {
@@ -84,11 +115,69 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
     }
   };
 
+  const handleOpenEdit = (student) => {
+    const sId = student.student_id || student.id || student.name;
+    const norm = normalizeBatchAndClass(student.batch_name || student.student_batch || student.class_batch || 'Class 10 - Section A');
+    setEditData({
+      student_id: sId,
+      name: student.student_name || student.name || '',
+      roll_no: String(student.roll_no || student.roll_number || '01'),
+      class_batch: norm.class_batch,
+      batch_id: norm.batch_id,
+      dob: student.date_of_birth || student.dob || '2010-05-15',
+      gender: student.gender || 'Female',
+      blood_group: student.blood_group || 'O+',
+      phone: student.student_mobile_number || student.phone || '',
+      email: student.student_email_id || student.email || '',
+      father_name: student.father_name || (studentDetails?.parents?.[0]?.name) || '',
+      father_phone: student.father_phone || (studentDetails?.parents?.[0]?.phone) || '',
+      mother_name: student.mother_name || (studentDetails?.parents?.[1]?.name) || '',
+      mother_phone: student.mother_phone || (studentDetails?.parents?.[1]?.phone) || '',
+      residential_address: student.residential_address || student.address_line_1 || '',
+      fee_status: student.fee_status || (student.balance_due > 0 ? 'Pending' : 'Paid'),
+      balance_due: student.balance_due || student.fee_due || 0
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    try {
+      const norm = normalizeBatchAndClass(editData.class_batch);
+      const payload = {
+        ...editData,
+        class_batch: norm.class_batch,
+        student_batch: norm.class_batch,
+        batch_id: norm.batch_id
+      };
+
+      await api.updateStudent(editData.student_id, payload);
+      setShowEditModal(false);
+      showToast(`Student profile for "${editData.name}" updated & synced across all batches and reports!`);
+      
+      await loadData();
+      if (selectedStudent) {
+        const updatedDetail = await api.getStudentDetail(editData.student_id);
+        setStudentDetails(updatedDetail);
+        setSelectedStudent(prev => ({
+          ...prev,
+          ...payload,
+          student_name: editData.name,
+          roll_no: editData.roll_no,
+          batch_name: norm.class_batch
+        }));
+      }
+    } catch (err) {
+      alert('Error updating student: ' + err.message);
+    }
+  };
+
   const handleCreateStudent = async (e) => {
     e.preventDefault();
     try {
       await api.createStudent(formData);
       setShowAddModal(false);
+      showToast(`New student "${formData.first_name} ${formData.last_name}" enrolled successfully!`);
       setFormData({
         first_name: '',
         last_name: '',
@@ -239,15 +328,28 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenDetail(s);
-                        }}
-                        className="px-3 py-1 text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition-all cursor-pointer"
-                      >
-                        View Profile
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEdit(s);
+                          }}
+                          className="px-2.5 py-1 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 rounded-lg border border-amber-200 transition-all cursor-pointer flex items-center gap-1"
+                          title="Edit Student Profile"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenDetail(s);
+                          }}
+                          className="px-3 py-1 text-xs font-bold text-brand-700 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 transition-all cursor-pointer"
+                        >
+                          View Profile
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -282,12 +384,21 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                 </div>
               </div>
 
-              <button
-                onClick={() => setSelectedStudent(null)}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleOpenEdit(selectedStudent)}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit Profile
+                </button>
+                <button
+                  onClick={() => setSelectedStudent(null)}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Modal Tabs */}
@@ -596,6 +707,239 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* EDIT STUDENT PROFILE MODAL */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 bg-swift-dark/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-[#cde8e8] w-full max-w-2xl overflow-hidden max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-gradient-to-r from-amber-600 via-amber-700 to-swift-dark text-white flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold flex items-center gap-2">
+                  <Edit3 className="w-5 h-5 text-amber-300" />
+                  Edit Student Profile & Enrollment
+                </h3>
+                <p className="text-xs text-amber-100">Updates will automatically sync across classes, attendance, marks, fees and teacher portals</p>
+              </div>
+              <button onClick={() => setShowEditModal(false)} className="text-white/80 hover:text-white cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editData.name}
+                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-swift-dark"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Roll Number *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editData.roll_no}
+                    onChange={(e) => setEditData({ ...editData, roll_no: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-swift-dark"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Class / Section / Batch *</label>
+                  <select
+                    value={editData.class_batch}
+                    onChange={(e) => setEditData({ ...editData, class_batch: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-swift-dark"
+                  >
+                    {batches.map((b) => (
+                      <option key={b.name} value={b.batch_name || b.name}>{b.batch_name || b.name}</option>
+                    ))}
+                    <option value="Class 10 - Section A">Class 10 - Section A</option>
+                    <option value="Class 10 - Section B">Class 10 - Section B</option>
+                    <option value="Class 11 - Section A">Class 11 - Section A</option>
+                    <option value="Class 12 - Section A">Class 12 - Section A</option>
+                    <option value="Class 4 - Section A">Class 4 - Section A</option>
+                    <option value="Class 4 - Section B">Class 4 - Section B</option>
+                    <option value="Class 5 - Section A">Class 5 - Section A</option>
+                    <option value="Class 6 - Section A">Class 6 - Section A</option>
+                    <option value="Class 7 - Section A">Class 7 - Section A</option>
+                    <option value="Class 8 - Section A">Class 8 - Section A</option>
+                    <option value="Class 9 - Section A">Class 9 - Section A</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Fee Status</label>
+                  <select
+                    value={editData.fee_status}
+                    onChange={(e) => setEditData({ ...editData, fee_status: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-swift-dark"
+                  >
+                    <option value="Paid">Paid (Fully Cleared)</option>
+                    <option value="Pending">Pending (Fee Due)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={editData.dob}
+                    onChange={(e) => setEditData({ ...editData, dob: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Gender</label>
+                  <select
+                    value={editData.gender}
+                    onChange={(e) => setEditData({ ...editData, gender: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  >
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Non-Binary">Non-Binary</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Blood Group</label>
+                  <select
+                    value={editData.blood_group}
+                    onChange={(e) => setEditData({ ...editData, blood_group: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  >
+                    <option value="O+">O+</option>
+                    <option value="A+">A+</option>
+                    <option value="B+">B+</option>
+                    <option value="AB+">AB+</option>
+                    <option value="O-">O-</option>
+                    <option value="A-">A-</option>
+                    <option value="B-">B-</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Mobile Phone</label>
+                  <input
+                    type="text"
+                    value={editData.phone}
+                    onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    placeholder="+91 98765 00000"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-swift-dark block mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={editData.email}
+                    onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    placeholder="student@school.edu"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#edfafa]/60 border border-[#cde8e8] space-y-3">
+                <h4 className="text-xs font-bold text-swift-dark flex items-center gap-2">
+                  <Users className="w-4 h-4 text-brand-600" />
+                  Parent & Guardian Information
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-bold text-swift-muted block mb-1">Father / Guardian Name</label>
+                    <input
+                      type="text"
+                      value={editData.father_name}
+                      onChange={(e) => setEditData({ ...editData, father_name: e.target.value })}
+                      className="w-full text-xs p-2 rounded-xl border border-[#cde8e8] bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      placeholder="e.g. Mr. Rajesh Sengupta"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-swift-muted block mb-1">Father Phone</label>
+                    <input
+                      type="text"
+                      value={editData.father_phone}
+                      onChange={(e) => setEditData({ ...editData, father_phone: e.target.value })}
+                      className="w-full text-xs p-2 rounded-xl border border-[#cde8e8] bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      placeholder="+91 98765 43210"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-bold text-swift-muted block mb-1">Mother Name</label>
+                    <input
+                      type="text"
+                      value={editData.mother_name}
+                      onChange={(e) => setEditData({ ...editData, mother_name: e.target.value })}
+                      className="w-full text-xs p-2 rounded-xl border border-[#cde8e8] bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      placeholder="e.g. Mrs. Priya Sengupta"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-bold text-swift-muted block mb-1">Mother Phone</label>
+                    <input
+                      type="text"
+                      value={editData.mother_phone}
+                      onChange={(e) => setEditData({ ...editData, mother_phone: e.target.value })}
+                      className="w-full text-xs p-2 rounded-xl border border-[#cde8e8] bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                      placeholder="+91 98765 43211"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-swift-dark block mb-1">Residential Address</label>
+                <input
+                  type="text"
+                  value={editData.residential_address}
+                  onChange={(e) => setEditData({ ...editData, residential_address: e.target.value })}
+                  className="w-full text-xs p-2.5 rounded-xl border border-[#cde8e8] bg-[#f4fafa] focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  placeholder="Street Address, City, State, PIN"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#cde8e8]">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-swift-muted hover:bg-[#edfafa] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 shadow-md cursor-pointer flex items-center gap-1.5"
+                >
+                  <Save className="w-4 h-4" />
+                  Save & Sync All Records
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0c1f2c] border border-teal-500/60 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 text-xs animate-bounce">
+          <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
     </div>
