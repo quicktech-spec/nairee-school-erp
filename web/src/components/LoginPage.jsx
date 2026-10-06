@@ -11,13 +11,17 @@ import {
   Sparkles,
   HelpCircle,
   X,
-  School
+  School,
+  Building2,
+  Globe
 } from 'lucide-react';
+import { useTenant } from '../context/TenantContext.jsx';
 import { api } from '../api.js';
 import naireeLogo from '../assets/nairee-logo.png';
 import loginCartoon from '../assets/login-cartoon.png';
 
 export default function LoginPage({ onLoginSuccess }) {
+  const { tenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -103,55 +107,78 @@ export default function LoginPage({ onLoginSuccess }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ebf1fe] via-[#f1f5fe] to-[#e4edfd] flex flex-col justify-between text-slate-800 selection:bg-[#5673ec] selection:text-white">
-      {/* Top Header Bar */}
-      <header className="border-b border-indigo-100 bg-white/80 backdrop-blur-md px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      {/* Top Header Bar with Multi-Tenant White-Label Badge */}
+      <header className="border-b border-indigo-100 bg-white/85 backdrop-blur-md px-6 py-3.5 shadow-xs">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center space-x-3.5">
             <img 
-              src={naireeLogo} 
-              alt="Nairee" 
-              className="h-10 w-auto object-contain" 
+              src={tenant?.logo_url || naireeLogo} 
+              alt={tenant?.school_name || 'Nairee ERP'} 
+              className="h-10 max-w-[160px] w-auto object-contain" 
+              onError={(e) => { e.target.src = naireeLogo; }}
             />
+            <div className="hidden sm:block pl-3 border-l border-slate-200">
+              <span className="text-xs font-black text-slate-900 block tracking-tight">
+                {tenant?.school_name}
+              </span>
+              <span className="text-[10px] text-indigo-700 font-mono font-semibold">
+                https://{tenant?.subdomain}.nairee.app
+              </span>
+            </div>
           </div>
 
-          <div className="hidden sm:flex items-center space-x-6 text-xs text-slate-500">
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-emerald-700 font-medium">Term 1 (2026-2027) Live</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <ShieldCheck className="w-4 h-4 text-[#5673ec]" />
-              <span>Frappe DocType Standard</span>
-            </div>
+          <div className="flex items-center gap-3">
+            {/* White-Label Switcher Button */}
+            <button
+              type="button"
+              onClick={() => setIsSwitchModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              title="Test another white-label school"
+            >
+              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="hidden sm:inline">Switch School</span>
+            </button>
+
+            {/* Onboard New School Wizard Trigger */}
+            <button
+              type="button"
+              onClick={() => setIsOnboardingModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+              <span>+ Onboard School</span>
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Login Area - Matches media_1790867259798.png */}
+      {/* Main Login Area */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
         <div className="max-w-5xl w-full bg-white rounded-3xl shadow-2xl shadow-indigo-100/70 border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-center">
           
-          {/* Left Column: Exact Cartoon Illustration from media_1790867259798.png */}
+          {/* Left Column: Exact Cartoon Illustration */}
           <div className="lg:col-span-6 p-6 sm:p-8 flex flex-col items-center justify-center bg-white border-b lg:border-b-0 lg:border-r border-slate-100">
             <img 
               src={loginCartoon} 
-              alt="Nairee School Admin Cartoon" 
+              alt="School Admin Cartoon" 
               className="w-full max-w-md h-auto object-contain"
             />
           </div>
 
-          {/* Right Column: Sleek Login Card (Matches media_1790867259798.png) */}
+          {/* Right Column: Sleek Dynamic White-Label Login Card */}
           <div className="lg:col-span-6 p-6 sm:p-10 md:p-12">
             <div className="max-w-md mx-auto">
               
               {/* Logo on Top & Login Title */}
               <div className="mb-6 text-center">
                 <img 
-                  src={naireeLogo} 
-                  alt="Nairee" 
-                  className="h-11 mx-auto mb-3 object-contain" 
+                  src={tenant?.logo_url || naireeLogo} 
+                  alt={tenant?.school_name} 
+                  className="h-12 mx-auto mb-2 object-contain" 
+                  onError={(e) => { e.target.src = naireeLogo; }}
                 />
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Login</h1>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">{tenant?.school_name}</h1>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">{tenant?.tagline}</p>
               </div>
 
               {/* Error Notice */}

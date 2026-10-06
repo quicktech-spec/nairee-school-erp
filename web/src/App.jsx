@@ -7,9 +7,13 @@ import StudentPortalView from './components/StudentPortalView.jsx';
 import ParentPortalView from './components/ParentPortalView.jsx';
 import DatabaseStudioView from './components/DatabaseStudioView.jsx';
 import CommandPaletteModal from './components/CommandPaletteModal.jsx';
+import TenantOnboardingModal from './components/TenantOnboardingModal.jsx';
+import TenantSwitchModal from './components/TenantSwitchModal.jsx';
+import { TenantProvider, useTenant } from './context/TenantContext.jsx';
 import { api } from './api.js';
 
-export default function App() {
+function MainApp() {
+  const { isOnboardingModalOpen, setIsOnboardingModalOpen, isSwitchModalOpen, setIsSwitchModalOpen } = useTenant();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentUser, setCurrentUser] = useState(() => {
@@ -51,55 +55,78 @@ export default function App() {
     }
   };
 
-  // If not logged in, show the universal login page
-  if (!currentUser) {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  // Once authenticated, route strictly to the user's role-dedicated portal in the ERP layout
   return (
-    <div className="min-h-screen bg-[#f4f7fb]">
-      {/* Global Command Palette (Ctrl+K) */}
-      <CommandPaletteModal
-        isOpen={isPaletteOpen}
-        onClose={() => setIsPaletteOpen(false)}
-        onNavigate={(tab) => {
-          setActiveTab(tab);
-          window.dispatchEvent(new CustomEvent('nairee_navigate', { detail: tab }));
-        }}
-        onSwitchUser={handleSwitchUser}
-        currentRole={currentUser.role}
+    <>
+      {/* Global White-Label Onboarding Wizard Modal */}
+      <TenantOnboardingModal 
+        isOpen={isOnboardingModalOpen} 
+        onClose={() => setIsOnboardingModalOpen(false)} 
       />
 
-      {/* Main ERP Layout matching media_1790867008790.png */}
-      <AppLayout
-        user={currentUser}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={handleLogout}
-        onSwitchUser={handleSwitchUser}
-        onOpenPalette={() => setIsPaletteOpen(true)}
-      >
-        {activeTab === 'database' && (
-          <DatabaseStudioView />
-        )}
+      {/* Global Multi-Tenant Switcher Modal */}
+      <TenantSwitchModal 
+        isOpen={isSwitchModalOpen} 
+        onClose={() => setIsSwitchModalOpen(false)} 
+        onOpenOnboarding={() => setIsOnboardingModalOpen(true)} 
+      />
 
-        {activeTab !== 'database' && currentUser.role === 'admin' && (
-          <AdminPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
-        )}
+      {/* If not logged in, show the universal white-label login page */}
+      {!currentUser ? (
+        <LoginPage onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <div className="min-h-screen bg-[#f4f7fb]">
+          {/* Global Command Palette (Ctrl+K) */}
+          <CommandPaletteModal
+            isOpen={isPaletteOpen}
+            onClose={() => setIsPaletteOpen(false)}
+            onNavigate={(tab) => {
+              setActiveTab(tab);
+              window.dispatchEvent(new CustomEvent('nairee_navigate', { detail: tab }));
+            }}
+            onSwitchUser={handleSwitchUser}
+            currentRole={currentUser.role}
+          />
 
-        {activeTab !== 'database' && currentUser.role === 'teacher' && (
-          <TeacherPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
-        )}
+          {/* Main ERP Layout matching media_1790867008790.png */}
+          <AppLayout
+            user={currentUser}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onLogout={handleLogout}
+            onSwitchUser={handleSwitchUser}
+            onOpenPalette={() => setIsPaletteOpen(true)}
+          >
+            {activeTab === 'database' && (
+              <DatabaseStudioView />
+            )}
 
-        {activeTab !== 'database' && currentUser.role === 'student' && (
-          <StudentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
-        )}
+            {activeTab !== 'database' && currentUser.role === 'admin' && (
+              <AdminPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
+            )}
 
-        {activeTab !== 'database' && currentUser.role === 'parent' && (
-          <ParentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
-        )}
-      </AppLayout>
-    </div>
+            {activeTab !== 'database' && currentUser.role === 'teacher' && (
+              <TeacherPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
+            )}
+
+            {activeTab !== 'database' && currentUser.role === 'student' && (
+              <StudentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
+            )}
+
+            {activeTab !== 'database' && currentUser.role === 'parent' && (
+              <ParentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
+            )}
+          </AppLayout>
+        </div>
+      )}
+    </>
   );
 }
+
+export default function App() {
+  return (
+    <TenantProvider>
+      <MainApp />
+    </TenantProvider>
+  );
+}
+

@@ -7,10 +7,15 @@ import {
   User, 
   ChevronDown,
   Sparkles,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Building2,
+  Plus
 } from 'lucide-react';
+import { useTenant } from '../context/TenantContext.jsx';
 
 export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) {
+  const { tenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+
   const getRoleBadge = (role) => {
     switch (role) {
       case 'admin':
@@ -41,35 +46,70 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-[#5673ec] via-[#6c8cff] to-[#5673ec] backdrop-blur-md border-b border-indigo-300/40 px-6 py-3 text-white shadow-md">
+    <header 
+      className="sticky top-0 z-40 backdrop-blur-md border-b border-white/20 px-6 py-3 text-white shadow-md transition-colors"
+      style={{
+        background: `linear-gradient(135deg, ${tenant?.primary_color || '#5673ec'}, ${tenant?.secondary_color || '#6c8cff'})`
+      }}
+    >
       <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-        {/* Left: Branding with Official Nairee Logo */}
+        {/* Left: Dynamic White-Label School Branding */}
         <div className="flex items-center gap-3">
           <img 
-            src="/nairee-logo-white.png" 
-            alt="Nairee" 
-            className="h-8 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity drop-shadow-sm" 
+            src={tenant?.logo_white_url || tenant?.logo_url || '/nairee-logo-white.png'} 
+            alt={tenant?.school_name || 'School ERP'} 
+            className="h-8 max-w-[160px] w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity drop-shadow-sm bg-white/10 rounded-lg p-0.5" 
+            onError={(e) => { e.target.src = '/nairee-logo-white.png'; }}
+            onClick={() => setIsSwitchModalOpen(true)}
+            title="Click to switch white-label school instance"
           />
           <div className="hidden sm:block pl-3 border-l border-white/25">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                ERP
+              <span className="text-xs font-bold text-white tracking-tight truncate max-w-[220px]">
+                {tenant?.school_name}
+              </span>
+              <span 
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider text-white shadow-xs"
+                style={{ backgroundColor: tenant?.accent_color || '#10b981' }}
+              >
+                {tenant?.school_code || 'ERP'}
               </span>
             </div>
-            <p className="text-[11px] text-indigo-100 font-medium">Single Shared Database &bull; Connected Portals</p>
+            <p className="text-[10px] text-white/80 font-mono">
+              {tenant?.subdomain}.nairee.app &bull; Isolated Tenant
+            </p>
           </div>
         </div>
 
-        {/* Middle / Right: Quick Command Palette Trigger */}
-        <div className="flex items-center gap-3">
+        {/* Middle / Right: Actions & Switchers */}
+        <div className="flex items-center gap-2.5">
+          {/* Multi-Tenant Switcher Button */}
+          <button
+            onClick={() => setIsSwitchModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white font-bold transition-all cursor-pointer shadow-sm"
+            title="Switch between onboarded school instances"
+          >
+            <Building2 className="w-3.5 h-3.5 text-yellow-300" />
+            <span className="hidden lg:inline">Switch School</span>
+          </button>
+
+          {/* Onboard School Button (for Admins) */}
+          <button
+            onClick={() => setIsOnboardingModalOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition-all cursor-pointer shadow-sm"
+            title="Launch White-Label School Onboarding Wizard"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Onboard School</span>
+          </button>
+
           <button
             onClick={onOpenPalette}
-            className="hidden sm:flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white transition-all cursor-pointer shadow-sm group"
+            className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white transition-all cursor-pointer shadow-sm group"
           >
-            <Search className="w-3.5 h-3.5 text-indigo-100 group-hover:scale-110 transition-transform" />
-            <span className="text-indigo-100 group-hover:text-white">Search commands...</span>
-            <kbd className="text-[10px] font-mono bg-black/20 px-1.5 py-0.5 rounded border border-white/20 text-indigo-100">Ctrl K</kbd>
+            <Search className="w-3.5 h-3.5 text-white/80 group-hover:scale-110 transition-transform" />
+            <span className="text-white/80 group-hover:text-white">Search</span>
+            <kbd className="text-[10px] font-mono bg-black/20 px-1.5 py-0.5 rounded border border-white/20 text-white/90">Ctrl K</kbd>
           </button>
 
           {/* Active User Info Card */}

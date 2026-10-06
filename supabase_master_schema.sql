@@ -34,15 +34,45 @@ DROP TABLE IF EXISTS classes CASCADE;
 DROP TABLE IF EXISTS employees CASCADE;
 DROP TABLE IF EXISTS academic_years CASCADE;
 DROP TABLE IF EXISTS schools CASCADE;
+DROP TABLE IF EXISTS tenants CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
 /* ==============================================================================
-   2. CORE MASTER TABLES
+   2. MULTI-TENANT SAAS & CORE MASTER TABLES
 ============================================================================== */
+
+-- 2.0 TENANTS (White-Label SaaS Platform Model)
+CREATE TABLE tenants (
+    tenant_id VARCHAR(50) PRIMARY KEY,
+    school_name VARCHAR(255) NOT NULL,
+    school_code VARCHAR(50) NOT NULL,
+    subdomain VARCHAR(100) UNIQUE NOT NULL,
+    custom_domain VARCHAR(255) UNIQUE,
+    logo_url TEXT,
+    logo_white_url TEXT,
+    favicon_url TEXT,
+    primary_color VARCHAR(20) DEFAULT '#5673ec',
+    secondary_color VARCHAR(20) DEFAULT '#6c8cff',
+    accent_color VARCHAR(20) DEFAULT '#10b981',
+    bg_gradient TEXT,
+    tagline TEXT,
+    board_affiliation VARCHAR(100) DEFAULT 'CBSE Affiliated',
+    address TEXT,
+    contact_phone VARCHAR(50),
+    contact_email VARCHAR(255),
+    plan_tier VARCHAR(50) DEFAULT 'Standard',
+    max_students INT DEFAULT 2000,
+    max_staff INT DEFAULT 100,
+    enabled_features JSONB DEFAULT '["academics", "attendance", "fees", "gradebook", "timetable", "homework", "reports", "parent_portal", "student_portal", "teacher_portal"]'::jsonb,
+    status VARCHAR(50) DEFAULT 'Active',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
 -- 2.1 SCHOOL MASTER
 CREATE TABLE schools (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     school_code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     affiliation_board VARCHAR(50) DEFAULT 'CBSE',
@@ -57,6 +87,7 @@ CREATE TABLE schools (
 -- 2.2 ACADEMIC YEARS
 CREATE TABLE academic_years (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
     year_name VARCHAR(50) NOT NULL,
     start_date DATE NOT NULL,
@@ -68,6 +99,7 @@ CREATE TABLE academic_years (
 -- 2.3 EMPLOYEES / TEACHERS / STAFF FACULTY
 CREATE TABLE employees (
     teacher_id VARCHAR(50) PRIMARY KEY,
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     gender VARCHAR(20),
@@ -100,6 +132,7 @@ CREATE TABLE employees (
 -- 2.4 CLASSES
 CREATE TABLE classes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
     grade_name VARCHAR(50) NOT NULL,
     numeric_order INT NOT NULL,
@@ -109,6 +142,7 @@ CREATE TABLE classes (
 -- 2.5 SECTIONS & CLASS TEACHERS
 CREATE TABLE sections (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
     batch_code VARCHAR(50) UNIQUE NOT NULL,
     section_name VARCHAR(50) NOT NULL,
@@ -122,6 +156,7 @@ CREATE TABLE sections (
 -- 2.6 SUBJECTS
 CREATE TABLE subjects (
     subject_code VARCHAR(50) PRIMARY KEY,
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     subject_name VARCHAR(255) NOT NULL,
     department VARCHAR(100),
     credit_hours INT DEFAULT 4,
@@ -132,6 +167,7 @@ CREATE TABLE subjects (
 -- 2.7 SECTION SUBJECT TEACHER ALLOCATION
 CREATE TABLE section_subject_teachers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -145,6 +181,7 @@ CREATE TABLE section_subject_teachers (
 -- 3.1 STUDENTS
 CREATE TABLE students (
     admission_no VARCHAR(50) PRIMARY KEY,
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     roll_no VARCHAR(50) NOT NULL,
     class VARCHAR(50) NOT NULL,
@@ -172,6 +209,7 @@ CREATE TABLE students (
 -- 3.2 GUARDIANS / PARENTS
 CREATE TABLE guardians (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     father_name VARCHAR(255),
     father_occupation VARCHAR(255),
@@ -194,6 +232,7 @@ CREATE TABLE guardians (
 -- 4.1 STUDENT DAILY ATTENDANCE
 CREATE TABLE student_daily_attendance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     attendance_date DATE NOT NULL,
@@ -206,6 +245,7 @@ CREATE TABLE student_daily_attendance (
 -- 4.2 EMPLOYEE / TEACHER PUNCH LOGS
 CREATE TABLE employee_attendance_punch (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     employee_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     punch_date DATE NOT NULL,
     punch_in_time VARCHAR(20),
@@ -223,6 +263,7 @@ CREATE TABLE employee_attendance_punch (
 -- 5.1 ASSESSMENT / EXAM PLANS
 CREATE TABLE exam_terms (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
     plan_code VARCHAR(50) UNIQUE NOT NULL,
     assessment_name VARCHAR(255) NOT NULL,
@@ -234,6 +275,7 @@ CREATE TABLE exam_terms (
 
 CREATE TABLE exam_schedules (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     exam_term_id UUID REFERENCES exam_terms(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
     class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
@@ -246,6 +288,7 @@ CREATE TABLE exam_schedules (
 -- 5.2 STUDENT MARKS & EVALUATIONS
 CREATE TABLE exam_marks_entries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     exam_schedule_id UUID REFERENCES exam_schedules(id) ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     score DECIMAL(5,2) NOT NULL,
@@ -265,6 +308,7 @@ CREATE TABLE exam_marks_entries (
 -- 6.1 STUDENT FEE INVOICES
 CREATE TABLE student_fee_invoices (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     invoice_code VARCHAR(50) UNIQUE NOT NULL,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
@@ -280,6 +324,7 @@ CREATE TABLE student_fee_invoices (
 -- 6.2 FEE PAYMENT RECEIPTS
 CREATE TABLE fee_payment_transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     invoice_id UUID REFERENCES student_fee_invoices(id) ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     receipt_no VARCHAR(50) UNIQUE NOT NULL,
@@ -295,6 +340,7 @@ CREATE TABLE fee_payment_transactions (
 
 CREATE TABLE timetable_slots (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     day_of_week VARCHAR(20) NOT NULL,
     period_number INT NOT NULL,
@@ -307,6 +353,7 @@ CREATE TABLE timetable_slots (
 
 CREATE TABLE daily_class_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
@@ -318,6 +365,7 @@ CREATE TABLE daily_class_logs (
 
 CREATE TABLE teacher_substitutions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     original_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     substitute_teacher_id VARCHAR(50) REFERENCES employees(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
@@ -335,6 +383,7 @@ CREATE TABLE teacher_substitutions (
 
 CREATE TABLE homework_assignments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     homework_code VARCHAR(50) UNIQUE NOT NULL,
     section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
     subject_id VARCHAR(50) REFERENCES subjects(subject_code) ON DELETE CASCADE,
@@ -347,6 +396,7 @@ CREATE TABLE homework_assignments (
 
 CREATE TABLE homework_submissions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     homework_id UUID REFERENCES homework_assignments(id) ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     submission_text TEXT,
@@ -363,6 +413,7 @@ CREATE TABLE homework_submissions (
 
 CREATE TABLE transfer_certificates (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     tc_number VARCHAR(50) UNIQUE NOT NULL,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE CASCADE,
     leaving_date DATE NOT NULL,
@@ -374,6 +425,7 @@ CREATE TABLE transfer_certificates (
 
 CREATE TABLE alumni (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tenant_id VARCHAR(50) NOT NULL DEFAULT 'tenant-default' REFERENCES tenants(tenant_id) ON UPDATE CASCADE ON DELETE CASCADE,
     student_id VARCHAR(50) REFERENCES students(admission_no) ON UPDATE CASCADE ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     passing_year VARCHAR(50) NOT NULL,
@@ -384,16 +436,58 @@ CREATE TABLE alumni (
 );
 
 /* ==============================================================================
-   10. INDEXES & REACTIVE CASCADING TRIGGERS
+   10. MULTI-TENANT INDEXES, RLS POLICIES & CASCADING TRIGGERS
 ============================================================================== */
-CREATE INDEX idx_students_class_section ON students(class, section);
-CREATE INDEX idx_students_roll ON students(roll_no);
-CREATE INDEX idx_attendance_date ON student_daily_attendance(attendance_date);
-CREATE INDEX idx_attendance_student ON student_daily_attendance(student_id);
-CREATE INDEX idx_marks_student ON exam_marks_entries(student_id);
-CREATE INDEX idx_invoices_student ON student_fee_invoices(student_id);
-CREATE INDEX idx_invoices_status ON student_fee_invoices(status);
-CREATE INDEX idx_teacher_punch_date ON employee_attendance_punch(punch_date);
+-- Multi-Tenant Composite Indexes for Lightning Fast Queries
+CREATE INDEX idx_students_tenant_class ON students(tenant_id, class, section);
+CREATE INDEX idx_students_tenant_roll ON students(tenant_id, roll_no);
+CREATE INDEX idx_attendance_tenant_date ON student_daily_attendance(tenant_id, attendance_date);
+CREATE INDEX idx_attendance_tenant_student ON student_daily_attendance(tenant_id, student_id);
+CREATE INDEX idx_marks_tenant_student ON exam_marks_entries(tenant_id, student_id);
+CREATE INDEX idx_invoices_tenant_student ON student_fee_invoices(tenant_id, student_id);
+CREATE INDEX idx_invoices_tenant_status ON student_fee_invoices(tenant_id, status);
+CREATE INDEX idx_teacher_punch_tenant_date ON employee_attendance_punch(tenant_id, punch_date);
+CREATE INDEX idx_employees_tenant ON employees(tenant_id, status);
+CREATE INDEX idx_sections_tenant_class ON sections(tenant_id, class_id);
+CREATE INDEX idx_timetable_tenant_section ON timetable_slots(tenant_id, section_id);
+
+-- PostgreSQL Row Level Security (RLS) for Strict Multi-Tenant Data Isolation
+ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subjects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE guardians ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_daily_attendance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE employee_attendance_punch ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exam_terms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exam_schedules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE exam_marks_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE student_fee_invoices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fee_payment_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE timetable_slots ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_class_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teacher_substitutions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE homework_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE homework_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transfer_certificates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alumni ENABLE ROW LEVEL SECURITY;
+
+-- Tenant Isolation Policies (Allows global bypass if app.current_tenant_id is not set, or enforces tenant_id match)
+CREATE POLICY tenant_isolation_students ON students
+    FOR ALL USING (tenant_id = current_setting('app.current_tenant_id', true) OR current_setting('app.current_tenant_id', true) IS NULL);
+
+CREATE POLICY tenant_isolation_employees ON employees
+    FOR ALL USING (tenant_id = current_setting('app.current_tenant_id', true) OR current_setting('app.current_tenant_id', true) IS NULL);
+
+CREATE POLICY tenant_isolation_invoices ON student_fee_invoices
+    FOR ALL USING (tenant_id = current_setting('app.current_tenant_id', true) OR current_setting('app.current_tenant_id', true) IS NULL);
+
+CREATE POLICY tenant_isolation_attendance ON student_daily_attendance
+    FOR ALL USING (tenant_id = current_setting('app.current_tenant_id', true) OR current_setting('app.current_tenant_id', true) IS NULL);
+
+CREATE POLICY tenant_isolation_marks ON exam_marks_entries
+    FOR ALL USING (tenant_id = current_setting('app.current_tenant_id', true) OR current_setting('app.current_tenant_id', true) IS NULL);
 
 -- Trigger 1: Automatically recalculate student fee status when fee invoices or payments change
 CREATE OR REPLACE FUNCTION fn_sync_student_fee_status()
@@ -454,14 +548,28 @@ FOR EACH ROW
 EXECUTE FUNCTION fn_calculate_exam_grade();
 
 /* ==============================================================================
-   11. INITIAL SAMPLE SEED DATA (10 RECORDS PER TABLE)
+   11. INITIAL MULTI-TENANT SEED DATA
 ============================================================================== */
-INSERT INTO schools (id, school_code, name, affiliation_board, contact_phone, contact_email)
-VALUES ('11111111-1111-1111-1111-111111111111', 'NAIREE-01', 'Nairee International School', 'CBSE', '+91 98765 43210', 'admin@nairee.edu')
+
+-- 11.0 SEED TENANTS (4 DISTINCT WHITE-LABEL SCHOOL INSTANCES)
+INSERT INTO tenants (tenant_id, school_name, school_code, subdomain, custom_domain, primary_color, secondary_color, accent_color, tagline, plan_tier, max_students, max_staff, enabled_features)
+VALUES 
+('tenant-default', 'Nairee International School', 'NIS', 'demo', '', '#5673ec', '#6c8cff', '#10b981', 'Excellence in Connected Global Education', 'Enterprise', 2500, 150, '["academics", "attendance", "fees", "gradebook", "timetable", "homework", "library", "transport", "communication", "payroll", "reports", "database", "parent_portal", "student_portal", "teacher_portal", "id_cards", "transfer_certificates"]'::jsonb),
+('dps-ranchi', 'Delhi Public School, Ranchi', 'DPS', 'dps-ranchi', 'erp.dpsranchi.com', '#006633', '#009944', '#eab308', 'Service Before Self • CBSE Affiliated #3430012', 'Enterprise', 4000, 220, '["academics", "attendance", "fees", "gradebook", "timetable", "homework", "library", "transport", "communication", "payroll", "reports", "database", "parent_portal", "student_portal", "teacher_portal", "id_cards", "transfer_certificates"]'::jsonb),
+('st-xaviers', 'St. Xavier''s Senior Academy', 'SXA', 'st-xaviers', 'portal.stxaviers.org', '#800020', '#b91c1c', '#f59e0b', 'Lucet et Ardet • Catholic Diocesan Board', 'Standard', 1800, 95, '["academics", "attendance", "fees", "gradebook", "timetable", "homework", "communication", "reports", "parent_portal", "student_portal", "teacher_portal", "id_cards"]'::jsonb),
+('greenfield-global', 'Greenfield Global School', 'GGS', 'greenfield', '', '#0284c7', '#0ea5e9', '#10b981', 'Empowering Future Leaders with STEM & Innovation', 'Premium', 1200, 80, '["academics", "attendance", "fees", "gradebook", "timetable", "homework", "library", "reports", "parent_portal", "student_portal", "teacher_portal"]'::jsonb)
+ON CONFLICT (tenant_id) DO UPDATE SET
+    school_name = EXCLUDED.school_name,
+    primary_color = EXCLUDED.primary_color,
+    secondary_color = EXCLUDED.secondary_color,
+    enabled_features = EXCLUDED.enabled_features;
+
+INSERT INTO schools (id, tenant_id, school_code, name, affiliation_board, contact_phone, contact_email)
+VALUES ('11111111-1111-1111-1111-111111111111', 'tenant-default', 'NAIREE-01', 'Nairee International School', 'CBSE', '+91 98765 43210', 'admin@nairee.edu')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO academic_years (id, school_id, year_name, start_date, end_date, is_current)
-VALUES ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', '2026-2027', '2026-04-01', '2027-03-31', true)
+INSERT INTO academic_years (id, tenant_id, school_id, year_name, start_date, end_date, is_current)
+VALUES ('22222222-2222-2222-2222-222222222222', 'tenant-default', '11111111-1111-1111-1111-111111111111', '2026-2027', '2026-04-01', '2027-03-31', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- 10 EMPLOYEES / TEACHERS

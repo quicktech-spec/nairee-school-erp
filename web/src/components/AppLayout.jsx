@@ -31,12 +31,40 @@ import {
   School,
   TrendingUp,
   Package,
-  Briefcase
+  Briefcase,
+  Building2,
+  Plus
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
 import { api, subscribeLiveEvents } from '../api.js';
 import { FALLBACK_DATA } from '../fallbackData.js';
+import { useTenant } from '../context/TenantContext.jsx';
+
+const TAB_FEATURE_MAPPING = {
+  homework: 'homework',
+  materials: 'academics',
+  messages: 'communication',
+  communication: 'communication',
+  timetable: 'timetable',
+  results: 'gradebook',
+  progress: 'gradebook',
+  transport: 'transport',
+  attendance: 'attendance',
+  syllabus: 'academics',
+  database: 'database',
+  fees: 'fees',
+  class_manager: 'academics',
+  tc_generator: 'transfer_certificates',
+  financial_pl: 'fees',
+  students: 'academics',
+  teachers: 'academics',
+  accounts: 'academics',
+  announcements: 'communication',
+  inventory_mgmt: 'academics',
+  alumni_mgmt: 'academics',
+  reports: 'reports'
+};
 
 const NAV_CONFIG = {
   student: [
@@ -214,6 +242,7 @@ export default function AppLayout({
   onOpenPalette,
   children
 }) {
+  const { tenant, isFeatureEnabled, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
@@ -231,7 +260,14 @@ export default function AppLayout({
   });
   const dropdownRef = useRef(null);
 
-  const navItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
+  // Filter navigation items based on Tenant Enabled Features
+  const rawNavItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
+  const navItems = rawNavItems.filter(item => {
+    if (item.id === 'dashboard') return true;
+    const featureKey = TAB_FEATURE_MAPPING[item.id];
+    if (!featureKey) return true;
+    return isFeatureEnabled(featureKey);
+  });
 
   // Sync live announcements into notifications with strict user privacy filters
   const loadLiveNotifications = async () => {
@@ -391,25 +427,46 @@ export default function AppLayout({
         }`}
       >
         <div>
-          {/* Logo & Brand matching "ABS school" from media_1790863408009.png */}
-          <div className="flex items-center justify-between px-2 mb-8">
-            <div className="flex items-center gap-3">
+          {/* White-Label School Brand Header in Sidebar */}
+          <div className="flex items-center justify-between px-2 mb-6">
+            <div 
+              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setIsSwitchModalOpen(true)}
+              title="Click to switch white-label school instance"
+            >
               <img
-                src={naireeLogo}
-                alt="Nairee"
-                className="h-9 w-auto object-contain"
+                src={tenant?.logo_url || naireeLogo}
+                alt={tenant?.school_name || 'Nairee School ERP'}
+                className="h-9 w-9 object-contain rounded-xl border border-slate-200/80 bg-white p-1 shadow-xs shrink-0"
+                onError={(e) => { e.target.src = naireeLogo; }}
               />
+              <div className="min-w-0">
+                <h2 className="text-xs font-black text-slate-800 truncate leading-tight">
+                  {tenant?.school_name || 'Nairee School'}
+                </h2>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span 
+                    className="text-[9px] font-black text-white px-1.5 py-0.2 rounded-full uppercase tracking-wider shadow-2xs"
+                    style={{ backgroundColor: tenant?.accent_color || '#10b981' }}
+                  >
+                    {tenant?.school_code || 'ERP'}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400 truncate">
+                    {tenant?.subdomain || 'demo'}.nairee.app
+                  </span>
+                </div>
+              </div>
             </div>
 
             <button
               onClick={() => setIsMobileMenuOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 shrink-0"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Navigation Items Stack with Capsule Active Pill */}
+          {/* Navigation Items Stack with Dynamic Active Brand Pill */}
           <nav className="space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -421,9 +478,12 @@ export default function AppLayout({
                     setActiveTab(item.id);
                     setIsMobileMenuOpen(false);
                   }}
+                  style={{
+                    backgroundColor: isActive ? (tenant?.primary_color || '#00a884') : undefined
+                  }}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-left ${
                     isActive
-                      ? 'bg-[#00a884] text-white shadow-md shadow-[#00a884]/25'
+                      ? 'text-white shadow-md'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                   }`}
                 >
@@ -440,11 +500,19 @@ export default function AppLayout({
         {/* Sidebar Footer */}
         <div className="pt-4 border-t border-slate-100 px-2 space-y-2">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="font-semibold">&copy; {new Date().getFullYear()} Nairee</span>
-            <span className="font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-600">v2.6</span>
+            <span className="font-semibold">&copy; {new Date().getFullYear()} {tenant?.school_name?.split(' ')[0] || 'Nairee'}</span>
+            <span className="font-mono text-[10px] bg-slate-100 px-2 py-0.5 rounded-full font-bold text-slate-600">
+              {tenant?.plan_tier || 'SaaS'}
+            </span>
           </div>
-          <div className="text-[10px] text-teal-700 font-semibold truncate">
-            {user?.full_name} ({user?.role?.toUpperCase()})
+          <div className="text-[10px] text-teal-700 font-semibold truncate flex items-center justify-between">
+            <span>{user?.full_name} ({user?.role?.toUpperCase()})</span>
+            <button 
+              onClick={() => setIsSwitchModalOpen(true)}
+              className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer"
+            >
+              Switch
+            </button>
           </div>
         </div>
       </aside>
@@ -469,12 +537,34 @@ export default function AppLayout({
 
             {/* Greeting */}
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight">
-              Welcome back <span className="text-[#00a884]">{user?.full_name?.split(' ')[0] || user?.full_name}!</span>
+              Welcome back <span style={{ color: tenant?.primary_color || '#00a884' }}>{user?.full_name?.split(' ')[0] || user?.full_name}!</span>
             </h1>
           </div>
 
-          {/* Right: DB Studio + Search + Notification Bell + Profile Capsule */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right: Tenant Switcher + Onboard + DB Studio + Search + Notification Bell + Profile */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* White-Label School Instance Switcher */}
+            <button
+              onClick={() => setIsSwitchModalOpen(true)}
+              className="px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+              title="Switch School Tenant Instance"
+            >
+              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
+            </button>
+
+            {/* Onboard New School Wizard Button */}
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                title="Onboard New White-Label School"
+              >
+                <Plus className="w-3.5 h-3.5 text-teal-600" />
+                <span>+ Onboard School</span>
+              </button>
+            )}
+
             {/* Quick School Records Button (ADMIN ONLY) */}
             {user?.role === 'admin' && (
               <button
@@ -487,18 +577,18 @@ export default function AppLayout({
                 title="Open School Records"
               >
                 <Database className="w-3.5 h-3.5 text-teal-600" />
-                <span className="hidden md:inline">School Records</span>
+                <span className="hidden lg:inline">Records</span>
               </button>
             )}
 
             {/* Mobile App Scan QR Button */}
             <button
               onClick={() => setShowQrModal(true)}
-              className="px-3.5 py-1.5 rounded-full border border-indigo-200 bg-indigo-50/90 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+              className="hidden sm:flex px-3 py-1.5 rounded-full border border-indigo-200 bg-indigo-50/90 hover:bg-indigo-100 text-indigo-700 text-xs font-bold items-center gap-1.5 transition-all cursor-pointer shadow-xs"
               title="Open Mobile App QR Code & Setup"
             >
               <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
-              <span>📱 Mobile App</span>
+              <span>Mobile</span>
             </button>
 
             {/* Search Icon Button */}

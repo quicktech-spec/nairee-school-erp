@@ -1,0 +1,829 @@
+import React, { useState } from 'react';
+import { 
+  X, 
+  Building2, 
+  Palette, 
+  Globe, 
+  Layers, 
+  ShieldCheck, 
+  UserCheck, 
+  CheckCircle2, 
+  Sparkles, 
+  ArrowRight, 
+  ArrowLeft,
+  School,
+  Upload,
+  Check,
+  Zap,
+  ExternalLink,
+  BookOpen,
+  Calendar,
+  CreditCard,
+  Award,
+  Bus,
+  Library,
+  FileSpreadsheet,
+  Users,
+  Lock,
+  ChevronRight
+} from 'lucide-react';
+import { useTenant } from '../context/TenantContext.jsx';
+
+const PRESET_PALETTES = [
+  { name: 'Royal Indigo (Default)', primary: '#5673ec', secondary: '#6c8cff', accent: '#10b981' },
+  { name: 'Emerald Forest (DPS Style)', primary: '#006633', secondary: '#009944', accent: '#eab308' },
+  { name: 'Crimson Maroon (St. Xavier Style)', primary: '#800020', secondary: '#b91c1c', accent: '#f59e0b' },
+  { name: 'Deep Sapphire Navy', primary: '#1e3a8a', secondary: '#3b82f6', accent: '#06b6d4' },
+  { name: 'Azure Ocean (Modern STEM)', primary: '#0284c7', secondary: '#0ea5e9', accent: '#10b981' },
+  { name: 'Imperial Violet (Academy)', primary: '#6d28d9', secondary: '#8b5cf6', accent: '#f43f5e' }
+];
+
+const AVAILABLE_MODULES = [
+  { id: 'academics', label: 'Academics & Curriculum', desc: 'Classes, batches, 72 CBSE subjects & faculty allocations', icon: BookOpen, recommended: true },
+  { id: 'attendance', label: 'Daily School Attendance', desc: 'Real-time student & staff punch logs with SMS notifications', icon: Calendar, recommended: true },
+  { id: 'fees', label: 'Fee Invoices & Billing Ledger', desc: 'Online fee collection, multi-term installments & receipts', icon: CreditCard, recommended: true },
+  { id: 'gradebook', label: 'Exam Marks & Gradebook', desc: 'Auto grading triggers, report cards & CBSE marksheets', icon: Award, recommended: true },
+  { id: 'timetable', label: 'Timetable & Class Schedules', desc: 'Weekly bell schedules, period slots & room allocations', icon: Calendar, recommended: true },
+  { id: 'homework', label: 'Homework & Assignments', desc: 'Online submission uploads, feedback & grading tracker', icon: FileSpreadsheet, recommended: true },
+  { id: 'library', label: 'Library Management', desc: 'Book cataloging, ISBN lookup, issue/return tracker', icon: Library, recommended: false },
+  { id: 'transport', label: 'Transport & GPS Bus Fleet', desc: 'Live route tracking, pickup stops & driver directory', icon: Bus, recommended: false },
+  { id: 'communication', label: 'Parent Communication Hub', desc: 'Direct circulars, SMS broadcasts & teacher chats', icon: Users, recommended: true },
+  { id: 'payroll', label: 'Staff HR & Payroll', desc: 'Salary slip generator, deductions & leave tracker', icon: CreditCard, recommended: false },
+  { id: 'reports', label: 'Financial & P&L Analytics', desc: 'Audited balance sheets, fee collections & cash flows', icon: Award, recommended: true },
+  { id: 'database', label: 'Database Studio & Master Tables', desc: 'Direct table editor, CSV/Excel export & query runner', icon: Layers, recommended: true }
+];
+
+export default function TenantOnboardingModal({ isOpen, onClose }) {
+  const { createTenant, switchTenant } = useTenant();
+  const [step, setStep] = useState(1);
+  const [isProvisioning, setIsProvisioning] = useState(false);
+  const [provisionSuccess, setProvisionSuccess] = useState(false);
+  const [provisionedTenant, setProvisionedTenant] = useState(null);
+
+  const [formData, setFormData] = useState({
+    school_name: '',
+    school_code: '',
+    board_affiliation: 'CBSE Affiliated',
+    tagline: 'Excellence in Connected Global Education',
+    phone: '+91 98765 00000',
+    email: 'admin@school.edu',
+    address: 'City Campus, State, PIN',
+    logo_url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=150',
+    primary_color: '#006633',
+    secondary_color: '#009944',
+    accent_color: '#eab308',
+    subdomain: '',
+    custom_domain: '',
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'communication', 'reports', 'database'
+    ],
+    plan_tier: 'Enterprise',
+    max_students: 2500,
+    max_staff: 150,
+    admin_name: 'Dr. Principal Officer',
+    admin_email: 'principal@school.edu',
+    admin_pass: 'school123'
+  });
+
+  if (!isOpen) return null;
+
+  const handleNameChange = (name) => {
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 30);
+    const code = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 4) || 'SCH';
+    setFormData(prev => ({
+      ...prev,
+      school_name: name,
+      subdomain: prev.subdomain === '' || prev.subdomain.startsWith('school') ? slug : prev.subdomain,
+      school_code: prev.school_code === '' || prev.school_code === 'SCH' ? code : prev.school_code
+    }));
+  };
+
+  const handleApplyPalette = (palette) => {
+    setFormData(prev => ({
+      ...prev,
+      primary_color: palette.primary,
+      secondary_color: palette.secondary,
+      accent_color: palette.accent
+    }));
+  };
+
+  const toggleModule = (moduleId) => {
+    setFormData(prev => {
+      const exists = prev.enabled_features.includes(moduleId);
+      return {
+        ...prev,
+        enabled_features: exists 
+          ? prev.enabled_features.filter(id => id !== moduleId)
+          : [...prev.enabled_features, moduleId]
+      };
+    });
+  };
+
+  const handleSelectAllModules = () => {
+    setFormData(prev => ({
+      ...prev,
+      enabled_features: AVAILABLE_MODULES.map(m => m.id)
+    }));
+  };
+
+  const handleFinishProvisioning = () => {
+    setIsProvisioning(true);
+    setTimeout(() => {
+      const created = createTenant(formData);
+      setProvisionedTenant(created);
+      setIsProvisioning(false);
+      setProvisionSuccess(true);
+    }, 1200);
+  };
+
+  const handleLaunchInstance = () => {
+    if (provisionedTenant) {
+      switchTenant(provisionedTenant.tenant_id);
+    }
+    onClose();
+    // Reset modal
+    setStep(1);
+    setProvisionSuccess(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+        
+        {/* Modal Top Header */}
+        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 flex items-center justify-between border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Building2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold tracking-tight">White-Label School Onboarding Wizard</h2>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Instant SaaS
+                </span>
+              </div>
+              <p className="text-xs text-slate-300">Provision a branded, isolated School ERP instance in a few clicks</p>
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Multi-Step Progress Tracker */}
+        {!provisionSuccess && (
+          <div className="bg-slate-50 border-b border-slate-200 px-6 py-3">
+            <div className="flex items-center justify-between max-w-2xl mx-auto">
+              {[
+                { s: 1, label: 'Identity' },
+                { s: 2, label: 'Branding' },
+                { s: 3, label: 'Subdomain' },
+                { s: 4, label: 'Modules' },
+                { s: 5, label: 'Tier' },
+                { s: 6, label: 'Admin' },
+                { s: 7, label: 'Provision' }
+              ].map((item) => (
+                <div key={item.s} className="flex items-center gap-2">
+                  <div 
+                    className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
+                      step === item.s 
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 ring-2 ring-indigo-600 ring-offset-2' 
+                        : step > item.s 
+                          ? 'bg-emerald-600 text-white' 
+                          : 'bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    {step > item.s ? <Check className="w-3.5 h-3.5" /> : item.s}
+                  </div>
+                  <span className={`text-[11px] font-semibold hidden md:inline ${step === item.s ? 'text-indigo-900' : 'text-slate-500'}`}>
+                    {item.label}
+                  </span>
+                  {item.s < 7 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 hidden md:inline" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Modal Body: Step-by-Step Forms */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8">
+          
+          {/* Step 1: School Identity */}
+          {step === 1 && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 1: School Profile & Identity</h3>
+                <p className="text-xs text-slate-500 mt-1">Enter the official school details that will appear on marksheets, fee receipts, and portals.</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    School / Institution Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.school_name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    placeholder="e.g. Delhi Public School, Ranchi"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-semibold text-slate-900 outline-none"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      School Code / Acronym *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.school_code}
+                      onChange={(e) => setFormData({ ...formData, school_code: e.target.value.toUpperCase() })}
+                      placeholder="e.g. DPS, SXA, GGS"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-bold text-slate-900 uppercase"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">Used for Student/Teacher ID prefixes (e.g. {formData.school_code || 'SCH'}-2024-091-001)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Board / Affiliation *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.board_affiliation}
+                      onChange={(e) => setFormData({ ...formData, board_affiliation: e.target.value })}
+                      placeholder="e.g. CBSE Affiliated #3430012, ICSE, Cambridge"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-medium text-slate-900"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    School Motto / Tagline
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.tagline}
+                    onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                    placeholder="e.g. Service Before Self • Empowering Excellence"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-900"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Official Contact Phone
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+91 651 244 1125"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Official Admin Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="admissions@school.edu"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Campus Address
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    placeholder="Sector 4, Main Campus Road, City, State - PIN"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Branding & Appearance */}
+          {step === 2 && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 2: Brand & Visual Customization</h3>
+                <p className="text-xs text-slate-500 mt-1">Upload the school logo and choose colors that will instantly style the entire portal.</p>
+              </div>
+
+              {/* Live Branding Preview Card */}
+              <div 
+                className="p-6 rounded-2xl border text-white shadow-lg transition-all"
+                style={{
+                  background: `linear-gradient(135deg, ${formData.primary_color}, ${formData.secondary_color})`
+                }}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={formData.logo_url} 
+                      alt="Logo Preview" 
+                      className="w-12 h-12 rounded-xl object-contain bg-white/20 p-1 border border-white/30 backdrop-blur-sm"
+                      onError={(e) => { e.target.src = '/nairee-logo.png'; }}
+                    />
+                    <div>
+                      <h4 className="text-base font-black tracking-tight drop-shadow-sm">
+                        {formData.school_name || 'Your School Name'}
+                      </h4>
+                      <p className="text-xs text-white/80 font-medium">
+                        {formData.tagline || 'Excellence in Connected Education'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span 
+                    className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border shadow-sm"
+                    style={{ backgroundColor: formData.accent_color, color: '#ffffff' }}
+                  >
+                    {formData.school_code || 'ERP'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Logo URL input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  School Crest / Logo URL
+                </label>
+                <input
+                  type="text"
+                  value={formData.logo_url}
+                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                  placeholder="https://your-domain.com/logo.png"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-mono"
+                />
+              </div>
+
+              {/* Presets Grid */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Select a Curated Luxury School Color Palette:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {PRESET_PALETTES.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleApplyPalette(p)}
+                      className={`p-3 rounded-xl border flex items-center justify-between text-left transition-all cursor-pointer ${
+                        formData.primary_color === p.primary 
+                          ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-600/30' 
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <span className="text-xs font-bold text-slate-800">{p.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-4 h-4 rounded-full border border-black/10" style={{ backgroundColor: p.primary }}></span>
+                        <span className="w-4 h-4 rounded-full border border-black/10" style={{ backgroundColor: p.secondary }}></span>
+                        <span className="w-4 h-4 rounded-full border border-black/10" style={{ backgroundColor: p.accent }}></span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Color Pickers */}
+              <div className="grid grid-cols-3 gap-4 pt-2">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Primary Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={formData.primary_color}
+                      onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })}
+                      className="w-9 h-9 rounded-lg cursor-pointer border border-slate-200"
+                    />
+                    <input
+                      type="text"
+                      value={formData.primary_color}
+                      onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded-lg border border-slate-300 font-mono text-xs uppercase"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Secondary Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={formData.secondary_color}
+                      onChange={(e) => setFormData({ ...formData, secondary_color: e.target.value })}
+                      className="w-9 h-9 rounded-lg cursor-pointer border border-slate-200"
+                    />
+                    <input
+                      type="text"
+                      value={formData.secondary_color}
+                      onChange={(e) => setFormData({ ...formData, secondary_color: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded-lg border border-slate-300 font-mono text-xs uppercase"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Accent Badge Color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={formData.accent_color}
+                      onChange={(e) => setFormData({ ...formData, accent_color: e.target.value })}
+                      className="w-9 h-9 rounded-lg cursor-pointer border border-slate-200"
+                    />
+                    <input
+                      type="text"
+                      value={formData.accent_color}
+                      onChange={(e) => setFormData({ ...formData, accent_color: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded-lg border border-slate-300 font-mono text-xs uppercase"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Subdomain & Routing */}
+          {step === 3 && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 3: Subdomain & Domain Routing</h3>
+                <p className="text-xs text-slate-500 mt-1">Assign an isolated subdomain and optional custom domain for this school.</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Assigned Subdomain *
+                  </label>
+                  <div className="flex items-center rounded-xl border border-slate-300 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500">
+                    <input
+                      type="text"
+                      value={formData.subdomain}
+                      onChange={(e) => setFormData({ ...formData, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                      placeholder="dps-ranchi"
+                      className="flex-1 px-4 py-2.5 text-sm font-bold text-indigo-900 outline-none"
+                    />
+                    <span className="px-4 py-2.5 bg-slate-100 text-slate-500 font-mono text-xs font-semibold border-l border-slate-200">
+                      .nairee.app
+                    </span>
+                  </div>
+                  <div className="mt-2 p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between text-xs text-indigo-900 font-medium">
+                    <span>Live Portal URL:</span>
+                    <span className="font-mono font-bold text-indigo-700">
+                      https://{formData.subdomain || 'schoolname'}.nairee.app
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Custom Domain (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.custom_domain}
+                    onChange={(e) => setFormData({ ...formData, custom_domain: e.target.value.toLowerCase() })}
+                    placeholder="e.g. erp.dpsranchi.com"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-mono text-slate-800"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">Add a CNAME record in your DNS pointing to cname.nairee.app</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Modules & Feature Flags */}
+          {step === 4 && (
+            <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="flex items-center justify-between pb-2">
+                <div>
+                  <h3 className="text-xl font-black text-slate-900">Step 4: Module Selection & Feature Flags</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Toggle only the modules this school has purchased or needs enabled.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSelectAllModules}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Enable All 12 Modules
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {AVAILABLE_MODULES.map((mod) => {
+                  const isEnabled = formData.enabled_features.includes(mod.id);
+                  const Icon = mod.icon;
+                  return (
+                    <button
+                      key={mod.id}
+                      type="button"
+                      onClick={() => toggleModule(mod.id)}
+                      className={`p-4 rounded-2xl border text-left flex items-start gap-3.5 transition-all cursor-pointer ${
+                        isEnabled
+                          ? 'border-indigo-600 bg-indigo-50/40 ring-1 ring-indigo-600/30'
+                          : 'border-slate-200 bg-white hover:border-slate-300 opacity-60'
+                      }`}
+                    >
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        isEnabled ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
+                      }`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold text-slate-900">{mod.label}</h4>
+                          <span className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                            isEnabled ? 'bg-indigo-600 text-white' : 'border border-slate-300'
+                          }`}>
+                            {isEnabled && <Check className="w-3 h-3" />}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1 leading-snug">{mod.desc}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Plan & Limits */}
+          {step === 5 && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 5: Subscription Plan & Resource Tier</h3>
+                <p className="text-xs text-slate-500 mt-1">Define subscription level and maximum student/faculty capacity.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {[
+                  { tier: 'Basic', students: 500, staff: 40, price: '₹15,000 / mo', desc: 'Core Academics & Attendance' },
+                  { tier: 'Standard', students: 1800, staff: 100, price: '₹35,000 / mo', desc: 'Fees, Gradebook & Portals' },
+                  { tier: 'Enterprise', students: 5000, staff: 250, price: '₹75,000 / mo', desc: 'All Modules + Dedicated DB' }
+                ].map((p) => (
+                  <button
+                    key={p.tier}
+                    type="button"
+                    onClick={() => setFormData({ 
+                      ...formData, 
+                      plan_tier: p.tier, 
+                      max_students: p.students, 
+                      max_staff: p.staff 
+                    })}
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                      formData.plan_tier === p.tier
+                        ? 'border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-600/30'
+                        : 'border-slate-200 bg-white hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-black uppercase text-indigo-700">{p.tier}</span>
+                      {formData.plan_tier === p.tier && <CheckCircle2 className="w-4 h-4 text-indigo-600" />}
+                    </div>
+                    <div className="text-base font-black text-slate-900">{p.price}</div>
+                    <p className="text-[11px] text-slate-500 mt-1">{p.desc}</p>
+                    <div className="mt-3 pt-3 border-t border-slate-100 text-[10px] text-slate-600 font-semibold space-y-1">
+                      <div>👥 Up to {p.students.toLocaleString()} Students</div>
+                      <div>👨‍🏫 Up to {p.staff} Faculty/Staff</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Initial Admin Account */}
+          {step === 6 && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 6: Super Admin / Principal Account</h3>
+                <p className="text-xs text-slate-500 mt-1">Credentials for the school's principal or executive administrator to log in.</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Principal / Executive Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.admin_name}
+                    onChange={(e) => setFormData({ ...formData, admin_name: e.target.value })}
+                    placeholder="e.g. Dr. Ramakant Sharma"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-semibold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Admin Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.admin_email}
+                      onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })}
+                      placeholder="principal@school.edu"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Default Master Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.admin_pass}
+                      onChange={(e) => setFormData({ ...formData, admin_pass: e.target.value })}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 7: Review & Provision */}
+          {step === 7 && !provisionSuccess && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-2">
+                <h3 className="text-xl font-black text-slate-900">Step 7: Confirm & Provision Instance</h3>
+                <p className="text-xs text-slate-500 mt-1">Review the white-label configuration before automatic provisioning.</p>
+              </div>
+
+              {/* Review Summary Card */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center gap-4 pb-4 border-b border-slate-200">
+                  <img 
+                    src={formData.logo_url} 
+                    alt="Logo" 
+                    className="w-14 h-14 rounded-2xl object-contain bg-white border p-1"
+                  />
+                  <div>
+                    <h4 className="text-base font-black text-slate-900">{formData.school_name}</h4>
+                    <p className="text-xs text-indigo-700 font-mono font-semibold">
+                      https://{formData.subdomain}.nairee.app
+                    </p>
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800">
+                      {formData.plan_tier} Plan &bull; {formData.enabled_features.length} Modules Active
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 font-bold block">School Code</span>
+                    <span className="font-bold text-slate-800">{formData.school_code}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block">Board</span>
+                    <span className="font-semibold text-slate-800">{formData.board_affiliation}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block">Theme Primary</span>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: formData.primary_color }}></span>
+                      <span className="font-mono text-[11px]">{formData.primary_color}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block">Capacity</span>
+                    <span className="font-semibold text-slate-800">{formData.max_students} Students</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 flex items-start gap-3">
+                <Sparkles className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold">Automated Multi-Tenant Partitioning:</span>
+                  <p className="text-[11px] text-emerald-700 mt-0.5">
+                    Clicking "Provision School Now" creates the tenant record, configures Row-Level Isolation (RLS), and registers the subdomain routing immediately without requiring redeployment.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Provision Success View */}
+          {provisionSuccess && (
+            <div className="text-center py-8 space-y-6 max-w-md mx-auto animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/20 ring-4 ring-emerald-50">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-black text-slate-900">Instance Successfully Provisioned!</h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  <strong>{provisionedTenant?.school_name}</strong> is live and ready for staff & student logins.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-left space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Subdomain URL:</span>
+                  <span className="font-mono font-bold text-indigo-600">https://{provisionedTenant?.subdomain}.nairee.app</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Tenant ID:</span>
+                  <span className="font-mono font-semibold">{provisionedTenant?.tenant_id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Active Modules:</span>
+                  <span className="font-semibold text-emerald-700">{provisionedTenant?.enabled_features?.length} Enabled</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLaunchInstance}
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <span>Switch to {provisionedTenant?.school_code || 'This School'} Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Modal Bottom Navigation */}
+        {!provisionSuccess && (
+          <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+            <button
+              type="button"
+              disabled={step === 1}
+              onClick={() => setStep(prev => Math.max(1, prev - 1))}
+              className={`px-4 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all ${
+                step === 1 
+                  ? 'border-transparent text-slate-400 cursor-not-allowed' 
+                  : 'border-slate-300 text-slate-700 hover:bg-white cursor-pointer'
+              }`}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Previous</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              {step < 7 ? (
+                <button
+                  type="button"
+                  disabled={step === 1 && !formData.school_name.trim()}
+                  onClick={() => setStep(prev => Math.min(7, prev + 1))}
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span>Next Step</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled={isProvisioning}
+                  onClick={handleFinishProvisioning}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black flex items-center gap-2 shadow-lg shadow-emerald-600/30 cursor-pointer transition-all disabled:opacity-50"
+                >
+                  {isProvisioning ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                      <span>Provisioning School Instance...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 text-yellow-300" />
+                      <span>Provision School Now</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
