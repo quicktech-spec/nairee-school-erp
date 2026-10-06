@@ -348,7 +348,8 @@ export default function AppLayout({
   const dropdownRef = useRef(null);
 
   // Filter navigation items based on Tenant Enabled Features
-  const rawNavItems = NAV_CONFIG[user?.role] || NAV_CONFIG.student;
+  const normalizedRole = (user?.role || 'admin').toLowerCase();
+  const rawNavItems = NAV_CONFIG[normalizedRole] || NAV_CONFIG.student;
   const navItems = rawNavItems.filter(item => {
     if (item.id === 'dashboard') return true;
     const featureKey = TAB_FEATURE_MAPPING[item.id];
@@ -361,7 +362,7 @@ export default function AppLayout({
     try {
       const readIds = getReadNotifIds();
       const currentTenantId = tenant?.tenant_id || 'tenant-default';
-      const annList = await api.getAnnouncements(user?.role || 'all', currentTenantId).catch(() => []);
+      const annList = await api.getAnnouncements(normalizedRole || 'all', currentTenantId).catch(() => []);
       const fallbackList = (FALLBACK_DATA.announcements || []).filter(a => (a.tenant_id || 'tenant-default') === currentTenantId || a.tenant_id === 'all_tenants');
       const activeList = annList && annList.length > 0 ? annList : fallbackList;
 
@@ -675,34 +676,31 @@ export default function AppLayout({
 
           {/* Right: Tenant Switcher + Onboard + DB Studio + Search + Notification Bell + Profile */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Master Platform Only Controls (Hidden on Client School Websites) */}
-            {isMasterTenant && (
-              <>
-                <button
-                  onClick={() => setIsSwitchModalOpen(true)}
-                  className="px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-                  title="Switch School Tenant Instance"
-                >
-                  <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
-                </button>
+            {/* School Switcher Button (Always accessible to browse all schools) */}
+            <button
+              onClick={() => setIsSwitchModalOpen(true)}
+              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+              title="Switch School Tenant Instance"
+            >
+              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
+            </button>
 
-                {user?.role === 'admin' && (
-                  <button
-                    onClick={() => setIsOnboardingModalOpen(true)}
-                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
-                    title="Onboard New White-Label School"
-                  >
-                    <Plus className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                    <span className="hidden sm:inline">+ Onboard School</span>
-                    <span className="sm:hidden">+ School</span>
-                  </button>
-                )}
-              </>
+            {/* Admin Onboard School Wizard Trigger */}
+            {normalizedRole === 'admin' && (
+              <button
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                title="Onboard New White-Label School"
+              >
+                <Plus className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                <span className="hidden sm:inline">+ Onboard School</span>
+                <span className="sm:hidden">+ School</span>
+              </button>
             )}
 
             {/* Quick School Records Button (ADMIN ONLY) */}
-            {user?.role === 'admin' && (
+            {normalizedRole === 'admin' && (
               <button
                 onClick={() => setActiveTab('database')}
                 className={`px-3 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${

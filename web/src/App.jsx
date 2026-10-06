@@ -100,19 +100,19 @@ function MainApp() {
               <DatabaseStudioView />
             )}
 
-            {activeTab !== 'database' && currentUser.role === 'admin' && (
+            {activeTab !== 'database' && (currentUser?.role || 'admin').toLowerCase() === 'admin' && (
               <AdminPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
 
-            {activeTab !== 'database' && currentUser.role === 'teacher' && (
+            {activeTab !== 'database' && (currentUser?.role || '').toLowerCase() === 'teacher' && (
               <TeacherPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
 
-            {activeTab !== 'database' && currentUser.role === 'student' && (
+            {activeTab !== 'database' && (currentUser?.role || '').toLowerCase() === 'student' && (
               <StudentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
 
-            {activeTab !== 'database' && currentUser.role === 'parent' && (
+            {activeTab !== 'database' && (currentUser?.role || '').toLowerCase() === 'parent' && (
               <ParentPortalView user={currentUser} activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
           </AppLayout>
