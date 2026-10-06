@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -23,12 +23,30 @@ import {
   Filter,
   X,
   UserCheck,
-  Receipt
+  Receipt,
+  Wallet,
+  Coins,
+  RefreshCw,
+  Trash2,
+  Tag,
+  AlertCircle
 } from 'lucide-react';
 import { FALLBACK_FACULTY, FALLBACK_STUDENTS } from '../fallbackData.js';
-import { api, subscribeLiveEvents } from '../api.js';
+import { api, subscribeLiveEvents, broadcastLiveEvent } from '../api.js';
+import { useTenant } from '../context/TenantContext.jsx';
+
+const INITIAL_PETTY_CASH = [
+  { id: 'PC-001', voucher_no: 'VCH-801', title: 'Science Lab Glassware Cleaning Solvents & Reagents', category: 'Lab Consumables', amount: 1250, date: '2026-10-02', claimant: 'Dr. Evelyn Reed', status: 'Disbursed', receipt_attached: true },
+  { id: 'PC-002', voucher_no: 'VCH-802', title: 'Emergency First Aid Kit & Antiseptic Bandages Refill', category: 'Medical & First Aid', amount: 840, date: '2026-10-03', claimant: 'Campus Health Nurse', status: 'Disbursed', receipt_attached: true },
+  { id: 'PC-003', voucher_no: 'VCH-803', title: 'Staff Room Tea, Coffee, Biscuits & Guest Refreshments', category: 'Hospitality & Pantry', amount: 1650, date: '2026-10-04', claimant: 'Admin Office Pantry', status: 'Disbursed', receipt_attached: false },
+  { id: 'PC-004', voucher_no: 'VCH-804', title: 'Inter-School Sports Meet Whistles & Stopwatch Batteries', category: 'Sports Logistics', amount: 920, date: '2026-10-05', claimant: 'Mr. Arjun Kapoor', status: 'Disbursed', receipt_attached: true },
+  { id: 'PC-005', voucher_no: 'VCH-805', title: 'Speed Post & Statutory Board Certificates Courier', category: 'Postage & Courier', amount: 480, date: '2026-10-06', claimant: 'Registrar Directorate', status: 'Disbursed', receipt_attached: true }
+];
 
 export default function FinancialPnLView() {
+  const { tenant } = useTenant();
+  const tenantKey = tenant?.tenant_id || 'default';
+
   // Reactive Student Fee Records State
   const [studentRecords, setStudentRecords] = useState(() => {
     try {
@@ -45,7 +63,6 @@ export default function FinancialPnLView() {
   const transportFees = 60000;
 
   // Faculty Payroll calculation
-  const totalSalaries = FALLBACK_FACULTY.reduce((acc, f) => acc + (f.salary || 65000), 0);
   const termPayrollDisbursed = 185000;
 
   // Operational Expenses State in INR
@@ -58,13 +75,34 @@ export default function FinancialPnLView() {
     { id: 'EXP 006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 12000, date: '2026-09-25', status: 'Paid', type: 'facility' }
   ]);
 
+  // --- PETTY CASH FUND STATE (Integrated directly with P&L) ---
+  const [pettyCashImprest, setPettyCashImprest] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`nairee_petty_cash_imprest_${tenantKey}`);
+      return saved ? Number(saved) : 25000;
+    } catch {
+      return 25000;
+    }
+  });
+
+  const [pettyCashLedger, setPettyCashLedger] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`nairee_petty_cash_ledger_${tenantKey}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return INITIAL_PETTY_CASH;
+  });
+
   const [selectedExpenseIds, setSelectedExpenseIds] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [pettyCashCategoryFilter, setPettyCashCategoryFilter] = useState('all');
   const [feeSearch, setFeeSearch] = useState('');
   const [feeStatusFilter, setFeeStatusFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddPettyCashModal, setShowAddPettyCashModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+
   const [newExp, setNewExp] = useState({
     category: 'Annual Function',
     description: '',
@@ -73,10 +111,27 @@ export default function FinancialPnLView() {
     type: 'event'
   });
 
+  const [newPettyCash, setNewPettyCash] = useState({
+    title: '',
+    category: 'Lab Consumables',
+    amount: '',
+    claimant: 'Faculty Staff',
+    date: new Date().toISOString().split('T')[0],
+    receipt_attached: true
+  });
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 4000);
   };
+
+  // Sync Petty Cash changes to LocalStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(`nairee_petty_cash_ledger_${tenantKey}`, JSON.stringify(pettyCashLedger));
+      localStorage.setItem(`nairee_petty_cash_imprest_${tenantKey}`, String(pettyCashImprest));
+    } catch (e) {}
+  }, [pettyCashLedger, pettyCashImprest, tenantKey]);
 
   // Listen to live fee updates across all portals
   useEffect(() => {
@@ -91,23 +146,35 @@ export default function FinancialPnLView() {
     return () => unsubscribe();
   }, []);
 
-  // Dynamic Financial Calculations directly connected to student fee records
+  // --- DYNAMIC P&L FORMULAS LINKED WITH PETTY CASH ---
+  // 1. Gross Revenue = Total Tuition Collected + Lab Tech Fees + Transport Subscriptions
   const totalStudents = studentRecords.length;
   const totalPendingTuition = studentRecords.reduce((sum, s) => sum + (Number(s.feeDues) || 0), 0);
   const totalPotentialTuition = totalStudents * tuitionPerStudent;
   const collectedTuition = totalPotentialTuition - totalPendingTuition;
   const grossRevenue = collectedTuition + labTechFees + transportFees;
 
+  // 2. Direct Regular Operational Expenses
   const pendingExpenses = expenses.filter(e => e.status === 'Pending');
   const selectedPendingExpenses = pendingExpenses.filter(e => selectedExpenseIds.includes(e.id));
   const selectedTotalAmount = selectedPendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const totalPaidExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
-  const totalPendingExpenses = pendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  
-  // Net Institution Profit = Gross Collected Revenue - Paid Expenses
-  const netProfit = grossRevenue - totalPaidExpenses;
+
+  // 3. Petty Cash Fund Calculations
+  const totalPettyCashSpent = useMemo(() => {
+    return pettyCashLedger.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  }, [pettyCashLedger]);
+
+  const pettyCashRemainingFloat = pettyCashImprest - totalPettyCashSpent;
+  const pettyCashUtilizationPct = pettyCashImprest > 0 ? ((totalPettyCashSpent / pettyCashImprest) * 100).toFixed(1) : '0.0';
+
+  // 4. Combined Total Operating Outflows = Paid Regular Expenses + Total Petty Cash Spent
+  const totalCombinedOutflows = totalPaidExpenses + totalPettyCashSpent;
+
+  // 5. Net Institutional Profit (P&L Surplus) Formula:
+  // Net Profit = Gross Revenue - (Paid Regular OPEX + Total Petty Cash Disbursements)
+  const netProfit = grossRevenue - totalCombinedOutflows;
   const marginPct = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : '0.0';
 
   // Settle single student fee
@@ -115,7 +182,6 @@ export default function FinancialPnLView() {
     const amount = Number(student.feeDues) > 0 ? Number(student.feeDues) : tuitionPerStudent;
     await api.settleStudentFee(student.name, amount);
     
-    // Update local reactive state
     setStudentRecords(prev => prev.map(s => 
       s.name === student.name ? { ...s, feeDues: 0, fee_status: 'Paid' } : s
     ));
@@ -191,9 +257,62 @@ export default function FinancialPnLView() {
     });
   };
 
+  // --- PETTY CASH VOUCHER HANDLERS ---
+  const handleAddPettyCash = (e) => {
+    e.preventDefault();
+    if (!newPettyCash.title || !newPettyCash.amount) return;
+    const voucherNum = `VCH-${800 + pettyCashLedger.length + 1}`;
+    const newEntry = {
+      id: `PC-00${pettyCashLedger.length + 1}`,
+      voucher_no: voucherNum,
+      title: newPettyCash.title,
+      category: newPettyCash.category,
+      amount: parseFloat(newPettyCash.amount),
+      date: newPettyCash.date,
+      claimant: newPettyCash.claimant || 'Staff Member',
+      status: 'Disbursed',
+      receipt_attached: Boolean(newPettyCash.receipt_attached)
+    };
+
+    const updated = [newEntry, ...pettyCashLedger];
+    setPettyCashLedger(updated);
+    setShowAddPettyCashModal(false);
+    showToast(`🪙 Petty Cash Voucher ${voucherNum} (₹${Number(newPettyCash.amount).toLocaleString('en-IN')}) recorded & deducted from P&L Surplus!`);
+    broadcastLiveEvent('pnl_updated', { type: 'petty_cash_added', entry: newEntry });
+
+    setNewPettyCash({
+      title: '',
+      category: 'Lab Consumables',
+      amount: '',
+      claimant: 'Faculty Staff',
+      date: new Date().toISOString().split('T')[0],
+      receipt_attached: true
+    });
+  };
+
+  const handleDeletePettyCash = (id) => {
+    const target = pettyCashLedger.find(p => p.id === id);
+    if (!target) return;
+    const updated = pettyCashLedger.filter(p => p.id !== id);
+    setPettyCashLedger(updated);
+    showToast(`Removed Petty Cash voucher ${target.voucher_no} (₹${target.amount}). P&L surplus adjusted.`);
+    broadcastLiveEvent('pnl_updated', { type: 'petty_cash_deleted', id });
+  };
+
+  const handleReplenishFloat = () => {
+    const addedAmount = 15000;
+    setPettyCashImprest(prev => prev + addedAmount);
+    showToast(`⚡ Imprest Float topped up by ₹${addedAmount.toLocaleString('en-IN')}! Total Float: ₹${(pettyCashImprest + addedAmount).toLocaleString('en-IN')}`);
+  };
+
   const filteredExpenses = expenses.filter(e => {
     if (filterType === 'all') return true;
     return e.type === filterType;
+  });
+
+  const filteredPettyCash = pettyCashLedger.filter(p => {
+    if (pettyCashCategoryFilter === 'all') return true;
+    return p.category === pettyCashCategoryFilter;
   });
 
   const filteredStudentFees = studentRecords.filter(s => {
@@ -214,18 +333,26 @@ export default function FinancialPnLView() {
     expenses.forEach(e => {
       csv += `${e.id},"${e.category}","${e.description}",${e.amount},${e.date},${e.status},${e.type}\n`;
     });
+    csv += "\n--- PETTY CASH DISBURSEMENTS LEDGER ---\n";
+    csv += "Voucher No,Expense Title,Category,Claimant,Amount (₹),Date,Status\n";
+    pettyCashLedger.forEach(p => {
+      csv += `${p.voucher_no},"${p.title}","${p.category}","${p.claimant}",${p.amount},${p.date},${p.status}\n`;
+    });
     csv += `\nTotal Gross Revenue,₹${grossRevenue}\n`;
-    csv += `Total Expenses,₹${totalExpenses}\n`;
-    csv += `Net Profit,₹${netProfit}\n`;
+    csv += `Regular Paid Expenses,₹${totalPaidExpenses}\n`;
+    csv += `Total Petty Cash Disbursed,₹${totalPettyCashSpent}\n`;
+    csv += `Total Combined Operational Outflows,₹${totalCombinedOutflows}\n`;
+    csv += `Net Institutional Profit (P&L Surplus),₹${netProfit}\n`;
     csv += `Profit Margin,${marginPct}%\n`;
+    csv += `Petty Cash Imprest Float Remaining,₹${pettyCashRemainingFloat}\n`;
 
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Nairee_Financial_PL_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `${tenant?.school_code || 'Nairee'}_Financial_PL_with_PettyCash_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
-    showToast("Financial P&L Report exported successfully!");
+    showToast("Financial P&L Report with Petty Cash exported successfully!");
   };
 
   return (
@@ -244,103 +371,317 @@ export default function FinancialPnLView() {
           <div>
             <div className="flex items-center space-x-2 text-xs font-semibold text-teal-400 mb-1">
               <Sparkles className="w-4 h-4" />
-              <span className="uppercase tracking-wider">Fee Governance & Institutional Profit & Loss</span>
+              <span className="uppercase tracking-wider">{tenant?.school_name || 'Nairee'} &bull; Audited Financial P&L</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
-              <span>Financial P&L and Fee Governance</span>
+              <span>Executive Profit &amp; Loss (P&amp;L) Statement</span>
               <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-normal">
-                ● Live Real-Time Sync
+                ● Petty Cash Linked
               </span>
             </h1>
             <p className="text-xs text-slate-300 mt-1 max-w-2xl">
-              Centralized financial overview linking student fee collections directly to gross revenue, operational disbursements, and institutional net surplus.
+              Centralized financial governance linking fee collections, operational expenses, and <strong>daily petty cash disbursements</strong> directly into institutional net surplus.
             </p>
           </div>
 
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center flex-wrap gap-2.5">
+            <button
+              onClick={() => setShowAddPettyCashModal(true)}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-all shadow-md flex items-center space-x-1.5 cursor-pointer active:scale-95"
+            >
+              <Coins className="w-4 h-4" />
+              <span>+ Record Petty Cash</span>
+            </button>
             <button
               onClick={() => setShowAddModal(true)}
               className="px-4 py-2 rounded-xl bg-[#00a884] hover:bg-[#009272] text-white text-xs font-bold transition-all shadow-md flex items-center space-x-1.5 cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Log Outflow</span>
+              <span>Log Major Outflow</span>
             </button>
             <button
               onClick={exportCSV}
               className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/20 flex items-center space-x-1.5 cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>Export P&L</span>
+              <span>Export P&L CSV</span>
             </button>
           </div>
         </div>
 
-        {/* Highlight KPI Grid inside Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/10">
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+        {/* 5-COLUMN HIGHLIGHT KPI GRID (Including Direct Petty Cash Integration) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-8 pt-6 border-t border-white/10">
+          
+          {/* Card 1: Gross Revenue */}
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-              <span>Gross Revenue (Collected)</span>
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <span className="truncate">Gross Revenue (Collected)</span>
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                 <ArrowUpRight className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-emerald-400 mt-2 font-mono">
+            <div className="text-xl sm:text-2xl font-black text-emerald-400 mt-2 font-mono truncate">
               ₹{grossRevenue.toLocaleString('en-IN')}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1 flex items-center space-x-1">
-              <span>Tuition (₹{collectedTuition.toLocaleString('en-IN')}) + Labs + Bus</span>
+            <div className="text-[11px] text-slate-400 mt-1 truncate">
+              Tuition (₹{collectedTuition.toLocaleString('en-IN')}) + Labs + Bus
             </div>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+          {/* Card 2: Fixed OPEX */}
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-              <span>Operational Expenses</span>
-              <div className="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center">
+              <span className="truncate">Fixed Operational Outflow</span>
+              <div className="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
                 <ArrowDownRight className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-rose-400 mt-2 font-mono">
+            <div className="text-xl sm:text-2xl font-black text-rose-400 mt-2 font-mono truncate">
               ₹{totalPaidExpenses.toLocaleString('en-IN')}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">
-              Payroll (₹{termPayrollDisbursed.toLocaleString('en-IN')}) + Rent + Events
+            <div className="text-[11px] text-slate-400 mt-1 truncate">
+              Payroll (₹{termPayrollDisbursed.toLocaleString('en-IN')}) + Lease + Events
             </div>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+          {/* Card 3: PETTY CASH DISBURSEMENTS (NEW PART) */}
+          <div className="bg-amber-500/10 backdrop-blur-md rounded-2xl p-4 border border-amber-400/30 min-w-0">
+            <div className="flex items-center justify-between text-amber-300 text-xs font-semibold">
+              <span className="truncate">🪙 Petty Cash Disbursed</span>
+              <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                <Wallet className="w-4 h-4" />
+              </div>
+            </div>
+            <div className="text-xl sm:text-2xl font-black text-amber-300 mt-2 font-mono truncate">
+              ₹{totalPettyCashSpent.toLocaleString('en-IN')}
+            </div>
+            <div className="text-[11px] text-amber-200/80 mt-1 flex items-center justify-between">
+              <span className="truncate">{pettyCashLedger.length} Vouchers</span>
+              <span className="font-mono font-bold">Float: ₹{pettyCashRemainingFloat.toLocaleString('en-IN')}</span>
+            </div>
+          </div>
+
+          {/* Card 4: Net Institution Profit (Calculated via Formula: Revenue - (Fixed OPEX + Petty Cash)) */}
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-              <span>Net Institution Profit</span>
-              <div className="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center">
+              <span className="truncate">Net Institutional Profit</span>
+              <div className="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
                 <IndianRupee className="w-4 h-4" />
               </div>
             </div>
-            <div className={`text-2xl font-black mt-2 font-mono ${netProfit >= 0 ? 'text-teal-300' : 'text-rose-400'}`}>
+            <div className={`text-xl sm:text-2xl font-black mt-2 font-mono truncate ${netProfit >= 0 ? 'text-teal-300' : 'text-rose-400'}`}>
               ₹{netProfit.toLocaleString('en-IN')}
             </div>
-            <div className="text-[11px] text-teal-400 mt-1 flex items-center space-x-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{netProfit >= 0 ? 'Positive Operating Surplus' : 'Deficit Outflow'}</span>
+            <div className="text-[11px] text-teal-400 mt-1 flex items-center space-x-1 truncate">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">{netProfit >= 0 ? 'Surplus (Post Petty Cash)' : 'Deficit Outflow'}</span>
             </div>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+          {/* Card 5: Profit Margin */}
+          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 min-w-0">
             <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-              <span>Profit Margin</span>
-              <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <span className="truncate">Net Surplus Margin</span>
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
                 <Percent className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-amber-300 mt-2 font-mono">
+            <div className="text-xl sm:text-2xl font-black text-emerald-300 mt-2 font-mono truncate">
               {marginPct}%
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">
-              Outstanding Dues: ₹{totalPendingTuition.toLocaleString('en-IN')}
+            <div className="text-[11px] text-slate-400 mt-1 truncate">
+              Receivables Due: ₹{totalPendingTuition.toLocaleString('en-IN')}
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* SECTION 1: DEDICATED STUDENT FEE GOVERNANCE & RECEIVABLES TABLE */}
+      {/* SECTION 1: DEDICATED PETTY CASH FUND & DISCRETIONARY EXPENSE TRACKER (NEW INTEGRATED SECTION) */}
+      <div className="bg-white rounded-3xl border border-amber-200/80 shadow-sm overflow-hidden p-6 space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-slate-950 flex items-center justify-center font-bold shadow-md shadow-amber-500/20 shrink-0">
+              <Coins className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-slate-900 text-base">Petty Cash Fund &amp; Daily Discretionary Ledger</h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-extrabold uppercase">
+                  P&amp;L Linked
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Tracks day-to-day cash disbursements (science consumables, medical kits, pantry, postage, and local transport) and auto-deducts from P&amp;L surplus.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center flex-wrap gap-2">
+            <button
+              onClick={handleReplenishFloat}
+              className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Replenish Monthly Imprest Float"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+              <span>+ Top Up Float (₹15,000)</span>
+            </button>
+            <button
+              onClick={() => setShowAddPettyCashModal(true)}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black shadow-md shadow-amber-500/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Record Petty Cash Voucher</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Petty Cash Imprest Fund Analytics Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5 p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60">
+          <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-xs">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">Monthly Imprest Float</span>
+            <div className="text-lg font-black text-slate-800 mt-0.5 font-mono">
+              ₹{pettyCashImprest.toLocaleString('en-IN')}
+            </div>
+            <span className="text-[10px] text-slate-500">Allocated Discretionary Pool</span>
+          </div>
+
+          <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-xs">
+            <span className="text-[10px] uppercase font-bold text-rose-500 block">Total Disbursed (Spent)</span>
+            <div className="text-lg font-black text-rose-600 mt-0.5 font-mono">
+              ₹{totalPettyCashSpent.toLocaleString('en-IN')}
+            </div>
+            <span className="text-[10px] text-rose-600/80">{pettyCashUtilizationPct}% of Fund Consumed</span>
+          </div>
+
+          <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-xs">
+            <span className="text-[10px] uppercase font-bold text-emerald-600 block">Cash Balance in Hand</span>
+            <div className="text-lg font-black text-emerald-600 mt-0.5 font-mono">
+              ₹{pettyCashRemainingFloat.toLocaleString('en-IN')}
+            </div>
+            <span className="text-[10px] text-emerald-700">Available for Daily Vouchers</span>
+          </div>
+
+          <div className="p-3 bg-white rounded-xl border border-amber-100 shadow-xs">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">P&amp;L Deduction Formula</span>
+            <div className="text-xs font-bold text-indigo-900 mt-1 font-mono">
+              NOP = Rev - (OPEX + PC)
+            </div>
+            <span className="text-[10px] text-teal-700 font-medium">Auto-deducted from Profit</span>
+          </div>
+        </div>
+
+        {/* Filter Chips & Table Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <span className="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
+              <Tag className="w-3.5 h-3.5" />
+              <span>Category:</span>
+            </span>
+            {['all', 'Lab Consumables', 'Medical & First Aid', 'Hospitality & Pantry', 'Sports Logistics', 'Postage & Courier'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setPettyCashCategoryFilter(cat)}
+                className={`px-3 py-1 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  pettyCashCategoryFilter === cat
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                }`}
+              >
+                {cat === 'all' ? `All Vouchers (${pettyCashLedger.length})` : cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-xs text-slate-400 font-medium">
+            Showing <strong className="text-slate-800">{filteredPettyCash.length}</strong> reconciled disbursements
+          </div>
+        </div>
+
+        {/* Petty Cash Vouchers Table */}
+        <div className="overflow-x-auto rounded-2xl border border-slate-200">
+          <table className="w-full text-left text-xs text-slate-600">
+            <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+              <tr>
+                <th className="py-3 px-4">Voucher No</th>
+                <th className="py-3 px-4">Expense Title &amp; Purpose</th>
+                <th className="py-3 px-4">Category</th>
+                <th className="py-3 px-4">Claimant / Staff</th>
+                <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4 text-center">Receipt Proof</th>
+                <th className="py-3 px-4 text-right">Amount (₹)</th>
+                <th className="py-3 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-medium">
+              {filteredPettyCash.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="py-8 text-center text-xs text-slate-400">
+                    No petty cash vouchers logged under this filter category.
+                  </td>
+                </tr>
+              ) : (
+                filteredPettyCash.map((p) => (
+                  <tr key={p.id} className="hover:bg-amber-50/30 transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px]">
+                        {p.voucher_no}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="font-bold text-slate-800">{p.title}</div>
+                      <div className="text-[10px] text-slate-400">Status: {p.status} &bull; Linked to P&amp;L</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                        p.category === 'Lab Consumables' ? 'bg-cyan-100 text-cyan-800 border border-cyan-200' :
+                        p.category === 'Medical & First Aid' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
+                        p.category === 'Hospitality & Pantry' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                        p.category === 'Sports Logistics' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                        'bg-blue-100 text-blue-800 border border-blue-200'
+                      }`}>
+                        {p.category}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-semibold text-slate-700">
+                      {p.claimant}
+                    </td>
+                    <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
+                      {p.date}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {p.receipt_attached ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Attached</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                          <span>Physical Memo</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right font-black font-mono text-rose-600">
+                      -₹{Number(p.amount).toLocaleString('en-IN')}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={() => handleDeletePettyCash(p.id)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Delete Voucher"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* SECTION 2: DEDICATED STUDENT FEE GOVERNANCE & RECEIVABLES TABLE */}
       <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden p-6 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -358,51 +699,78 @@ export default function FinancialPnLView() {
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Every fee collected directly increases institutional Gross Revenue and Net Profit across all connected portals.
+              Receive student term payments with 1-click. Settled amounts instantly boost Gross Revenue &amp; Net Institutional Surplus.
             </p>
           </div>
 
-          {/* Search, Filter & 1-Click Collect All */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <input
-              type="text"
-              placeholder="Search student or roll..."
-              value={feeSearch}
-              onChange={(e) => setFeeSearch(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-teal-500 w-44"
-            />
-            <select
-              value={feeStatusFilter}
-              onChange={(e) => setFeeStatusFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500"
-            >
-              <option value="all">All Students ({studentRecords.length})</option>
-              <option value="pending">Pending Dues Only ({pendingStudentsCount})</option>
-              <option value="paid">Fully Paid ({studentRecords.length - pendingStudentsCount})</option>
-            </select>
-
+          <div className="flex items-center space-x-2">
             {pendingStudentsCount > 0 && (
               <button
                 onClick={handleCollectAllStudentFees}
-                className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
-                <Zap className="w-3.5 h-3.5" />
-                <span>1-Click Collect All ({pendingStudentsCount})</span>
+                <Zap className="w-4 h-4" />
+                <span>1-Click Collect All Pending Fees</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Student Fee Ledger Table */}
+        {/* Filter and Search Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setFeeStatusFilter('all')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                feeStatusFilter === 'all'
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+              }`}
+            >
+              All Students ({studentRecords.length})
+            </button>
+            <button
+              onClick={() => setFeeStatusFilter('pending')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                feeStatusFilter === 'pending'
+                  ? 'bg-rose-600 text-white'
+                  : 'bg-rose-50 hover:bg-rose-100 text-rose-700'
+              }`}
+            >
+              Pending Dues ({pendingStudentsCount})
+            </button>
+            <button
+              onClick={() => setFeeStatusFilter('paid')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                feeStatusFilter === 'paid'
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'
+              }`}
+            >
+              Cleared ({studentRecords.length - pendingStudentsCount})
+            </button>
+          </div>
+
+          <div className="w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search student or class..."
+              value={feeSearch}
+              onChange={(e) => setFeeSearch(e.target.value)}
+              className="w-full px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-teal-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Student Fee Records Table */}
         <div className="overflow-x-auto rounded-2xl border border-slate-100">
           <table className="w-full text-left text-xs text-slate-600">
             <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
               <tr>
-                <th className="py-3.5 px-4">Student Name</th>
-                <th className="py-3.5 px-4">Roll Number</th>
-                <th className="py-3.5 px-4">Class & Batch</th>
-                <th className="py-3.5 px-4">Term Total Fee</th>
-                <th className="py-3.5 px-4">Pending Due</th>
+                <th className="py-3.5 px-4">Student ID &amp; Name</th>
+                <th className="py-3.5 px-4">Class Batch</th>
+                <th className="py-3.5 px-4">Guardian Contact</th>
+                <th className="py-3.5 px-4">Term Amount</th>
                 <th className="py-3.5 px-4">Fee Status</th>
                 <th className="py-3.5 px-4 text-center">Settlement Action</th>
               </tr>
@@ -410,40 +778,32 @@ export default function FinancialPnLView() {
             <tbody className="divide-y divide-slate-100 font-medium">
               {filteredStudentFees.map((s) => {
                 const isPending = Number(s.feeDues) > 0 || s.fee_status === 'Pending';
-                const dueAmount = Number(s.feeDues) > 0 ? Number(s.feeDues) : (isPending ? tuitionPerStudent : 0);
                 return (
-                  <tr key={s.name} className={`transition-colors ${isPending ? 'bg-amber-50/20 hover:bg-amber-50/40' : 'hover:bg-slate-50/60'}`}>
+                  <tr key={s.name} className="hover:bg-slate-50/60 transition-colors">
                     <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-black text-xs flex items-center justify-center">
-                          {s.student_name?.[0] || 'S'}
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-900">{s.student_name}</span>
-                          <div className="text-[10px] text-slate-400">{s.guardian_name || 'Parent on Record'}</div>
-                        </div>
-                      </div>
+                      <div className="font-bold text-slate-900">{s.student_name || s.name}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{s.name} &bull; Roll #{s.roll_no}</div>
                     </td>
-                    <td className="py-3.5 px-4 font-mono font-bold text-slate-700">{s.roll_no || s.roll_number || s.name}</td>
-                    <td className="py-3.5 px-4 text-slate-600 font-medium">{s.student_batch || 'Grade 10 Section A'}</td>
-                    <td className="py-3.5 px-4 font-mono font-bold text-slate-800">₹{tuitionPerStudent.toLocaleString('en-IN')}</td>
-                    <td className="py-3.5 px-4 font-mono font-bold">
-                      {isPending ? (
-                        <span className="text-rose-600 font-black">₹{dueAmount.toLocaleString('en-IN')}</span>
-                      ) : (
-                        <span className="text-emerald-600 font-bold">₹0 (Cleared)</span>
-                      )}
+                    <td className="py-3.5 px-4 font-semibold text-slate-700">
+                      {s.student_batch || s.class_batch}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="font-semibold text-slate-800">{s.guardian_name || 'Guardian'}</div>
+                      <div className="text-[11px] text-teal-600 font-mono">{s.guardian_mobile || '+91 98765 00000'}</div>
+                    </td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
+                      ₹{tuitionPerStudent.toLocaleString('en-IN')}
                     </td>
                     <td className="py-3.5 px-4">
                       {isPending ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
-                          <span>Pending</span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                          <span>Due: ₹{Number(s.feeDues || tuitionPerStudent).toLocaleString('en-IN')}</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          <span>Paid & Verified</span>
+                          <span>Paid &amp; Cleared</span>
                         </span>
                       )}
                     </td>
@@ -471,126 +831,7 @@ export default function FinancialPnLView() {
         </div>
       </div>
 
-      {/* SECTION 2: BREAKDOWN CARDS & VISUAL ANALYTICS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Revenue Breakdown */}
-        <div className="lg:col-span-6 bg-white rounded-3xl p-6 border border-teal-100 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-800 text-sm">Income & Revenue Channels</h3>
-                <p className="text-[11px] text-slate-400">Total institutional collections for Academic Year 2026</p>
-              </div>
-            </div>
-            <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full font-mono">
-              ₹{grossRevenue.toLocaleString('en-IN')}
-            </span>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Student Tuition & Enrollment Fees</span>
-                <span>₹{collectedTuition.toLocaleString('en-IN')} ({((collectedTuition / grossRevenue) * 100).toFixed(1)}%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style={{ width: `${((collectedTuition / grossRevenue) * 100).toFixed(1)}%` }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>North City Transport & Bus Fleet Subscriptions</span>
-                <span>₹{transportFees.toLocaleString('en-IN')} ({((transportFees / grossRevenue) * 100).toFixed(1)}%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full" style={{ width: `${((transportFees / grossRevenue) * 100).toFixed(1)}%` }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Science, Robotics & Smart Classroom Lab Fees</span>
-                <span>₹{labTechFees.toLocaleString('en-IN')} ({((labTechFees / grossRevenue) * 100).toFixed(1)}%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full" style={{ width: `${((labTechFees / grossRevenue) * 100).toFixed(1)}%` }} />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100 flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-2 text-emerald-800 font-semibold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Online Payment Gateway Sync: Active (Razorpay & UPI & Bank NEFT)</span>
-            </div>
-            <span className="text-[11px] font-mono text-emerald-700 font-bold">100% Verified</span>
-          </div>
-        </div>
-
-        {/* Expense Distribution */}
-        <div className="lg:col-span-6 bg-white rounded-3xl p-6 border border-teal-100 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-                <TrendingDown className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-800 text-sm">Institutional Cost Outflows</h3>
-                <p className="text-[11px] text-slate-400">Payroll, maintenance, campus lease & functions</p>
-              </div>
-            </div>
-            <span className="text-xs font-black text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full font-mono">
-              ₹{totalPaidExpenses.toLocaleString('en-IN')}
-            </span>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Faculty Salaries & Staff Remuneration</span>
-                <span>₹{termPayrollDisbursed.toLocaleString('en-IN')} (69.9%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-rose-500 to-amber-500 rounded-full" style={{ width: '69.9%' }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Campus Building Lease & Ground Rent</span>
-                <span>₹48,000 (15.6%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full" style={{ width: '15.6%' }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                <span>Annual Function, Sports Day & Facility Upgrades</span>
-                <span>₹44,200 (14.5%)</span>
-              </div>
-              <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full" style={{ width: '14.5%' }} />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-2 text-slate-700 font-semibold">
-              <Building2 className="w-4 h-4 text-slate-500" />
-              <span>Campus Rent Lease Lock: Verified till Dec 2028</span>
-            </div>
-            <span className="text-[11px] font-mono text-slate-500 font-bold">Auto-Debited</span>
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 3: DETAILED EXPENSE LEDGER & SETTLEMENT HUB */}
+      {/* SECTION 3: EXPENSE & DISBURSEMENT LEDGER */}
       <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden space-y-4 p-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -598,7 +839,7 @@ export default function FinancialPnLView() {
               <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
                 <TrendingDown className="w-4 h-4" />
               </div>
-              <h3 className="font-bold text-slate-800 text-base">Institutional Expense & Disbursement Hub</h3>
+              <h3 className="font-bold text-slate-800 text-base">Major Operational Expense &amp; Disbursement Hub</h3>
               <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
                 {pendingExpenses.length} Pending Approval
               </span>
@@ -616,9 +857,9 @@ export default function FinancialPnLView() {
               className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500 outline-none"
             >
               <option value="all">All Outflows</option>
-              <option value="operational">Operational & Payroll</option>
+              <option value="operational">Operational &amp; Payroll</option>
               <option value="event">School Events (Annual Day, Sports)</option>
-              <option value="facility">Facility & Lab Upgrades</option>
+              <option value="facility">Facility &amp; Lab Upgrades</option>
             </select>
           </div>
         </div>
@@ -673,7 +914,7 @@ export default function FinancialPnLView() {
                   <span className="sr-only">Select</span>
                 </th>
                 <th className="py-3.5 px-4">Expense ID</th>
-                <th className="py-3.5 px-4">Category & Purpose</th>
+                <th className="py-3.5 px-4">Category &amp; Purpose</th>
                 <th className="py-3.5 px-4">Classification</th>
                 <th className="py-3.5 px-4">Date Logged</th>
                 <th className="py-3.5 px-4">Status</th>
@@ -723,7 +964,7 @@ export default function FinancialPnLView() {
                       ) : (
                         <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1 w-fit">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                          <span>Paid & Settled</span>
+                          <span>Paid &amp; Settled</span>
                         </span>
                       )}
                     </td>
@@ -753,7 +994,7 @@ export default function FinancialPnLView() {
         </div>
       </div>
 
-      {/* Add Expense Modal */}
+      {/* Add Major Expense Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scaleUp">
@@ -808,7 +1049,7 @@ export default function FinancialPnLView() {
                     onChange={(e) => setNewExp({ ...newExp, type: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700"
                   >
-                    <option value="operational">Operational & Bills</option>
+                    <option value="operational">Operational &amp; Bills</option>
                     <option value="event">School Event</option>
                     <option value="facility">Facility Asset</option>
                   </select>
@@ -828,6 +1069,128 @@ export default function FinancialPnLView() {
                   className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold shadow-md shadow-teal-600/20"
                 >
                   Record Outflow
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Petty Cash Voucher Modal */}
+      {showAddPettyCashModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-scaleUp">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                  <Coins className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-base">Record Petty Cash Voucher</h3>
+                  <p className="text-[11px] text-slate-400">Instantly links and deducts from P&amp;L surplus</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddPettyCashModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddPettyCash} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-slate-700 font-bold mb-1">Expense Title / Purpose *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Science Lab Test Tubes Cleaning Brush & Acid"
+                  value={newPettyCash.title}
+                  onChange={(e) => setNewPettyCash({ ...newPettyCash, title: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-amber-500 font-medium text-slate-900"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Disbursement Category *</label>
+                  <select
+                    value={newPettyCash.category}
+                    onChange={(e) => setNewPettyCash({ ...newPettyCash, category: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-amber-500 font-semibold text-slate-700"
+                  >
+                    <option value="Lab Consumables">Lab Consumables</option>
+                    <option value="Medical & First Aid">Medical &amp; First Aid</option>
+                    <option value="Hospitality & Pantry">Hospitality &amp; Pantry</option>
+                    <option value="Sports Logistics">Sports Logistics</option>
+                    <option value="Postage & Courier">Postage &amp; Courier</option>
+                    <option value="Stationery & Printing">Stationery &amp; Printing</option>
+                    <option value="Minor Repairs & Plumbing">Minor Repairs &amp; Plumbing</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Amount (₹) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    placeholder="1250"
+                    value={newPettyCash.amount}
+                    onChange={(e) => setNewPettyCash({ ...newPettyCash, amount: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-amber-500 font-mono font-bold text-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Staff Member / Claimant</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dr. Evelyn Reed"
+                    value={newPettyCash.claimant}
+                    onChange={(e) => setNewPettyCash({ ...newPettyCash, claimant: e.target.value })}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-amber-500 text-slate-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">Disbursement Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={newPettyCash.date}
+                    onChange={(e) => setNewPettyCash({ ...newPettyCash, date: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-amber-500 text-slate-800 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer text-slate-700 font-bold text-xs">
+                  <input
+                    type="checkbox"
+                    checked={newPettyCash.receipt_attached}
+                    onChange={(e) => setNewPettyCash({ ...newPettyCash, receipt_attached: e.target.checked })}
+                    className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500 cursor-pointer"
+                  />
+                  <span>Physical Receipt / Cash Bill Attached</span>
+                </label>
+                <span className="text-[10px] text-amber-800 font-semibold font-mono">Tax Audit Ready</span>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddPettyCashModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black shadow-md shadow-amber-500/20 cursor-pointer"
+                >
+                  Confirm &amp; Disburse Voucher
                 </button>
               </div>
             </form>
