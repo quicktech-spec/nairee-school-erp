@@ -27,23 +27,7 @@ export const DEFAULT_TENANTS = [
     max_students: 2500,
     max_staff: 150,
     enabled_features: [
-      'academics',
-      'attendance',
-      'fees',
-      'gradebook',
-      'timetable',
-      'homework',
-      'library',
-      'transport',
-      'communication',
-      'payroll',
-      'reports',
-      'database',
-      'parent_portal',
-      'student_portal',
-      'teacher_portal',
-      'id_cards',
-      'transfer_certificates'
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
     ],
     status: 'Active',
     created_at: '2024-01-01T00:00:00.000Z'
@@ -70,23 +54,7 @@ export const DEFAULT_TENANTS = [
     max_students: 4000,
     max_staff: 220,
     enabled_features: [
-      'academics',
-      'attendance',
-      'fees',
-      'gradebook',
-      'timetable',
-      'homework',
-      'library',
-      'transport',
-      'communication',
-      'payroll',
-      'reports',
-      'database',
-      'parent_portal',
-      'student_portal',
-      'teacher_portal',
-      'id_cards',
-      'transfer_certificates'
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
     ],
     status: 'Active',
     created_at: '2024-03-15T10:30:00.000Z'
@@ -113,18 +81,7 @@ export const DEFAULT_TENANTS = [
     max_students: 1800,
     max_staff: 95,
     enabled_features: [
-      'academics',
-      'attendance',
-      'fees',
-      'gradebook',
-      'timetable',
-      'homework',
-      'communication',
-      'reports',
-      'parent_portal',
-      'student_portal',
-      'teacher_portal',
-      'id_cards'
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'communication', 'reports', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
     ],
     status: 'Active',
     created_at: '2024-05-10T14:00:00.000Z'
@@ -151,30 +108,168 @@ export const DEFAULT_TENANTS = [
     max_students: 1200,
     max_staff: 80,
     enabled_features: [
-      'academics',
-      'attendance',
-      'fees',
-      'gradebook',
-      'timetable',
-      'homework',
-      'library',
-      'reports',
-      'parent_portal',
-      'student_portal',
-      'teacher_portal'
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'reports', 'parent_portal', 'student_portal', 'teacher_portal'
     ],
     status: 'Active',
     created_at: '2024-06-01T09:00:00.000Z'
+  },
+  {
+    tenant_id: 'doon-school',
+    school_name: 'The Doon School, Dehradun',
+    school_code: 'TDS',
+    subdomain: 'doon-school',
+    custom_domain: '',
+    logo_url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=150',
+    logo_white_url: '',
+    favicon_url: '',
+    primary_color: '#1e3a8a',
+    secondary_color: '#3b82f6',
+    accent_color: '#f59e0b',
+    bg_gradient: 'from-[#1e3a8a] via-[#3b82f6] to-[#1e3a8a]',
+    tagline: 'Leadership, Honor & Intellectual Rigour • All-India Board',
+    board_affiliation: 'IB & ICSE All-India Board',
+    address: 'Mall Road, Dehradun, Uttarakhand - 248001',
+    phone: '+91 135 252 6400',
+    email: 'admissions@doonschool.com',
+    plan_tier: 'Enterprise',
+    max_students: 600,
+    max_staff: 85,
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
+    ],
+    status: 'Active',
+    created_at: '2024-06-15T08:00:00.000Z'
+  },
+  {
+    tenant_id: 'oakridge-intl',
+    school_name: 'Oakridge International IB World School',
+    school_code: 'OIS',
+    subdomain: 'oakridge',
+    custom_domain: '',
+    logo_url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=150',
+    logo_white_url: '',
+    favicon_url: '',
+    primary_color: '#581c87',
+    secondary_color: '#7e22ce',
+    accent_color: '#06b6d4',
+    bg_gradient: 'from-[#581c87] via-[#7e22ce] to-[#581c87]',
+    tagline: 'World-Class IB Continuum & Cambridge Education',
+    board_affiliation: 'IB Continuum & Cambridge IGCSE',
+    address: 'Khajaguda, Nanakramguda Road, Gachibowli, Hyderabad - 500008',
+    phone: '+91 40 6813 4500',
+    email: 'hyderabad@oakridge.in',
+    plan_tier: 'Enterprise',
+    max_students: 2200,
+    max_staff: 160,
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'communication', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
+    ],
+    status: 'Active',
+    created_at: '2024-07-01T10:00:00.000Z'
+  },
+  {
+    tenant_id: 'ryan-intl',
+    school_name: 'Ryan International Academy',
+    school_code: 'RIS',
+    subdomain: 'ryan-intl',
+    custom_domain: '',
+    logo_url: 'https://images.unsplash.com/photo-1562774053-701939374585?w=150',
+    logo_white_url: '',
+    favicon_url: '',
+    primary_color: '#b45309',
+    secondary_color: '#d97706',
+    accent_color: '#1e3a8a',
+    bg_gradient: 'from-[#b45309] via-[#d97706] to-[#b45309]',
+    tagline: 'Excellence in Education & Character Building • CBSE',
+    board_affiliation: 'CBSE Affiliated #1130129',
+    address: 'Evershine Nagar, Malad West, Mumbai, Maharashtra - 400064',
+    phone: '+91 22 2893 1111',
+    email: 'info@ryangroup.org',
+    plan_tier: 'Standard',
+    max_students: 3200,
+    max_staff: 180,
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'reports', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
+    ],
+    status: 'Active',
+    created_at: '2024-07-15T12:00:00.000Z'
+  },
+  {
+    tenant_id: 'mayo-college',
+    school_name: 'Mayo College, Ajmer',
+    school_code: 'MCA',
+    subdomain: 'mayo-college',
+    custom_domain: '',
+    logo_url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=150',
+    logo_white_url: '',
+    favicon_url: '',
+    primary_color: '#0f766e',
+    secondary_color: '#14b8a6',
+    accent_color: '#f59e0b',
+    bg_gradient: 'from-[#0f766e] via-[#14b8a6] to-[#0f766e]',
+    tagline: 'Let There Be Light • Historic Heritage Boarding',
+    board_affiliation: 'CBSE & Cambridge Board',
+    address: 'Srinagar Road, Alwar Gate, Ajmer, Rajasthan - 305001',
+    phone: '+91 145 266 1154',
+    email: 'principal@mayocollege.net',
+    plan_tier: 'Enterprise',
+    max_students: 900,
+    max_staff: 110,
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
+    ],
+    status: 'Active',
+    created_at: '2024-08-01T09:30:00.000Z'
+  },
+  {
+    tenant_id: 'bishop-cotton',
+    school_name: "Bishop Cotton Boys' School",
+    school_code: 'BCS',
+    subdomain: 'bishop-cotton',
+    custom_domain: '',
+    logo_url: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=150',
+    logo_white_url: '',
+    favicon_url: '',
+    primary_color: '#4c0519',
+    secondary_color: '#9f1239',
+    accent_color: '#eab308',
+    bg_gradient: 'from-[#4c0519] via-[#9f1239] to-[#4c0519]',
+    tagline: 'Nec Dextra Nec Sinistra • Founded 1865',
+    board_affiliation: 'ICSE & ISC Affiliated #KA001',
+    address: 'St. Mark\'s Road, Residency Road, Bengaluru - 560001',
+    phone: '+91 80 2221 3608',
+    email: 'principal@cottonboys.com',
+    plan_tier: 'Enterprise',
+    max_students: 2800,
+    max_staff: 175,
+    enabled_features: [
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
+    ],
+    status: 'Active',
+    created_at: '2024-08-10T11:00:00.000Z'
   }
 ];
 
 export function resolveTenantFromLocation(tenantsList = DEFAULT_TENANTS) {
-  if (typeof window === 'undefined') return tenantsList[0];
+  let list = tenantsList;
+  if (!list || list.length === 0) {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('nairee_tenants_store');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) list = parsed;
+        }
+      } catch (e) {}
+    }
+  }
+  if (!list || list.length === 0) list = DEFAULT_TENANTS;
+  if (typeof window === 'undefined') return list[0];
 
   const params = new URLSearchParams(window.location.search);
   const queryTenant = params.get('tenant') || params.get('school') || params.get('subdomain');
   if (queryTenant) {
-    const match = tenantsList.find(t => 
+    const match = list.find(t => 
       t.tenant_id.toLowerCase() === queryTenant.toLowerCase() || 
       t.subdomain.toLowerCase() === queryTenant.toLowerCase()
     );
@@ -187,17 +282,17 @@ export function resolveTenantFromLocation(tenantsList = DEFAULT_TENANTS) {
     const parts = hostname.split('.');
     if (parts.length >= 3) {
       const sub = parts[0].toLowerCase();
-      const subMatch = tenantsList.find(t => t.subdomain.toLowerCase() === sub);
+      const subMatch = list.find(t => t.subdomain.toLowerCase() === sub);
       if (subMatch) return subMatch;
     }
   }
 
   // 3. Custom domain check (e.g. erp.dpsranchi.com)
-  const customDomainMatch = tenantsList.find(t => t.custom_domain && t.custom_domain.toLowerCase() === hostname.toLowerCase());
+  const customDomainMatch = list.find(t => t.custom_domain && t.custom_domain.toLowerCase() === hostname.toLowerCase());
   if (customDomainMatch) return customDomainMatch;
 
-  // 4. Default Fallback: Root URL on master site ALWAYS opens Master Tenant (tenantsList[0])
-  return tenantsList[0];
+  // 4. Default Fallback: Root URL on master site ALWAYS opens Master Tenant (list[0])
+  return list[0];
 }
 
 export function TenantProvider({ children }) {
@@ -320,11 +415,44 @@ export function TenantProvider({ children }) {
     setTenantsList(updatedList);
     try {
       localStorage.setItem('nairee_tenants_store', JSON.stringify(updatedList));
+      
+      // Also sync into Central Database Store table 'Tenants & Multi-Tenant Schools'
+      const currentDb = getStoredDb();
+      if (currentDb) {
+        const tableKey = currentDb['Tenants & Multi-Tenant Schools'] ? 'Tenants & Multi-Tenant Schools' : (currentDb['Tenants'] ? 'Tenants' : null);
+        if (tableKey && currentDb[tableKey]) {
+          const existingRows = currentDb[tableKey].rows || [];
+          const newRow = {
+            tenant_id: newTenant.tenant_id,
+            school_name: newTenant.school_name,
+            school_code: newTenant.school_code,
+            subdomain: newTenant.subdomain,
+            board_affiliation: newTenant.board_affiliation,
+            plan_tier: newTenant.plan_tier,
+            primary_color: newTenant.primary_color,
+            secondary_color: newTenant.secondary_color,
+            accent_color: newTenant.accent_color,
+            phone: newTenant.phone,
+            email: newTenant.email,
+            status: newTenant.status,
+            portal_url: `https://quicktech-spec.github.io/nairee-school-erp/?tenant=${newTenant.subdomain}`
+          };
+          currentDb[tableKey].rows = [...existingRows.filter(r => r.tenant_id !== newTenant.tenant_id), newRow];
+          saveStoredDb(currentDb);
+        }
+      }
+
       broadcastLiveEvent('tenant_created', { tenantsList: updatedList, newTenant });
     } catch (e) {}
 
     // Automatically switch to the newly created tenant instance
     setActiveTenant(newTenant);
+    try {
+      localStorage.setItem('nairee_active_tenant_id', newTenant.tenant_id);
+      const url = new URL(window.location.href);
+      url.searchParams.set('tenant', newTenant.subdomain || newTenant.tenant_id);
+      window.history.replaceState({}, '', url.toString());
+    } catch (e) {}
     return newTenant;
   };
 
