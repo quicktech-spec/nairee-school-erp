@@ -379,76 +379,76 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* KPI Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-teal-100/80 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Students</span>
-                <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal-100/80 shadow-sm min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Total Students</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center flex-shrink-0">
+                  <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black text-slate-800">{stats?.students || 7}</div>
-                <div className="text-[11px] text-teal-600 font-medium mt-0.5 flex items-center space-x-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>100% Active Enrollment</span>
+              <div className="mt-2.5 sm:mt-3 min-w-0">
+                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{stats?.students || 7}</div>
+                <div className="text-[11px] text-teal-600 font-medium mt-0.5 flex items-center space-x-1 truncate">
+                  <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">100% Active Enrollment</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-teal-100/80 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Faculty</span>
-                <div className="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
-                  <Users className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal-100/80 shadow-sm min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Total Faculty</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black text-slate-800">{stats?.faculty || 4}</div>
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5">Across 4 Departments</div>
+              <div className="mt-2.5 sm:mt-3 min-w-0">
+                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{stats?.faculty || 4}</div>
+                <div className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">Across 4 Departments</div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-teal-100/80 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Attendance %</span>
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                  <UserCheck className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal-100/80 shadow-sm min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Attendance %</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                  <UserCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black text-emerald-600">{stats?.attendanceRate || 95}%</div>
-                <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Today's Campus Average</div>
+              <div className="mt-2.5 sm:mt-3 min-w-0">
+                <div className="text-xl sm:text-2xl font-black text-emerald-600 truncate">{stats?.attendanceRate || 95}%</div>
+                <div className="text-[11px] text-emerald-600 font-medium mt-0.5 truncate">Today's Campus Average</div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-teal-100/80 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fee Collection</span>
-                <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                  <CreditCard className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal-100/80 shadow-sm min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Fee Collection</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
+                  <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black text-slate-800">
+              <div className="mt-2.5 sm:mt-3 min-w-0">
+                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">
                   ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '35,000'}
                 </div>
-                <div className="text-[11px] text-purple-600 font-medium mt-0.5">
+                <div className="text-[11px] text-purple-600 font-medium mt-0.5 truncate">
                   {stats?.finance?.collectionRate || 22}% Collected This Term
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-teal-100/80 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Upcoming Exam</span>
-                <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                  <Calendar className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-teal-100/80 shadow-sm min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">Upcoming Exam</span>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="text-base font-black text-slate-800">Mid-Term Exams</div>
-                <div className="text-[11px] text-amber-600 font-medium mt-0.5">Oct 14, 2026 (In 13 Days)</div>
+              <div className="mt-2.5 sm:mt-3 min-w-0">
+                <div className="text-sm sm:text-base font-black text-slate-800 truncate">Mid-Term Exams</div>
+                <div className="text-[11px] text-amber-600 font-medium mt-0.5 truncate">Oct 14, 2026 (In 13 Days)</div>
               </div>
             </div>
           </div>

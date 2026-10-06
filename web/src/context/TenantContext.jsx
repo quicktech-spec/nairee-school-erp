@@ -196,18 +196,7 @@ export function resolveTenantFromLocation(tenantsList = DEFAULT_TENANTS) {
   const customDomainMatch = tenantsList.find(t => t.custom_domain && t.custom_domain.toLowerCase() === hostname.toLowerCase());
   if (customDomainMatch) return customDomainMatch;
 
-  // 4. LocalStorage user preference check
-  try {
-    const savedTenantId = localStorage.getItem('nairee_active_tenant_id');
-    if (savedTenantId) {
-      const match = tenantsList.find(t => t.tenant_id === savedTenantId);
-      if (match) return match;
-    }
-  } catch (e) {
-    // Ignore localStorage error
-  }
-
-  // 5. Default Fallback
+  // 4. Default Fallback: Root URL on master site ALWAYS opens Master Tenant (tenantsList[0])
   return tenantsList[0];
 }
 

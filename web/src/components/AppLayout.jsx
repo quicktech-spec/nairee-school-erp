@@ -530,19 +530,19 @@ export default function AppLayout({
                 className="h-9 w-9 object-contain rounded-xl border border-slate-200/80 bg-white p-1 shadow-xs shrink-0"
                 onError={(e) => { e.target.src = naireeLogo; }}
               />
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h2 className="text-xs font-black text-slate-800 truncate leading-tight">
                   {tenant?.school_name || 'Nairee School'}
                 </h2>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span 
-                    className="text-[9px] font-black text-white px-1.5 py-0.2 rounded-full uppercase tracking-wider shadow-2xs"
+                    className="text-[9px] font-black text-white px-1.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs shrink-0"
                     style={{ backgroundColor: tenant?.accent_color || '#10b981' }}
                   >
                     {tenant?.school_code || 'ERP'}
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400 truncate">
-                    {tenant?.subdomain || 'demo'}.nairee.app
+                  <span className="text-[10px] font-bold text-slate-400 truncate">
+                    {isMasterTenant ? 'Master Platform' : (tenant?.board_affiliation?.split('#')[0]?.trim() || 'School Portal')}
                   </span>
                 </div>
               </div>
@@ -596,13 +596,21 @@ export default function AppLayout({
             </span>
           </div>
           <div className="text-[10px] text-teal-700 font-semibold truncate flex items-center justify-between">
-            <span>{user?.full_name} ({user?.role?.toUpperCase()})</span>
-            {isMasterTenant && (
+            <span className="truncate">{user?.full_name} ({user?.role?.toUpperCase()})</span>
+            {isMasterTenant ? (
               <button 
                 onClick={() => setIsSwitchModalOpen(true)}
-                className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer"
+                className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer shrink-0 ml-1"
               >
                 Switch
+              </button>
+            ) : (
+              <button 
+                onClick={() => window.location.href = window.location.pathname}
+                className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer shrink-0 ml-1"
+                title="Return to master platform"
+              >
+                Master
               </button>
             )}
           </div>
@@ -612,14 +620,36 @@ export default function AppLayout({
       {/* 2. RIGHT MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
         
+        {/* Top Notification Banner when switched to a client school tenant */}
+        {!isMasterTenant && (
+          <div className="bg-slate-800 text-white px-4 sm:px-6 py-2 flex items-center justify-between text-xs font-semibold shadow-xs">
+            <div className="flex items-center gap-2 truncate">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span className="truncate">
+                Viewing <b>{tenant?.school_name}</b> ({tenant?.subdomain}.nairee.app)
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('tenant');
+                window.location.href = url.pathname;
+              }}
+              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition-all cursor-pointer shrink-0 ml-2"
+            >
+              &larr; Back to Master Platform
+            </button>
+          </div>
+        )}
+
         {/* Top Header Bar matching media_1790863408009.png */}
-        <header className="px-6 py-5 flex items-center justify-between bg-transparent">
+        <header className="px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-transparent">
           {/* Left: Hamburger (mobile) + Greeting */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1">
             {/* 3-Dash Circular Hamburger Button for Mobile */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden w-11 h-11 rounded-full bg-[#d7dfe9] hover:bg-[#cbd5e1] border border-slate-300 flex flex-col items-center justify-center gap-[4px] cursor-pointer shadow-sm active:scale-95"
+              className="lg:hidden w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#d7dfe9] hover:bg-[#cbd5e1] border border-slate-300 flex flex-col items-center justify-center gap-[4px] cursor-pointer shadow-sm active:scale-95 shrink-0"
               title="Open Navigation Menu"
             >
               <span className="w-5 h-[3px] bg-[#111827] rounded-full"></span>
@@ -628,33 +658,34 @@ export default function AppLayout({
             </button>
 
             {/* Greeting */}
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight">
-              Welcome back <span style={{ color: tenant?.primary_color || '#00a884' }}>{user?.full_name?.split(' ')[0] || user?.full_name}!</span>
+            <h1 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-black text-slate-800 tracking-tight truncate">
+              Welcome back <span style={{ color: tenant?.primary_color || '#00a884' }}>{user?.full_name || user?.username || 'User'}!</span>
             </h1>
           </div>
 
           {/* Right: Tenant Switcher + Onboard + DB Studio + Search + Notification Bell + Profile */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Master Platform Only Controls (Hidden on Client School Websites) */}
             {isMasterTenant && (
               <>
                 <button
                   onClick={() => setIsSwitchModalOpen(true)}
-                  className="px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  className="px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                   title="Switch School Tenant Instance"
                 >
-                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                   <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
                 </button>
 
                 {user?.role === 'admin' && (
                   <button
                     onClick={() => setIsOnboardingModalOpen(true)}
-                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
                     title="Onboard New White-Label School"
                   >
-                    <Plus className="w-3.5 h-3.5 text-teal-600" />
-                    <span>+ Onboard School</span>
+                    <Plus className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                    <span className="hidden sm:inline">+ Onboard School</span>
+                    <span className="sm:hidden">+ School</span>
                   </button>
                 )}
               </>
@@ -723,8 +754,8 @@ export default function AppLayout({
                   alt={user?.full_name}
                   className="w-7 h-7 rounded-full object-cover border border-teal-500"
                 />
-                <span className="text-xs font-bold text-slate-800 hidden sm:inline truncate max-w-[120px]">
-                  {user?.full_name?.split(' ')[0] || user?.username}
+                <span className="text-xs font-bold text-slate-800 hidden sm:inline truncate max-w-[160px]">
+                  {user?.full_name || user?.username}
                 </span>
                 <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
