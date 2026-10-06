@@ -185,6 +185,21 @@ export default function ClassStaffManagerView() {
     };
 
     setClasses(prev => [newClassObj, ...prev]);
+
+    // Persist to Master Database
+    const db = getStoredDb();
+    const rows = db['Class & Batch List']?.rows || [];
+    const newDbRow = {
+      batch_id: newClassObj.id,
+      batch_name: newClassObj.name,
+      room_no: newClassObj.room,
+      class_teacher_id: newClassObj.class_teacher_id,
+      class_teacher: newClassObj.class_teacher_name,
+      capacity: newClassObj.capacity
+    };
+    db['Class & Batch List'].rows = [newDbRow, ...rows];
+    saveStoredDb(db);
+
     showToast(`Class "${className}" created with appointed teacher ${classTeacher.name}!`);
     setShowAddClassModal(false);
   };
@@ -204,6 +219,22 @@ export default function ClassStaffManagerView() {
       return c;
     }));
 
+    // Persist to Master Database
+    const db = getStoredDb();
+    if (db['Class & Batch List'] && Array.isArray(db['Class & Batch List'].rows)) {
+      db['Class & Batch List'].rows = db['Class & Batch List'].rows.map(b => {
+        if (b.batch_id === classObj.id || b.batch_name === classObj.name) {
+          return {
+            ...b,
+            class_teacher_id: selectedTeacher.id,
+            class_teacher: selectedTeacher.name
+          };
+        }
+        return b;
+      });
+      saveStoredDb(db);
+    }
+
     showToast(`Appointed ${selectedTeacher.name} as Head Class Teacher for ${classObj.name}!`);
     setShowAppointTeacherModal(null);
   };
@@ -213,6 +244,14 @@ export default function ClassStaffManagerView() {
       return;
     }
     setClasses(prev => prev.filter(c => c.id !== classId));
+
+    // Persist to Master Database
+    const db = getStoredDb();
+    if (db['Class & Batch List'] && Array.isArray(db['Class & Batch List'].rows)) {
+      db['Class & Batch List'].rows = db['Class & Batch List'].rows.filter(b => b.batch_id !== classId && b.batch_name !== className);
+      saveStoredDb(db);
+    }
+
     showToast(`Class "${className}" deleted.`);
   };
 
@@ -379,6 +418,23 @@ export default function ClassStaffManagerView() {
       return t;
     }));
 
+    // Record Salary Expense in Master P&L
+    const db = getStoredDb();
+    const currentExp = db['Operational Expenses (P&L)']?.rows || [];
+    currentExp.unshift({
+      expense_id: `EXP-SAL-${Date.now().toString().slice(-4)}`,
+      id: `EXP-SAL-${Date.now().toString().slice(-4)}`,
+      title: `Monthly Faculty Salary — ${teacher.name} (${teacher.department})`,
+      category: 'Teacher Payroll',
+      description: `Disbursed monthly salary of ₹${netPay.toLocaleString()} to ${teacher.name} via ${salaryPaymentMethod}`,
+      amount: netPay,
+      date: new Date().toISOString().split('T')[0],
+      status: 'Paid',
+      type: 'operational'
+    });
+    db['Operational Expenses (P&L)'].rows = currentExp;
+    saveStoredDb(db);
+
     const payslip = {
       payslip_no: `PAY-${Date.now().toString().slice(-6)}`,
       teacher_name: teacher.name,
@@ -393,7 +449,7 @@ export default function ClassStaffManagerView() {
 
     setReceiptData(payslip);
     setShowSalaryModal(null);
-    showToast(`Monthly salary of ₹${netPay.toLocaleString()} disbursed to ${teacher.name}! Official payslip generated.`);
+    showToast(`Monthly salary of ₹${netPay.toLocaleString()} disbursed to ${teacher.name}! Official payslip generated and P&L ledger updated.`);
   };
 
   // Filtered Students

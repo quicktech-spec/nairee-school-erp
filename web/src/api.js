@@ -799,6 +799,416 @@ export function saveMasterTeachers(updatedTeachersList) {
   broadcastLiveEvent('teacher_cascaded_update', { dbStore: currentDb });
 }
 
+// Synchronize Teacher across all datasets and dependent relations
+export function syncTeacherAcrossAllDatasets(teacherIdentifier, teacherUpdates = {}) {
+  let db = getStoredDb();
+  const teachers = [...(db['Teacher List']?.rows || INITIAL_DB_STORE['Teacher List'].rows)];
+  const cleanId = String(teacherIdentifier || '').toLowerCase().trim();
+
+  let targetTeacher = null;
+  const updatedTeachers = teachers.map(t => {
+    const tid = String(t.teacher_number || t.teacher_id || t.id || '').toLowerCase().trim();
+    const tname = String(t.name || t.full_name || '').toLowerCase().trim();
+    if (tid === cleanId || tname === cleanId || tid.includes(cleanId) || cleanId.includes(tid)) {
+      targetTeacher = {
+        ...t,
+        ...teacherUpdates,
+        teacher_number: teacherUpdates.teacher_number || t.teacher_number || t.id,
+        name: teacherUpdates.name || teacherUpdates.full_name || t.name
+      };
+      return targetTeacher;
+    }
+    return t;
+  });
+
+  if (targetTeacher) {
+    db['Teacher List'].rows = updatedTeachers;
+    db = cascadeTeacherUpdates(updatedTeachers, db);
+    saveStoredDb(db);
+    broadcastLiveEvent('teacher_updated', { teacher: targetTeacher, teachers: updatedTeachers });
+    broadcastLiveEvent('teacher_cascaded_update', { dbStore: db });
+  }
+
+  return { success: true, teacher: targetTeacher, dbStore: db };
+}
+
+// Master Helpers for Non-Teaching Staff & Personnel
+export function getMasterStaff() {
+  const db = getStoredDb();
+  return db['Staff & Personnel']?.rows || INITIAL_DB_STORE['Staff & Personnel'].rows;
+}
+
+export function cascadeStaffUpdates(updatedStaffList, dbStore) {
+  if (!dbStore || !Array.isArray(updatedStaffList)) return dbStore;
+  if (dbStore['employees'] && Array.isArray(dbStore['employees'].rows)) {
+    dbStore['employees'].rows = updatedStaffList;
+  }
+  return dbStore;
+}
+
+export function saveMasterStaff(updatedStaffList) {
+  let currentDb = getStoredDb();
+  const currentTbl = currentDb['Staff & Personnel'] || INITIAL_DB_STORE['Staff & Personnel'];
+  currentDb = {
+    ...currentDb,
+    'Staff & Personnel': {
+      ...currentTbl,
+      rows: updatedStaffList
+    }
+  };
+  currentDb = cascadeStaffUpdates(updatedStaffList, currentDb);
+  saveStoredDb(currentDb);
+  broadcastLiveEvent('staff_updated', { staff: updatedStaffList });
+  broadcastLiveEvent('db_store_updated', currentDb);
+}
+
+export function syncStaffAcrossAllDatasets(staffIdentifier, staffUpdates = {}) {
+  let db = getStoredDb();
+  const staffList = [...(db['Staff & Personnel']?.rows || INITIAL_DB_STORE['Staff & Personnel'].rows)];
+  const cleanId = String(staffIdentifier || '').toLowerCase().trim();
+
+  let targetStaff = null;
+  const updated = staffList.map(s => {
+    const sid = String(s.staff_id || s.id || '').toLowerCase().trim();
+    const sname = String(s.name || '').toLowerCase().trim();
+    if (sid === cleanId || sname === cleanId || sid.includes(cleanId) || cleanId.includes(sid)) {
+      targetStaff = {
+        ...s,
+        ...staffUpdates,
+        staff_id: staffUpdates.staff_id || s.staff_id,
+        name: staffUpdates.name || s.name
+      };
+      return targetStaff;
+    }
+    return s;
+  });
+
+  if (targetStaff) {
+    db['Staff & Personnel'].rows = updated;
+    db = cascadeStaffUpdates(updated, db);
+    saveStoredDb(db);
+    broadcastLiveEvent('staff_updated', { staffMember: targetStaff, staff: updated });
+  }
+
+  return { success: true, staff: targetStaff, dbStore: db };
+}
+
+// Master Helpers for School Administrators
+export function getMasterAdmins() {
+  const db = getStoredDb();
+  return db['Admin List']?.rows || INITIAL_DB_STORE['Admin List'].rows;
+}
+
+export function cascadeAdminUpdates(updatedAdminsList, dbStore) {
+  if (!dbStore || !Array.isArray(updatedAdminsList)) return dbStore;
+  return dbStore;
+}
+
+export function saveMasterAdmins(updatedAdminsList) {
+  let currentDb = getStoredDb();
+  const currentTbl = currentDb['Admin List'] || INITIAL_DB_STORE['Admin List'];
+  currentDb = {
+    ...currentDb,
+    'Admin List': {
+      ...currentTbl,
+      rows: updatedAdminsList
+    }
+  };
+  currentDb = cascadeAdminUpdates(updatedAdminsList, currentDb);
+  saveStoredDb(currentDb);
+  broadcastLiveEvent('admin_updated', { admins: updatedAdminsList });
+  broadcastLiveEvent('db_store_updated', currentDb);
+}
+
+export function syncAdminAcrossAllDatasets(adminIdentifier, adminUpdates = {}) {
+  let db = getStoredDb();
+  const adminList = [...(db['Admin List']?.rows || INITIAL_DB_STORE['Admin List'].rows)];
+  const cleanId = String(adminIdentifier || '').toLowerCase().trim();
+
+  let targetAdmin = null;
+  const updated = adminList.map(a => {
+    const aid = String(a.admin_id || a.id || '').toLowerCase().trim();
+    const aname = String(a.name || '').toLowerCase().trim();
+    if (aid === cleanId || aname === cleanId || aid.includes(cleanId) || cleanId.includes(aid)) {
+      targetAdmin = {
+        ...a,
+        ...adminUpdates,
+        admin_id: adminUpdates.admin_id || a.admin_id,
+        name: adminUpdates.name || a.name
+      };
+      return targetAdmin;
+    }
+    return a;
+  });
+
+  if (targetAdmin) {
+    db['Admin List'].rows = updated;
+    saveStoredDb(db);
+    broadcastLiveEvent('admin_updated', { admin: targetAdmin, admins: updated });
+  }
+
+  return { success: true, admin: targetAdmin, dbStore: db };
+}
+
+// Master Helpers for Parents & Guardians
+export function getMasterParents() {
+  const db = getStoredDb();
+  return db['Parent List']?.rows || INITIAL_DB_STORE['Parent List'].rows;
+}
+
+export function cascadeParentUpdates(updatedParentsList, dbStore) {
+  if (!dbStore || !Array.isArray(updatedParentsList)) return dbStore;
+  const parentMap = new Map();
+  updatedParentsList.forEach(p => {
+    const pid = String(p.parent_id || p.id || '').toLowerCase().trim();
+    const pname = String(p.name || '').toLowerCase().trim();
+    const childId = String(p.child || '').toLowerCase().trim();
+    const data = {
+      parent_id: p.parent_id || p.id,
+      name: p.name,
+      phone: p.phone,
+      email: p.email,
+      child: p.child,
+      relation: p.relation
+    };
+    if (pid) parentMap.set(pid, data);
+    if (pname) parentMap.set(pname, data);
+    if (childId) parentMap.set(childId, data);
+  });
+
+  // Cascade parent updates to student father/mother details
+  if (dbStore['Student List'] && Array.isArray(dbStore['Student List'].rows)) {
+    dbStore['Student List'].rows = dbStore['Student List'].rows.map(stu => {
+      const sid = String(stu.student_id || stu.id || '').toLowerCase().trim();
+      const pid = String(stu.parent_id || '').toLowerCase().trim();
+      const matched = parentMap.get(sid) || parentMap.get(pid);
+      if (matched) {
+        const isMother = matched.relation && matched.relation.toLowerCase().includes('mother');
+        return {
+          ...stu,
+          father_name: !isMother ? matched.name : stu.father_name,
+          father_phone: !isMother ? matched.phone : stu.father_phone,
+          mother_name: isMother ? matched.name : stu.mother_name,
+          mother_phone: isMother ? matched.phone : stu.mother_phone,
+          parent_id: matched.parent_id || stu.parent_id
+        };
+      }
+      return stu;
+    });
+  }
+  return dbStore;
+}
+
+export function saveMasterParents(updatedParentsList) {
+  let currentDb = getStoredDb();
+  const currentTbl = currentDb['Parent List'] || INITIAL_DB_STORE['Parent List'];
+  currentDb = {
+    ...currentDb,
+    'Parent List': {
+      ...currentTbl,
+      rows: updatedParentsList
+    }
+  };
+  currentDb = cascadeParentUpdates(updatedParentsList, currentDb);
+  saveStoredDb(currentDb);
+  broadcastLiveEvent('parent_updated', { parents: updatedParentsList });
+  broadcastLiveEvent('db_store_updated', currentDb);
+}
+
+export function syncParentAcrossAllDatasets(parentIdentifier, parentUpdates = {}) {
+  let db = getStoredDb();
+  const parentList = [...(db['Parent List']?.rows || INITIAL_DB_STORE['Parent List'].rows)];
+  const cleanId = String(parentIdentifier || '').toLowerCase().trim();
+
+  let targetParent = null;
+  const updated = parentList.map(p => {
+    const pid = String(p.parent_id || p.id || '').toLowerCase().trim();
+    const pname = String(p.name || '').toLowerCase().trim();
+    if (pid === cleanId || pname === cleanId || pid.includes(cleanId) || cleanId.includes(pid)) {
+      targetParent = {
+        ...p,
+        ...parentUpdates,
+        parent_id: parentUpdates.parent_id || p.parent_id,
+        name: parentUpdates.name || p.name
+      };
+      return targetParent;
+    }
+    return p;
+  });
+
+  if (targetParent) {
+    db['Parent List'].rows = updated;
+    db = cascadeParentUpdates(updated, db);
+    saveStoredDb(db);
+    broadcastLiveEvent('parent_updated', { parent: targetParent, parents: updated });
+  }
+
+  return { success: true, parent: targetParent, dbStore: db };
+}
+
+// Master Helpers for Classes & Batches
+export function getMasterClasses() {
+  const db = getStoredDb();
+  return db['Class & Batch List']?.rows || INITIAL_DB_STORE['Class & Batch List'].rows;
+}
+
+export function saveMasterClasses(updatedClassesList) {
+  let currentDb = getStoredDb();
+  const currentTbl = currentDb['Class & Batch List'] || INITIAL_DB_STORE['Class & Batch List'];
+  currentDb = {
+    ...currentDb,
+    'Class & Batch List': {
+      ...currentTbl,
+      rows: updatedClassesList
+    }
+  };
+  saveStoredDb(currentDb);
+  broadcastLiveEvent('class_updated', { classes: updatedClassesList });
+  broadcastLiveEvent('db_store_updated', currentDb);
+}
+
+export function syncClassAcrossAllDatasets(batchIdentifier, classUpdates = {}) {
+  let db = getStoredDb();
+  const classesList = [...(db['Class & Batch List']?.rows || INITIAL_DB_STORE['Class & Batch List'].rows)];
+  const cleanId = String(batchIdentifier || '').toLowerCase().trim();
+
+  let targetClass = null;
+  const updated = classesList.map(c => {
+    const bid = String(c.batch_id || c.id || '').toLowerCase().trim();
+    const bname = String(c.batch_name || c.name || '').toLowerCase().trim();
+    if (bid === cleanId || bname === cleanId || bid.includes(cleanId) || cleanId.includes(bid)) {
+      targetClass = {
+        ...c,
+        ...classUpdates,
+        batch_id: classUpdates.batch_id || c.batch_id,
+        batch_name: classUpdates.batch_name || classUpdates.name || c.batch_name
+      };
+      return targetClass;
+    }
+    return c;
+  });
+
+  if (targetClass) {
+    db['Class & Batch List'].rows = updated;
+    saveStoredDb(db);
+    broadcastLiveEvent('class_updated', { batch: targetClass, classes: updated });
+  }
+
+  return { success: true, batch: targetClass, dbStore: db };
+}
+
+// Master Helpers for Operational Expenses & P&L (Profit & Loss)
+export function getMasterExpenses() {
+  const db = getStoredDb();
+  return db['Operational Expenses (P&L)']?.rows || INITIAL_DB_STORE['Operational Expenses (P&L)'].rows;
+}
+
+export function saveMasterExpenses(updatedExpensesList) {
+  let currentDb = getStoredDb();
+  const currentTbl = currentDb['Operational Expenses (P&L)'] || INITIAL_DB_STORE['Operational Expenses (P&L)'];
+  currentDb = {
+    ...currentDb,
+    'Operational Expenses (P&L)': {
+      ...currentTbl,
+      rows: updatedExpensesList
+    }
+  };
+  saveStoredDb(currentDb);
+  broadcastLiveEvent('expense_updated', { expenses: updatedExpensesList });
+  broadcastLiveEvent('db_store_updated', currentDb);
+}
+
+export function syncExpenseAcrossAllDatasets(expenseIdentifier, expenseUpdates = {}) {
+  let db = getStoredDb();
+  const expenses = [...(db['Operational Expenses (P&L)']?.rows || INITIAL_DB_STORE['Operational Expenses (P&L)'].rows)];
+  const cleanId = String(expenseIdentifier || '').toLowerCase().trim();
+
+  let targetExp = null;
+  const updated = expenses.map(e => {
+    const eid = String(e.expense_id || e.id || '').toLowerCase().trim();
+    const ename = String(e.title || e.category || e.description || '').toLowerCase().trim();
+    if (eid === cleanId || ename === cleanId || eid.includes(cleanId) || cleanId.includes(eid)) {
+      targetExp = {
+        ...e,
+        ...expenseUpdates,
+        expense_id: expenseUpdates.expense_id || e.expense_id,
+        amount: expenseUpdates.amount !== undefined ? Number(expenseUpdates.amount) : e.amount
+      };
+      return targetExp;
+    }
+    return e;
+  });
+
+  if (targetExp) {
+    db['Operational Expenses (P&L)'].rows = updated;
+    saveStoredDb(db);
+    broadcastLiveEvent('expense_updated', { expense: targetExp, expenses: updated });
+  }
+
+  return { success: true, expense: targetExp, dbStore: db };
+}
+
+// Comprehensive Live P&L (Profit & Loss) Metric Evaluator
+export function calculatePnLMetrics() {
+  const db = getStoredDb();
+  const students = db['Student List']?.rows || [];
+  const teachers = db['Teacher List']?.rows || [];
+  const staff = db['Staff & Personnel']?.rows || [];
+  const invoices = db['Fee Invoices & Ledger']?.rows || [];
+  const expenses = db['Operational Expenses (P&L)']?.rows || [];
+  const subscriptions = db['SaaS Subscriptions & Billing']?.rows || [];
+
+  // 1. Fee Invoices Revenue Breakdown
+  const paidInvoicesTotal = invoices
+    .filter(i => i.status === 'Paid')
+    .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+  const totalBilledFees = invoices.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+  const pendingFees = invoices
+    .filter(i => i.status === 'Pending' || i.status === 'Unpaid')
+    .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+  // Student base tuition
+  const calculatedTuitionRevenue = students.length * 35000;
+  const grossRevenue = paidInvoicesTotal > 0 ? paidInvoicesTotal : calculatedTuitionRevenue;
+
+  // 2. Operational Expenses Breakdown
+  const facultyPayroll = teachers.reduce((sum, t) => sum + (Number(t.monthly_salary) || 60000), 0);
+  const staffPayroll = staff.reduce((sum, s) => sum + (Number(s.salary) || 28000), 0);
+  const totalPayroll = facultyPayroll + staffPayroll;
+
+  const operationalExpensesTotal = expenses
+    .filter(e => e.status === 'Paid' || e.type === 'operational')
+    .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+
+  const saasSubscriptionsTotal = subscriptions
+    .reduce((sum, s) => sum + (Number(s.monthly_cost || s.amount) || 0), 0);
+
+  const totalOperatingExpenses = totalPayroll + operationalExpensesTotal + saasSubscriptionsTotal;
+  const netProfitLoss = grossRevenue - totalOperatingExpenses;
+  const operatingMargin = grossRevenue > 0 ? Number(((netProfitLoss / grossRevenue) * 100).toFixed(1)) : 0;
+
+  return {
+    grossRevenue,
+    paidInvoicesTotal,
+    totalBilledFees,
+    pendingFees,
+    totalOperatingExpenses,
+    facultyPayroll,
+    staffPayroll,
+    totalPayroll,
+    operationalExpensesTotal,
+    saasSubscriptionsTotal,
+    netProfitLoss,
+    operatingMargin,
+    expensesList: expenses,
+    invoicesList: invoices,
+    teachersCount: teachers.length,
+    studentsCount: students.length,
+    staffCount: staff.length
+  };
+}
+
 export function transferStudentClass(studentIdentifier, newClassId, newClassName) {
   const students = [...getMasterStudents()];
   const cleanId = String(studentIdentifier || '').toLowerCase().trim();
@@ -1943,14 +2353,78 @@ export const api = {
     return { success: true, ...newSubm };
   },
 
-  // Users & System Administration
+  // Users & System Administration (Dynamic Unified Directory)
   async getUsers(role = '') {
     const params = new URLSearchParams();
     if (role && role !== 'all') params.append('role', role);
     const data = await safeFetch(`/admin/users?${params.toString()}`);
     if (data) return data;
-    if (role && role !== 'all') return FALLBACK_DATA.users.filter(u => u.role === role);
-    return FALLBACK_DATA.users;
+
+    const db = getStoredDb();
+    const admins = (db['Admin List']?.rows || []).map(a => ({
+      id: a.admin_id || a.id,
+      name: a.admin_id || a.id,
+      username: (a.name || 'admin').toLowerCase().replace(/\s+/g, '_'),
+      full_name: a.name,
+      role: 'admin',
+      email: a.email || 'admin@nairee.edu',
+      status: a.status || 'Active',
+      department: a.department || 'Administration'
+    }));
+
+    const teachers = (db['Teacher List']?.rows || []).map(t => ({
+      id: t.teacher_number || t.id,
+      name: t.teacher_number || t.id,
+      username: (t.name || 'teacher').toLowerCase().replace(/\s+/g, '_'),
+      full_name: t.name,
+      role: 'teacher',
+      email: t.email || `${t.name.toLowerCase().replace(/\s+/g, '')}@nairee.edu`,
+      status: t.status || 'Active',
+      department: t.department || 'Academics',
+      phone: t.phone
+    }));
+
+    const staff = (db['Staff & Personnel']?.rows || []).map(s => ({
+      id: s.staff_id || s.id,
+      name: s.staff_id || s.id,
+      username: (s.name || 'staff').toLowerCase().replace(/\s+/g, '_'),
+      full_name: s.name,
+      role: 'staff',
+      email: s.email || `${s.name.toLowerCase().replace(/\s+/g, '')}@staff.nairee.edu`,
+      status: s.status || 'Active',
+      department: s.department || 'Support Operations',
+      phone: s.phone
+    }));
+
+    const students = (db['Student List']?.rows || []).map(s => ({
+      id: s.student_id || s.id,
+      name: s.student_id || s.id,
+      username: (s.name || 'student').toLowerCase().replace(/\s+/g, ''),
+      full_name: s.name,
+      role: 'student',
+      email: s.email || `${s.name.toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+      status: s.status || 'Active',
+      batch_name: s.class_batch || 'Class 10 - Section A',
+      phone: s.phone
+    }));
+
+    const parents = (db['Parent List']?.rows || []).map(p => ({
+      id: p.parent_id || p.id,
+      name: p.parent_id || p.id,
+      username: (p.name || 'parent').toLowerCase().replace(/\s+/g, '_'),
+      full_name: p.name,
+      role: 'parent',
+      email: p.email || `${p.name.toLowerCase().replace(/\s+/g, '')}@parent.nairee.edu`,
+      status: 'Active',
+      child: p.child,
+      phone: p.phone
+    }));
+
+    let allUsers = [...admins, ...teachers, ...staff, ...students, ...parents];
+    if (role && role !== 'all') {
+      allUsers = allUsers.filter(u => u.role.toLowerCase() === role.toLowerCase());
+    }
+    return allUsers;
   },
 
   async toggleUserStatus(id, status) {
@@ -1959,32 +2433,169 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
-    const user = FALLBACK_DATA.users.find(u => u.id === id || u.username === id);
-    if (user) user.status = status;
+    
+    // Update live database tables
+    const db = getStoredDb();
+    ['Admin List', 'Teacher List', 'Staff & Personnel', 'Student List'].forEach(tblName => {
+      if (db[tblName] && Array.isArray(db[tblName].rows)) {
+        db[tblName].rows = db[tblName].rows.map(r => {
+          const rId = String(r.student_id || r.teacher_number || r.admin_id || r.staff_id || r.id || '');
+          if (rId === String(id) || r.name === id) {
+            return { ...r, status };
+          }
+          return r;
+        });
+      }
+    });
+    saveStoredDb(db);
     return data || { success: true, id, status };
   },
 
   async createAccount(data) {
     const usernameGenerated = data.email ? data.email.split('@')[0] : (data.full_name || 'user').toLowerCase().replace(/\s+/g, '_');
-    const newId = `USR-${Date.now().toString().slice(-4)}`;
-    const newAcc = {
+    const role = (data.role || 'student').toLowerCase();
+    
+    if (role === 'teacher') {
+      const newTeacher = await this.createTeacher({
+        name: data.full_name,
+        email: data.email,
+        phone: data.phone,
+        department: data.department || 'Academics',
+        designation: data.designation || 'Faculty Instructor'
+      });
+      return {
+        message: `Faculty account created for ${data.full_name}!`,
+        username: usernameGenerated,
+        password: 'Welcome@123',
+        role: 'teacher',
+        user: newTeacher
+      };
+    } else if (role === 'admin') {
+      const admins = getMasterAdmins();
+      const newAdmin = {
+        admin_id: `ADM-${String(admins.length + 1).padStart(3, '0')}`,
+        name: data.full_name,
+        role: 'School Administrator',
+        department: data.department || 'Administration',
+        email: data.email || `${usernameGenerated}@nairee.edu`,
+        status: 'Active'
+      };
+      saveMasterAdmins([newAdmin, ...admins]);
+      return {
+        message: `Administrator account created for ${data.full_name}!`,
+        username: usernameGenerated,
+        password: 'Welcome@123',
+        role: 'admin',
+        user: newAdmin
+      };
+    } else if (role === 'staff') {
+      const staffList = getMasterStaff();
+      const newStaff = {
+        staff_id: `STF-${String(staffList.length + 1).padStart(3, '0')}`,
+        name: data.full_name,
+        designation: data.designation || 'Support Personnel',
+        department: data.department || 'Operations',
+        phone: data.phone || '+91 98765 00000',
+        email: data.email || `${usernameGenerated}@staff.nairee.edu`,
+        salary: 28000,
+        status: 'Active'
+      };
+      saveMasterStaff([newStaff, ...staffList]);
+      return {
+        message: `Staff personnel account created for ${data.full_name}!`,
+        username: usernameGenerated,
+        password: 'Welcome@123',
+        role: 'staff',
+        user: newStaff
+      };
+    } else {
+      const newStu = await this.createStudent({
+        student_name: data.full_name,
+        email: data.email,
+        phone: data.phone,
+        class_batch: data.batch || 'Class 10 - Section A'
+      });
+      return {
+        message: `Student account created for ${data.full_name}!`,
+        username: usernameGenerated,
+        password: 'Welcome@123',
+        role: 'student',
+        user: newStu
+      };
+    }
+  },
+
+  // Staff & Non-Teaching Personnel Endpoints
+  async getStaff() {
+    return getMasterStaff();
+  },
+
+  async updateStaff(staffId, updates) {
+    const res = syncStaffAcrossAllDatasets(staffId, updates);
+    return res.staff;
+  },
+
+  // Admin Endpoints
+  async getAdmins() {
+    return getMasterAdmins();
+  },
+
+  async updateAdmin(adminId, updates) {
+    const res = syncAdminAcrossAllDatasets(adminId, updates);
+    return res.admin;
+  },
+
+  // Parent Endpoints
+  async getParents() {
+    return getMasterParents();
+  },
+
+  async updateParent(parentId, updates) {
+    const res = syncParentAcrossAllDatasets(parentId, updates);
+    return res.parent;
+  },
+
+  // Operational Expenses & P&L (Profit & Loss) Endpoints
+  async getExpenses() {
+    return getMasterExpenses();
+  },
+
+  async createExpense(expenseData) {
+    const currentExpenses = getMasterExpenses();
+    const newId = `EXP-${String(currentExpenses.length + 1).padStart(3, '0')}`;
+    const newExp = {
+      expense_id: newId,
       id: newId,
-      username: usernameGenerated,
-      full_name: data.full_name,
-      email: data.email,
-      role: data.role,
-      status: 'Active',
-      department: data.department || 'Academics'
+      title: expenseData.title || expenseData.description || expenseData.category || 'Operational Expense',
+      category: expenseData.category || 'Operational Expense',
+      description: expenseData.description || expenseData.title || '',
+      amount: Number(expenseData.amount) || 0,
+      date: expenseData.date || new Date().toISOString().split('T')[0],
+      status: expenseData.status || 'Paid',
+      type: expenseData.type || 'operational'
     };
-    FALLBACK_DATA.users.push(newAcc);
-    broadcastLiveEvent('user_created', newAcc);
-    return {
-      message: `Account created for ${data.full_name}!`,
-      username: usernameGenerated,
-      password: 'Welcome@123',
-      role: data.role,
-      user: newAcc
-    };
+    saveMasterExpenses([newExp, ...currentExpenses]);
+    return newExp;
+  },
+
+  async updateExpense(expenseId, updates) {
+    const res = syncExpenseAcrossAllDatasets(expenseId, updates);
+    return res.expense;
+  },
+
+  async deleteExpense(expenseId) {
+    const currentExpenses = getMasterExpenses();
+    const cleanId = String(expenseId).toLowerCase().trim();
+    const filtered = currentExpenses.filter(e => {
+      const eid = String(e.expense_id || e.id || '').toLowerCase().trim();
+      return eid !== cleanId;
+    });
+    saveMasterExpenses(filtered);
+    return { success: true };
+  },
+
+  async getPnLReport() {
+    return calculatePnLMetrics();
   },
 
   async getAnnouncements(targetRole = '', tenantId = '') {

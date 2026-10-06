@@ -32,7 +32,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { FALLBACK_FACULTY, FALLBACK_STUDENTS } from '../fallbackData.js';
-import { api, subscribeLiveEvents, broadcastLiveEvent } from '../api.js';
+import { api, subscribeLiveEvents, broadcastLiveEvent, getMasterStudents, getMasterExpenses, saveMasterExpenses, syncStudentAcrossAllDatasets, saveMasterStudents } from '../api.js';
 import { useTenant } from '../context/TenantContext.jsx';
 
 const INITIAL_PETTY_CASH = [
@@ -47,11 +47,11 @@ export default function FinancialPnLView() {
   const { tenant } = useTenant();
   const tenantKey = tenant?.tenant_id || 'default';
 
-  // Reactive Student Fee Records State
+  // Reactive Student Fee Records State from Master DB
   const [studentRecords, setStudentRecords] = useState(() => {
     try {
-      const saved = localStorage.getItem('nairee_fallback_students');
-      return saved ? JSON.parse(saved) : FALLBACK_STUDENTS;
+      const master = getMasterStudents();
+      return master && master.length > 0 ? master : FALLBACK_STUDENTS;
     } catch {
       return FALLBACK_STUDENTS;
     }
@@ -65,15 +65,22 @@ export default function FinancialPnLView() {
   // Faculty Payroll calculation
   const termPayrollDisbursed = 185000;
 
-  // Operational Expenses State in INR
-  const [expenses, setExpenses] = useState([
-    { id: 'EXP 001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
-    { id: 'EXP 002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 48000, date: '2026-09-01', status: 'Paid', type: 'operational' },
-    { id: 'EXP 003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 14500, date: '2026-10-02', status: 'Pending', type: 'operational' },
-    { id: 'EXP 004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 18500, date: '2026-10-03', status: 'Pending', type: 'event' },
-    { id: 'EXP 005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 9200, date: '2026-10-04', status: 'Pending', type: 'event' },
-    { id: 'EXP 006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 12000, date: '2026-09-25', status: 'Paid', type: 'facility' }
-  ]);
+  // Operational Expenses State in INR from Master DB
+  const [expenses, setExpenses] = useState(() => {
+    try {
+      const masterExp = getMasterExpenses();
+      return masterExp && masterExp.length > 0 ? masterExp : [
+        { id: 'EXP 001', expense_id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
+        { id: 'EXP 002', expense_id: 'EXP-002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 48000, date: '2026-09-01', status: 'Paid', type: 'operational' },
+        { id: 'EXP 003', expense_id: 'EXP-003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 14500, date: '2026-10-02', status: 'Pending', type: 'operational' },
+        { id: 'EXP 004', expense_id: 'EXP-004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 18500, date: '2026-10-03', status: 'Pending', type: 'event' },
+        { id: 'EXP 005', expense_id: 'EXP-005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 9200, date: '2026-10-04', status: 'Pending', type: 'event' },
+        { id: 'EXP 006', expense_id: 'EXP-006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 12000, date: '2026-09-25', status: 'Paid', type: 'facility' }
+      ];
+    } catch {
+      return [];
+    }
+  });
 
   // --- PETTY CASH FUND STATE (Integrated directly with P&L) ---
   const [pettyCashImprest, setPettyCashImprest] = useState(() => {
@@ -133,14 +140,16 @@ export default function FinancialPnLView() {
     } catch (e) {}
   }, [pettyCashLedger, pettyCashImprest, tenantKey]);
 
-  // Listen to live fee updates across all portals
+  // Listen to live fee & database updates across all portals
   useEffect(() => {
     const unsubscribe = subscribeLiveEvents((event) => {
-      if (event.type === 'fee_updated') {
-        try {
-          const saved = localStorage.getItem('nairee_fallback_students');
-          if (saved) setStudentRecords(JSON.parse(saved));
-        } catch {}
+      const freshStudents = getMasterStudents();
+      if (freshStudents && freshStudents.length > 0) {
+        setStudentRecords(freshStudents);
+      }
+      const freshExpenses = getMasterExpenses();
+      if (freshExpenses && freshExpenses.length > 0) {
+        setExpenses(freshExpenses);
       }
     });
     return () => unsubscribe();
@@ -149,14 +158,14 @@ export default function FinancialPnLView() {
   // --- DYNAMIC P&L FORMULAS LINKED WITH PETTY CASH ---
   // 1. Gross Revenue = Total Tuition Collected + Lab Tech Fees + Transport Subscriptions
   const totalStudents = studentRecords.length;
-  const totalPendingTuition = studentRecords.reduce((sum, s) => sum + (Number(s.feeDues) || 0), 0);
+  const totalPendingTuition = studentRecords.reduce((sum, s) => sum + (Number(s.feeDues || s.balance_due) || 0), 0);
   const totalPotentialTuition = totalStudents * tuitionPerStudent;
   const collectedTuition = totalPotentialTuition - totalPendingTuition;
   const grossRevenue = collectedTuition + labTechFees + transportFees;
 
   // 2. Direct Regular Operational Expenses
   const pendingExpenses = expenses.filter(e => e.status === 'Pending');
-  const selectedPendingExpenses = pendingExpenses.filter(e => selectedExpenseIds.includes(e.id));
+  const selectedPendingExpenses = pendingExpenses.filter(e => selectedExpenseIds.includes(e.id) || selectedExpenseIds.includes(e.expense_id));
   const selectedTotalAmount = selectedPendingExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const totalPaidExpenses = expenses.filter(e => e.status === 'Paid').reduce((sum, e) => sum + Number(e.amount), 0);
@@ -179,26 +188,30 @@ export default function FinancialPnLView() {
 
   // Settle single student fee
   const handleCollectStudentFee = async (student) => {
-    const amount = Number(student.feeDues) > 0 ? Number(student.feeDues) : tuitionPerStudent;
-    await api.settleStudentFee(student.name, amount);
+    const sId = student.student_id || student.id || student.name;
+    const amount = Number(student.feeDues || student.balance_due) > 0 ? Number(student.feeDues || student.balance_due) : tuitionPerStudent;
+    await api.settleStudentFee(sId, amount);
     
-    setStudentRecords(prev => prev.map(s => 
-      s.name === student.name ? { ...s, feeDues: 0, fee_status: 'Paid' } : s
-    ));
-    showToast(`🎉 Fee payment of ₹${amount.toLocaleString('en-IN')} received for ${student.student_name}! Gross Revenue & Net Profit increased.`);
+    syncStudentAcrossAllDatasets(sId, { fee_status: 'Paid', balance_due: 0, fee_due: 0, feeDues: 0 });
+    const fresh = getMasterStudents();
+    setStudentRecords(fresh);
+    showToast(`🎉 Fee payment of ₹${amount.toLocaleString('en-IN')} received for ${student.name || student.student_name}! Gross Revenue & Net Profit increased.`);
   };
 
   // 1-Click Collect All Pending Student Fees
   const handleCollectAllStudentFees = async () => {
-    const pendingStudents = studentRecords.filter(s => Number(s.feeDues) > 0);
+    const pendingStudents = studentRecords.filter(s => Number(s.feeDues || s.balance_due) > 0);
     if (pendingStudents.length === 0) return;
 
-    const totalCollected = pendingStudents.reduce((sum, s) => sum + Number(s.feeDues), 0);
+    const totalCollected = pendingStudents.reduce((sum, s) => sum + Number(s.feeDues || s.balance_due), 0);
     for (const s of pendingStudents) {
-      await api.settleStudentFee(s.name, Number(s.feeDues));
+      const sId = s.student_id || s.id || s.name;
+      await api.settleStudentFee(sId, Number(s.feeDues || s.balance_due));
+      syncStudentAcrossAllDatasets(sId, { fee_status: 'Paid', balance_due: 0, fee_due: 0, feeDues: 0 });
     }
 
-    setStudentRecords(prev => prev.map(s => ({ ...s, feeDues: 0, fee_status: 'Paid' })));
+    const fresh = getMasterStudents();
+    setStudentRecords(fresh);
     showToast(`🎉 1-Click Fee Collection: Received ₹${totalCollected.toLocaleString('en-IN')} across ${pendingStudents.length} students! Revenue & Profit fully updated.`);
   };
 
@@ -212,23 +225,27 @@ export default function FinancialPnLView() {
     if (selectedExpenseIds.length === pendingExpenses.length) {
       setSelectedExpenseIds([]);
     } else {
-      setSelectedExpenseIds(pendingExpenses.map(e => e.id));
+      setSelectedExpenseIds(pendingExpenses.map(e => e.id || e.expense_id));
     }
   };
 
   const handlePayIndividual = (id) => {
-    const target = expenses.find(e => e.id === id);
+    const target = expenses.find(e => e.id === id || e.expense_id === id);
     if (!target) return;
-    setExpenses(prev => prev.map(e => e.id === id ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
+    const updated = expenses.map(e => (e.id === id || e.expense_id === id) ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e);
+    setExpenses(updated);
+    saveMasterExpenses(updated);
     setSelectedExpenseIds(prev => prev.filter(x => x !== id));
-    showToast(`Expense ${id} (${target.category} • ₹${Number(target.amount).toLocaleString('en-IN')}) settled successfully!`);
+    showToast(`Expense (${target.category} • ₹${Number(target.amount).toLocaleString('en-IN')}) settled successfully!`);
   };
 
   const handlePayAllSelected = () => {
     if (selectedExpenseIds.length === 0) return;
     const count = selectedExpenseIds.length;
     const total = selectedTotalAmount;
-    setExpenses(prev => prev.map(e => selectedExpenseIds.includes(e.id) ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e));
+    const updated = expenses.map(e => (selectedExpenseIds.includes(e.id) || selectedExpenseIds.includes(e.expense_id)) ? { ...e, status: 'Paid', date: new Date().toISOString().split('T')[0] } : e);
+    setExpenses(updated);
+    saveMasterExpenses(updated);
     setSelectedExpenseIds([]);
     showToast(`🎉 1-Click Pay All: Settled ${count} pending expenses (₹${total.toLocaleString('en-IN')})!`);
   };
@@ -236,8 +253,11 @@ export default function FinancialPnLView() {
   const handleAddExpense = (e) => {
     e.preventDefault();
     if (!newExp.amount || !newExp.description) return;
+    const nextNum = expenses.length + 1;
     const added = {
-      id: `EXP 00${expenses.length + 1}`,
+      id: `EXP 00${nextNum}`,
+      expense_id: `EXP-${String(nextNum).padStart(3, '0')}`,
+      title: newExp.description || newExp.category,
       category: newExp.category,
       description: newExp.description,
       amount: parseFloat(newExp.amount),
@@ -245,7 +265,9 @@ export default function FinancialPnLView() {
       status: 'Pending',
       type: newExp.type
     };
-    setExpenses([added, ...expenses]);
+    const updated = [added, ...expenses];
+    setExpenses(updated);
+    saveMasterExpenses(updated);
     setShowAddModal(false);
     showToast(`Logged new pending expense for ${newExp.category} (₹${Number(newExp.amount).toLocaleString('en-IN')})`);
     setNewExp({
