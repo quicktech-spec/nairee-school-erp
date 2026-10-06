@@ -27,25 +27,28 @@ import {
   Mail,
   Receipt
 } from 'lucide-react';
-import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
+import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId, normalizeBatchAndClass } from '../api.js';
 
 function mapMasterToMgmtStudents(masterList) {
-  return masterList.map((s, idx) => ({
-    id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
-    name: s.name || s.student_name,
-    roll_no: s.roll_no || String(idx + 1).padStart(2, '0'),
-    class_id: s.batch_id || (s.class_batch?.includes('10B') || s.class_batch?.includes('Section B') ? 'CLS-10B' : 'CLS-10A'),
-    class_name: s.class_batch || 'Class 10 - Section A',
-    email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
-    phone: s.phone || '+91 98765 00000',
-    parent_name: s.father_name || s.mother_name || 'Parent',
-    parent_phone: s.father_phone || s.mother_phone || s.phone || '+91 98765 00000',
-    attendance: 96.5,
-    fee_total: 43500,
-    fee_paid: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 43500 : (s.fee_paid !== undefined ? s.fee_paid : (s.fee_status === 'Pending' ? 0 : 43500)),
-    fee_due: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 0 : (s.fee_due !== undefined ? s.fee_due : (s.fee_status === 'Pending' ? 35000 : 0)),
-    fee_status: s.fee_status || 'Paid'
-  }));
+  return masterList.map((s, idx) => {
+    const norm = normalizeBatchAndClass(s.class_batch || s.student_batch || s.batch_id || 'Class 10 - Section A');
+    return {
+      id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
+      name: s.name || s.student_name,
+      roll_no: s.roll_no || String(idx + 1).padStart(2, '0'),
+      class_id: norm.batch_id,
+      class_name: s.class_batch || norm.class_batch,
+      email: s.email || `${(s.name || s.student_name || 'student').toLowerCase().replace(/\s+/g, '')}@student.nairee.edu`,
+      phone: s.phone || '+91 98765 00000',
+      parent_name: s.father_name || s.mother_name || 'Parent',
+      parent_phone: s.father_phone || s.mother_phone || s.phone || '+91 98765 00000',
+      attendance: 96.5,
+      fee_total: 43500,
+      fee_paid: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 43500 : (s.fee_paid !== undefined ? s.fee_paid : (s.fee_status === 'Pending' ? 0 : 43500)),
+      fee_due: (s.fee_status === 'Paid' || s.fee_status === 'Cleared') ? 0 : (s.fee_due !== undefined ? s.fee_due : (s.fee_status === 'Pending' ? 35000 : 0)),
+      fee_status: s.fee_status || 'Paid'
+    };
+  });
 }
 
 function getClassesFromDb() {
@@ -146,6 +149,8 @@ export default function ClassStaffManagerView() {
   // Subscribe to live multi-tab & cross-component database sync events
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
+      setClasses(getClassesFromDb());
+      setTeachers(getTeachersFromDb());
       const freshMaster = getMasterStudents();
       if (freshMaster && freshMaster.length > 0) {
         setStudents(mapMasterToMgmtStudents(freshMaster));

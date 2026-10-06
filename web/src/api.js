@@ -430,32 +430,97 @@ export function saveStoredDb(newDbStore, shouldBroadcast = true) {
   }
 }
 
+export function normalizeBatchAndClass(inputClassOrBatch) {
+  const raw = String(inputClassOrBatch || 'Class 10 - Section A').trim();
+  
+  const match = raw.match(/(?:Class|Grade)?\s*(\d+|Nursery|LKG|UKG|KG)\s*(?:-|\/)?\s*(?:Section)?\s*([A-Z])?/i);
+  
+  let grade = 'Class 10';
+  let section = 'A';
+  let batchId = 'CLS-10A';
+  let className = raw;
+
+  if (match && match[1]) {
+    const num = match[1];
+    const sec = (match[2] || 'A').toUpperCase();
+    grade = `Class ${num}`;
+    section = sec;
+    const paddedNum = !isNaN(num) ? String(num).padStart(2, '0') : num.toUpperCase();
+    batchId = `CLS-${paddedNum}${sec}`;
+    className = `Class ${num} - Section ${sec}`;
+  } else if (raw.toUpperCase().startsWith('CLS-')) {
+    batchId = raw.toUpperCase();
+    const cleanNum = raw.replace(/\D/g, '');
+    const cleanSec = raw.slice(-1).toUpperCase();
+    grade = `Class ${cleanNum || '10'}`;
+    section = cleanSec || 'A';
+    className = `Class ${cleanNum || '10'} - Section ${cleanSec || 'A'}`;
+  }
+
+  return {
+    batch_id: batchId,
+    class_batch: className,
+    grade,
+    section
+  };
+}
+
 // Cascading Relational Trigger Engine for Students:
 // When any student detail (id, name, roll_no, class_batch) updates, it triggers
-// instantaneous cascading updates across Attendance, Invoices, Results, and Portals.
+// instantaneous cascading updates across Attendance, Invoices, Results, Classes, and Portals.
 export function cascadeStudentUpdates(updatedStudentsList, dbStore) {
   if (!dbStore || !Array.isArray(updatedStudentsList)) return dbStore;
 
   const studentMap = new Map();
+  const detectedClasses = new Map();
+
   updatedStudentsList.forEach(s => {
     if (s && (s.student_id || s.id)) {
       const sid = String(s.student_id || s.id).trim();
       const sname = String(s.name || s.student_name || '').trim();
       const roll = String(s.roll_no || '').padStart(2, '0');
-      const classBatch = s.class_batch || s.student_batch || 'Class 10 - Section A';
       
+      const norm = normalizeBatchAndClass(s.class_batch || s.student_batch || s.batch_id);
+      s.batch_id = s.batch_id || norm.batch_id;
+      s.class_batch = s.class_batch || norm.class_batch;
+
       const payload = {
         student_id: sid,
         student_name: sname,
         roll_no: roll,
-        class_batch: classBatch,
-        batch_id: s.batch_id || 'CLS-10A'
+        class_batch: norm.class_batch,
+        batch_id: norm.batch_id,
+        grade: norm.grade,
+        section: norm.section
       };
 
       studentMap.set(sid.toLowerCase(), payload);
       if (sname) studentMap.set(sname.toLowerCase(), payload);
+
+      if (!detectedClasses.has(norm.batch_id)) {
+        detectedClasses.set(norm.batch_id, {
+          batch_id: norm.batch_id,
+          batch_name: norm.class_batch,
+          grade: norm.grade,
+          section: norm.section,
+          room_no: `Room ${(parseInt(norm.grade.replace(/\D/g, '')) || 1) * 100 + 1}`,
+          class_teacher_id: 'NIS-2020-811-001',
+          class_teacher: 'Prof. Sarah Jenkins',
+          capacity: 35
+        });
+      }
     }
   });
+
+  // 0. Ensure Class & Batch List contains all active classes
+  if (dbStore['Class & Batch List'] && Array.isArray(dbStore['Class & Batch List'].rows)) {
+    const existingBatchIds = new Set(dbStore['Class & Batch List'].rows.map(r => r.batch_id));
+    detectedClasses.forEach((clsObj, bId) => {
+      if (!existingBatchIds.has(bId)) {
+        dbStore['Class & Batch List'].rows.push(clsObj);
+      }
+    });
+  }
 
   // 1. Cascade to Attendance Records
   if (dbStore['Attendance Records'] && Array.isArray(dbStore['Attendance Records'].rows)) {
@@ -524,7 +589,8 @@ export function cascadeStudentUpdates(updatedStudentsList, dbStore) {
         return {
           ...sub,
           student_id: matched.student_id,
-          student_name: matched.student_name
+          student_name: matched.student_name,
+          class_batch: matched.class_batch || sub.class_batch
         };
       }
       return sub;
@@ -970,18 +1036,27 @@ export const api = {
 
     let list = getMasterStudents();
     if (batch && batch !== 'all') {
-      list = list.filter(s => 
-        s.batch_id === batch || 
-        s.class_batch === batch || 
-        (s.class_batch && s.class_batch.toLowerCase().includes(batch.toLowerCase()))
-      );
+      const normQuery = normalizeBatchAndClass(batch);
+      const cleanBId = normQuery.batch_id.toLowerCase();
+      const cleanBName = normQuery.class_batch.toLowerCase();
+      const cleanRaw = batch.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      list = list.filter(s => {
+        const sNorm = normalizeBatchAndClass(s.class_batch || s.student_batch || s.batch_id);
+        const sBId = sNorm.batch_id.toLowerCase();
+        const sBName = sNorm.class_batch.toLowerCase();
+        const sRaw = (s.batch_id || s.class_batch || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        return sBId === cleanBId || sBName === cleanBName || sRaw === cleanRaw;
+      });
     }
     if (search) {
-      const q = search.toLowerCase();
+      const q = search.toLowerCase().trim();
       list = list.filter(s => 
         (s.name || '').toLowerCase().includes(q) || 
         (s.roll_no || '').toLowerCase().includes(q) ||
-        (s.student_id || '').toLowerCase().includes(q)
+        (s.student_id || '').toLowerCase().includes(q) ||
+        (s.class_batch || '').toLowerCase().includes(q)
       );
     }
 

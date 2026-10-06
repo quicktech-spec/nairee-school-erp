@@ -28,7 +28,7 @@ import {
   X,
   Flame
 } from 'lucide-react';
-import { api } from '../api.js';
+import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 
 export default function TeacherPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
@@ -201,14 +201,15 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
 
   const loadData = async () => {
     try {
-      const [sch, syl, hw, mat, msg, plans, stuList] = await Promise.all([
+      const [sch, syl, hw, mat, msg, plans, stuList, batchesData] = await Promise.all([
         api.getSchedule(selectedBatch).catch(() => []),
         api.getSyllabus({ batch: selectedBatch }).catch(() => []),
         api.getHomework().catch(() => []),
         api.getStudyMaterials({ batch: selectedBatch }).catch(() => []),
         api.getMessages(user?.username, 'teacher').catch(() => []),
         api.getAssessmentPlans().catch(() => []),
-        api.getStudents(selectedBatch).catch(() => [])
+        api.getStudents(selectedBatch).catch(() => []),
+        api.getBatches().catch(() => [])
       ]);
       setSchedule(sch);
       setSyllabusList(syl);
@@ -217,6 +218,9 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
       setMessages(msg);
       setAssessmentPlans(plans);
       setStudents(stuList);
+      if (batchesData && batchesData.length > 0) {
+        setBatches(batchesData.map(b => ({ name: b.id || b.batch_id, batch_name: b.name || b.batch_name })));
+      }
 
       // Default attendance records to Present
       const initialAtt = {};
@@ -231,6 +235,14 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
 
   useEffect(() => {
     loadData();
+  }, [selectedBatch]);
+
+  // Live real-time sync across all components and database updates
+  useEffect(() => {
+    const unsub = subscribeLiveEvents((event) => {
+      loadData();
+    });
+    return () => unsub();
   }, [selectedBatch]);
 
   // Update Syllabus Topic Completion

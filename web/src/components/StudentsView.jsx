@@ -62,12 +62,10 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
     loadData();
   }, [selectedBatch, searchQuery]);
 
-  // Live real-time sync across tabs and P&L fee settlements
+  // Live real-time sync across tabs and relational cascades
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
-      if (event?.type === 'fee_updated' || event?.type === 'attendance_updated') {
-        loadData();
-      }
+      loadData();
     });
     return () => unsub();
   }, [selectedBatch, searchQuery]);
