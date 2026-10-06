@@ -1335,6 +1335,95 @@ export const INITIAL_DB_STORE = {
       { alumni_id: 'ALUM-2017-09', name: 'Natasha Wadia', passing_year: 'Batch of 2017', higher_education: 'M.D. Pediatrics, Johns Hopkins University', current_profession: 'Pediatric Cardiologist', email: 'natasha.wadia@alumni.nairee.edu' },
       { alumni_id: 'ALUM-2016-10', name: 'Rishabh Bajaj', passing_year: 'Batch of 2016', higher_education: 'B.Tech Electrical Engineering, IIT Madras', current_profession: 'Founder & CEO, Quantum Clean Energy', email: 'rishabh.bajaj@alumni.nairee.edu' }
     ]
+  },
+
+  'Staff & Personnel': {
+    columns: [
+      { name: 'staff_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'name', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'designation', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'department', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'email', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'monthly_salary', type: 'NUMERIC(12,2)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { staff_id: 'STF-001', name: 'Rameshwar Singh', designation: 'Senior Fleet Driver', department: 'Transport', phone: '+91 98765 11223', email: 'transport@nairee.edu', monthly_salary: 28000, status: 'Active' },
+      { staff_id: 'STF-002', name: 'Manjula Gowda', designation: 'Head Librarian', department: 'Library', phone: '+91 98765 11224', email: 'library@nairee.edu', monthly_salary: 38000, status: 'Active' },
+      { staff_id: 'STF-003', name: 'Kishanlal Meena', designation: 'Campus Safety Officer', department: 'Security', phone: '+91 98765 11225', email: 'security@nairee.edu', monthly_salary: 26000, status: 'Active' },
+      { staff_id: 'STF-004', name: 'Sumantha Mukherjee', designation: 'Senior Accountant', department: 'Finance & Accounts', phone: '+91 98765 11226', email: 'accounts@nairee.edu', monthly_salary: 45000, status: 'Active' }
+    ]
+  },
+
+  'Certificates & Credentials': {
+    columns: [
+      { name: 'certificate_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'certificate_type', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'issue_date', type: 'DATE', pk: 0 },
+      { name: 'issued_by_admin', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'issued_by_teacher', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { certificate_id: 'CERT-2026-001', student_id: 'NIS-2024-091-001', certificate_type: 'Bonafide Certificate', issue_date: '2026-04-10', issued_by_admin: 'ADM-001', issued_by_teacher: null, status: 'Issued' },
+      { certificate_id: 'CERT-2026-002', student_id: 'NIS-2024-092-002', certificate_type: 'Character Certificate', issue_date: '2026-04-12', issued_by_admin: 'ADM-001', issued_by_teacher: null, status: 'Issued' },
+      { certificate_id: 'CERT-2026-003', student_id: 'NIS-2024-095-005', certificate_type: 'National Olympiad Excellence', issue_date: '2026-05-18', issued_by_admin: null, issued_by_teacher: 'NIS-2020-811-001', status: 'Issued' }
+    ]
+  },
+
+  'ID Cards & Badges': {
+    columns: [
+      { name: 'id_card_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'holder_type', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'student_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'teacher_number', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'staff_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'card_design', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'issue_date', type: 'DATE', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { id_card_id: 'IDC-STD-001', holder_type: 'Student', student_id: 'NIS-2024-091-001', teacher_number: null, staff_id: null, card_design: 'Smart-NFC-v2', issue_date: '2024-06-15', status: 'Active' },
+      { id_card_id: 'IDC-TCH-001', holder_type: 'Teacher', student_id: null, teacher_number: 'NIS-2020-811-001', staff_id: null, card_design: 'Faculty-RFID-Gold', issue_date: '2020-08-01', status: 'Active' },
+      { id_card_id: 'IDC-STF-001', holder_type: 'Staff', student_id: null, teacher_number: null, staff_id: 'STF-001', card_design: 'Staff-Standard-Blue', issue_date: '2022-03-10', status: 'Active' }
+    ]
+  },
+
+  'Operational Expenses (P&L)': {
+    columns: [
+      { name: 'expense_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'category', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'description', type: 'TEXT', pk: 0 },
+      { name: 'amount', type: 'NUMERIC(12,2)', pk: 0 },
+      { name: 'expense_date', type: 'DATE', pk: 0 },
+      { name: 'paid_to', type: 'VARCHAR(255)', pk: 0 },
+      { name: 'approved_by', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 }
+    ],
+    rows: [
+      { expense_id: 'EXP-2026-001', category: 'Salary', description: 'Faculty & Administrative Staff Payroll - March', amount: 845000, expense_date: '2026-03-31', paid_to: 'Nairee Staff Disbursal A/C', approved_by: 'ADM-002', status: 'Paid' },
+      { expense_id: 'EXP-2026-002', category: 'Utilities', description: 'Campus High-Speed Fiber & Solar Grid Electricity', amount: 48500, expense_date: '2026-04-05', paid_to: 'BESCOM Power Corp', approved_by: 'ADM-002', status: 'Paid' },
+      { expense_id: 'EXP-2026-003', category: 'Petty Cash', description: 'Library Stationery & Science Olympiad Lab Reagents', amount: 14200, expense_date: '2026-04-10', paid_to: 'City Academic Suppliers', approved_by: 'ADM-002', status: 'Paid' }
+    ]
+  },
+
+  'SaaS Subscriptions & Billing': {
+    columns: [
+      { name: 'subscription_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'tenant_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'plan_tier', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'start_date', type: 'DATE', pk: 0 },
+      { name: 'end_date', type: 'DATE', pk: 0 },
+      { name: 'amount_paid', type: 'NUMERIC(12,2)', pk: 0 },
+      { name: 'payment_status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'invoice_ref', type: 'VARCHAR(100)', pk: 0 }
+    ],
+    rows: [
+      { subscription_id: 'SUB-2026-001', tenant_id: 'tenant-default', plan_tier: 'Enterprise', start_date: '2026-01-01', end_date: '2026-12-31', amount_paid: 120000, payment_status: 'Paid', invoice_ref: 'INV-SaaS-9021' },
+      { subscription_id: 'SUB-2026-002', tenant_id: 'dps-ranchi', plan_tier: 'Enterprise', start_date: '2026-01-01', end_date: '2026-12-31', amount_paid: 120000, payment_status: 'Paid', invoice_ref: 'INV-SaaS-9022' }
+    ]
   }
 };
 

@@ -208,7 +208,44 @@ export function getGuaranteedUniqueTeacherId({ schoolCode = 'NIS', joiningDate =
 }
 
 // --- CENTRALIZED RELATIONAL DATABASE STORAGE ENGINE ---
-const DB_VERSION_KEY = 'nairee_db_v12_multi_tenant_table';
+const DB_VERSION_KEY = 'nairee_db_v13_hardened_security';
+
+export function maskAadhaar(aadhaar) {
+  if (!aadhaar) return '•••• •••• ••••';
+  const clean = String(aadhaar).replace(/\D/g, '');
+  const last4 = clean.slice(-4) || '1091';
+  return `•••• •••• ${last4}`;
+}
+
+export function maskBank(acc) {
+  if (!acc) return '•••• •••• ••••';
+  const clean = String(acc).replace(/\D/g, '');
+  const last4 = clean.slice(-4) || '4321';
+  return `•••• •••• ${last4}`;
+}
+
+export function maskPan(pan) {
+  if (!pan) return '••••••••••';
+  const str = String(pan).trim();
+  const last4 = str.slice(-4) || '901A';
+  return `••••••${last4}`;
+}
+
+// Pre-save Timetable collision guard (matching uq_timetable_teacher_slot constraint)
+export function validateTimetableSlot({ teacher_number, day_of_week, period_number, slot_id = null }) {
+  const db = getStoredDb();
+  const slots = db['timetable_slots']?.rows || db['Timetable Schedule']?.rows || [];
+  const collision = slots.find(s => 
+    s.teacher_number === teacher_number && 
+    s.day_of_week === day_of_week && 
+    Number(s.period_number) === Number(period_number) &&
+    s.slot_id !== slot_id
+  );
+  if (collision) {
+    throw new Error(`Teacher conflict: Selected faculty is already scheduled for Period ${period_number} on ${day_of_week}.`);
+  }
+  return true;
+}
 
 const PK_MAP = {
   'Tenants & Multi-Tenant Schools': 'tenant_id',
@@ -218,6 +255,8 @@ const PK_MAP = {
   'staff_faculty': 'teacher_number',
   'Staff & Faculty': 'teacher_number',
   'employees': 'teacher_number',
+  'Staff & Personnel': 'staff_id',
+  'staff': 'staff_id',
   'Class & Batch List': 'batch_id',
   'Subjects List': 'subject_id',
   'Assessment Plans': 'plan_id',
@@ -232,6 +271,14 @@ const PK_MAP = {
   'Parent List': 'parent_id',
   'Admin List': 'admin_id',
   'Transfer Certificates': 'tc_id',
+  'Certificates & Credentials': 'certificate_id',
+  'certificates': 'certificate_id',
+  'ID Cards & Badges': 'id_card_id',
+  'id_cards': 'id_card_id',
+  'Operational Expenses (P&L)': 'expense_id',
+  'expenses': 'expense_id',
+  'SaaS Subscriptions & Billing': 'subscription_id',
+  'subscriptions': 'subscription_id',
   'Alumni Network': 'alumni_id'
 };
 

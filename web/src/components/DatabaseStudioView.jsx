@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { INITIAL_DB_STORE } from '../fallbackData.js';
-import { getStoredDb, saveStoredDb, saveMasterStudents, saveMasterTeachers, syncStudentAcrossAllDatasets, subscribeLiveEvents, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId } from '../api.js';
+import { getStoredDb, saveStoredDb, saveMasterStudents, saveMasterTeachers, syncStudentAcrossAllDatasets, subscribeLiveEvents, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId, maskAadhaar, maskBank, maskPan } from '../api.js';
 
 const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
