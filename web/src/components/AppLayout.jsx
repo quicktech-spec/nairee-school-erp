@@ -1033,18 +1033,6 @@ export default function AppLayout({
         </div>
       )}
 
-      {/* Onboard School Modal */}
-      <TenantOnboardingModal 
-        isOpen={isOnboardingModalOpen} 
-        onClose={() => setIsOnboardingModalOpen(false)} 
-      />
-
-      {/* Switch School Modal */}
-      <TenantSwitchModal 
-        isOpen={isSwitchModalOpen} 
-        onClose={() => setIsSwitchModalOpen(false)} 
-      />
-
     </div>
   );
 }

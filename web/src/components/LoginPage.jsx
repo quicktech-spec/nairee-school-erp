@@ -517,18 +517,6 @@ export default function LoginPage({ onLoginSuccess }) {
           </div>
         </div>
       </footer>
-
-      {/* Onboard School Modal */}
-      <TenantOnboardingModal 
-        isOpen={isOnboardingModalOpen} 
-        onClose={() => setIsOnboardingModalOpen(false)} 
-      />
-
-      {/* Switch School Modal */}
-      <TenantSwitchModal 
-        isOpen={isSwitchModalOpen} 
-        onClose={() => setIsSwitchModalOpen(false)} 
-      />
     </div>
   );
 }

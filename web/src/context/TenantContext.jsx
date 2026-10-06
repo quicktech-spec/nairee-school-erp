@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase, teardownRealtimeAndSession } from '../supabaseClient.js';
-import { subscribeLiveEvents, broadcastLiveEvent, getStoredDb, saveStoredDb } from '../api.js';
+import { subscribeLiveEvents, broadcastLiveEvent } from '../api.js';
 
 const TenantContext = createContext(null);
 
@@ -162,11 +162,12 @@ export function resolveSubdomainFromLocation() {
 
 export function resolveTenantFromLocation(tenantsList = DEFAULT_TENANTS) {
   const subdomain = resolveSubdomainFromLocation();
-  const match = tenantsList.find(t => 
-    t.tenant_id.toLowerCase() === subdomain || 
-    t.subdomain.toLowerCase() === subdomain
+  const list = (tenantsList && tenantsList.length > 0) ? tenantsList : DEFAULT_TENANTS;
+  const match = list.find(t => 
+    t?.tenant_id?.toLowerCase() === subdomain || 
+    t?.subdomain?.toLowerCase() === subdomain
   );
-  return match || tenantsList[0];
+  return match || list[0] || DEFAULT_TENANTS[0];
 }
 
 export function TenantProvider({ children }) {
@@ -190,7 +191,7 @@ export function TenantProvider({ children }) {
   const [isOnboardingModalOpen, setIsOnboardingModalOpen] = useState(false);
   const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false);
 
-  // Fetch Public Branding
+  // Fetch Public Branding Safely
   const loadBrandingForSubdomain = useCallback(async (subdomain) => {
     try {
       setIsBrandingLoading(true);
@@ -200,19 +201,24 @@ export function TenantProvider({ children }) {
 
       if (!error && data && data.length > 0) {
         const brand = data[0];
-        setActiveTenant(prev => ({
-          ...prev,
-          school_name: brand.school_name || prev.school_name,
-          logo_url: brand.logo_url || prev.logo_url,
-          logo_white_url: brand.logo_white_url || prev.logo_white_url,
-          primary_color: brand.primary_color || prev.primary_color,
-          secondary_color: brand.secondary_color || prev.secondary_color,
-          accent_color: brand.accent_color || prev.accent_color,
-          tagline: brand.tagline || prev.tagline
-        }));
+        if (brand) {
+          setActiveTenant(prev => {
+            const base = prev || DEFAULT_TENANTS[0];
+            return {
+              ...base,
+              school_name: brand.school_name || base.school_name,
+              logo_url: brand.logo_url || base.logo_url,
+              logo_white_url: brand.logo_white_url || base.logo_white_url,
+              primary_color: brand.primary_color || base.primary_color,
+              secondary_color: brand.secondary_color || base.secondary_color,
+              accent_color: brand.accent_color || base.accent_color,
+              tagline: brand.tagline || base.tagline
+            };
+          });
+        }
       }
     } catch (err) {
-      // Fallback
+      // Graceful fallback
     } finally {
       setIsBrandingLoading(false);
     }
@@ -225,16 +231,21 @@ export function TenantProvider({ children }) {
 
   // Auth Lifecycle & Security
   useEffect(() => {
+    let isMounted = true;
+
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        handleAuthSession(session);
-      }
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && isMounted) {
+          handleAuthSession(session);
+        }
+      } catch (e) {}
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!isMounted) return;
       if (session?.user) {
         await handleAuthSession(session);
       } else {
@@ -244,11 +255,13 @@ export function TenantProvider({ children }) {
     });
 
     return () => {
+      isMounted = false;
       subscription?.unsubscribe();
     };
-  }, [activeTenant.tenant_id]);
+  }, [activeTenant?.tenant_id]);
 
   const handleAuthSession = async (session) => {
+    if (!session?.user) return;
     const user = session.user;
     setCurrentUser(user);
 
@@ -257,8 +270,10 @@ export function TenantProvider({ children }) {
 
     if (jwtTenantId && activeTenant?.tenant_id && jwtTenantId !== activeTenant.tenant_id && activeTenant.tenant_id !== 'tenant-default') {
       setAuthError('Security Alert: Your account belongs to a different school domain. You have been signed out.');
-      await supabase.auth.signOut();
-      await teardownRealtimeAndSession();
+      try {
+        await supabase.auth.signOut();
+        await teardownRealtimeAndSession();
+      } catch (e) {}
       return;
     }
 
@@ -279,14 +294,14 @@ export function TenantProvider({ children }) {
       } else {
         setUserProfile({
           auth_user_id: user.id,
-          tenant_id: jwtTenantId || activeTenant.tenant_id,
+          tenant_id: jwtTenantId || activeTenant?.tenant_id || 'tenant-default',
           role: jwtRole || 'Admin'
         });
       }
     } catch (e) {
       setUserProfile({
         auth_user_id: user.id,
-        tenant_id: jwtTenantId || activeTenant.tenant_id,
+        tenant_id: jwtTenantId || activeTenant?.tenant_id || 'tenant-default',
         role: jwtRole || 'Admin'
       });
     }
@@ -294,33 +309,36 @@ export function TenantProvider({ children }) {
 
   // Dynamic Theme Colors
   useEffect(() => {
-    if (!activeTenant) return;
+    const current = activeTenant || DEFAULT_TENANTS[0];
 
     try {
       const root = document.documentElement;
-      root.style.setProperty('--tenant-primary', activeTenant.primary_color || '#5673ec');
-      root.style.setProperty('--tenant-secondary', activeTenant.secondary_color || '#6c8cff');
-      root.style.setProperty('--tenant-accent', activeTenant.accent_color || '#10b981');
+      root.style.setProperty('--tenant-primary', current.primary_color || '#5673ec');
+      root.style.setProperty('--tenant-secondary', current.secondary_color || '#6c8cff');
+      root.style.setProperty('--tenant-accent', current.accent_color || '#10b981');
       
-      document.title = `${activeTenant.school_name} | Smart ERP System`;
+      document.title = `${current.school_name || 'Nairee ERP'} | Smart ERP System`;
 
-      if (activeTenant.favicon_url) {
+      if (current.favicon_url) {
         let link = document.querySelector("link[rel~='icon']");
         if (!link) {
           link = document.createElement('link');
           link.rel = 'icon';
           document.head.appendChild(link);
         }
-        link.href = activeTenant.favicon_url;
+        link.href = current.favicon_url;
       }
-      localStorage.setItem('nairee_active_tenant_id', activeTenant.tenant_id);
+      if (current.tenant_id) {
+        localStorage.setItem('nairee_active_tenant_id', current.tenant_id);
+      }
     } catch (e) {}
   }, [activeTenant]);
 
   const switchTenant = async (tenantIdOrSubdomain) => {
-    const match = tenantsList.find(t => 
-      t.tenant_id === tenantIdOrSubdomain || 
-      t.subdomain === tenantIdOrSubdomain
+    const list = (tenantsList && tenantsList.length > 0) ? tenantsList : DEFAULT_TENANTS;
+    const match = list.find(t => 
+      t?.tenant_id === tenantIdOrSubdomain || 
+      t?.subdomain === tenantIdOrSubdomain
     );
     if (match) {
       await teardownRealtimeAndSession();
@@ -367,7 +385,7 @@ export function TenantProvider({ children }) {
       created_at: new Date().toISOString()
     };
 
-    const updatedList = [...tenantsList.filter(t => t.tenant_id !== newTenant.tenant_id), newTenant];
+    const updatedList = [...(tenantsList || []).filter(t => t?.tenant_id !== newTenant.tenant_id), newTenant];
     setTenantsList(updatedList);
     try {
       localStorage.setItem('nairee_tenants_store', JSON.stringify(updatedList));
@@ -385,8 +403,8 @@ export function TenantProvider({ children }) {
   };
 
   const updateTenant = (tenantId, updates) => {
-    const updatedList = tenantsList.map(t => {
-      if (t.tenant_id === tenantId) {
+    const updatedList = (tenantsList || []).map(t => {
+      if (t?.tenant_id === tenantId) {
         return { ...t, ...updates, updated_at: new Date().toISOString() };
       }
       return t;
@@ -394,8 +412,8 @@ export function TenantProvider({ children }) {
     setTenantsList(updatedList);
     try {
       localStorage.setItem('nairee_tenants_store', JSON.stringify(updatedList));
-      const updatedTenant = updatedList.find(t => t.tenant_id === tenantId);
-      if (activeTenant.tenant_id === tenantId) {
+      const updatedTenant = updatedList.find(t => t?.tenant_id === tenantId);
+      if (activeTenant?.tenant_id === tenantId) {
         setActiveTenant(updatedTenant);
       }
       broadcastLiveEvent('tenant_updated', { tenantsList: updatedList, updatedTenant, activeTenantId: tenantId });
@@ -407,7 +425,7 @@ export function TenantProvider({ children }) {
     return activeTenant.enabled_features.includes(featureKey);
   };
 
-  const isMasterTenant = !activeTenant?.tenant_id || activeTenant?.tenant_id === 'tenant-default' || activeTenant?.subdomain === 'demo';
+  const isMasterTenant = Boolean(!activeTenant?.tenant_id || activeTenant?.tenant_id === 'tenant-default' || activeTenant?.subdomain === 'demo');
   const userRole = userProfile?.role || currentUser?.app_metadata?.role || 'Admin';
   const isAdmin = userRole === 'Admin' || userRole === 'SuperAdmin';
   const isTeacher = userRole === 'Teacher';
@@ -417,10 +435,10 @@ export function TenantProvider({ children }) {
   return (
     <TenantContext.Provider
       value={{
-        tenant: activeTenant,
-        activeTenant,
+        tenant: activeTenant || DEFAULT_TENANTS[0],
+        activeTenant: activeTenant || DEFAULT_TENANTS[0],
         isMasterTenant,
-        tenantsList,
+        tenantsList: tenantsList || DEFAULT_TENANTS,
         currentUser,
         userProfile,
         userRole,
