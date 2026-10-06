@@ -19,9 +19,18 @@ import { useTenant } from '../context/TenantContext.jsx';
 import { api } from '../api.js';
 import naireeLogo from '../assets/nairee-logo.png';
 import loginCartoon from '../assets/login-cartoon.png';
+import TenantOnboardingModal from './TenantOnboardingModal.jsx';
+import TenantSwitchModal from './TenantSwitchModal.jsx';
 
 export default function LoginPage({ onLoginSuccess }) {
-  const { tenant, isMasterTenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+  const { 
+    tenant, 
+    isMasterTenant, 
+    isOnboardingModalOpen, 
+    setIsOnboardingModalOpen, 
+    isSwitchModalOpen, 
+    setIsSwitchModalOpen 
+  } = useTenant();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -508,6 +517,18 @@ export default function LoginPage({ onLoginSuccess }) {
           </div>
         </div>
       </footer>
+
+      {/* Onboard School Modal */}
+      <TenantOnboardingModal 
+        isOpen={isOnboardingModalOpen} 
+        onClose={() => setIsOnboardingModalOpen(false)} 
+      />
+
+      {/* Switch School Modal */}
+      <TenantSwitchModal 
+        isOpen={isSwitchModalOpen} 
+        onClose={() => setIsSwitchModalOpen(false)} 
+      />
     </div>
   );
 }

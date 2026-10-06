@@ -40,6 +40,8 @@ import webMobileQr from '../assets/web_mobile_qr.png';
 import { api, subscribeLiveEvents } from '../api.js';
 import { FALLBACK_DATA } from '../fallbackData.js';
 import { useTenant } from '../context/TenantContext.jsx';
+import TenantOnboardingModal from './TenantOnboardingModal.jsx';
+import TenantSwitchModal from './TenantSwitchModal.jsx';
 
 const TAB_FEATURE_MAPPING = {
   homework: 'homework',
@@ -319,7 +321,15 @@ export default function AppLayout({
   onOpenPalette,
   children
 }) {
-  const { tenant, isMasterTenant, isFeatureEnabled, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+  const { 
+    tenant, 
+    isMasterTenant, 
+    isFeatureEnabled, 
+    isOnboardingModalOpen,
+    setIsOnboardingModalOpen, 
+    isSwitchModalOpen,
+    setIsSwitchModalOpen 
+  } = useTenant();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
@@ -1022,6 +1032,18 @@ export default function AppLayout({
           </div>
         </div>
       )}
+
+      {/* Onboard School Modal */}
+      <TenantOnboardingModal 
+        isOpen={isOnboardingModalOpen} 
+        onClose={() => setIsOnboardingModalOpen(false)} 
+      />
+
+      {/* Switch School Modal */}
+      <TenantSwitchModal 
+        isOpen={isSwitchModalOpen} 
+        onClose={() => setIsSwitchModalOpen(false)} 
+      />
 
     </div>
   );
