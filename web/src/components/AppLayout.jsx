@@ -608,20 +608,13 @@ export default function AppLayout({
           </div>
           <div className="text-[10px] text-teal-700 font-semibold truncate flex items-center justify-between">
             <span className="truncate">{user?.full_name} ({user?.role?.toUpperCase()})</span>
-            {isMasterTenant ? (
+            {isMasterTenant && (
               <button 
                 onClick={() => setIsSwitchModalOpen(true)}
                 className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer shrink-0 ml-1"
+                title="Switch school instance"
               >
                 Switch
-              </button>
-            ) : (
-              <button 
-                onClick={() => window.location.href = window.location.pathname}
-                className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer shrink-0 ml-1"
-                title="Return to master platform"
-              >
-                Master
               </button>
             )}
           </div>
@@ -630,28 +623,6 @@ export default function AppLayout({
 
       {/* 2. RIGHT MAIN CONTENT AREA */}
       <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* Top Notification Banner when switched to a client school tenant */}
-        {!isMasterTenant && (
-          <div className="bg-slate-800 text-white px-4 sm:px-6 py-2 flex items-center justify-between text-xs font-semibold shadow-xs">
-            <div className="flex items-center gap-2 truncate">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-              <span className="truncate">
-                Viewing <b>{tenant?.school_name}</b> ({tenant?.subdomain}.nairee.app)
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('tenant');
-                window.location.href = url.pathname;
-              }}
-              className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition-all cursor-pointer shrink-0 ml-2"
-            >
-              &larr; Back to Master Platform
-            </button>
-          </div>
-        )}
 
         {/* Top Header Bar matching media_1790863408009.png */}
         <header className="px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-transparent">
@@ -674,29 +645,32 @@ export default function AppLayout({
             </h1>
           </div>
 
-          {/* Right: Tenant Switcher + Onboard + DB Studio + Search + Notification Bell + Profile */}
+          {/* Right: Master Platform Controls (Switch School & Onboard School) + DB Studio + Search + Notification Bell + Profile */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* School Switcher Button (Always accessible to browse all schools) */}
-            <button
-              onClick={() => setIsSwitchModalOpen(true)}
-              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-              title="Switch School Tenant Instance"
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
-            </button>
+            {/* Master Platform Only Controls (Hidden on all client school websites) */}
+            {isMasterTenant && (
+              <>
+                <button
+                  onClick={() => setIsSwitchModalOpen(true)}
+                  className="px-2.5 sm:px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  title="Switch School Tenant Instance"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
+                </button>
 
-            {/* Admin Onboard School Wizard Trigger */}
-            {normalizedRole === 'admin' && (
-              <button
-                onClick={() => setIsOnboardingModalOpen(true)}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
-                title="Onboard New White-Label School"
-              >
-                <Plus className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                <span className="hidden sm:inline">+ Onboard School</span>
-                <span className="sm:hidden">+ School</span>
-              </button>
+                {normalizedRole === 'admin' && (
+                  <button
+                    onClick={() => setIsOnboardingModalOpen(true)}
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                    title="Onboard New White-Label School"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                    <span className="hidden sm:inline">+ Onboard School</span>
+                    <span className="sm:hidden">+ School</span>
+                  </button>
+                )}
+              </>
             )}
 
             {/* Quick School Records Button (ADMIN ONLY) */}

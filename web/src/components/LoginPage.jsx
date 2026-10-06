@@ -137,44 +137,31 @@ export default function LoginPage({ onLoginSuccess }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {!isMasterTenant && (
+          {isMasterTenant && (
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* White-Label Switcher Button (Master Platform Only) */}
               <button
                 type="button"
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.delete('tenant');
-                  window.location.href = url.pathname;
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all cursor-pointer shadow-xs"
-                title="Return to Master Platform"
+                onClick={() => setIsSwitchModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                title="Browse & Switch Between All Schools"
               >
-                &larr; <span className="hidden sm:inline">Master Platform</span>
+                <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Switch School</span>
               </button>
-            )}
 
-            {/* White-Label Switcher Button */}
-            <button
-              type="button"
-              onClick={() => setIsSwitchModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-              title="Browse & Switch Between All Schools"
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>{isMasterTenant ? 'Switch School' : 'All Schools'}</span>
-            </button>
-
-            {/* Onboard New School Wizard Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsOnboardingModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-              title="Provision a new white-label school"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-              <span>+ Onboard School</span>
-            </button>
-          </div>
+              {/* Onboard New School Wizard Trigger (Master Platform Only) */}
+              <button
+                type="button"
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                title="Provision a new white-label school"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                <span>+ Onboard School</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
