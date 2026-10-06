@@ -21,7 +21,7 @@ import naireeLogo from '../assets/nairee-logo.png';
 import loginCartoon from '../assets/login-cartoon.png';
 
 export default function LoginPage({ onLoginSuccess }) {
-  const { tenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+  const { tenant, isMasterTenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -127,28 +127,30 @@ export default function LoginPage({ onLoginSuccess }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* White-Label Switcher Button */}
-            <button
-              type="button"
-              onClick={() => setIsSwitchModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-              title="Test another white-label school"
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="hidden sm:inline">Switch School</span>
-            </button>
+          {isMasterTenant && (
+            <div className="flex items-center gap-3">
+              {/* White-Label Switcher Button */}
+              <button
+                type="button"
+                onClick={() => setIsSwitchModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                title="Platform Owner Switcher"
+              >
+                <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                <span className="hidden sm:inline">Switch School</span>
+              </button>
 
-            {/* Onboard New School Wizard Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsOnboardingModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-              <span>+ Onboard School</span>
-            </button>
-          </div>
+              {/* Onboard New School Wizard Trigger */}
+              <button
+                type="button"
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                <span>+ Onboard School</span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 

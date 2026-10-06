@@ -363,11 +363,14 @@ export function TenantProvider({ children }) {
     return activeTenant.enabled_features.includes(featureKey);
   };
 
+  const isMasterTenant = activeTenant?.tenant_id === 'tenant-default';
+
   return (
     <TenantContext.Provider
       value={{
         tenant: activeTenant,
         activeTenant,
+        isMasterTenant,
         tenantsList,
         switchTenant,
         createTenant,

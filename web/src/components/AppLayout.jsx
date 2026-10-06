@@ -242,7 +242,7 @@ export default function AppLayout({
   onOpenPalette,
   children
 }) {
-  const { tenant, isFeatureEnabled, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+  const { tenant, isMasterTenant, isFeatureEnabled, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showNoticesModal, setShowNoticesModal] = useState(false);
@@ -430,9 +430,11 @@ export default function AppLayout({
           {/* White-Label School Brand Header in Sidebar */}
           <div className="flex items-center justify-between px-2 mb-6">
             <div 
-              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => setIsSwitchModalOpen(true)}
-              title="Click to switch white-label school instance"
+              className={`flex items-center gap-2.5 min-w-0 ${
+                isMasterTenant ? 'cursor-pointer hover:opacity-90 transition-opacity' : 'cursor-default'
+              }`}
+              onClick={isMasterTenant ? () => setIsSwitchModalOpen(true) : undefined}
+              title={isMasterTenant ? "Click to switch white-label school instance" : undefined}
             >
               <img
                 src={tenant?.logo_url || naireeLogo}
@@ -507,12 +509,14 @@ export default function AppLayout({
           </div>
           <div className="text-[10px] text-teal-700 font-semibold truncate flex items-center justify-between">
             <span>{user?.full_name} ({user?.role?.toUpperCase()})</span>
-            <button 
-              onClick={() => setIsSwitchModalOpen(true)}
-              className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer"
-            >
-              Switch
-            </button>
+            {isMasterTenant && (
+              <button 
+                onClick={() => setIsSwitchModalOpen(true)}
+                className="text-[10px] text-indigo-600 hover:underline font-bold cursor-pointer"
+              >
+                Switch
+              </button>
+            )}
           </div>
         </div>
       </aside>
@@ -543,26 +547,29 @@ export default function AppLayout({
 
           {/* Right: Tenant Switcher + Onboard + DB Studio + Search + Notification Bell + Profile */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* White-Label School Instance Switcher */}
-            <button
-              onClick={() => setIsSwitchModalOpen(true)}
-              className="px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-              title="Switch School Tenant Instance"
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
-            </button>
+            {/* Master Platform Only Controls (Hidden on Client School Websites) */}
+            {isMasterTenant && (
+              <>
+                <button
+                  onClick={() => setIsSwitchModalOpen(true)}
+                  className="px-3 py-1.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  title="Switch School Tenant Instance"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span className="hidden sm:inline">{tenant?.school_code || 'Schools'}</span>
+                </button>
 
-            {/* Onboard New School Wizard Button */}
-            {user?.role === 'admin' && (
-              <button
-                onClick={() => setIsOnboardingModalOpen(true)}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
-                title="Onboard New White-Label School"
-              >
-                <Plus className="w-3.5 h-3.5 text-teal-600" />
-                <span>+ Onboard School</span>
-              </button>
+                {user?.role === 'admin' && (
+                  <button
+                    onClick={() => setIsOnboardingModalOpen(true)}
+                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all cursor-pointer shadow-xs"
+                    title="Onboard New White-Label School"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-teal-600" />
+                    <span>+ Onboard School</span>
+                  </button>
+                )}
+              </>
             )}
 
             {/* Quick School Records Button (ADMIN ONLY) */}

@@ -14,7 +14,7 @@ import {
 import { useTenant } from '../context/TenantContext.jsx';
 
 export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) {
-  const { tenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
+  const { tenant, isMasterTenant, setIsSwitchModalOpen, setIsOnboardingModalOpen } = useTenant();
 
   const getRoleBadge = (role) => {
     switch (role) {
@@ -58,10 +58,12 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
           <img 
             src={tenant?.logo_white_url || tenant?.logo_url || '/nairee-logo-white.png'} 
             alt={tenant?.school_name || 'School ERP'} 
-            className="h-8 max-w-[160px] w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity drop-shadow-sm bg-white/10 rounded-lg p-0.5" 
+            className={`h-8 max-w-[160px] w-auto object-contain drop-shadow-sm bg-white/10 rounded-lg p-0.5 ${
+              isMasterTenant ? 'cursor-pointer hover:opacity-90' : 'cursor-default'
+            }`} 
             onError={(e) => { e.target.src = '/nairee-logo-white.png'; }}
-            onClick={() => setIsSwitchModalOpen(true)}
-            title="Click to switch white-label school instance"
+            onClick={isMasterTenant ? () => setIsSwitchModalOpen(true) : undefined}
+            title={isMasterTenant ? "Click to switch white-label school instance" : undefined}
           />
           <div className="hidden sm:block pl-3 border-l border-white/25">
             <div className="flex items-center gap-2">
@@ -76,32 +78,35 @@ export default function Navbar({ user, onLogout, onSwitchUser, onOpenPalette }) 
               </span>
             </div>
             <p className="text-[10px] text-white/80 font-mono">
-              {tenant?.subdomain}.nairee.app &bull; Isolated Tenant
+              {tenant?.subdomain}.nairee.app
             </p>
           </div>
         </div>
 
         {/* Middle / Right: Actions & Switchers */}
         <div className="flex items-center gap-2.5">
-          {/* Multi-Tenant Switcher Button */}
-          <button
-            onClick={() => setIsSwitchModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white font-bold transition-all cursor-pointer shadow-sm"
-            title="Switch between onboarded school instances"
-          >
-            <Building2 className="w-3.5 h-3.5 text-yellow-300" />
-            <span className="hidden lg:inline">Switch School</span>
-          </button>
+          {/* Multi-Tenant Controls: ONLY shown to platform owner on main site */}
+          {isMasterTenant && (
+            <>
+              <button
+                onClick={() => setIsSwitchModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs text-white font-bold transition-all cursor-pointer shadow-sm"
+                title="Switch between onboarded school instances"
+              >
+                <Building2 className="w-3.5 h-3.5 text-yellow-300" />
+                <span className="hidden lg:inline">Switch School</span>
+              </button>
 
-          {/* Onboard School Button (for Admins) */}
-          <button
-            onClick={() => setIsOnboardingModalOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition-all cursor-pointer shadow-sm"
-            title="Launch White-Label School Onboarding Wizard"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Onboard School</span>
-          </button>
+              <button
+                onClick={() => setIsOnboardingModalOpen(true)}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-extrabold transition-all cursor-pointer shadow-sm"
+                title="Launch White-Label School Onboarding Wizard"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Onboard School</span>
+              </button>
+            </>
+          )}
 
           <button
             onClick={onOpenPalette}

@@ -59,6 +59,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [provisionSuccess, setProvisionSuccess] = useState(false);
   const [provisionedTenant, setProvisionedTenant] = useState(null);
+  const [showUrlInput, setShowUrlInput] = useState(false);
 
   const [formData, setFormData] = useState({
     school_name: '',
@@ -84,6 +85,24 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
     admin_email: 'principal@school.edu',
     admin_pass: 'school123'
   });
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Logo file size must be under 5MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        setFormData(prev => ({
+          ...prev,
+          logo_url: uploadEvent.target.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -364,18 +383,71 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Logo URL input */}
+              {/* School Logo Upload & Drag-Drop Zone */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  School Crest / Logo URL
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                  <span>School Crest / Logo Upload *</span>
+                  <span className="text-[10px] text-slate-400 font-normal">PNG, JPG, SVG, WebP (Max 5MB)</span>
                 </label>
-                <input
-                  type="text"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                  placeholder="https://your-domain.com/logo.png"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-sm font-mono"
-                />
+
+                <div className="p-4 rounded-2xl border-2 border-dashed border-indigo-200 bg-indigo-50/30 hover:bg-indigo-50/60 transition-colors flex flex-col sm:flex-row items-center gap-4">
+                  {/* Current Logo Thumbnail */}
+                  <div className="relative shrink-0">
+                    <img 
+                      src={formData.logo_url} 
+                      alt="School Crest" 
+                      className="w-16 h-16 rounded-xl object-contain bg-white p-1.5 border border-slate-200 shadow-sm"
+                      onError={(e) => { e.target.src = '/nairee-logo.png'; }}
+                    />
+                    {formData.logo_url && (
+                      <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold shadow-xs">
+                        ✓
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex-1 text-center sm:text-left space-y-2 w-full">
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                      <label className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-sm transition-all active:scale-95">
+                        <Upload className="w-4 h-4" />
+                        <span>Choose / Upload File</span>
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowUrlInput(!showUrlInput)}
+                        className="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Globe className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{showUrlInput ? 'Hide URL Box' : 'Paste Image URL'}</span>
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] text-slate-500">
+                      Upload the school's official PNG/SVG crest or logo from your computer.
+                    </p>
+
+                    {/* URL Input (Optional Dropdown) */}
+                    {showUrlInput && (
+                      <div className="pt-1.5 animate-in fade-in duration-150">
+                        <input
+                          type="text"
+                          value={formData.logo_url}
+                          onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                          placeholder="https://example.com/school-crest.png"
+                          className="w-full px-3.5 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 text-xs font-mono bg-white"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Presets Grid */}
