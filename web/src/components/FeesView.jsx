@@ -8,24 +8,33 @@ import {
   Download, 
   Filter
 } from 'lucide-react';
-import { api, subscribeLiveEvents } from '../api.js';
+import { api, formatDbError, subscribeLiveEvents } from '../api.js';
+import { useTenant } from '../context/TenantContext.jsx';
 
 export default function FeesView({ onPaymentCompleted }) {
+  const { isAdmin, userRole } = useTenant();
   const [fees, setFees] = useState([]);
+  const [feeStatusList, setFeeStatusList] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [payingFee, setPayingFee] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('UPI / Razorpay');
   const [isProcessing, setIsProcessing] = useState(false);
   const [receiptModal, setReceiptModal] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const loadFees = async () => {
     try {
       setLoading(true);
-      const data = await api.getFees({ status: statusFilter });
-      setFees(data);
+      setErrorMessage('');
+      const [data, statusData] = await Promise.all([
+        api.getFees({ status: statusFilter }),
+        api.getStudentFeeStatus()
+      ]);
+      setFees(data || []);
+      setFeeStatusList(statusData || []);
     } catch (err) {
-      console.error(err);
+      setErrorMessage(formatDbError(err));
     } finally {
       setLoading(false);
     }
@@ -53,7 +62,15 @@ export default function FeesView({ onPaymentCompleted }) {
 
     try {
       setIsProcessing(true);
-      const res = await api.payFee(payingFee.name, paymentMethod);
+      setErrorMessage('');
+
+      // Guard: Check balance if fee status view is available
+      const feeStatus = feeStatusList.find(s => s.student_id === payingFee.student_id);
+      if (feeStatus && feeStatus.balance_amount !== undefined && Number(payingFee.amount) > Number(feeStatus.balance_amount)) {
+        throw new Error(`Payment amount (₹${payingFee.amount}) exceeds the remaining balance (₹${feeStatus.balance_amount}).`);
+      }
+
+      const res = await api.payFee(payingFee.name || payingFee.id, paymentMethod);
       setReceiptModal({
         ...payingFee,
         receipt_no: res.receipt_no,
@@ -64,18 +81,45 @@ export default function FeesView({ onPaymentCompleted }) {
       if (onPaymentCompleted) onPaymentCompleted();
       loadFees();
     } catch (err) {
-      alert('Payment failed: ' + err.message);
+      setErrorMessage(formatDbError(err));
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const totalBilled = fees.reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
-  const totalPaid = fees.filter(f => f.status === 'Paid').reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
-  const totalOutstanding = fees.reduce((sum, f) => sum + (f.outstanding_amount || 0), 0);
+  // Dynamic totals derived directly from database ledger status view or calculated rows
+  const totalBilled = feeStatusList.length > 0
+    ? feeStatusList.reduce((sum, s) => sum + (Number(s.total_billed || s.amount_due) || 0), 0)
+    : fees.reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
+
+  const totalPaid = feeStatusList.length > 0
+    ? feeStatusList.reduce((sum, s) => sum + (Number(s.total_paid || s.amount_paid) || 0), 0)
+    : fees.filter(f => f.status === 'Paid').reduce((sum, f) => sum + (f.grand_total || f.amount || 0), 0);
+
+  const totalOutstanding = feeStatusList.length > 0
+    ? feeStatusList.reduce((sum, s) => sum + (Number(s.balance_amount || s.outstanding_amount) || 0), 0)
+    : fees.reduce((sum, f) => sum + (f.outstanding_amount || 0), 0);
 
   return (
     <div className="space-y-6">
+      {/* Error Alert */}
+      {errorMessage && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-3 shadow-xs">
+          <span className="font-bold text-rose-500 text-sm">✕</span>
+          <div className="flex-1">
+            <p className="font-bold">Transaction Notice</p>
+            <p className="mt-0.5">{errorMessage}</p>
+          </div>
+          <button 
+            type="button"
+            onClick={() => setErrorMessage('')}
+            className="text-rose-400 hover:text-rose-700 font-bold cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#cde8e8] shadow-swift-card">
         <div>

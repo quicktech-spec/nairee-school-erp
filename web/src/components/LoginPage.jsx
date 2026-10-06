@@ -184,10 +184,10 @@ export default function LoginPage({ onLoginSuccess }) {
               </div>
 
               {/* Error Notice */}
-              {errorMessage && (
+              {(authError || errorMessage) && (
                 <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2">
                   <span className="text-rose-500 font-bold">&bull;</span>
-                  <span>{errorMessage}</span>
+                  <span>{authError || errorMessage}</span>
                 </div>
               )}
 

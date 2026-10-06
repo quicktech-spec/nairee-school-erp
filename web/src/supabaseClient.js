@@ -6,6 +6,29 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
-    autoRefreshToken: true
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
 });
+
+/**
+ * Hardened Realtime Channel Manager:
+ * Safely removes and unregisters channels during logout or tenant transitions.
+ */
+export async function teardownRealtimeAndSession() {
+  try {
+    if (supabase) {
+      await supabase.removeAllChannels();
+    }
+  } catch (err) {
+    console.warn('Realtime teardown notice:', err);
+  }
+
+  // Clear in-memory / local storage tenant caches
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem('nairee_active_tenant_id');
+      localStorage.removeItem('nairee_user_profile');
+    } catch (e) {}
+  }
+}

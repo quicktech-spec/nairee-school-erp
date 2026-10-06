@@ -124,6 +124,79 @@ export function subscribeLiveEvents(callback) {
   };
 }
 
+/**
+ * Enterprise Database Error Formatter:
+ * Converts raw PostgreSQL / Supabase codes into user-friendly messages.
+ */
+export function formatDbError(err) {
+  if (!err) return 'An unexpected error occurred.';
+  if (typeof err === 'string') return err;
+  
+  const msg = (err.message || '').toLowerCase();
+  const code = err.code || '';
+  const details = (err.details || '').toLowerCase();
+
+  // 1. Unique violations (23505)
+  if (code === '23505' || msg.includes('duplicate key') || msg.includes('unique constraint')) {
+    if (msg.includes('admission_no') || details.includes('admission_no')) {
+      return 'A student with this Admission Number already exists in the institution.';
+    }
+    if (msg.includes('uq_students_batch_roll') || details.includes('roll_no') || msg.includes('roll_no')) {
+      return 'This Roll Number is already assigned to another student in this class section.';
+    }
+    if (msg.includes('tc_number') || details.includes('tc_number')) {
+      return 'This Transfer Certificate (TC) number has already been recorded.';
+    }
+    if (msg.includes('uq_timetable_teacher_period') || msg.includes('timetable') || details.includes('teacher')) {
+      return 'Scheduling Conflict: This teacher is already assigned to another lecture during this period.';
+    }
+    if (msg.includes('uq_id_cards') || details.includes('card_number')) {
+      return 'An ID card with this card number already exists.';
+    }
+    if (msg.includes('uq_subscriptions_active_tenant')) {
+      return 'This school tenant already has an active subscription plan.';
+    }
+    return 'A record with these unique details already exists in the system.';
+  }
+
+  // 2. Foreign key violations (23503)
+  if (code === '23503' || msg.includes('foreign key constraint') || msg.includes('violates foreign key')) {
+    return 'Cannot complete operation: The referenced record does not exist or belongs to another school tenant.';
+  }
+
+  // 3. Check constraint violations (23514)
+  if (code === '23514' || msg.includes('check constraint')) {
+    if (msg.includes('amount') || msg.includes('payment') || msg.includes('exceeds')) {
+      return 'Payment error: The payment amount cannot exceed the pending invoice balance.';
+    }
+    if (msg.includes('end_time') || msg.includes('chk_timetable_times')) {
+      return 'Lecture time error: End time must be later than the start time.';
+    }
+    if (msg.includes('chk_timetable_period')) {
+      return 'Invalid timetable period: Period must be between 1 and 12.';
+    }
+    if (msg.includes('chk_certificates_not_transfer')) {
+      return 'Transfer certificates cannot be issued here. Please use the Transfer Certificate module.';
+    }
+    if (msg.includes('chk_certificates_single_issuer')) {
+      return 'Certificate authorization error: Exactly one issuer (Admin or Teacher) must be specified.';
+    }
+    return 'Input validation failed: One or more fields violate school policy rules.';
+  }
+
+  // 4. RLS / Permission Denied (42501)
+  if (code === '42501' || msg.includes('permission denied') || msg.includes('row-level security') || msg.includes('violates row-level')) {
+    return 'Permission Denied: Your account role does not have authorization to view or modify this record.';
+  }
+
+  // 5. Restrict Delete Violations (23000 / 23504)
+  if (code === '23504' || msg.includes('restrict') || msg.includes('still referenced')) {
+    return 'Cannot delete record: Financial transactions, fee invoices, or certificates are linked to this record.';
+  }
+
+  return err.message || 'Database request failed. Please try again.';
+}
+
 // Central Student ID Generator: [School Code]-[Year of Admission]-[Aadhaar Card Last 3 Digits]-[Sequence]
 
 // Central Teacher ID Generator: [School Code]-[Year of Employment]-[Aadhaar Card Last 3 Digits]-[Sequence]
@@ -1032,6 +1105,42 @@ export const api = {
     const updated = [newStudent, ...master];
     saveMasterStudents(updated);
 
+    // Direct Supabase PostgreSQL Insertion
+    try {
+      if (supabase) {
+        const activeTenantId = (typeof localStorage !== 'undefined' ? localStorage.getItem('nairee_active_tenant_id') : 'tenant-default') || 'tenant-default';
+        const dbPayload = {
+          admission_no: newStudentId,
+          tenant_id: activeTenantId,
+          name: newStudent.name,
+          roll_no: String(newStudent.roll_no),
+          class: studentData.class || 'Class 10',
+          section: studentData.section || 'A',
+          gender: newStudent.gender || 'Female',
+          dob: newStudent.dob || '2011-05-15',
+          admission_date: new Date().toISOString().split('T')[0],
+          residential_address: newStudent.residential_address || 'Bengaluru',
+          permanent_address: newStudent.permanent_address || 'Bengaluru',
+          phone: newStudent.phone,
+          email: newStudent.email,
+          fee_status: 'Pending',
+          status: 'Active'
+        };
+
+        const { data: dbData, error: dbErr } = await supabase
+          .from('students')
+          .insert([dbPayload])
+          .select()
+          .single();
+
+        if (dbErr) {
+          console.warn('Supabase student insert notice:', dbErr);
+        }
+      }
+    } catch (dbEx) {
+      console.warn('Supabase direct insert exception:', dbEx);
+    }
+
     // Create default tuition fee invoice
     const db = getStoredDb();
     const invoices = db['Fee Invoices & Ledger']?.rows || [];
@@ -1049,6 +1158,7 @@ export const api = {
     });
     db['Fee Invoices & Ledger'].rows = invoices;
     saveStoredDb(db);
+    broadcastLiveEvent('student_created', newStudent);
 
     return newStudent;
   },
@@ -1857,5 +1967,127 @@ export const api = {
 
   async uploadFile(file) {
     return { url: URL.createObjectURL(file), name: file.name };
+  },
+
+  // ---------------------------------------------------------
+  // ENTERPRISE HARDENED DATABASE INTEGRATION METHODS (v3.2)
+  // ---------------------------------------------------------
+
+  // Dynamic Student Fee Status from Database View
+  async getStudentFeeStatus(studentId = '') {
+    try {
+      if (supabase) {
+        let query = supabase.from('student_fee_status').select('*');
+        if (studentId) {
+          query = query.or(`student_id.eq.${studentId},admission_no.eq.${studentId}`);
+        }
+        const { data, error } = await query;
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('student_fee_status view fallback:', e);
+    }
+    return [];
+  },
+
+  // Expenses & Operational Outflows
+  async getExpenses() {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('expenses')
+          .select('*')
+          .order('expense_date', { ascending: false });
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('getExpenses fallback:', e);
+    }
+    const db = getStoredDb();
+    return db['School Expenses & Accounts']?.rows || [];
+  },
+
+  async createExpense(expenseData) {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('expenses')
+          .insert([expenseData])
+          .select()
+          .single();
+        if (error) throw new Error(formatDbError(error));
+        broadcastLiveEvent('expense_created', data);
+        return { success: true, ...data };
+      }
+    } catch (err) {
+      throw new Error(formatDbError(err));
+    }
+  },
+
+  // Admins List
+  async getAdmins() {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('admins')
+          .select('*')
+          .order('name', { ascending: true });
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('getAdmins fallback:', e);
+    }
+    return [];
+  },
+
+  // Teaching Faculty (PII Secured)
+  async getTeachers() {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('teachers')
+          .select('*')
+          .order('name', { ascending: true });
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('getTeachers fallback:', e);
+    }
+    const db = getStoredDb();
+    return db['Faculty & Teachers']?.rows || [];
+  },
+
+  // Non-Teaching Staff
+  async getStaff() {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('staff')
+          .select('*')
+          .order('name', { ascending: true });
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('getStaff fallback:', e);
+    }
+    const db = getStoredDb();
+    return db['Staff Members']?.rows || [];
+  },
+
+  // Parents (Consolidated from Guardians)
+  async getParents() {
+    try {
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('parents')
+          .select('*')
+          .order('name', { ascending: true });
+        if (!error && data) return data;
+      }
+    } catch (e) {
+      console.warn('getParents fallback:', e);
+    }
+    const db = getStoredDb();
+    return db['Parents & Guardians']?.rows || [];
   }
 };

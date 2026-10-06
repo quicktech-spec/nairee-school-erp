@@ -354,29 +354,29 @@ export default function StudentsView({ searchQuery, onSelectStudentPortal }) {
                         </div>
                       </div>
 
-                      {/* Guardians */}
+                      {/* Parents */}
                       <div>
                         <h4 className="text-xs font-bold text-swift-dark mb-3 flex items-center gap-2">
                           <Users className="w-4 h-4 text-brand-600" />
-                          Guardians & Parent Records (tabGuardian)
+                          Parent & Family Contacts
                         </h4>
-                        {studentDetails.guardians?.length > 0 ? (
+                        {(studentDetails.parents?.length > 0 || studentDetails.guardians?.length > 0) ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {studentDetails.guardians.map((g) => (
-                              <div key={g.id} className="p-3.5 rounded-xl bg-[#edfafa]/50 border border-[#cde8e8]">
+                            {(studentDetails.parents || studentDetails.guardians || []).map((p, pIdx) => (
+                              <div key={p.parent_id || p.id || pIdx} className="p-3.5 rounded-xl bg-[#edfafa]/50 border border-[#cde8e8]">
                                 <div className="flex items-center justify-between">
-                                  <p className="text-xs font-bold text-swift-dark">{g.guardian_name}</p>
+                                  <p className="text-xs font-bold text-swift-dark">{p.name || p.guardian_name}</p>
                                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200">
-                                    {g.relation}
+                                    {p.relation || 'Parent'}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-swift-muted mt-1">{g.email_address}</p>
-                                <p className="text-[11px] text-swift-muted">{g.mobile_number}</p>
+                                <p className="text-[11px] text-swift-muted mt-1">{p.email || p.email_address || 'No email'}</p>
+                                <p className="text-[11px] text-swift-muted">{p.phone || p.mobile_number || 'No phone'}</p>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-swift-muted">No guardian contacts recorded.</p>
+                          <p className="text-xs text-swift-muted">No parent contacts recorded.</p>
                         )}
                       </div>
                     </div>
