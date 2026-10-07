@@ -80,14 +80,14 @@ export default function TenantSwitchModal({ isOpen, onClose, onOpenOnboarding })
                     </div>
 
                     <div className="flex items-center gap-3 mt-1 text-[11px] text-slate-500 font-medium">
-                      <span className="flex items-center gap-1 font-mono text-indigo-700 font-semibold">
-                        <Globe className="w-3 h-3 text-slate-400" />
-                        {t.subdomain}.nairee.app
+                      <span className="flex items-center gap-1 font-mono text-indigo-700 font-semibold truncate max-w-[200px]">
+                        <Globe className="w-3 h-3 text-slate-400 shrink-0" />
+                        {t.custom_domain || `${t.subdomain || t.tenant_id}.naireeschool.com`}
                       </span>
                       <span>&bull;</span>
                       <span>{t.plan_tier} Plan</span>
                       <span>&bull;</span>
-                      <span className="text-emerald-600 font-semibold">{t.enabled_features?.length || 10} Modules Active</span>
+                      <span className="text-emerald-600 font-semibold">{t.enabled_features?.length || 10} Modules</span>
                     </div>
                   </div>
                 </div>

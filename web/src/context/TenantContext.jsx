@@ -187,20 +187,51 @@ export const DEFAULT_TENANTS = [
   }
 ];
 
+export function getBaseDomain() {
+  if (typeof window === 'undefined') return 'naireeschool.com';
+  const hostname = window.location.hostname;
+  if (hostname.includes('github.io') || hostname.includes('localhost') || hostname === '127.0.0.1') {
+    return hostname;
+  }
+  const parts = hostname.split('.');
+  if (parts.length >= 2) {
+    return parts.slice(-2).join('.');
+  }
+  return hostname;
+}
+
 export function resolveSubdomainFromLocation() {
   if (typeof window === 'undefined') return 'demo';
 
+  const hostname = window.location.hostname.toLowerCase();
+
+  // 1. Direct Custom Domain Check (e.g. erp.dpsranchi.com)
+  try {
+    const saved = localStorage.getItem('nairee_tenants_store');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        const customMatch = parsed.find(t => t?.custom_domain && t.custom_domain.toLowerCase() === hostname);
+        if (customMatch) return customMatch.subdomain || customMatch.tenant_id;
+      }
+    }
+  } catch (e) {}
+
+  // 2. Real Wildcard Subdomain Check (e.g. dps-ranchi.naireeschool.com or dps-ranchi.localhost)
+  if (hostname && !hostname.includes('github.io')) {
+    const parts = hostname.split('.');
+    if (parts.length >= 3 || (hostname.includes('localhost') && parts.length >= 2)) {
+      const firstPart = parts[0].toLowerCase();
+      if (firstPart !== 'www' && firstPart !== 'app' && firstPart !== 'erp') {
+        return firstPart;
+      }
+    }
+  }
+
+  // 3. Query Parameter Fallback (For preview testing / single domain links)
   const params = new URLSearchParams(window.location.search);
   const queryTenant = params.get('tenant') || params.get('school') || params.get('subdomain');
   if (queryTenant) return queryTenant.toLowerCase();
-
-  const hostname = window.location.hostname;
-  if (hostname && !hostname.includes('github.io') && !hostname.includes('localhost') && hostname.includes('.')) {
-    const parts = hostname.split('.');
-    if (parts.length >= 3) {
-      return parts[0].toLowerCase();
-    }
-  }
 
   return 'demo';
 }
@@ -208,11 +239,54 @@ export function resolveSubdomainFromLocation() {
 export function resolveTenantFromLocation(tenantsList = DEFAULT_TENANTS) {
   const subdomain = resolveSubdomainFromLocation();
   const list = (tenantsList && tenantsList.length > 0) ? tenantsList : DEFAULT_TENANTS;
+  
+  // Try exact subdomain / tenant_id match
   const match = list.find(t => 
     t?.tenant_id?.toLowerCase() === subdomain || 
     t?.subdomain?.toLowerCase() === subdomain
   );
   return match || list[0] || DEFAULT_TENANTS[0];
+}
+
+export function getTenantPortalUrl(targetTenant) {
+  if (!targetTenant) return typeof window !== 'undefined' ? window.location.href : '';
+  if (typeof window === 'undefined') return `https://${targetTenant.subdomain || 'demo'}.naireeschool.com`;
+
+  // Custom domain check
+  if (targetTenant.custom_domain) {
+    return `https://${targetTenant.custom_domain}`;
+  }
+
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  const port = window.location.port ? `:${window.location.port}` : '';
+
+  // GitHub Pages or single domain preview fallback
+  if (hostname.includes('github.io')) {
+    const url = new URL(window.location.href);
+    if (targetTenant.tenant_id === 'tenant-default' || targetTenant.subdomain === 'demo') {
+      url.searchParams.delete('tenant');
+    } else {
+      url.searchParams.set('tenant', targetTenant.subdomain || targetTenant.tenant_id);
+    }
+    return url.toString();
+  }
+
+  // Real Multi-Tenant Wildcard Subdomain
+  const baseDomain = getBaseDomain();
+  const sub = targetTenant.subdomain || targetTenant.tenant_id.replace('tenant-', '');
+  
+  if (hostname.includes('localhost') || hostname === '127.0.0.1') {
+    const url = new URL(window.location.href);
+    if (targetTenant.tenant_id === 'tenant-default' || targetTenant.subdomain === 'demo') {
+      url.searchParams.delete('tenant');
+    } else {
+      url.searchParams.set('tenant', targetTenant.subdomain || targetTenant.tenant_id);
+    }
+    return url.toString();
+  }
+
+  return `${protocol}//${sub}.${baseDomain}${port}`;
 }
 
 export function TenantProvider({ children }) {
@@ -519,7 +593,8 @@ export function TenantProvider({ children }) {
         isOnboardingModalOpen,
         setIsOnboardingModalOpen,
         isSwitchModalOpen,
-        setIsSwitchModalOpen
+        setIsSwitchModalOpen,
+        getTenantPortalUrl: (t) => getTenantPortalUrl(t || activeTenant)
       }}
     >
       {children}

@@ -139,7 +139,7 @@ const AVAILABLE_MODULES = [
 ];
 
 export default function TenantOnboardingModal({ isOpen, onClose }) {
-  const { createTenant, switchTenant } = useTenant();
+  const { createTenant, switchTenant, getTenantPortalUrl } = useTenant();
   const [step, setStep] = useState(1);
   const [isProvisioning, setIsProvisioning] = useState(false);
   const [provisionSuccess, setProvisionSuccess] = useState(false);
@@ -1355,8 +1355,8 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                   />
                   <div>
                     <h4 className="text-base font-black text-slate-900">{formData.school_name}</h4>
-                    <p className="text-xs text-indigo-700 font-mono font-semibold">
-                      https://{formData.subdomain}.nairee.app
+                    <p className="text-xs text-indigo-700 font-mono font-semibold truncate max-w-[280px]">
+                      {getTenantPortalUrl ? getTenantPortalUrl(formData) : `https://${formData.subdomain}.naireeschool.com`}
                     </p>
                     <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-100 text-indigo-800">
                       {formData.plan_tier} Plan &bull; {formData.enabled_features.length} Modules Active
@@ -1445,9 +1445,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
               </div>
 
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-left space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Subdomain URL:</span>
-                  <span className="font-mono font-bold text-indigo-600">https://{provisionedTenant?.subdomain}.nairee.app</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500">Dedicated Portal URL:</span>
+                  <span className="font-mono font-bold text-indigo-600 truncate max-w-[220px]">
+                    {getTenantPortalUrl ? getTenantPortalUrl(provisionedTenant) : `https://${provisionedTenant?.subdomain}.naireeschool.com`}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Tenant ID:</span>

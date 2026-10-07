@@ -15,7 +15,7 @@ import { TenantProvider, useTenant } from './context/TenantContext.jsx';
 import { api } from './api.js';
 
 function MainApp() {
-  const { isOnboardingModalOpen, setIsOnboardingModalOpen, isSwitchModalOpen, setIsSwitchModalOpen } = useTenant();
+  const { tenant, isOnboardingModalOpen, setIsOnboardingModalOpen, isSwitchModalOpen, setIsSwitchModalOpen } = useTenant();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isAdmissionDispatcherOpen, setIsAdmissionDispatcherOpen] = useState(false);
   
@@ -38,6 +38,31 @@ function MainApp() {
       return null;
     }
   });
+
+  // Strict Multi-Tenant Boundary Security Guard:
+  // Prevents session bleed across different schools / subdomains
+  useEffect(() => {
+    if (currentUser && tenant?.tenant_id) {
+      const userTenant = currentUser.tenant_id || currentUser.tenant;
+      const activeTenantId = tenant.tenant_id;
+      const activeSubdomain = tenant.subdomain;
+
+      if (
+        userTenant &&
+        userTenant !== 'tenant-default' &&
+        userTenant !== 'demo' &&
+        userTenant !== activeTenantId &&
+        userTenant !== activeSubdomain
+      ) {
+        console.warn(`[Security Guard] Tenant mismatch: User from (${userTenant}) accessed (${activeTenantId}). Clearing session.`);
+        setCurrentUser(null);
+        try {
+          localStorage.removeItem('nairee_user');
+          localStorage.removeItem('nairee_token');
+        } catch (e) {}
+      }
+    }
+  }, [tenant?.tenant_id, tenant?.subdomain, currentUser]);
 
   useEffect(() => {
     const handleOpenDispatcher = () => setIsAdmissionDispatcherOpen(true);
