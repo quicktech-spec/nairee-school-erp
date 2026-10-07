@@ -33,6 +33,7 @@ import { useTenant } from '../context/TenantContext.jsx';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
 import OnlineAdmissionView from './OnlineAdmissionView.jsx';
+import GradebookView from './GradebookView.jsx';
 
 export default function TeacherPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const { tenant } = useTenant();
@@ -447,6 +448,11 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
           <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
           <span>{toastMessage}</span>
         </div>
+      )}
+
+      {/* EXAMINATIONS & GRADEBOOK MARKS ENTRY */}
+      {(activeTab === 'gradebook' || activeTab === 'grading') && (
+        <GradebookView />
       )}
 
       {/* ONLINE ADMISSION PORTAL & LEADS */}

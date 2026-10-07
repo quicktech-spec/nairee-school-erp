@@ -43,6 +43,7 @@ import TransferCertificateView from './TransferCertificateView.jsx';
 import InventoryAssetsView from './InventoryAssetsView.jsx';
 import AlumniNetworkView from './AlumniNetworkView.jsx';
 import OnlineAdmissionView from './OnlineAdmissionView.jsx';
+import GradebookView from './GradebookView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const { tenant } = useTenant();
@@ -359,6 +360,11 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
           <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
           <span>{toastMessage}</span>
         </div>
+      )}
+
+      {/* EXAMINATIONS & GRADEBOOK TAB */}
+      {activeTab === 'gradebook' && (
+        <GradebookView />
       )}
 
       {/* DEDICATED CLASS, ROSTER & SALARY MANAGER TAB */}

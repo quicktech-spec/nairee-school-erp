@@ -83,6 +83,7 @@ const NAV_CONFIG = {
   ],
   teacher: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'gradebook', label: 'Examinations & Marks', icon: Award },
     { id: 'admissions', label: 'Admissions & Leads', icon: GraduationCap },
     { id: 'attendance', label: 'Attendance', icon: UserCheck },
     { id: 'homework', label: 'Multi-Class HW', icon: BookOpen },
@@ -94,6 +95,7 @@ const NAV_CONFIG = {
   ],
   admin: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'gradebook', label: 'Exams & Gradebook', icon: Award },
     { id: 'admissions', label: 'Admissions & Leads', icon: GraduationCap },
     { id: 'database', label: 'School Records', icon: Database },
     { id: 'fees', label: 'Fee Governance', icon: CreditCard },
