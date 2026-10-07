@@ -2248,160 +2248,55 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Featured Certificate Design Showcase (9 Master Certificate Templates) */}
+        {/* Top Master Document & Certificate Type Selector (All 8 Institutional Documents) */}
         <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-300" />
               <h3 className="font-extrabold text-xs text-amber-300 uppercase tracking-wider">
-                🎨 9 Interchangeable Certificate &amp; Award Design Templates
+                📜 Select Document / Certificate Type (8 Official Formats)
               </h3>
             </div>
             <span className="text-[10px] text-teal-300 bg-teal-950/60 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/30">
-              Click any design to preview instantly
+              Active: {docTypesList.find(d => d.id === docType)?.title}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2.5">
-            {[
-              {
-                id: 'sunrise_chevron',
-                docType: 'tc',
-                tpl: 'sunrise_chevron',
-                title: 'Sunrise Golden Chevron',
-                tag: 'Landscape • Gold Chevron',
-                icon: Sparkles,
-                activeBg: 'from-amber-600/30 to-yellow-600/20 border-amber-400 text-amber-200'
-              },
-              {
-                id: 'imperial_arch',
-                docType: 'appreciation',
-                tpl: 'imperial_arch',
-                title: 'Imperial Crimson Appreciation',
-                tag: 'Portrait • Crimson Arch',
-                icon: Trophy,
-                activeBg: 'from-rose-600/30 to-red-600/20 border-rose-400 text-rose-200'
-              },
-              {
-                id: 'modern_teal',
-                docType: 'participation',
-                tpl: 'modern_teal_geometric',
-                title: 'Modern Teal Participation',
-                tag: 'Portrait • Geometric Teal',
-                icon: Medal,
-                activeBg: 'from-teal-600/30 to-cyan-600/20 border-teal-400 text-teal-200'
-              },
-              {
-                id: 'royal_gold',
-                docType: 'tc',
-                tpl: 'royal_gold',
-                title: 'Royal Navy & Gold Crest',
-                tag: 'Landscape • Luxury Crest',
-                icon: Award,
-                activeBg: 'from-indigo-600/30 to-blue-600/20 border-indigo-400 text-indigo-200'
-              },
-              {
-                id: 'cbse_statutory',
-                docType: 'tc',
-                tpl: 'cbse_statutory',
-                title: 'CBSE Statutory 15-Point',
-                tag: 'Portrait • Board Standard',
-                icon: GraduationCap,
-                activeBg: 'from-slate-600/30 to-slate-700/20 border-slate-300 text-slate-200'
-              },
-              {
-                id: 'traditional_heritage',
-                docType: 'tc',
-                tpl: 'traditional_heritage',
-                title: 'Traditional Heritage',
-                tag: 'Portrait • Classical Filigree',
-                icon: Building,
-                activeBg: 'from-blue-600/30 to-sky-600/20 border-blue-400 text-blue-200'
-              },
-              {
-                id: 'vintage_crimson',
-                docType: 'tc',
-                tpl: 'vintage_crimson',
-                title: 'Vintage Crimson Guilloche',
-                tag: 'Portrait • Burgundy Wax',
-                icon: FileText,
-                activeBg: 'from-red-600/30 to-rose-600/20 border-red-400 text-red-200'
-              },
-              {
-                id: 'classic_ivory',
-                docType: 'tc',
-                tpl: 'classic_ivory',
-                title: 'Classic Ivory Filigree',
-                tag: 'Landscape • Banknote Grade',
-                icon: CheckCircle2,
-                activeBg: 'from-amber-700/30 to-amber-600/20 border-amber-300 text-amber-200'
-              },
-              {
-                id: 'modern_platinum',
-                docType: 'tc',
-                tpl: 'modern_platinum',
-                title: 'Modern Platinum Cobalt',
-                tag: 'Landscape • High-Tech QR',
-                icon: QrCode,
-                activeBg: 'from-cyan-600/30 to-teal-600/20 border-cyan-400 text-cyan-200'
-              }
-            ].map((tplItem) => {
-              const Icon = tplItem.icon;
-              const isSelected = docType === tplItem.docType && (tplItem.docType !== 'tc' || tcTemplate === tplItem.tpl);
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+            {docTypesList.map((dt) => {
+              const Icon = dt.icon;
+              const isSelected = docType === dt.id;
               return (
                 <button
-                  key={tplItem.id}
-                  onClick={() => {
-                    setDocType(tplItem.docType);
-                    if (tplItem.docType === 'tc') {
-                      setTcTemplate(tplItem.tpl);
-                    }
-                  }}
-                  className={`p-2.5 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  key={dt.id}
+                  onClick={() => setDocType(dt.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? `bg-gradient-to-br ${tplItem.activeBg} shadow-lg ring-2 ring-white/30 scale-[1.04]`
+                      ? `bg-gradient-to-br ${dt.activeBg || 'from-teal-600/40 to-slate-900 border-teal-400 text-white'} shadow-lg ring-2 ring-white/30 scale-[1.04]`
                       : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <Icon className="w-3.5 h-3.5 text-amber-300" />
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-white/10 text-amber-300'}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
                       {isSelected && <Check className="w-3.5 h-3.5 text-white font-black" />}
                     </div>
-                    <div className="text-[11px] font-black leading-tight text-white line-clamp-2">
-                      {tplItem.title}
+                    <div className="text-xs font-black leading-tight text-white line-clamp-2">
+                      {dt.title}
                     </div>
+                    <p className="text-[9.5px] text-slate-400 mt-1 line-clamp-2 leading-tight">
+                      {dt.subtitle}
+                    </p>
                   </div>
-                  <div className="mt-2 pt-1 border-t border-white/10 text-[8.5px] font-bold text-slate-400 truncate uppercase">
-                    {tplItem.tag}
+                  <div className="mt-2 pt-1 border-t border-white/10 text-[8.5px] font-bold text-teal-300 uppercase truncate">
+                    {dt.tag || dt.subtitle}
                   </div>
                 </button>
               );
             })}
           </div>
-        </div>
-
-        {/* Secondary Administrative Documents (Domicile, Migration, Marksheet, Hall Ticket, ID Card) */}
-        <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Other Institutional Records:</span>
-          {docTypesList.filter(d => d.id !== 'tc' && d.id !== 'appreciation' && d.id !== 'participation').map((dt) => {
-            const Icon = dt.icon;
-            const isSelected = docType === dt.id;
-            return (
-              <button
-                key={dt.id}
-                onClick={() => setDocType(dt.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md font-black'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{dt.title}</span>
-              </button>
-            );
-          })}
         </div>
       </div>
 
@@ -2603,6 +2498,60 @@ export default function TransferCertificateView() {
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* APPRECIATION TEMPLATE SWITCHER (When Doc Type is 'appreciation') */}
+      {docType === 'appreciation' && (
+        <div className="bg-gradient-to-r from-rose-950 via-slate-900 to-rose-950 rounded-3xl p-5 text-white border-2 border-rose-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-rose-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                🏆 Appreciation &amp; Merit Certificate Layout
+              </h3>
+            </div>
+            <span className="text-[10px] text-rose-200 bg-rose-900/80 px-2.5 py-0.5 rounded-full font-bold border border-rose-500/40">
+              Active: Imperial Crimson &amp; Gold Arch
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-700/30 to-amber-700/20 border-2 border-rose-400 text-rose-200 shadow-md">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold text-rose-300 uppercase tracking-wider">Portrait • Regal Arch</span>
+                <Check className="w-3.5 h-3.5 text-white font-bold" />
+              </div>
+              <div className="text-xs font-black text-white">Imperial Crimson &amp; Gold Arch Appreciation</div>
+              <p className="text-[10px] text-slate-300 mt-1">Ornate crimson arch, 3-star gold sunburst medallion, serif typography</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PARTICIPATION TEMPLATE SWITCHER (When Doc Type is 'participation') */}
+      {docType === 'participation' && (
+        <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-cyan-950 rounded-3xl p-5 text-white border-2 border-teal-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Medal className="w-4 h-4 text-teal-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                🏅 Participation &amp; Contest Award Layout
+              </h3>
+            </div>
+            <span className="text-[10px] text-teal-200 bg-teal-900/80 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/40">
+              Active: Modern Teal Geometric
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-teal-700/30 to-cyan-700/20 border-2 border-teal-400 text-teal-200 shadow-md">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">Portrait • Modern Polygonal</span>
+                <Check className="w-3.5 h-3.5 text-white font-bold" />
+              </div>
+              <div className="text-xs font-black text-white">Modern Teal Geometric Participation</div>
+              <p className="text-[10px] text-slate-300 mt-1">Cyan &amp; emerald geometric banner accents, multi-ring hologram seal</p>
+            </div>
           </div>
         </div>
       )}
