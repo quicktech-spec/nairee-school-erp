@@ -4344,7 +4344,8 @@ export default function TransferCertificateView() {
     const certRecipient = certConfig.recipientName || st.student_name || 'Rahul Verma';
     const certTitle = certConfig.title || 'INDIRA GANDHI NATIONAL OPEN UNIVERSITY';
     const certSubtitle = certConfig.subtitle || 'ADMIT CARD – Term End Examination';
-    const certProgram = certConfig.presentationLine || 'BACHELOR OF ARTS (BAG)';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certProgram = certConfig.presentationLine || (customClassSection ? `CLASS: ${customClassSection}` : (st.class_batch ? `CLASS: ${st.class_batch}` : 'BACHELOR OF ARTS (BAG)'));
     const certDob = st.dob || '15 Feb 2000';
     const certEnrollment = st.roll_no ? `${st.roll_no}2026` : '2201712401';
     const regNo = getDocRegNo(st, 'admit_card');
@@ -4740,7 +4741,8 @@ export default function TransferCertificateView() {
     const certRecipient = certConfig.recipientName || st.student_name || 'SHAILENDRA KUMAR';
     const certTitle = certConfig.title || 'CENTRAL BOARD OF SECONDARY EDUCATION, DELHI';
     const certSubtitle = certConfig.subtitle || 'ADMIT CARD FOR JOINT ENTRANCE EXAMINATION JEE(MAIN) - 2026';
-    const certPaper = certConfig.presentationLine || 'JEE(Main) Paper - 1 (B.E./B.Tech.) Only';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certPaper = certConfig.presentationLine || (customClassSection ? `Grade: ${customClassSection} • Paper - 1 (B.E./B.Tech.)` : 'JEE(Main) Paper - 1 (B.E./B.Tech.) Only');
     const regNo = getDocRegNo(st, 'admit_card');
 
     return (
@@ -5672,7 +5674,25 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={dt.id}
-                  onClick={() => setDocType(dt.id)}
+                  onClick={() => {
+                    setDocType(dt.id);
+                    if (dt.id === 'appreciation') {
+                      const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
+                      if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    } else if (dt.id === 'participation') {
+                      const tpl = participationTemplatesList.find(t => t.id === participationTemplate);
+                      if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    } else if (dt.id === 'migration') {
+                      const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate);
+                      if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    } else if (dt.id === 'report_card') {
+                      const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate);
+                      if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    } else if (dt.id === 'admit_card') {
+                      const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate);
+                      if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${dt.activeBg || 'from-teal-600/40 to-slate-900 border-teal-400 text-white'} shadow-lg ring-2 ring-white/30 scale-[1.04]`
