@@ -72,6 +72,46 @@ const ID_CARD_TEMPLATES_ONBOARDING = [
   { id: 'terracotta_portrait', title: 'Borcelle Terracotta Heritage', tag: 'Portrait Vertical Card', desc: 'Vertical ID card with warm rust geometric banner, lotus insignia, hazard accent tabs & QR code' }
 ];
 
+const PARTICIPATION_TEMPLATES_ONBOARDING = [
+  { id: 'classic_gold_filigree_frame', title: 'Classic Gold Filigree Frame', tag: 'Ornate Baroque', desc: 'Double thin gold border, dark navy corner triangles with intricate baroque scrollwork, bronze-blue seal' },
+  { id: 'modern_crystal_navy_angle', title: 'Modern Crystal & Navy Angle', tag: 'Polygonal Facets', desc: 'Clean geometric crystal facets, navy diagonal wedge with double gold stripes, 3D gold medal' },
+  { id: 'royal_purple_gold_arch', title: 'Royal Purple & Gold Arch', tag: 'Scalloped Arch', desc: 'Royal purple scalloped arch & mandala crescent with gold trim and gold cursive calligraphy' },
+  { id: 'lavender_sunset_wave', title: 'Lavender & Sunset Waves', tag: 'Fluid Waves', desc: 'Pastel lavender & violet fluid wave borders with warm sunset glow and amber calligraphy' },
+  { id: 'imperial_baroque_gold_crest', title: 'Imperial Baroque Gold Crest', tag: 'Royal Parchment', desc: 'Antique warm ivory parchment framed in royal baroque gold scrollwork with crown top motif' }
+];
+
+const DOMICILE_TEMPLATES_ONBOARDING = [
+  { id: 'statutory_residence_formal', title: 'Official Statutory Residence', tag: 'UIDAI & UDISE Record', desc: 'Government/institutional residency format with UIDAI & UDISE official verification' },
+  { id: 'heritage_academic_bonafide', title: 'Heritage Academic Enrollment', tag: 'Attested Photograph', desc: 'Classic ornamental frame with student photograph, parent details, and registrar stamp' },
+  { id: 'modern_digital_bonafide', title: 'Modern Digital Authenticated', tag: 'Digital Barcode Pass', desc: 'Clean corporate design with digital signature stamp, barcode, and residency duration table' },
+  { id: 'regal_navy_institutional', title: 'Regal Navy Campus Bonafide', tag: 'Embossed Gold Crest', desc: 'Deep navy border with embossed gold seal and institutional head verification text' },
+  { id: 'minimalist_board_proof', title: 'Minimalist Board Verification', tag: 'Institutional Clear', desc: 'Clean monochrome table layout with student credentials and fee clearance confirmation' }
+];
+
+const MIGRATION_TEMPLATES_ONBOARDING = [
+  { id: 'cbse_bilingual_migration', title: 'CBSE Statutory Bilingual', tag: 'Central Board Standard', desc: 'Official CBSE bilingual migration certificate with central emblem watermark & No-Objection clause' },
+  { id: 'ptu_state_technical_migration', title: 'State Technical University Standard', tag: '4-Tier Verification', desc: 'Dual language university title, colored emblem, EDP serial no., QR barcode block, 4 signature rows' },
+  { id: 'delhi_univ_central_migration', title: 'Central University Standard', tag: 'Purple Crest & QR', desc: 'Clean central university layout with royal purple emblem, security verification QR code box' },
+  { id: 'statutory_board_character_migration', title: 'National Statutory Clear-Pass', tag: 'Conduct & Migration', desc: 'Double-border character clearance certificate with conduct endorsement, attendance grade, gold seal' },
+  { id: 'modern_cryptographic_qr_migration', title: 'Modern Cryptographic QR Pass', tag: 'Anti-Tamper Security', desc: 'Anti-tamper guilloche borders, cryptographic QR verification token, clearance checklist, barcode tracking' }
+];
+
+const REPORT_CARD_TEMPLATES_ONBOARDING = [
+  { id: 'salford_skyblue_quarterly', title: 'Salford Sky-Blue Quarterly', tag: '4 Quarters & Grading Scale', desc: 'Sky-blue graduation logo, 4-quarterly marks table for 10 subjects, percentage grading scale' },
+  { id: 'homeschool_holistic_habits', title: 'Homeschool & Habits Profile', tag: '5-Star Habits & Focus', desc: 'Pastel yellow & clean double-border layout, subject evaluations, 5-star learning habits, term highlights' },
+  { id: 'salford_maroon_quarterly', title: 'Salford Burgundy Laurel', tag: 'Laurel Crest & Swooshes', desc: 'Rich burgundy header, laurel wreath crest, 4-quarter subject grading table, grading scale card' },
+  { id: 'classic_ivy_slate_gold', title: 'Classic Ivy League Slate & Gold', tag: 'Slate Blue & Serif', desc: 'Dark slate blue section banners with gold serif lettering, attendance record, subject grades' },
+  { id: 'borcelle_lavender_pill', title: 'Borcelle Lavender Pill Gradebook', tag: 'BLS Shield & Pill Badges', desc: 'Deep purple header with BLS shield crest, lavender containers, white pill inputs for grades' }
+];
+
+const ADMIT_CARD_TEMPLATES_ONBOARDING = [
+  { id: 'ignou_term_end_admit', title: 'IGNOU Term End Admit Card', tag: 'Spiral Emblem & Timetable', desc: 'National Open University layout with spiral logo, candidate photo, 6-course timetable & QR code' },
+  { id: 'hpu_provisional_hall_ticket', title: 'State University Provisional Ticket', tag: 'Mountain Seal & 4-Paper Grid', desc: 'State university header, roll number bar, candidate details, appearing paper datesheet & instructions' },
+  { id: 'cbse_jee_main_hall_ticket', title: 'CBSE / JEE Main National Hall Ticket', tag: 'National NTA / CBSE Pass', desc: 'Central Examination Board standard, candidate barcode, passport photo slot, thumbprint box' },
+  { id: 'modern_cyan_qr_hall_ticket', title: 'Modern Cyan QR Verification Ticket', tag: 'Cyan Tech & Dynamic QR', desc: 'Modern cyan header, anti-tamper QR code verification box, candidate photo, datesheet' },
+  { id: 'bseh_bilingual_board_hall_ticket', title: 'State Board Bilingual Hall Ticket', tag: 'State Board Standard', desc: 'State Board bilingual header, student roll number, center code, theory exam schedule' }
+];
+
 const ALL_CERTIFICATE_MODULES = [
   { id: 'tc', label: 'Transfer Certificate (TC)', desc: 'Official student transfer & statutory leaving record', tag: 'Statutory School Leaving', icon: Scroll },
   { id: 'appreciation', label: 'Certificate of Appreciation', desc: 'Merit, honors, and academic achievement awards', tag: 'Merit & Honors', icon: Trophy },
@@ -125,6 +165,8 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
     default_appreciation_template: 'mint_emerald_fluid_waves',
     default_participation_template: 'classic_gold_filigree_frame',
     default_id_card_template: 'navy_chevron',
+    default_domicile_template: 'statutory_residence_formal',
+    default_migration_template: 'cbse_bilingual_migration',
     default_report_card_template: 'salford_skyblue_quarterly',
     default_admit_card_template: 'ignou_term_end_admit',
     principal_name: 'Dr. Ramakant Sharma',
@@ -666,7 +708,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
 
               {/* 1. Transfer Certificate Default Layout (Rendered if TC is enabled) */}
               {formData.enabled_certificates.includes('tc') && (
-                <div className="p-5 rounded-2xl border-2 border-amber-200 bg-amber-50/40 space-y-3">
+                <div className="p-5 rounded-2xl border-2 border-amber-200 bg-amber-50/40 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Scroll className="w-4 h-4 text-amber-700" />
@@ -675,7 +717,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                       </h4>
                     </div>
                     <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
-                      Active: {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title}
+                      Active: {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title || 'Selected'}
                     </span>
                   </div>
 
@@ -716,7 +758,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
 
               {/* 2. Certificate of Appreciation & Merit Layout (Rendered if Appreciation is enabled) */}
               {formData.enabled_certificates.includes('appreciation') && (
-                <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3">
+                <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Trophy className="w-4 h-4 text-rose-700" />
@@ -725,7 +767,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                       </h4>
                     </div>
                     <span className="text-[10px] font-bold text-rose-800 bg-rose-100/80 px-2.5 py-0.5 rounded-full border border-rose-300">
-                      Active: {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title}
+                      Active: {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title || 'Selected'}
                     </span>
                   </div>
 
@@ -766,7 +808,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
 
               {/* 3. Student ID Card Layout (Rendered if ID card is enabled) */}
               {formData.enabled_certificates.includes('id_card') && (
-                <div className="p-5 rounded-2xl border-2 border-teal-200 bg-teal-50/40 space-y-3">
+                <div className="p-5 rounded-2xl border-2 border-teal-200 bg-teal-50/40 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <IdCard className="w-4 h-4 text-teal-700" />
@@ -775,11 +817,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                       </h4>
                     </div>
                     <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-300">
-                      Active: {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title}
+                      Active: {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title || 'Selected'}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
                     {ID_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
                       const isSelected = formData.default_id_card_template === tpl.id;
                       return (
@@ -803,6 +845,256 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                           </div>
                           <div className="mt-2 pt-1.5 border-t border-slate-100 text-[9px] font-bold text-teal-800">
                             {isSelected ? '✓ Default Selected' : 'Select'}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Certificate of Participation Layout (Rendered if Participation is enabled) */}
+              {formData.enabled_certificates.includes('participation') && (
+                <div className="p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Medal className="w-4 h-4 text-emerald-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-emerald-950">
+                        Default Certificate of Participation Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                      Active: {PARTICIPATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_participation_template)?.title || 'Selected'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {PARTICIPATION_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_participation_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_participation_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-emerald-600 bg-emerald-100/70 shadow-sm ring-2 ring-emerald-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-emerald-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-emerald-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>Landscape</span>
+                            <span className={isSelected ? 'text-emerald-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 5. Domicile & Bonafide Layout (Rendered if Domicile is enabled) */}
+              {formData.enabled_certificates.includes('domicile') && (
+                <div className="p-5 rounded-2xl border-2 border-blue-200 bg-blue-50/40 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Building className="w-4 h-4 text-blue-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-blue-950">
+                        Default Domicile / Bonafide Certificate Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-blue-800 bg-blue-100/80 px-2.5 py-0.5 rounded-full border border-blue-300">
+                      Active: {DOMICILE_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_domicile_template)?.title || 'Selected'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {DOMICILE_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_domicile_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_domicile_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-blue-600 bg-blue-100/70 shadow-sm ring-2 ring-blue-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-blue-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-blue-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>A4 Format</span>
+                            <span className={isSelected ? 'text-blue-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 6. Character & Migration Layout (Rendered if Migration is enabled) */}
+              {formData.enabled_certificates.includes('migration') && (
+                <div className="p-5 rounded-2xl border-2 border-purple-200 bg-purple-50/40 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-purple-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-purple-950">
+                        Default Character &amp; Migration Certificate Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-purple-800 bg-purple-100/80 px-2.5 py-0.5 rounded-full border border-purple-300">
+                      Active: {MIGRATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_migration_template)?.title || 'Selected'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {MIGRATION_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_migration_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_migration_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-purple-600 bg-purple-100/70 shadow-sm ring-2 ring-purple-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-purple-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-purple-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>Statutory Pass</span>
+                            <span className={isSelected ? 'text-purple-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 7. Academic Report Card Layout (Rendered if Report Card is enabled) */}
+              {formData.enabled_certificates.includes('report_card') && (
+                <div className="p-5 rounded-2xl border-2 border-sky-200 bg-sky-50/40 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-sky-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-sky-950">
+                        Default Academic Report Card &amp; Marksheet Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-sky-800 bg-sky-100/80 px-2.5 py-0.5 rounded-full border border-sky-300">
+                      Active: {REPORT_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_report_card_template)?.title || 'Selected'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {REPORT_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_report_card_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_report_card_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-sky-600 bg-sky-100/70 shadow-sm ring-2 ring-sky-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-sky-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-sky-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>Marksheet Layout</span>
+                            <span className={isSelected ? 'text-sky-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 8. Exam Admit Card Layout (Rendered if Admit Card is enabled) */}
+              {formData.enabled_certificates.includes('admit_card') && (
+                <div className="p-5 rounded-2xl border-2 border-indigo-200 bg-indigo-50/40 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-indigo-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-indigo-950">
+                        Default Exam Admit Card &amp; Hall Ticket Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-indigo-800 bg-indigo-100/80 px-2.5 py-0.5 rounded-full border border-indigo-300">
+                      Active: {ADMIT_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_admit_card_template)?.title || 'Selected'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {ADMIT_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_admit_card_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_admit_card_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-indigo-600 bg-indigo-100/70 shadow-sm ring-2 ring-indigo-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-indigo-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-indigo-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>Hall Ticket</span>
+                            <span className={isSelected ? 'text-indigo-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
                           </div>
                         </button>
                       );
