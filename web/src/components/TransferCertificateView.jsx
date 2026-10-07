@@ -115,8 +115,16 @@ function getSynchronizedStudents() {
 }
 
 export default function TransferCertificateView() {
-  const { tenant } = useTenant();
+  const { tenant, updateTenant } = useTenant();
   
+  // Active enabled certificates for this institution (defaults to the 3 chosen: TC, Appreciation, ID Card)
+  const [activeCertificates, setActiveCertificates] = useState(() => {
+    return (tenant?.enabled_certificates && tenant.enabled_certificates.length > 0)
+      ? tenant.enabled_certificates
+      : ['tc', 'appreciation', 'id_card'];
+  });
+  const [showDocManagerModal, setShowDocManagerModal] = useState(false);
+
   // Document Type: 'tc', 'appreciation', 'participation', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
   const [docType, setDocType] = useState('tc');
   
@@ -205,6 +213,9 @@ export default function TransferCertificateView() {
         principalTitle: tenant.principal_title || prev.principalTitle,
         customLogoUrl: tenant.logo_url || prev.customLogoUrl
       }));
+      if (tenant.enabled_certificates && tenant.enabled_certificates.length > 0) {
+        setActiveCertificates(tenant.enabled_certificates);
+      }
       if (tenant.default_tc_template) setTcTemplate(tenant.default_tc_template);
       if (tenant.default_appreciation_template) setAppreciationTemplate(tenant.default_appreciation_template);
       if (tenant.default_participation_template) setParticipationTemplate(tenant.default_participation_template);
@@ -312,6 +323,17 @@ export default function TransferCertificateView() {
       color: 'rose'
     }
   ];
+
+  // Filter docTypes to only display formats enabled/chosen for the school
+  const visibleDocTypes = docTypesList.filter(d => activeCertificates.includes(d.id));
+  const safeVisibleDocTypes = visibleDocTypes.length > 0 ? visibleDocTypes : docTypesList.slice(0, 3);
+
+  // Automatically switch active docType if current docType is not in enabled certificates
+  useEffect(() => {
+    if (activeCertificates.length > 0 && !activeCertificates.includes(docType)) {
+      setDocType(activeCertificates[0]);
+    }
+  }, [activeCertificates]);
 
   const tcTemplatesList = [
     {
@@ -5999,22 +6021,40 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Top Master Document & Certificate Type Selector (All 8 Institutional Documents) */}
+        {/* Top Master Document & Certificate Type Selector (Only Chosen Formats Displayed) */}
         <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-300" />
               <h3 className="font-extrabold text-xs text-amber-300 uppercase tracking-wider">
-                📜 Select Document / Certificate Type (8 Official Formats)
+                📜 Active Document &amp; Certificate Formats ({safeVisibleDocTypes.length} Enabled)
               </h3>
             </div>
-            <span className="text-[10px] text-teal-300 bg-teal-950/60 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/30">
-              Active: {docTypesList.find(d => d.id === docType)?.title}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-teal-300 bg-teal-950/60 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/30">
+                Active: {safeVisibleDocTypes.find(d => d.id === docType)?.title || safeVisibleDocTypes[0]?.title}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowDocManagerModal(true)}
+                className="text-[10px] bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 px-2.5 py-1 rounded-full font-bold border border-amber-400/40 flex items-center gap-1 transition-colors cursor-pointer"
+                title="Configure which certificate types are available for this school"
+              >
+                <Settings2 className="w-3 h-3" />
+                <span>Configure Formats ({activeCertificates.length}/8)</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
-            {docTypesList.map((dt) => {
+          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${
+            safeVisibleDocTypes.length === 1 ? 'lg:grid-cols-1' :
+            safeVisibleDocTypes.length === 2 ? 'lg:grid-cols-2' :
+            safeVisibleDocTypes.length === 3 ? 'lg:grid-cols-3' :
+            safeVisibleDocTypes.length === 4 ? 'lg:grid-cols-4' :
+            safeVisibleDocTypes.length === 5 ? 'lg:grid-cols-5' :
+            'lg:grid-cols-6'
+          } gap-3`}>
+            {safeVisibleDocTypes.map((dt) => {
               const Icon = dt.icon;
               const isSelected = docType === dt.id;
               return (
@@ -6042,27 +6082,31 @@ export default function TransferCertificateView() {
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     }
                   }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-3.5 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? `bg-gradient-to-br ${dt.activeBg || 'from-teal-600/40 to-slate-900 border-teal-400 text-white'} shadow-lg ring-2 ring-white/30 scale-[1.04]`
+                      ? `bg-gradient-to-br ${dt.activeBg || 'from-teal-600/40 to-slate-900 border-teal-400 text-white'} shadow-lg ring-2 ring-white/30 scale-[1.02]`
                       : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-white/10 text-amber-300'}`}>
-                        <Icon className="w-3.5 h-3.5" />
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isSelected ? 'bg-white/20 text-white' : 'bg-white/10 text-amber-300'}`}>
+                        <Icon className="w-4 h-4" />
                       </div>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-black" />}
+                      {isSelected && (
+                        <span className="bg-teal-500 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Check className="w-2.5 h-2.5" /> ACTIVE
+                        </span>
+                      )}
                     </div>
-                    <div className="text-xs font-black leading-tight text-white line-clamp-2">
+                    <div className="text-xs font-black leading-tight text-white line-clamp-1">
                       {dt.title}
                     </div>
-                    <p className="text-[9.5px] text-slate-400 mt-1 line-clamp-2 leading-tight">
+                    <p className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-tight">
                       {dt.subtitle}
                     </p>
                   </div>
-                  <div className="mt-2 pt-1 border-t border-white/10 text-[8.5px] font-bold text-teal-300 uppercase truncate">
+                  <div className="mt-2.5 pt-1.5 border-t border-white/10 text-[9px] font-bold text-teal-300 uppercase truncate">
                     {dt.tag || dt.subtitle}
                   </div>
                 </button>
@@ -6930,6 +6974,126 @@ export default function TransferCertificateView() {
                   className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* INSTITUTION CERTIFICATE & DOCUMENT FORMAT MANAGER MODAL */}
+      {showDocManagerModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-5 text-white animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                  <Settings2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white">Institutional Document Manager</h3>
+                  <p className="text-xs text-slate-400">Select which certificate formats appear on your school's workspace</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDocManagerModal(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-300">Choose Enabled Certificate Modules ({activeCertificates.length} of 8 selected):</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCertificates(docTypesList.map(d => d.id))}
+                    className="text-[11px] text-teal-400 hover:underline font-bold"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-slate-600">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCertificates(['tc', 'appreciation', 'id_card'])}
+                    className="text-[11px] text-amber-400 hover:underline font-bold"
+                  >
+                    Reset to Default 3
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[50vh] overflow-y-auto p-1">
+                {docTypesList.map((dt) => {
+                  const isChecked = activeCertificates.includes(dt.id);
+                  const Icon = dt.icon;
+                  return (
+                    <label
+                      key={dt.id}
+                      onClick={() => {
+                        setActiveCertificates(prev => {
+                          if (prev.includes(dt.id)) {
+                            if (prev.length <= 1) return prev; // Keep at least one enabled
+                            return prev.filter(x => x !== dt.id);
+                          } else {
+                            return [...prev, dt.id];
+                          }
+                        });
+                      }}
+                      className={`flex items-start gap-3 p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                        isChecked
+                          ? 'bg-teal-500/15 border-teal-400/80 shadow-md text-white'
+                          : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        readOnly
+                        className="mt-1 w-4 h-4 rounded text-teal-500 focus:ring-0 cursor-pointer accent-teal-500"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <Icon className={`w-3.5 h-3.5 ${isChecked ? 'text-teal-300' : 'text-slate-400'}`} />
+                          <span className={`text-xs font-bold leading-tight ${isChecked ? 'text-white' : 'text-slate-300'}`}>
+                            {dt.title}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                          {dt.subtitle}
+                        </p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">
+                Changes take effect instantly on this page and persist across the tenant.
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowDocManagerModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (tenant?.id && updateTenant) {
+                      updateTenant(tenant.id, { enabled_certificates: activeCertificates });
+                    }
+                    setShowDocManagerModal(false);
+                  }}
+                  className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/30 transition-transform hover:scale-105 cursor-pointer"
+                >
+                  Save &amp; Apply Configuration
                 </button>
               </div>
             </div>

@@ -37,6 +37,7 @@ export const DEFAULT_TENANTS = [
     default_migration_template: 'cbse_bilingual_migration',
     default_report_card_template: 'salford_skyblue_quarterly',
     default_admit_card_template: 'ignou_term_end_admit',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     status: 'Active',
     created_at: '2024-01-01T00:00:00.000Z'
   },
@@ -72,6 +73,7 @@ export const DEFAULT_TENANTS = [
     default_migration_template: 'cbse_bilingual_migration',
     default_report_card_template: 'salford_skyblue_quarterly',
     default_admit_card_template: 'ignou_term_end_admit',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     status: 'Active',
     created_at: '2024-03-15T10:30:00.000Z'
   },
@@ -107,6 +109,7 @@ export const DEFAULT_TENANTS = [
     default_migration_template: 'delhi_univ_central_migration',
     default_report_card_template: 'salford_maroon_quarterly',
     default_admit_card_template: 'cbse_jee_main_hall_ticket',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     status: 'Active',
     created_at: '2024-05-10T14:00:00.000Z'
   },
@@ -142,6 +145,7 @@ export const DEFAULT_TENANTS = [
     default_migration_template: 'modern_cryptographic_qr_migration',
     default_report_card_template: 'homeschool_holistic_habits',
     default_admit_card_template: 'modern_cryptographic_qr_admit',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     status: 'Active',
     created_at: '2024-06-01T09:00:00.000Z'
   },
@@ -177,6 +181,7 @@ export const DEFAULT_TENANTS = [
     default_migration_template: 'statutory_board_character_migration',
     default_report_card_template: 'classic_ivy_slate_gold',
     default_admit_card_template: 'hpu_provisional_hall_ticket',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     status: 'Active',
     created_at: '2024-08-10T11:00:00.000Z'
   }
@@ -428,6 +433,7 @@ export function TenantProvider({ children }) {
       default_admit_card_template: tenantData.default_admit_card_template || 'ignou_term_end_admit',
       principal_name: tenantData.principal_name || tenantData.admin_name || 'Dr. Ramakant Sharma',
       principal_title: tenantData.principal_title || 'Principal / Head of Institution',
+      enabled_certificates: tenantData.enabled_certificates || ['tc', 'appreciation', 'id_card'],
       enabled_features: tenantData.enabled_features || [
         'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'reports', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
       ],

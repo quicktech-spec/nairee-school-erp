@@ -71,6 +71,17 @@ const ID_CARD_TEMPLATES_ONBOARDING = [
   { id: 'terracotta_portrait', title: 'Borcelle Terracotta Heritage', tag: 'Portrait Vertical Card', desc: 'Vertical ID card with warm rust geometric banner, lotus insignia, hazard accent tabs & QR code' }
 ];
 
+const ALL_CERTIFICATE_MODULES = [
+  { id: 'tc', label: 'Transfer Certificate (TC)', desc: 'Official student transfer & statutory leaving record', tag: 'Statutory School Leaving', icon: Scroll },
+  { id: 'appreciation', label: 'Certificate of Appreciation', desc: 'Merit, honors, and academic achievement awards', tag: 'Merit & Honors', icon: Trophy },
+  { id: 'id_card', label: 'Student ID Cards', desc: 'Custom portrait & landscape photo ID badges with barcodes', tag: 'Smart Student Identity', icon: IdCard },
+  { id: 'participation', label: 'Certificate of Participation', desc: 'Co-curricular, sports, and contest entry certificates', tag: 'Co-curricular & Sports', icon: Medal },
+  { id: 'domicile', label: 'Domicile / Bonafide Certificate', desc: 'Official permanent residence and enrollment proof', tag: 'Statutory Residence Proof', icon: Building },
+  { id: 'migration', label: 'Character & Migration Certificate', desc: 'Relocation clearances and character testimonials', tag: 'Board Relocation Clearance', icon: ShieldCheck },
+  { id: 'report_card', label: 'Academic Report Card', desc: 'Quarterly & annual marksheet evaluations', tag: 'Gradebook Marksheet', icon: BookOpen },
+  { id: 'admit_card', label: 'Exam Admit Card', desc: 'Hall tickets with timetable & exam center instructions', tag: 'Examination Entry Pass', icon: Clock }
+];
+
 const AVAILABLE_MODULES = [
   { id: 'academics', label: 'Academics & Curriculum', desc: 'Classes, batches, 72 CBSE subjects & faculty allocations', icon: BookOpen, recommended: true },
   { id: 'attendance', label: 'Daily School Attendance', desc: 'Real-time student & staff punch logs with SMS notifications', icon: Calendar, recommended: true },
@@ -108,6 +119,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
     accent_color: '#eab308',
     subdomain: '',
     custom_domain: '',
+    enabled_certificates: ['tc', 'appreciation', 'id_card'],
     default_tc_template: 'traditional_heritage',
     default_appreciation_template: 'mint_emerald_fluid_waves',
     default_participation_template: 'classic_gold_filigree_frame',
@@ -593,146 +605,210 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                 </p>
               </div>
 
-              {/* 1. Transfer Certificate Default Layout */}
-              <div className="p-5 rounded-2xl border-2 border-amber-200 bg-amber-50/40 space-y-3">
+              {/* Document Suite Module Chooser (Choose which certificates are active for this school) */}
+              <div className="p-5 rounded-3xl border-2 border-indigo-200 bg-indigo-50/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Scroll className="w-4 h-4 text-amber-700" />
-                    <h4 className="text-xs font-black uppercase tracking-wider text-amber-950">
-                      1. Default Transfer Certificate (TC) Design Template
+                    <Sparkles className="w-4 h-4 text-indigo-700" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-indigo-950">
+                      Select Document &amp; Certificate Formats to Activate ({formData.enabled_certificates.length} of {ALL_CERTIFICATE_MODULES.length} Selected)
                     </h4>
                   </div>
-                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
-                    Active: {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title}
+                  <span className="text-[10px] font-bold text-indigo-800 bg-indigo-100/80 px-2.5 py-0.5 rounded-full border border-indigo-300">
+                    Custom Suite
                   </span>
                 </div>
+                <p className="text-[11px] text-slate-600">
+                  Select only the certificates your institution requires. Only the selected formats will appear in your school's certificate portal.
+                </p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-                  {TC_TEMPLATES_ONBOARDING.map((tpl) => {
-                    const isSelected = formData.default_tc_template === tpl.id;
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                  {ALL_CERTIFICATE_MODULES.map((mod) => {
+                    const isEnabled = formData.enabled_certificates.includes(mod.id);
+                    const Icon = mod.icon;
                     return (
                       <button
-                        key={tpl.id}
+                        key={mod.id}
                         type="button"
-                        onClick={() => setFormData({ ...formData, default_tc_template: tpl.id })}
-                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                          isSelected
-                            ? 'border-amber-600 bg-amber-100/70 shadow-sm ring-2 ring-amber-500/30 scale-[1.02]'
-                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                        onClick={() => {
+                          const next = isEnabled
+                            ? (formData.enabled_certificates.length > 1 ? formData.enabled_certificates.filter(k => k !== mod.id) : formData.enabled_certificates)
+                            : [...formData.enabled_certificates, mod.id];
+                          setFormData({ ...formData, enabled_certificates: next });
+                        }}
+                        className={`p-3 rounded-2xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          isEnabled
+                            ? 'border-indigo-600 bg-indigo-100/90 shadow-sm ring-2 ring-indigo-400/40 text-indigo-950'
+                            : 'border-slate-200 bg-white/80 text-slate-400 hover:border-slate-300'
                         }`}
                       >
                         <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold uppercase text-amber-800">{tpl.tag}</span>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-amber-700 font-bold" />}
+                          <div className="flex items-center justify-between mb-1.5">
+                            <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${isEnabled ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                              <Icon className="w-3.5 h-3.5" />
+                            </div>
+                            <div className={`w-4 h-4 rounded-md flex items-center justify-center border ${isEnabled ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white'}`}>
+                              {isEnabled && <Check className="w-3 h-3" />}
+                            </div>
                           </div>
-                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
-                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          <div className="text-xs font-black leading-tight text-slate-900">{mod.label}</div>
+                          <p className="text-[9.5px] text-slate-500 mt-1 line-clamp-2">{mod.desc}</p>
                         </div>
-                        <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
-                          <span>A4 Format</span>
-                          <span className={isSelected ? 'text-amber-800 font-bold' : 'text-slate-500'}>
+                        <div className="mt-2 pt-1 border-t border-indigo-200/50 text-[9px] font-bold text-indigo-700">
+                          {isEnabled ? '✓ Activated' : 'Click to Enable'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 1. Transfer Certificate Default Layout (Rendered if TC is enabled) */}
+              {formData.enabled_certificates.includes('tc') && (
+                <div className="p-5 rounded-2xl border-2 border-amber-200 bg-amber-50/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Scroll className="w-4 h-4 text-amber-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-amber-950">
+                        Default Transfer Certificate (TC) Design Template
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
+                      Active: {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {TC_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_tc_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_tc_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-amber-600 bg-amber-100/70 shadow-sm ring-2 ring-amber-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-amber-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-amber-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>A4 Format</span>
+                            <span className={isSelected ? 'text-amber-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Certificate of Appreciation & Merit Layout (Rendered if Appreciation is enabled) */}
+              {formData.enabled_certificates.includes('appreciation') && (
+                <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-rose-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-rose-950">
+                        Default Appreciation &amp; Merit Certificate Design
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-rose-800 bg-rose-100/80 px-2.5 py-0.5 rounded-full border border-rose-300">
+                      Active: {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                    {APPRECIATION_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_appreciation_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_appreciation_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-rose-600 bg-rose-100/70 shadow-sm ring-2 ring-rose-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-rose-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-rose-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                            <span>Landscape</span>
+                            <span className={isSelected ? 'text-rose-800 font-bold' : 'text-slate-500'}>
+                              {isSelected ? '✓ Default Selected' : 'Select'}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. Student ID Card Layout (Rendered if ID card is enabled) */}
+              {formData.enabled_certificates.includes('id_card') && (
+                <div className="p-5 rounded-2xl border-2 border-teal-200 bg-teal-50/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <IdCard className="w-4 h-4 text-teal-700" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-teal-950">
+                        Default Student ID Card Format
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-300">
+                      Active: {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                    {ID_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
+                      const isSelected = formData.default_id_card_template === tpl.id;
+                      return (
+                        <button
+                          key={tpl.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, default_id_card_template: tpl.id })}
+                          className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'border-teal-600 bg-teal-100/70 shadow-sm ring-2 ring-teal-500/30 scale-[1.02]'
+                              : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[9px] font-bold uppercase text-teal-800">{tpl.tag}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5 text-teal-700 font-bold" />}
+                            </div>
+                            <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                          </div>
+                          <div className="mt-2 pt-1.5 border-t border-slate-100 text-[9px] font-bold text-teal-800">
                             {isSelected ? '✓ Default Selected' : 'Select'}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 2. Certificate of Appreciation & Merit Layout */}
-              <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-rose-700" />
-                    <h4 className="text-xs font-black uppercase tracking-wider text-rose-950">
-                      2. Default Appreciation & Merit Certificate Design
-                    </h4>
-                  </div>
-                  <span className="text-[10px] font-bold text-rose-800 bg-rose-100/80 px-2.5 py-0.5 rounded-full border border-rose-300">
-                    Active: {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-                  {APPRECIATION_TEMPLATES_ONBOARDING.map((tpl) => {
-                    const isSelected = formData.default_appreciation_template === tpl.id;
-                    return (
-                      <button
-                        key={tpl.id}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, default_appreciation_template: tpl.id })}
-                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                          isSelected
-                            ? 'border-rose-600 bg-rose-100/70 shadow-sm ring-2 ring-rose-500/30 scale-[1.02]'
-                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold uppercase text-rose-800">{tpl.tag}</span>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-rose-700 font-bold" />}
                           </div>
-                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
-                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
-                        </div>
-                        <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
-                          <span>Landscape</span>
-                          <span className={isSelected ? 'text-rose-800 font-bold' : 'text-slate-500'}>
-                            {isSelected ? '✓ Default Selected' : 'Select'}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 3. Student ID Card Layout */}
-              <div className="p-5 rounded-2xl border-2 border-teal-200 bg-teal-50/40 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <IdCard className="w-4 h-4 text-teal-700" />
-                    <h4 className="text-xs font-black uppercase tracking-wider text-teal-950">
-                      3. Default Student ID Card Format
-                    </h4>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-300">
-                    Active: {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title}
-                  </span>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
-                  {ID_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
-                    const isSelected = formData.default_id_card_template === tpl.id;
-                    return (
-                      <button
-                        key={tpl.id}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, default_id_card_template: tpl.id })}
-                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
-                          isSelected
-                            ? 'border-teal-600 bg-teal-100/70 shadow-sm ring-2 ring-teal-500/30 scale-[1.02]'
-                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-[9px] font-bold uppercase text-teal-800">{tpl.tag}</span>
-                            {isSelected && <Check className="w-3.5 h-3.5 text-teal-700 font-bold" />}
-                          </div>
-                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
-                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
-                        </div>
-                        <div className="mt-2 pt-1.5 border-t border-slate-100 text-[9px] font-bold text-teal-800">
-                          {isSelected ? '✓ Default Selected' : 'Select'}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              )}
 
               {/* 4. Principal Signatory Information */}
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
