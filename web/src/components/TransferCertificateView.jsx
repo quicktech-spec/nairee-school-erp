@@ -119,16 +119,29 @@ export default function TransferCertificateView() {
   const [docType, setDocType] = useState('tc');
   
   // 7 Transfer Certificate Templates
-  // 'sunrise_chevron' | 'royal_gold' | 'cbse_statutory' | 'traditional_heritage' | 'vintage_crimson' | 'classic_ivory' | 'modern_platinum'
   const [tcTemplate, setTcTemplate] = useState('sunrise_chevron');
 
-  // Appreciation / Merit Templates
-  // 'imperial_arch' | 'modern_teal_geometric' | 'royal_gold_merit'
-  const [appreciationTemplate, setAppreciationTemplate] = useState('imperial_arch');
+  // 5 Appreciation / Merit Templates
+  const [appreciationTemplate, setAppreciationTemplate] = useState('imperial_crimson_arch');
+
+  // 5 Participation / Event Templates
+  const [participationTemplate, setParticipationTemplate] = useState('modern_teal_geometric');
 
   // 5 Student ID Card Templates
-  // 'navy_chevron' | 'sage_khaki' | 'terracotta_split' | 'emerald_wave' | 'terracotta_portrait'
   const [idCardTemplate, setIdCardTemplate] = useState('navy_chevron');
+
+  // 5 Character & Migration Templates
+  const [migrationTemplate, setMigrationTemplate] = useState('cbse_official_migration');
+
+  // 5 Domicile & Bonafide Templates
+  const [domicileTemplate, setDomicileTemplate] = useState('statutory_residence_formal');
+
+  // 5 Academic Report Card / Marksheet Templates
+  const [reportCardTemplate, setReportCardTemplate] = useState('cbse_cce_holistic');
+
+  // 5 Exam Admit Card / Hall Ticket Templates
+  const [admitCardTemplate, setAdmitCardTemplate] = useState('statutory_hall_ticket');
+
   const [customClassSection, setCustomClassSection] = useState('');
   
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
@@ -374,6 +387,264 @@ export default function TransferCertificateView() {
       orientation: 'portrait',
       borderStyle: 'border-[#9a4b27]',
       activeBg: 'from-amber-800/30 to-orange-800/20 border-amber-600 text-amber-200'
+    }
+  ];
+
+  const appreciationTemplatesList = [
+    {
+      id: 'imperial_crimson_arch',
+      title: 'Imperial Crimson & Gold Arch',
+      tag: 'Portrait • Regal Arch',
+      desc: 'Ornate crimson arch, 3-star gold sunburst medallion, serif typography',
+      orientation: 'portrait',
+      activeBg: 'from-rose-700/30 to-amber-700/20 border-rose-400 text-rose-200'
+    },
+    {
+      id: 'royal_navy_gold_merit',
+      title: 'Royal Navy & Golden Laurel',
+      tag: 'Landscape • Luxury Crest',
+      desc: 'Midnight navy frame, ornate corner filigree, embossed gold laurel crest',
+      orientation: 'landscape',
+      activeBg: 'from-indigo-700/30 to-blue-700/20 border-indigo-400 text-indigo-200'
+    },
+    {
+      id: 'vintage_parchment_honor',
+      title: 'Vintage Antique Parchment Honor',
+      tag: 'Landscape • Banknote Filigree',
+      desc: 'Warm textured parchment background, Gothic lettering, crimson wax seal',
+      orientation: 'landscape',
+      activeBg: 'from-amber-700/30 to-yellow-700/20 border-amber-400 text-amber-200'
+    },
+    {
+      id: 'modern_platinum_distinction',
+      title: 'Modern Platinum & Sapphire',
+      tag: 'Landscape • High-Tech Security',
+      desc: 'High-tech platinum geometric frames, dynamic QR verification, cobalt accents',
+      orientation: 'landscape',
+      activeBg: 'from-cyan-700/30 to-blue-700/20 border-cyan-400 text-cyan-200'
+    },
+    {
+      id: 'emerald_excellence_crest',
+      title: 'Emerald & Champagne Excellence',
+      tag: 'Portrait • Commendation Layout',
+      desc: 'Forest emerald dual borders, gold filigree starburst, formal commendation',
+      orientation: 'portrait',
+      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+    }
+  ];
+
+  const participationTemplatesList = [
+    {
+      id: 'modern_teal_geometric',
+      title: 'Modern Teal Geometric',
+      tag: 'Portrait • Polygonal Header',
+      desc: 'Cyan/teal polygonal angled headers & footers, multi-ring hologram seal',
+      orientation: 'portrait',
+      activeBg: 'from-teal-700/30 to-cyan-700/20 border-teal-400 text-teal-200'
+    },
+    {
+      id: 'olympic_gold_laurel',
+      title: 'Olympic Gold Laurel Athletics',
+      tag: 'Landscape • Sports & Athletics',
+      desc: 'Golden laurel branch framing, stadium ribbon medal icon, vibrant athletics design',
+      orientation: 'landscape',
+      activeBg: 'from-amber-600/30 to-orange-600/20 border-amber-400 text-amber-200'
+    },
+    {
+      id: 'cyber_neon_hackathon',
+      title: 'Cyber Cobalt STEM & Coding',
+      tag: 'Landscape • Tech & Hackathon',
+      desc: 'Futuristic digital grid accents, microchip tech emblem, hackathon/quiz layout',
+      orientation: 'landscape',
+      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'classic_crimson_contest',
+      title: 'Classic Crimson Arts & Debate',
+      tag: 'Portrait • Cultural Contest',
+      desc: 'Formal double-ruled crimson borders, bronze contest seal, arts citation',
+      orientation: 'portrait',
+      activeBg: 'from-rose-700/30 to-pink-700/20 border-rose-400 text-rose-200'
+    },
+    {
+      id: 'solar_amber_symposium',
+      title: 'Solar Amber Youth Leadership',
+      tag: 'Landscape • Symposium & MUN',
+      desc: 'Warm sunset gradient waves, star compass rosette, conference/symposium format',
+      orientation: 'landscape',
+      activeBg: 'from-yellow-600/30 to-amber-600/20 border-yellow-400 text-yellow-200'
+    }
+  ];
+
+  const migrationTemplatesList = [
+    {
+      id: 'cbse_official_migration',
+      title: 'Statutory Board Clearance',
+      tag: 'Portrait • CBSE/ICSE Standard',
+      desc: 'Statutory numbered clauses, watermark emblem, double principal & exam in-charge seal',
+      orientation: 'portrait',
+      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+    },
+    {
+      id: 'heritage_gold_seal',
+      title: 'Heritage Golden Conduct Seal',
+      tag: 'Portrait • Classical Filigree',
+      desc: 'Formal serif typography, golden embossed crest, institutional good-conduct verdict',
+      orientation: 'portrait',
+      activeBg: 'from-amber-700/30 to-yellow-700/20 border-amber-400 text-amber-200'
+    },
+    {
+      id: 'modern_security_qr',
+      title: 'Modern High-Security Digital QR',
+      tag: 'Landscape • QR Cryptographic',
+      desc: 'Security anti-tamper guilloche borders, dynamic QR verification token, clearance checklist',
+      orientation: 'landscape',
+      activeBg: 'from-cyan-700/30 to-teal-700/20 border-cyan-400 text-cyan-200'
+    },
+    {
+      id: 'classic_blue_parchment',
+      title: 'Executive Navy & Ivory Leaving',
+      tag: 'Portrait • Formal Parchment',
+      desc: 'Navy formal headers, detailed disciplinary clearance checklist & character remarks',
+      orientation: 'portrait',
+      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'tri_color_statutory',
+      title: 'National Statutory Clear-Pass',
+      tag: 'Portrait • Interstate Transfer',
+      desc: 'Formal bordered interstate migration certificate with registrar seal and character grade',
+      orientation: 'portrait',
+      activeBg: 'from-slate-700/30 to-slate-800/20 border-slate-400 text-slate-200'
+    }
+  ];
+
+  const domicileTemplatesList = [
+    {
+      id: 'statutory_residence_formal',
+      title: 'Official Statutory Residence',
+      tag: 'Portrait • UIDAI & UDISE Record',
+      desc: 'Government/institutional residency format with UIDAI & UDISE official verification',
+      orientation: 'portrait',
+      activeBg: 'from-blue-700/30 to-sky-700/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'heritage_academic_bonafide',
+      title: 'Heritage Academic Enrollment',
+      tag: 'Portrait • Attested Photograph',
+      desc: 'Classic ornamental frame with student photograph, parent details, and registrar stamp',
+      orientation: 'portrait',
+      activeBg: 'from-indigo-700/30 to-blue-700/20 border-indigo-400 text-indigo-200'
+    },
+    {
+      id: 'modern_digital_bonafide',
+      title: 'Modern Digital Authenticated',
+      tag: 'Landscape • Digital Barcode Pass',
+      desc: 'Clean corporate design with digital signature stamp, barcode, and residency duration table',
+      orientation: 'landscape',
+      activeBg: 'from-teal-700/30 to-cyan-700/20 border-teal-400 text-teal-200'
+    },
+    {
+      id: 'regal_navy_institutional',
+      title: 'Regal Navy Campus Bonafide',
+      tag: 'Portrait • Embossed Gold Crest',
+      desc: 'Deep navy border with embossed gold seal and institutional head verification text',
+      orientation: 'portrait',
+      activeBg: 'from-slate-700/30 to-blue-900/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'minimalist_board_proof',
+      title: 'Minimalist Board Verification',
+      tag: 'Landscape • Institutional Clear',
+      desc: 'Clean monochrome table layout with student credentials and fee clearance confirmation',
+      orientation: 'landscape',
+      activeBg: 'from-amber-700/30 to-orange-700/20 border-amber-400 text-amber-200'
+    }
+  ];
+
+  const reportCardTemplatesList = [
+    {
+      id: 'cbse_cce_holistic',
+      title: 'CBSE Holistic Term Marksheet',
+      tag: 'Portrait • Scholastic & Co-Scholastic',
+      desc: '8-subject table, attendance percentage, scholastic grades (A1-E), and teacher evaluation',
+      orientation: 'portrait',
+      activeBg: 'from-purple-700/30 to-indigo-700/20 border-purple-400 text-purple-200'
+    },
+    {
+      id: 'modern_analytics_dashboard',
+      title: 'Modern Visual Performance Matrix',
+      tag: 'Landscape • Percentile & Progress',
+      desc: 'Subject marks with visual progress bars, percentile graphs, rank badge, and grading breakdown',
+      orientation: 'landscape',
+      activeBg: 'from-cyan-700/30 to-purple-700/20 border-cyan-400 text-cyan-200'
+    },
+    {
+      id: 'classic_heritage_transcript',
+      title: 'Classic Academic Transcript',
+      tag: 'Portrait • Distinction Honors',
+      desc: 'Traditional double-border marksheet with maximum/minimum/obtained marks breakdown',
+      orientation: 'portrait',
+      activeBg: 'from-blue-700/30 to-slate-700/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'cambridge_igcse_gradebook',
+      title: 'Cambridge IGCSE Gradebook',
+      tag: 'Portrait • Letter Grade Scale',
+      desc: 'International letter grades (A*, A, B...), component credits, GPA scale, and principal sign-off',
+      orientation: 'portrait',
+      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+    },
+    {
+      id: 'executive_split_semester',
+      title: 'Bi-Semester Comparative Sheet',
+      tag: 'Landscape • Term 1 vs Term 2',
+      desc: 'Side-by-side Term 1 vs Term 2 comparative performance table with cumulative CGPA',
+      orientation: 'landscape',
+      activeBg: 'from-rose-700/30 to-purple-700/20 border-rose-400 text-rose-200'
+    }
+  ];
+
+  const admitCardTemplatesList = [
+    {
+      id: 'statutory_hall_ticket',
+      title: 'Board Examination Hall Ticket',
+      tag: 'Portrait • Timetable & Center',
+      desc: 'Candidate photo, roll number barcode, statutory 6-exam timetable, and superintendent seal',
+      orientation: 'portrait',
+      activeBg: 'from-amber-700/30 to-orange-700/20 border-amber-400 text-amber-200'
+    },
+    {
+      id: 'modern_qr_admit_pass',
+      title: 'Modern Digital QR Hall Ticket',
+      tag: 'Landscape • Dynamic QR Pass',
+      desc: 'High-tech security layout with dynamic QR scanning box, seat number badge, and timetable',
+      orientation: 'landscape',
+      activeBg: 'from-cyan-700/30 to-blue-700/20 border-cyan-400 text-cyan-200'
+    },
+    {
+      id: 'split_photo_admit_card',
+      title: 'Dual-Photo Invigilator Pass',
+      tag: 'Portrait • Invigilator Verification',
+      desc: 'Candidate photograph, invigilator signature boxes, room allocation & identification checklist',
+      orientation: 'portrait',
+      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'compact_slip_format',
+      title: 'Compact Slip Examination Pass',
+      tag: 'Landscape • Pocket Laminated',
+      desc: 'Pocket-sized laminated hall ticket format with subject dates, room slot, and candidate rules',
+      orientation: 'landscape',
+      activeBg: 'from-teal-700/30 to-emerald-700/20 border-teal-400 text-teal-200'
+    },
+    {
+      id: 'executive_navy_hall_ticket',
+      title: 'Executive Navy Hall Ticket & Rules',
+      tag: 'Portrait • Full Regulations',
+      desc: 'Full-page official admit card with comprehensive examination hall rules & statutory clauses',
+      orientation: 'portrait',
+      activeBg: 'from-slate-700/30 to-indigo-700/20 border-slate-400 text-slate-200'
     }
   ];
 
@@ -1412,300 +1683,953 @@ export default function TransferCertificateView() {
           default: return renderSunriseChevronTC(st);
         }
 
-      // 2. CERTIFICATE OF APPRECIATION
-      case 'appreciation':
-        return renderImperialArchAppreciation(st);
+      // 2. CERTIFICATE OF APPRECIATION (5 Master Design Layouts)
+      case 'appreciation': {
+        switch (appreciationTemplate) {
+          case 'imperial_crimson_arch': return renderImperialArchAppreciation(st);
+          
+          case 'royal_navy_gold_merit':
+            return (
+              <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-7 sm:p-10 rounded-3xl border-8 border-amber-400 shadow-2xl relative overflow-hidden font-sans">
+                <div className="absolute top-3 left-3 right-3 bottom-3 border-2 border-amber-300/40 rounded-2xl pointer-events-none" />
+                <div className="text-center space-y-2 relative z-10 pt-2">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-300 shadow-lg">
+                      <Award className="w-9 h-9 text-amber-300" />
+                    </div>
+                  </div>
+                  <h2 className="font-serif font-black text-2xl sm:text-3xl text-amber-200 uppercase tracking-widest leading-none">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <p className="text-xs text-slate-300 font-medium tracking-wide">
+                    {schoolInfo.address}
+                  </p>
+                  <div className="pt-2">
+                    <h1 className="text-3xl sm:text-4xl font-serif italic text-amber-400 font-extrabold tracking-wide">
+                      Certificate of Merit &amp; Excellence
+                    </h1>
+                    <div className="w-32 h-0.5 bg-amber-400 mx-auto mt-2 rounded-full" />
+                  </div>
+                </div>
 
-      // 3. CERTIFICATE OF PARTICIPATION
-      case 'participation':
-        return renderModernTealParticipation(st);
+                <div className="space-y-4 text-center px-6 py-4 font-serif text-sm leading-loose text-slate-100 relative z-10">
+                  <p className="text-base italic text-slate-300">
+                    This prestigious commendation is proudly bestowed upon
+                  </p>
+                  <div className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider font-sans border-b-2 border-amber-400 pb-1 max-w-md mx-auto">
+                    {st.student_name}
+                  </div>
+                  <div className="text-xs font-sans text-slate-300">
+                    Class &amp; Batch: <strong className="text-amber-300">{st.class_batch}</strong> &bull; Scholar ID: <strong className="font-mono text-amber-300">{st.id}</strong>
+                  </div>
+                  <p className="text-sm italic text-amber-200">
+                    In recognition of outstanding performance, leadership, and exemplary dedication as
+                  </p>
+                  <div className="text-xl font-black text-amber-400 uppercase tracking-wide font-sans py-1">
+                    "{awardTitle}"
+                  </div>
+                  <p className="text-xs text-slate-300 max-w-lg mx-auto font-sans leading-relaxed">
+                    Presented during the <strong className="text-white">{eventName}</strong>. We applaud your remarkable dedication and commitment to highest excellence.
+                  </p>
+                </div>
 
-      // 4. DOMICILE & BONAFIDE CERTIFICATE
-      case 'domicile':
-        return (
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-blue-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
-            <div className="text-center space-y-1 border-b-2 border-blue-900 pb-4">
-              <div className="text-[10px] font-bold tracking-widest text-blue-800 uppercase">
-                Department of Public Instruction &bull; Code: {schoolInfo.schoolCode}
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                {schoolInfo.schoolName}
-              </h2>
-              <div className="inline-block mt-2 px-4 py-1 rounded-full bg-blue-900 text-white font-bold text-xs uppercase tracking-wider">
-                Bonafide &amp; Institutional Domicile Certificate
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
-              <span>Certificate No: <strong className="text-blue-900">{regNo}</strong></span>
-              <span>Academic Year: <strong className="text-slate-900">{academicSession}</strong></span>
-              <span>Date: <strong className="text-slate-900">{issueDate}</strong></span>
-            </div>
-
-            <div className="p-4 bg-blue-50/40 rounded-xl border border-blue-100 text-justify text-xs leading-relaxed space-y-3">
-              <p>
-                This is to officially certify that Master / Miss <strong className="text-slate-900 underline text-sm">{st.student_name}</strong>, 
-                Admission No: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
-                Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
-                is a bonafide continuous student of this institution studying in <strong className="text-slate-900">{st.class_batch}</strong>.
-              </p>
-              <p>
-                As per the official school admission records, the candidate is a permanent resident residing at:
-              </p>
-              <div className="p-3 bg-white rounded-lg border border-blue-200 font-semibold text-slate-800 text-[11px]">
-                {st.residential_address}
-              </div>
-              <p>
-                According to the admission register, the date of birth recorded is <strong className="text-slate-900">{st.dob}</strong>. 
-                His/Her Aadhaar Identification number on record is <strong className="text-slate-900 font-mono">{st.aadhaar_no}</strong>. 
-                To the best of our knowledge and belief, he/she bears an exemplary moral character.
-              </p>
-            </div>
-
-            <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-              <div className="flex items-center gap-3">
-                <img src={st.photo} alt={st.student_name} className="w-14 h-14 rounded-lg object-cover border-2 border-blue-200 shadow-sm" />
-                <div>
-                  <div className="text-[10px] font-bold text-slate-700">Attested Photo</div>
-                  <div className="text-[9px] text-slate-400 font-mono">Institutional Seal Affixed</div>
+                <div className="pt-6 border-t border-amber-400/30 flex items-end justify-between px-6 pb-2 relative z-10 text-xs">
+                  <div className="text-center space-y-1">
+                    <div className="font-mono text-amber-200 font-bold">{issueDate}</div>
+                    <div className="text-[10px] text-slate-400 uppercase">Date of Conferment</div>
+                  </div>
+                  <div className="text-center">
+                    <GoldenSchoolSeal size={80} />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="font-serif italic font-bold text-amber-200 text-sm">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] text-slate-400 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
                 </div>
               </div>
-              <div className="text-center space-y-1">
-                <div className="w-36 border-b-2 border-blue-900 pb-1 font-serif italic text-blue-900 font-bold text-sm">
-                  {schoolInfo.principalName}
+            );
+
+          case 'vintage_parchment_honor':
+            return (
+              <div className="bg-[#fcf8ee] text-slate-900 p-8 sm:p-11 rounded-3xl border-8 border-amber-700 shadow-2xl relative overflow-hidden font-serif">
+                <div className="absolute top-2 left-2 right-2 bottom-2 border-4 border-double border-amber-900/40 pointer-events-none" />
+                <div className="text-center space-y-2 relative z-10">
+                  <div className="text-xs font-bold uppercase tracking-widest text-amber-900 font-sans">
+                    ★ INSTITUTIONAL ROLL OF HONOR ★
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-amber-950 uppercase">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <h1 className="text-3xl sm:text-4xl font-extrabold text-amber-900 italic pt-2">
+                    Honorary Certificate of Appreciation
+                  </h1>
                 </div>
-                <div className="font-black text-[10px] text-slate-900 uppercase">{schoolInfo.principalTitle}</div>
-              </div>
-            </div>
-          </div>
-        );
-
-      // 5. CHARACTER & CONDUCT MIGRATION CERTIFICATE
-      case 'migration':
-        return (
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-emerald-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
-            <div className="text-center space-y-1 border-b-2 border-emerald-900 pb-4">
-              <div className="text-[10px] font-bold tracking-widest text-emerald-800 uppercase">
-                Board of Secondary &amp; Senior Secondary Education
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                {schoolInfo.schoolName}
-              </h2>
-              <div className="inline-block mt-2 px-4 py-1 rounded-full bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider">
-                Character &amp; Inter-State Migration Clearance
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
-              <span>Migration No: <strong className="text-emerald-900">{regNo}</strong></span>
-              <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
-              <span>Issue Date: <strong className="text-slate-900">{issueDate}</strong></span>
-            </div>
-
-            <div className="p-4 bg-emerald-50/40 rounded-xl border border-emerald-100 text-justify text-xs leading-relaxed space-y-3">
-              <p>
-                This is to certify that <strong className="text-slate-900 underline text-sm">{st.student_name}</strong>, 
-                Student ID: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
-                has been a student of this school from <strong className="text-slate-900">{st.admission_date}</strong> to <strong className="text-slate-900">{issueDate}</strong>.
-              </p>
-              <p>
-                During his/her tenure at {schoolInfo.schoolName}, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>. 
-                He/She actively participated in academic workshops, sports, and institutional co-curricular events.
-              </p>
-              <p>
-                This institution has <strong>NO OBJECTION</strong> to his/her admission to any authorized board, university, or college across India or abroad.
-              </p>
-            </div>
-
-            <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border mx-auto mb-1">
-                  <QrCode className="w-8 h-8 text-slate-800" />
+                <div className="space-y-4 text-center px-6 py-6 text-sm leading-loose text-slate-800 relative z-10">
+                  <p className="text-base italic">Be it known to all that</p>
+                  <div className="text-3xl font-black text-amber-950 border-b-2 border-amber-900 max-w-md mx-auto pb-1">
+                    {st.student_name}
+                  </div>
+                  <p className="text-xs font-sans text-slate-600">
+                    of Grade <strong className="text-amber-950">{st.class_batch}</strong>
+                  </p>
+                  <p className="italic text-base">
+                    has attained the distinguished status of <strong className="text-amber-900 font-black uppercase underline">"{awardTitle}"</strong> at <strong className="text-amber-950">{eventName}</strong>.
+                  </p>
                 </div>
-                <span className="text-[9px] text-slate-400 font-mono">Digital Signature</span>
-              </div>
-              <div className="text-center space-y-1">
-                <div className="w-36 border-b-2 border-emerald-900 pb-1 font-serif italic text-emerald-900 font-bold text-sm">
-                  {schoolInfo.principalName}
+                <div className="pt-6 border-t border-amber-800/30 flex items-end justify-between px-6 pb-2 relative z-10">
+                  <div className="text-center space-y-1">
+                    <div className="font-mono text-xs font-bold text-amber-950">{issueDate}</div>
+                    <div className="text-[10px] uppercase text-slate-600">Conferred On</div>
+                  </div>
+                  <CrimsonStampSeal size={84} />
+                  <div className="text-center space-y-1">
+                    <div className="font-serif italic font-bold text-base text-amber-950">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] uppercase text-slate-600">Head of Institution</div>
+                  </div>
                 </div>
-                <div className="font-black text-[10px] text-slate-900 uppercase">Authorized Signatory</div>
               </div>
-            </div>
-          </div>
-        );
+            );
 
-      // 6. ACADEMIC REPORT CARD (MARKSHEET)
-      case 'report_card':
-        return (
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-purple-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
-            <div className="text-center space-y-1 border-b-2 border-purple-900 pb-3">
-              <div className="text-[10px] font-bold tracking-widest text-purple-800 uppercase">
-                Annual Academic Performance &amp; Evaluation Statement
-              </div>
-              <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                {schoolInfo.schoolName}
-              </h2>
-              <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-purple-900 text-white font-bold text-[11px] uppercase tracking-wider">
-                Official Report Card &bull; Academic Year {academicSession}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] bg-purple-50/50 p-3 rounded-xl border border-purple-100">
-              <div>Student Name: <strong className="block text-slate-900 font-bold text-xs">{st.student_name}</strong></div>
-              <div>Roll No: <strong className="block text-slate-900 font-mono font-bold">{st.roll_no}</strong></div>
-              <div>Class &amp; Section: <strong className="block text-slate-900 font-bold">{st.class_batch}</strong></div>
-              <div>Attendance: <strong className="block text-emerald-700 font-bold">{totalDaysPresent}</strong></div>
-            </div>
-
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-purple-900 text-white text-[10px] uppercase font-bold">
-                  <tr>
-                    <th className="py-2 px-3">Subject</th>
-                    <th className="py-2 px-3">Theory (80)</th>
-                    <th className="py-2 px-3">Practical (20)</th>
-                    <th className="py-2 px-3">Total (100)</th>
-                    <th className="py-2 px-3">Grade</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 text-[11px] font-semibold">
-                  <tr className="hover:bg-purple-50/30">
-                    <td className="py-2 px-3 font-bold">Advanced Mathematics</td>
-                    <td className="py-2 px-3">78</td>
-                    <td className="py-2 px-3">19</td>
-                    <td className="py-2 px-3 text-purple-900 font-black">97</td>
-                    <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                  </tr>
-                  <tr className="hover:bg-purple-50/30">
-                    <td className="py-2 px-3 font-bold">Physics &amp; Dynamics</td>
-                    <td className="py-2 px-3">75</td>
-                    <td className="py-2 px-3">19</td>
-                    <td className="py-2 px-3 text-purple-900 font-black">94</td>
-                    <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                  </tr>
-                  <tr className="hover:bg-purple-50/30">
-                    <td className="py-2 px-3 font-bold">Chemistry &amp; Applied Sciences</td>
-                    <td className="py-2 px-3">72</td>
-                    <td className="py-2 px-3">19</td>
-                    <td className="py-2 px-3 text-purple-900 font-black">91</td>
-                    <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                  </tr>
-                  <tr className="hover:bg-purple-50/30">
-                    <td className="py-2 px-3 font-bold">Computer Applications &amp; AI</td>
-                    <td className="py-2 px-3">79</td>
-                    <td className="py-2 px-3">20</td>
-                    <td className="py-2 px-3 text-purple-900 font-black">99</td>
-                    <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                  </tr>
-                  <tr className="hover:bg-purple-50/30">
-                    <td className="py-2 px-3 font-bold">English Language &amp; Literature</td>
-                    <td className="py-2 px-3">74</td>
-                    <td className="py-2 px-3">18</td>
-                    <td className="py-2 px-3 text-purple-900 font-black">92</td>
-                    <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                  </tr>
-                  <tr className="bg-purple-50 font-black text-slate-900">
-                    <td className="py-2.5 px-3">Grand Total: 473 / 500</td>
-                    <td colSpan="2" className="py-2.5 px-3 text-right">Aggregate Score: 94.6%</td>
-                    <td colSpan="2" className="py-2.5 px-3 text-emerald-700 font-black text-right">RESULT: PASSED (DISTINCTION)</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
-              <div className="text-[10px] text-slate-500">
-                Teacher Remark: <strong className="text-slate-800">Outstanding academic aptitude and problem-solving skills!</strong>
-              </div>
-              <div className="text-center space-y-1">
-                <div className="w-32 border-b-2 border-purple-900 pb-1 font-serif italic text-purple-900 font-bold text-sm">
-                  {schoolInfo.principalName}
+          case 'modern_platinum_distinction':
+            return (
+              <div className="bg-white text-slate-900 p-8 sm:p-10 rounded-3xl border-4 border-slate-400 shadow-2xl relative overflow-hidden font-sans">
+                <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-500 pointer-events-none" />
+                <div className="flex items-start justify-between border-b pb-4 relative z-10">
+                  <div>
+                    <h2 className="font-black text-xl sm:text-2xl text-slate-950 uppercase tracking-wide">
+                      {schoolInfo.schoolName}
+                    </h2>
+                    <p className="text-xs text-blue-700 font-bold uppercase tracking-wider mt-0.5">
+                      Academic Excellence &amp; Distinction Award
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center">
+                    <QrCode className="w-8 h-8 text-slate-800" />
+                  </div>
                 </div>
-                <div className="font-black text-[9px] text-slate-900 uppercase">Principal Signature &amp; Stamp</div>
-              </div>
-            </div>
-          </div>
-        );
-
-      // 7. EXAM ADMIT CARD (HALL TICKET)
-      case 'admit_card':
-        return (
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-amber-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
-            <div className="text-center space-y-1 border-b-2 border-amber-900 pb-3">
-              <div className="text-[10px] font-bold tracking-widest text-amber-800 uppercase">
-                Central Examination Cell &bull; Hall Ticket {academicSession}
-              </div>
-              <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                {schoolInfo.schoolName}
-              </h2>
-              <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-amber-900 text-amber-200 font-bold text-[11px] uppercase tracking-wider">
-                Official Examination Hall Ticket &bull; Roll #{st.roll_no}
-              </div>
-            </div>
-
-            <div className="flex items-start justify-between gap-4 p-3 bg-amber-50/50 rounded-xl border border-amber-200">
-              <div className="space-y-1 text-xs">
-                <div>Candidate Name: <strong className="text-slate-900 text-sm font-black">{st.student_name}</strong></div>
-                <div>Registration ID: <strong className="font-mono text-slate-900 font-bold">{regNo}</strong></div>
-                <div>Class &amp; Batch: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></div>
-                <div>Exam Center: <strong className="text-slate-900">Main Examination Hall, {schoolInfo.schoolName}</strong></div>
-              </div>
-              <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 shadow-sm" />
-            </div>
-
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-amber-900 text-white text-[10px] uppercase font-bold">
-                  <tr>
-                    <th className="py-2 px-3">Date</th>
-                    <th className="py-2 px-3">Time Slot</th>
-                    <th className="py-2 px-3">Subject Name</th>
-                    <th className="py-2 px-3">Exam Hall</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 text-[11px] font-medium">
-                  <tr className="hover:bg-amber-50/30">
-                    <td className="py-2 px-3 font-mono font-bold">14 Oct 2026</td>
-                    <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                    <td className="py-2 px-3 font-bold text-slate-900">Advanced Mathematics (MATH-101)</td>
-                    <td className="py-2 px-3">Room 204</td>
-                  </tr>
-                  <tr className="hover:bg-amber-50/30">
-                    <td className="py-2 px-3 font-mono font-bold">16 Oct 2026</td>
-                    <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                    <td className="py-2 px-3 font-bold text-slate-900">Physics &amp; Dynamics (PHYS-102)</td>
-                    <td className="py-2 px-3">Lab 2</td>
-                  </tr>
-                  <tr className="hover:bg-amber-50/30">
-                    <td className="py-2 px-3 font-mono font-bold">19 Oct 2026</td>
-                    <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                    <td className="py-2 px-3 font-bold text-slate-900">Chemistry &amp; Applied Sciences (CHEM-103)</td>
-                    <td className="py-2 px-3">Lab 1</td>
-                  </tr>
-                  <tr className="hover:bg-amber-50/30">
-                    <td className="py-2 px-3 font-mono font-bold">21 Oct 2026</td>
-                    <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                    <td className="py-2 px-3 font-bold text-slate-900">Computer Applications &amp; AI (CS-104)</td>
-                    <td className="py-2 px-3">Computer Lab</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
-              <div className="text-center">
-                <div className="w-24 border-b border-slate-400 pb-1 font-mono text-[10px] text-slate-400">Candidate Signature</div>
-                <span className="text-[9px] text-slate-500">Sign before invigilator</span>
-              </div>
-              <div className="text-center space-y-1">
-                <div className="w-32 border-b-2 border-amber-900 pb-1 font-serif italic text-amber-900 font-bold text-sm">
-                  Controller of Exams
+                <div className="space-y-4 text-center py-6 relative z-10">
+                  <div className="text-xs font-black uppercase tracking-widest text-cyan-700">CERTIFICATE OF RECOGNITION</div>
+                  <div className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
+                    {st.student_name}
+                  </div>
+                  <div className="inline-block px-4 py-1 rounded-full bg-blue-50 text-blue-900 font-bold text-xs border border-blue-200">
+                    {st.class_batch} &bull; Roll #{st.roll_no}
+                  </div>
+                  <p className="text-sm text-slate-700 max-w-xl mx-auto leading-relaxed">
+                    Recognized for superior achievement and exemplary performance in <strong className="text-slate-950 font-bold">{eventName}</strong>, achieving the title of <strong className="text-blue-700 font-black">"{awardTitle}"</strong>.
+                  </p>
                 </div>
-                <div className="font-black text-[9px] text-slate-900 uppercase">Board Officer Stamp</div>
+                <div className="pt-4 border-t border-slate-200 flex items-end justify-between relative z-10 text-xs">
+                  <div>
+                    <div className="font-mono text-[10px] text-slate-400">AUTH ID: {regNo}</div>
+                    <div className="text-slate-700 font-bold">{issueDate}</div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="font-serif italic font-bold text-sm text-slate-900">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        );
+            );
+
+          case 'emerald_excellence_crest':
+          default:
+            return (
+              <div className="bg-white text-slate-900 p-8 sm:p-11 rounded-3xl border-8 border-emerald-800 shadow-2xl relative overflow-hidden font-sans">
+                <div className="absolute top-3 left-3 right-3 bottom-3 border-2 border-emerald-600/40 rounded-2xl pointer-events-none" />
+                <div className="text-center space-y-2 relative z-10">
+                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto border-2 border-emerald-600">
+                    <Medal className="w-8 h-8 text-emerald-700" />
+                  </div>
+                  <h2 className="font-serif font-black text-2xl text-emerald-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <h1 className="text-3xl font-serif italic text-emerald-800 font-bold">Certificate of Commendation</h1>
+                </div>
+                <div className="space-y-4 text-center py-6 text-sm text-slate-800 relative z-10 font-serif">
+                  <p className="italic">Awarded to</p>
+                  <div className="text-3xl font-black text-emerald-950 font-sans">{st.student_name}</div>
+                  <p className="text-xs font-sans text-slate-600">Grade: <strong>{st.class_batch}</strong></p>
+                  <p className="italic max-w-lg mx-auto">
+                    For meritorious distinction as <strong className="text-emerald-800 font-black uppercase">"{awardTitle}"</strong> during <strong className="text-slate-900">{eventName}</strong>.
+                  </p>
+                </div>
+                <div className="pt-6 border-t border-emerald-800/30 flex items-end justify-between px-6 relative z-10 text-xs">
+                  <div>
+                    <div className="font-mono text-emerald-900 font-bold">{issueDate}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">Issued Date</div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="font-serif italic font-bold text-sm text-emerald-950">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">Principal</div>
+                  </div>
+                </div>
+              </div>
+            );
+        }
+      }
+
+      // 3. CERTIFICATE OF PARTICIPATION (5 Master Design Layouts)
+      case 'participation': {
+        switch (participationTemplate) {
+          case 'modern_teal_geometric': return renderModernTealParticipation(st);
+          
+          case 'olympic_gold_laurel':
+            return (
+              <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50 text-slate-900 p-8 sm:p-10 rounded-3xl border-8 border-amber-500 shadow-2xl relative overflow-hidden font-sans">
+                <div className="text-center space-y-2 relative z-10">
+                  <div className="w-16 h-16 rounded-full bg-amber-500 text-white flex items-center justify-center mx-auto shadow-md">
+                    <Trophy className="w-9 h-9 text-white" />
+                  </div>
+                  <h2 className="font-black text-2xl text-amber-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs font-bold text-orange-700 tracking-widest uppercase">ANNUAL ATHLETIC &amp; SPORTS MEET</div>
+                  <h1 className="text-3xl sm:text-4xl font-black text-slate-950 uppercase tracking-wider pt-2">
+                    CERTIFICATE OF PARTICIPATION
+                  </h1>
+                </div>
+                <div className="text-center space-y-3 py-6 px-6 relative z-10">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">PROUDLY PRESENTED TO</p>
+                  <div className="text-3xl font-black text-amber-900 border-b-2 border-amber-500 pb-1 max-w-md mx-auto">
+                    {st.student_name}
+                  </div>
+                  <p className="text-xs text-slate-600">Representing <strong>{st.class_batch}</strong></p>
+                  <p className="text-xs text-slate-700 max-w-lg mx-auto leading-relaxed">
+                    For active, enthusiastic participation and sportsmanship in the <strong className="text-amber-900 font-bold">{eventName}</strong>.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-amber-300 flex items-end justify-between px-6 relative z-10 text-xs">
+                  <div className="text-center space-y-1">
+                    <div className="font-bold text-slate-800">Prof. Sports Director</div>
+                    <div className="text-[10px] text-slate-500 uppercase">Head of Physical Ed.</div>
+                  </div>
+                  <ModernHologramSeal size={74} />
+                  <div className="text-center space-y-1">
+                    <div className="font-bold text-slate-900">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'cyber_neon_hackathon':
+            return (
+              <div className="bg-slate-950 text-white p-8 sm:p-10 rounded-3xl border-4 border-cyan-500 shadow-2xl relative overflow-hidden font-mono">
+                <div className="text-center space-y-2 relative z-10">
+                  <div className="text-xs text-cyan-400 font-bold uppercase tracking-widest">&lt;STEM &amp; AI INNOVATION /&gt;</div>
+                  <h2 className="text-2xl font-black text-white uppercase tracking-wider">{schoolInfo.schoolName}</h2>
+                  <h1 className="text-3xl font-black text-cyan-400 uppercase tracking-widest pt-2">PARTICIPATION BADGE</h1>
+                </div>
+                <div className="text-center space-y-3 py-6 px-6 relative z-10">
+                  <div className="text-xs text-slate-400">AWARDED TO CONTESTANT:</div>
+                  <div className="text-3xl font-black text-cyan-300 border-b border-cyan-500 pb-1 max-w-md mx-auto">{st.student_name}</div>
+                  <div className="text-xs text-slate-300">GRADE: {st.class_batch} &bull; ID: {st.id}</div>
+                  <p className="text-xs text-slate-300 max-w-lg mx-auto font-sans">
+                    Successfully completed and showcased technical proficiency in the <strong className="text-cyan-300">{eventName}</strong>.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-cyan-900/60 flex items-end justify-between px-6 text-xs">
+                  <div>
+                    <div className="text-cyan-400 font-bold">{issueDate}</div>
+                    <div className="text-[9px] text-slate-500">TIMESTAMP VALIDATED</div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="text-white font-bold">{schoolInfo.principalName}</div>
+                    <div className="text-[9px] text-slate-500 uppercase">Lead Coordinator</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'classic_crimson_contest':
+            return (
+              <div className="bg-white text-slate-900 p-8 sm:p-10 rounded-3xl border-8 border-rose-900 shadow-2xl relative overflow-hidden font-serif">
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-black text-rose-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs font-bold text-rose-800 uppercase tracking-widest">LITERARY, DEBATES &amp; CULTURAL FORUM</div>
+                  <h1 className="text-3xl font-bold text-rose-900 italic pt-2">Certificate of Participation</h1>
+                </div>
+                <div className="text-center space-y-3 py-6 px-6">
+                  <p className="text-xs font-sans text-slate-500 uppercase">Presented To</p>
+                  <div className="text-3xl font-black text-slate-950 border-b-2 border-rose-900 pb-1 max-w-md mx-auto font-sans">{st.student_name}</div>
+                  <p className="text-xs text-slate-600">Student of <strong>{st.class_batch}</strong></p>
+                  <p className="text-xs font-sans text-slate-700 max-w-lg mx-auto leading-relaxed">
+                    For commendable contribution in the cultural festival <strong className="text-rose-900">{eventName}</strong>.
+                  </p>
+                </div>
+                <div className="pt-4 border-t border-rose-200 flex items-end justify-between px-6 text-xs font-sans">
+                  <div className="text-slate-600">{issueDate}</div>
+                  <div className="text-center space-y-1">
+                    <div className="font-serif italic font-bold text-sm text-slate-900">{schoolInfo.principalName}</div>
+                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'solar_amber_symposium':
+          default:
+            return (
+              <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-8 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans">
+                <div className="bg-slate-950/80 p-6 rounded-2xl border border-white/20 text-center space-y-4">
+                  <h2 className="text-2xl font-black text-amber-300 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs text-orange-200 uppercase font-bold tracking-widest">YOUTH LEADERSHIP &amp; MODEL UN SYMPOSIUM</div>
+                  <h1 className="text-3xl font-black text-white uppercase tracking-wider">CERTIFICATE OF PARTICIPATION</h1>
+                  <div className="text-3xl font-black text-amber-200 border-b border-amber-400 pb-1 max-w-md mx-auto">{st.student_name}</div>
+                  <p className="text-xs text-slate-200 max-w-lg mx-auto">
+                    Actively contributed as a student delegate from <strong>{st.class_batch}</strong> at <strong className="text-amber-300">{eventName}</strong>.
+                  </p>
+                  <div className="pt-4 border-t border-white/20 flex items-end justify-between text-xs px-4">
+                    <span className="text-amber-200 font-mono">{issueDate}</span>
+                    <span className="font-serif italic text-white text-sm">{schoolInfo.principalName}</span>
+                  </div>
+                </div>
+              </div>
+            );
+        }
+      }
+
+      // 4. DOMICILE & BONAFIDE CERTIFICATE (5 Master Design Layouts)
+      case 'domicile': {
+        switch (domicileTemplate) {
+          case 'statutory_residence_formal':
+            return (
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-blue-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
+                <div className="text-center space-y-1 border-b-2 border-blue-900 pb-4">
+                  <div className="text-[10px] font-bold tracking-widest text-blue-800 uppercase">
+                    Department of Public Instruction &bull; Code: {schoolInfo.schoolCode}
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <div className="inline-block mt-2 px-4 py-1 rounded-full bg-blue-900 text-white font-bold text-xs uppercase tracking-wider">
+                    Official Statutory Residence &amp; Bonafide Certificate
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
+                  <span>Certificate No: <strong className="text-blue-900">{regNo}</strong></span>
+                  <span>Academic Year: <strong className="text-slate-900">{academicSession}</strong></span>
+                  <span>Date: <strong className="text-slate-900">{issueDate}</strong></span>
+                </div>
+
+                <div className="p-4 bg-blue-50/40 rounded-xl border border-blue-100 text-justify text-xs leading-relaxed space-y-3">
+                  <p>
+                    This is to officially certify that Master / Miss <strong className="text-slate-900 underline text-sm">{st.student_name}</strong>, 
+                    Admission No: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
+                    Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
+                    is a bonafide continuous student of this institution studying in <strong className="text-slate-900">{st.class_batch}</strong>.
+                  </p>
+                  <p>
+                    As per the official school admission records, the candidate is a permanent resident residing at:
+                  </p>
+                  <div className="p-3 bg-white rounded-lg border border-blue-200 font-semibold text-slate-800 text-[11px]">
+                    {st.residential_address}
+                  </div>
+                  <p>
+                    According to the admission register, the date of birth recorded is <strong className="text-slate-900">{st.dob}</strong>. 
+                    His/Her Aadhaar Identification number on record is <strong className="text-slate-900 font-mono">{st.aadhaar_no}</strong>. 
+                    To the best of our knowledge and belief, he/she bears an exemplary moral character.
+                  </p>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
+                  <div className="flex items-center gap-3">
+                    <img src={st.photo} alt={st.student_name} className="w-14 h-14 rounded-lg object-cover border-2 border-blue-200 shadow-sm" />
+                    <div>
+                      <div className="text-[10px] font-bold text-slate-700">Attested Photo</div>
+                      <div className="text-[9px] text-slate-400 font-mono">Institutional Seal Affixed</div>
+                    </div>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="w-36 border-b-2 border-blue-900 pb-1 font-serif italic text-blue-900 font-bold text-sm">
+                      {schoolInfo.principalName}
+                    </div>
+                    <div className="font-black text-[10px] text-slate-900 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'heritage_academic_bonafide':
+            return (
+              <div className="bg-[#fffdf7] p-8 rounded-3xl border-4 border-amber-800 text-slate-900 space-y-5 shadow-xl font-serif text-xs">
+                <div className="text-center border-b-2 border-amber-900 pb-3">
+                  <h2 className="text-2xl font-black text-amber-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs font-bold text-amber-800 uppercase tracking-widest">HERITAGE ACADEMIC ENROLLMENT CERTIFICATE</div>
+                </div>
+                <div className="space-y-3 leading-relaxed text-sm text-justify">
+                  <p>
+                    Certified that <strong className="text-amber-950 underline">{st.student_name}</strong> (Roll #{st.roll_no}) is duly enrolled in <strong className="text-amber-950">{st.class_batch}</strong> for session {academicSession}.
+                  </p>
+                  <p>Permanent Address on School Records: <strong>{st.residential_address}</strong>.</p>
+                </div>
+                <div className="pt-6 border-t border-amber-800/40 flex justify-between items-end">
+                  <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-xl border-2 border-amber-800" />
+                  <div className="text-center font-bold text-amber-950 italic text-sm">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'modern_digital_bonafide':
+            return (
+              <div className="bg-white p-7 rounded-3xl border-2 border-teal-600 shadow-xl space-y-4 text-xs font-sans">
+                <div className="flex items-center justify-between border-b pb-3">
+                  <div>
+                    <h2 className="font-black text-lg text-teal-900 uppercase">{schoolInfo.schoolName}</h2>
+                    <div className="text-[10px] font-bold text-teal-600 uppercase">DIGITAL BONAFIDE PASS</div>
+                  </div>
+                  <div className="font-mono text-teal-800 font-bold">{regNo}</div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 p-3 bg-teal-50/50 rounded-xl border border-teal-100">
+                  <div>Candidate: <strong className="block text-slate-900">{st.student_name}</strong></div>
+                  <div>Class: <strong className="block text-teal-800">{st.class_batch}</strong></div>
+                  <div>Resident Status: <strong className="block text-emerald-700">Verified Permanent</strong></div>
+                </div>
+                <p className="text-slate-700 text-xs">Resident Address: {st.residential_address}</p>
+                <div className="pt-3 border-t flex justify-between items-end">
+                  <span className="font-mono text-[10px] text-slate-400">CODE128: {regNo}</span>
+                  <div className="font-bold text-slate-900">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'regal_navy_institutional':
+            return (
+              <div className="bg-gradient-to-br from-blue-950 to-slate-900 text-white p-8 rounded-3xl border-4 border-amber-400 shadow-2xl space-y-4 text-xs font-sans">
+                <div className="text-center border-b border-white/20 pb-3">
+                  <h2 className="text-xl font-black text-amber-300 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-[10px] text-slate-300 uppercase">CAMPUS BONAFIDE &amp; IDENTITY ENDORSEMENT</div>
+                </div>
+                <p className="text-sm text-center leading-relaxed">
+                  This document certifies that <strong className="text-amber-300 text-base">{st.student_name}</strong> is a registered student in <strong className="text-white">{st.class_batch}</strong>.
+                </p>
+                <div className="p-3 bg-white/10 rounded-xl border border-white/10 text-center">
+                  Address: {st.residential_address}
+                </div>
+                <div className="pt-4 border-t border-white/20 flex justify-between items-end">
+                  <GoldenSchoolSeal size={64} />
+                  <div className="text-right">
+                    <div className="font-serif italic text-amber-200 text-sm">{schoolInfo.principalName}</div>
+                    <div className="text-[9px] text-slate-400 uppercase">{schoolInfo.principalTitle}</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'minimalist_board_proof':
+          default:
+            return (
+              <div className="bg-white p-6 rounded-2xl border-2 border-slate-300 text-slate-900 space-y-3 text-xs font-sans">
+                <div className="border-b pb-2 flex justify-between items-center">
+                  <h2 className="font-bold text-sm uppercase">{schoolInfo.schoolName}</h2>
+                  <span className="font-mono text-[10px] text-slate-500">REF: {regNo}</span>
+                </div>
+                <p>Candidate <strong>{st.student_name}</strong> is an active bonafide student in <strong>{st.class_batch}</strong>.</p>
+                <div className="p-2 bg-slate-50 border rounded text-[11px]">{st.residential_address}</div>
+                <div className="pt-3 border-t flex justify-between text-[11px]">
+                  <span>Date: {issueDate}</span>
+                  <strong>{schoolInfo.principalName}</strong>
+                </div>
+              </div>
+            );
+        }
+      }
+
+      // 5. CHARACTER & CONDUCT MIGRATION CERTIFICATE (5 Master Design Layouts)
+      case 'migration': {
+        switch (migrationTemplate) {
+          case 'cbse_official_migration':
+            return (
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-emerald-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
+                <div className="text-center space-y-1 border-b-2 border-emerald-900 pb-4">
+                  <div className="text-[10px] font-bold tracking-widest text-emerald-800 uppercase">
+                    Board of Secondary &amp; Senior Secondary Education
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <div className="inline-block mt-2 px-4 py-1 rounded-full bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider">
+                    Official Character &amp; Inter-State Migration Clearance
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
+                  <span>Migration No: <strong className="text-emerald-900">{regNo}</strong></span>
+                  <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
+                  <span>Issue Date: <strong className="text-slate-900">{issueDate}</strong></span>
+                </div>
+
+                <div className="p-4 bg-emerald-50/40 rounded-xl border border-emerald-100 text-justify text-xs leading-relaxed space-y-3">
+                  <p>
+                    This is to certify that <strong className="text-slate-900 underline text-sm">{st.student_name}</strong>, 
+                    Student ID: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
+                    has been a student of this school from <strong className="text-slate-900">{st.admission_date}</strong> to <strong className="text-slate-900">{issueDate}</strong>.
+                  </p>
+                  <p>
+                    During his/her tenure at {schoolInfo.schoolName}, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>. 
+                    He/She actively participated in academic workshops, sports, and institutional co-curricular events.
+                  </p>
+                  <p>
+                    This institution has <strong>NO OBJECTION</strong> to his/her admission to any authorized board, university, or college across India or abroad.
+                  </p>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border mx-auto mb-1">
+                      <QrCode className="w-8 h-8 text-slate-800" />
+                    </div>
+                    <span className="text-[9px] text-slate-400 font-mono">Digital Signature</span>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="w-36 border-b-2 border-emerald-900 pb-1 font-serif italic text-emerald-900 font-bold text-sm">
+                      {schoolInfo.principalName}
+                    </div>
+                    <div className="font-black text-[10px] text-slate-900 uppercase">Authorized Signatory</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'heritage_gold_seal':
+            return (
+              <div className="bg-[#faf8f0] p-8 rounded-3xl border-4 border-amber-700 shadow-xl space-y-4 text-xs font-serif">
+                <div className="text-center border-b-2 border-amber-800 pb-3">
+                  <h2 className="text-2xl font-black text-amber-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <h1 className="text-lg font-bold text-amber-900 italic">Conduct &amp; Character Certificate</h1>
+                </div>
+                <p className="text-sm leading-loose text-justify">
+                  This certifies that <strong>{st.student_name}</strong> of <strong>{st.class_batch}</strong> has maintained an impeccable disciplinary record and exemplary moral character during their education at this institution.
+                </p>
+                <div className="pt-4 border-t border-amber-800/30 flex justify-between items-end">
+                  <GoldenSchoolSeal size={74} />
+                  <div className="text-center italic font-bold text-amber-950 text-sm">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'modern_security_qr':
+            return (
+              <div className="bg-white p-7 rounded-3xl border-2 border-slate-400 shadow-xl space-y-4 text-xs font-sans">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <h2 className="font-black text-lg text-slate-900 uppercase">{schoolInfo.schoolName}</h2>
+                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">NO OBJECTION ISSUED</span>
+                </div>
+                <p>Candidate <strong>{st.student_name}</strong> ({st.id}) is granted full migration clearance with conduct: <strong>{conduct}</strong>.</p>
+                <div className="pt-3 border-t flex justify-between items-end">
+                  <div className="font-mono text-[10px] text-slate-400">HASH: {regNo}</div>
+                  <div className="font-bold text-slate-900">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'classic_blue_parchment':
+            return (
+              <div className="bg-slate-50 p-8 rounded-3xl border-4 border-blue-900 text-slate-900 space-y-4 text-xs font-sans">
+                <div className="text-center border-b border-blue-200 pb-3">
+                  <h2 className="text-xl font-black text-blue-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs font-bold text-blue-800">DISCIPLINARY &amp; CHARACTER ENDORSEMENT</div>
+                </div>
+                <p className="leading-relaxed">Student <strong>{st.student_name}</strong> has cleared all institutional obligations and bears conduct: <strong>{conduct}</strong>.</p>
+                <div className="pt-4 border-t flex justify-between items-end">
+                  <span>Session: {academicSession}</span>
+                  <strong>{schoolInfo.principalName}</strong>
+                </div>
+              </div>
+            );
+
+          case 'tri_color_statutory':
+          default:
+            return (
+              <div className="bg-white p-7 rounded-2xl border-2 border-slate-300 text-slate-900 space-y-4 text-xs font-sans">
+                <div className="text-center border-b pb-2">
+                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-[10px] text-slate-500 uppercase">National Board Clearance Certificate</div>
+                </div>
+                <p>Certified that <strong>{st.student_name}</strong> ({st.class_batch}) is cleared for inter-state educational migration.</p>
+                <div className="pt-3 border-t flex justify-between text-xs">
+                  <span>Dated: {issueDate}</span>
+                  <strong>{schoolInfo.principalName}</strong>
+                </div>
+              </div>
+            );
+        }
+      }
+
+      // 6. ACADEMIC REPORT CARD (MARKSHEET - 5 Master Design Layouts)
+      case 'report_card': {
+        switch (reportCardTemplate) {
+          case 'cbse_cce_holistic':
+            return (
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-purple-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
+                <div className="text-center space-y-1 border-b-2 border-purple-900 pb-3">
+                  <div className="text-[10px] font-bold tracking-widest text-purple-800 uppercase">
+                    Annual Academic Performance &amp; Evaluation Statement
+                  </div>
+                  <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-purple-900 text-white font-bold text-[11px] uppercase tracking-wider">
+                    Official Report Card &bull; Academic Year {academicSession}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] bg-purple-50/50 p-3 rounded-xl border border-purple-100">
+                  <div>Student Name: <strong className="block text-slate-900 font-bold text-xs">{st.student_name}</strong></div>
+                  <div>Roll No: <strong className="block text-slate-900 font-mono font-bold">{st.roll_no}</strong></div>
+                  <div>Class &amp; Section: <strong className="block text-slate-900 font-bold">{st.class_batch}</strong></div>
+                  <div>Attendance: <strong className="block text-emerald-700 font-bold">{totalDaysPresent}</strong></div>
+                </div>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-purple-900 text-white text-[10px] uppercase font-bold">
+                      <tr>
+                        <th className="py-2 px-3">Subject</th>
+                        <th className="py-2 px-3">Theory (80)</th>
+                        <th className="py-2 px-3">Practical (20)</th>
+                        <th className="py-2 px-3">Total (100)</th>
+                        <th className="py-2 px-3">Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 text-[11px] font-semibold">
+                      <tr className="hover:bg-purple-50/30">
+                        <td className="py-2 px-3 font-bold">Advanced Mathematics</td>
+                        <td className="py-2 px-3">78</td>
+                        <td className="py-2 px-3">19</td>
+                        <td className="py-2 px-3 text-purple-900 font-black">97</td>
+                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
+                      </tr>
+                      <tr className="hover:bg-purple-50/30">
+                        <td className="py-2 px-3 font-bold">Physics &amp; Dynamics</td>
+                        <td className="py-2 px-3">75</td>
+                        <td className="py-2 px-3">19</td>
+                        <td className="py-2 px-3 text-purple-900 font-black">94</td>
+                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
+                      </tr>
+                      <tr className="hover:bg-purple-50/30">
+                        <td className="py-2 px-3 font-bold">Chemistry &amp; Applied Sciences</td>
+                        <td className="py-2 px-3">72</td>
+                        <td className="py-2 px-3">19</td>
+                        <td className="py-2 px-3 text-purple-900 font-black">91</td>
+                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
+                      </tr>
+                      <tr className="hover:bg-purple-50/30">
+                        <td className="py-2 px-3 font-bold">Computer Applications &amp; AI</td>
+                        <td className="py-2 px-3">79</td>
+                        <td className="py-2 px-3">20</td>
+                        <td className="py-2 px-3 text-purple-900 font-black">99</td>
+                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
+                      </tr>
+                      <tr className="hover:bg-purple-50/30">
+                        <td className="py-2 px-3 font-bold">English Language &amp; Literature</td>
+                        <td className="py-2 px-3">74</td>
+                        <td className="py-2 px-3">18</td>
+                        <td className="py-2 px-3 text-purple-900 font-black">92</td>
+                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
+                      </tr>
+                      <tr className="bg-purple-50 font-black text-slate-900">
+                        <td className="py-2.5 px-3">Grand Total: 473 / 500</td>
+                        <td colSpan="2" className="py-2.5 px-3 text-right">Aggregate Score: 94.6%</td>
+                        <td colSpan="2" className="py-2.5 px-3 text-emerald-700 font-black text-right">RESULT: PASSED (DISTINCTION)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
+                  <div className="text-[10px] text-slate-500">
+                    Teacher Remark: <strong className="text-slate-800">Outstanding academic aptitude and problem-solving skills!</strong>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="w-32 border-b-2 border-purple-900 pb-1 font-serif italic text-purple-900 font-bold text-sm">
+                      {schoolInfo.principalName}
+                    </div>
+                    <div className="font-black text-[9px] text-slate-900 uppercase">Principal Signature &amp; Stamp</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'modern_analytics_dashboard':
+            return (
+              <div className="bg-slate-900 text-white p-7 rounded-3xl border-2 border-cyan-500 shadow-2xl space-y-4 text-xs font-sans">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div>
+                    <h2 className="font-black text-lg text-cyan-400 uppercase">{schoolInfo.schoolName}</h2>
+                    <div className="text-[10px] text-slate-400">ANALYTIC PERFORMANCE MATRIX &bull; {academicSession}</div>
+                  </div>
+                  <div className="px-3 py-1 bg-cyan-500/20 text-cyan-300 font-bold rounded-full border border-cyan-500/40 text-xs">
+                    CLASS RANK: #02 (94.6%)
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                    <span className="text-slate-400 block text-[10px]">CANDIDATE</span>
+                    <strong className="text-white text-sm">{st.student_name}</strong>
+                  </div>
+                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                    <span className="text-slate-400 block text-[10px]">GRADE / SECTION</span>
+                    <strong className="text-cyan-300 text-sm">{st.class_batch}</strong>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {[
+                    { sub: 'Advanced Mathematics', score: 97 },
+                    { sub: 'Physics & Dynamics', score: 94 },
+                    { sub: 'Chemistry & Applied Sciences', score: 91 },
+                    { sub: 'Computer Applications & AI', score: 99 },
+                    { sub: 'English Language', score: 92 }
+                  ].map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-[11px]">
+                        <span>{item.sub}</span>
+                        <strong className="text-cyan-300">{item.score}/100</strong>
+                      </div>
+                      <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-cyan-500 to-teal-400 h-full rounded-full" style={{ width: `${item.score}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-3 border-t border-white/10 flex justify-between text-xs text-slate-400">
+                  <span>Status: <strong className="text-emerald-400">Promoted with Honors</strong></span>
+                  <span>{schoolInfo.principalName}</span>
+                </div>
+              </div>
+            );
+
+          case 'classic_heritage_transcript':
+            return (
+              <div className="bg-[#fbf9f2] p-8 rounded-3xl border-4 border-slate-700 text-slate-900 space-y-4 text-xs font-serif shadow-xl">
+                <div className="text-center border-b pb-3">
+                  <h2 className="text-2xl font-black uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-xs font-bold italic">Official Transcript of Academic Record</div>
+                </div>
+                <div className="flex justify-between font-sans text-xs">
+                  <span>Candidate: <strong>{st.student_name}</strong></span>
+                  <span>Class: <strong>{st.class_batch}</strong></span>
+                  <span>CGPA: <strong className="text-blue-900">9.46 / 10</strong></span>
+                </div>
+                <div className="pt-4 border-t flex justify-between items-end font-sans text-xs">
+                  <span>Academic Clearance Confirmed</span>
+                  <div className="text-center italic font-serif font-bold text-sm">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'cambridge_igcse_gradebook':
+            return (
+              <div className="bg-white p-7 rounded-3xl border-4 border-emerald-900 text-slate-900 space-y-4 text-xs font-sans shadow-xl">
+                <div className="text-center border-b pb-2">
+                  <h2 className="text-xl font-black text-emerald-950 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-[10px] font-bold text-emerald-800 uppercase">INTERNATIONAL CURRICULUM STATEMENT OF GRADES</div>
+                </div>
+                <div className="p-3 bg-emerald-50 rounded-xl flex justify-between items-center text-xs">
+                  <span>Student: <strong>{st.student_name}</strong></span>
+                  <span>Grade: <strong>{st.class_batch}</strong></span>
+                  <span className="font-black text-emerald-900">OVERALL: A* (DISTINCTION)</span>
+                </div>
+                <div className="pt-4 border-t flex justify-between items-end">
+                  <span className="font-mono text-[10px] text-slate-400">IGCSE-VERIFIED</span>
+                  <div className="font-bold">{schoolInfo.principalName}</div>
+                </div>
+              </div>
+            );
+
+          case 'executive_split_semester':
+          default:
+            return (
+              <div className="bg-white p-7 rounded-3xl border-2 border-slate-300 text-slate-900 space-y-4 text-xs font-sans shadow-md">
+                <div className="flex justify-between items-center border-b pb-2">
+                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
+                  <span className="font-mono text-xs font-bold">BI-SEMESTER REPORT</span>
+                </div>
+                <p>Term 1 Score: <strong>94.2%</strong> &bull; Term 2 Score: <strong>95.0%</strong> &bull; Cumulative CGPA: <strong className="text-emerald-700 font-black">9.46</strong></p>
+                <div className="pt-3 border-t flex justify-between text-xs">
+                  <span>Result: <strong>PASSED WITH HONORS</strong></span>
+                  <strong>{schoolInfo.principalName}</strong>
+                </div>
+              </div>
+            );
+        }
+      }
+
+      // 7. EXAM ADMIT CARD (HALL TICKET - 5 Master Design Layouts)
+      case 'admit_card': {
+        switch (admitCardTemplate) {
+          case 'statutory_hall_ticket':
+            return (
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-amber-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
+                <div className="text-center space-y-1 border-b-2 border-amber-900 pb-3">
+                  <div className="text-[10px] font-bold tracking-widest text-amber-800 uppercase">
+                    Central Examination Cell &bull; Hall Ticket {academicSession}
+                  </div>
+                  <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
+                    {schoolInfo.schoolName}
+                  </h2>
+                  <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-amber-900 text-amber-200 font-bold text-[11px] uppercase tracking-wider">
+                    Official Examination Hall Ticket &bull; Roll #{st.roll_no}
+                  </div>
+                </div>
+
+                <div className="flex items-start justify-between gap-4 p-3 bg-amber-50/50 rounded-xl border border-amber-200">
+                  <div className="space-y-1 text-xs">
+                    <div>Candidate Name: <strong className="text-slate-900 text-sm font-black">{st.student_name}</strong></div>
+                    <div>Registration ID: <strong className="font-mono text-slate-900 font-bold">{regNo}</strong></div>
+                    <div>Class &amp; Batch: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></div>
+                    <div>Exam Center: <strong className="text-slate-900">Main Examination Hall, {schoolInfo.schoolName}</strong></div>
+                  </div>
+                  <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 shadow-sm" />
+                </div>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs text-slate-700">
+                    <thead className="bg-amber-900 text-white text-[10px] uppercase font-bold">
+                      <tr>
+                        <th className="py-2 px-3">Date</th>
+                        <th className="py-2 px-3">Time Slot</th>
+                        <th className="py-2 px-3">Subject Name</th>
+                        <th className="py-2 px-3">Exam Hall</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 text-[11px] font-medium">
+                      <tr className="hover:bg-amber-50/30">
+                        <td className="py-2 px-3 font-mono font-bold">14 Oct 2026</td>
+                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
+                        <td className="py-2 px-3 font-bold text-slate-900">Advanced Mathematics (MATH-101)</td>
+                        <td className="py-2 px-3">Room 204</td>
+                      </tr>
+                      <tr className="hover:bg-amber-50/30">
+                        <td className="py-2 px-3 font-mono font-bold">16 Oct 2026</td>
+                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
+                        <td className="py-2 px-3 font-bold text-slate-900">Physics &amp; Dynamics (PHYS-102)</td>
+                        <td className="py-2 px-3">Lab 2</td>
+                      </tr>
+                      <tr className="hover:bg-amber-50/30">
+                        <td className="py-2 px-3 font-mono font-bold">19 Oct 2026</td>
+                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
+                        <td className="py-2 px-3 font-bold text-slate-900">Chemistry &amp; Applied Sciences (CHEM-103)</td>
+                        <td className="py-2 px-3">Lab 1</td>
+                      </tr>
+                      <tr className="hover:bg-amber-50/30">
+                        <td className="py-2 px-3 font-mono font-bold">21 Oct 2026</td>
+                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
+                        <td className="py-2 px-3 font-bold text-slate-900">Computer Applications &amp; AI (CS-104)</td>
+                        <td className="py-2 px-3">Computer Lab</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
+                  <div className="text-center">
+                    <div className="w-24 border-b border-slate-400 pb-1 font-mono text-[10px] text-slate-400">Candidate Signature</div>
+                    <span className="text-[9px] text-slate-500">Sign before invigilator</span>
+                  </div>
+                  <div className="text-center space-y-1">
+                    <div className="w-32 border-b-2 border-amber-900 pb-1 font-serif italic text-amber-900 font-bold text-sm">
+                      Controller of Exams
+                    </div>
+                    <div className="font-black text-[9px] text-slate-900 uppercase">Board Officer Stamp</div>
+                  </div>
+                </div>
+              </div>
+            );
+
+          case 'modern_qr_admit_pass':
+            return (
+              <div className="bg-white p-7 rounded-3xl border-2 border-blue-600 shadow-xl space-y-4 text-xs font-sans">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <div>
+                    <h2 className="font-black text-lg text-blue-950 uppercase">{schoolInfo.schoolName}</h2>
+                    <div className="text-[10px] font-bold text-blue-600">DYNAMIC DIGITAL ADMIT CARD</div>
+                  </div>
+                  <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center border">
+                    <QrCode className="w-6 h-6 text-slate-900" />
+                  </div>
+                </div>
+                <div className="flex gap-4 items-center p-3 bg-blue-50/60 rounded-xl">
+                  <img src={st.photo} alt={st.student_name} className="w-14 h-14 rounded-xl object-cover border" />
+                  <div>
+                    <div className="font-black text-sm text-slate-950">{st.student_name}</div>
+                    <div className="text-xs text-blue-800 font-bold">Class: {st.class_batch} &bull; Seat: #{st.roll_no}</div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t flex justify-between text-xs">
+                  <span>Reporting Time: 08:30 AM</span>
+                  <strong>Exam In-Charge</strong>
+                </div>
+              </div>
+            );
+
+          case 'split_photo_admit_card':
+            return (
+              <div className="bg-white p-7 rounded-3xl border-4 border-slate-800 text-slate-900 space-y-4 text-xs font-sans shadow-xl">
+                <div className="text-center border-b pb-2">
+                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-[10px] text-slate-500 uppercase">DUAL-PHOTO VERIFIED ADMIT CARD</div>
+                </div>
+                <div className="flex justify-around items-center p-3 bg-slate-50 rounded-xl border">
+                  <div className="text-center">
+                    <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-xl object-cover border mx-auto" />
+                    <span className="text-[9px] text-slate-500 font-bold block mt-1">Candidate</span>
+                  </div>
+                  <div className="text-left space-y-1">
+                    <div className="font-black text-sm">{st.student_name}</div>
+                    <div className="text-xs text-slate-600">Class: {st.class_batch}</div>
+                    <div className="text-xs font-mono font-bold text-blue-900">Roll #{st.roll_no}</div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t flex justify-between text-xs">
+                  <span>Sign: _________________</span>
+                  <strong>Invigilator Attestation</strong>
+                </div>
+              </div>
+            );
+
+          case 'compact_slip_format':
+            return (
+              <div className="bg-[#fafaf9] p-6 rounded-2xl border-2 border-slate-400 text-slate-900 space-y-3 text-xs font-sans">
+                <div className="flex justify-between items-center border-b pb-1.5">
+                  <strong className="text-xs uppercase">{schoolInfo.schoolName}</strong>
+                  <span className="text-[10px] font-mono font-bold text-amber-800">SLIP #{st.roll_no}</span>
+                </div>
+                <div>Candidate: <strong>{st.student_name}</strong> ({st.class_batch})</div>
+                <div className="p-2 bg-white rounded border text-[11px]">Center: Examination Hall B &bull; Slot: Morning</div>
+                <div className="pt-2 border-t flex justify-between text-[10px]">
+                  <span>Date: {issueDate}</span>
+                  <strong>Authorized Controller</strong>
+                </div>
+              </div>
+            );
+
+          case 'executive_navy_hall_ticket':
+          default:
+            return (
+              <div className="bg-gradient-to-br from-slate-900 to-blue-950 text-white p-7 rounded-3xl border-2 border-amber-400 shadow-2xl space-y-4 text-xs font-sans">
+                <div className="text-center border-b border-white/20 pb-2">
+                  <h2 className="text-lg font-black text-amber-300 uppercase">{schoolInfo.schoolName}</h2>
+                  <div className="text-[10px] text-slate-300 uppercase">EXECUTIVE HALL TICKET &amp; REGULATIONS</div>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
+                  <div>
+                    <div className="text-sm font-black text-white">{st.student_name}</div>
+                    <div className="text-xs text-amber-300">Grade: {st.class_batch}</div>
+                  </div>
+                  <div className="font-mono text-xs font-bold bg-amber-400 text-slate-950 px-3 py-1 rounded-lg">
+                    ROLL #{st.roll_no}
+                  </div>
+                </div>
+                <p className="text-[10px] text-slate-300 leading-relaxed">
+                  Rules: 1. Electronic gadgets strictly prohibited. 2. Arrive 30 mins before commencement. 3. Carry physical photo ID.
+                </p>
+                <div className="pt-3 border-t border-white/20 flex justify-between text-xs text-slate-400">
+                  <span>Session: {academicSession}</span>
+                  <span className="text-white font-bold">{schoolInfo.principalName}</span>
+                </div>
+              </div>
+            );
+        }
+      }
 
       // 8. 5 SMART STUDENT ID CARD DESIGNS (Pixel-perfect matching reference images + Class/Section support)
       case 'id_card': {
@@ -2502,56 +3426,278 @@ export default function TransferCertificateView() {
         </div>
       )}
 
-      {/* APPRECIATION TEMPLATE SWITCHER (When Doc Type is 'appreciation') */}
+      {/* 5 APPRECIATION TEMPLATE SWITCHER (When Doc Type is 'appreciation') */}
       {docType === 'appreciation' && (
         <div className="bg-gradient-to-r from-rose-950 via-slate-900 to-rose-950 rounded-3xl p-5 text-white border-2 border-rose-500/40 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-rose-300" />
               <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🏆 Appreciation &amp; Merit Certificate Layout
+                🏆 5 Official Appreciation &amp; Merit Certificate Layouts
               </h3>
             </div>
             <span className="text-[10px] text-rose-200 bg-rose-900/80 px-2.5 py-0.5 rounded-full font-bold border border-rose-500/40">
-              Active: Imperial Crimson &amp; Gold Arch
+              Active: {appreciationTemplatesList.find(t => t.id === appreciationTemplate)?.title}
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-700/30 to-amber-700/20 border-2 border-rose-400 text-rose-200 shadow-md">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold text-rose-300 uppercase tracking-wider">Portrait • Regal Arch</span>
-                <Check className="w-3.5 h-3.5 text-white font-bold" />
-              </div>
-              <div className="text-xs font-black text-white">Imperial Crimson &amp; Gold Arch Appreciation</div>
-              <p className="text-[10px] text-slate-300 mt-1">Ornate crimson arch, 3-star gold sunburst medallion, serif typography</p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {appreciationTemplatesList.map((tpl) => {
+              const isSelected = appreciationTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setAppreciationTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-rose-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-rose-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* PARTICIPATION TEMPLATE SWITCHER (When Doc Type is 'participation') */}
+      {/* 5 PARTICIPATION TEMPLATE SWITCHER (When Doc Type is 'participation') */}
       {docType === 'participation' && (
         <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-cyan-950 rounded-3xl p-5 text-white border-2 border-teal-500/40 shadow-xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Medal className="w-4 h-4 text-teal-300" />
               <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🏅 Participation &amp; Contest Award Layout
+                🏅 5 Official Participation &amp; Contest Award Layouts
               </h3>
             </div>
             <span className="text-[10px] text-teal-200 bg-teal-900/80 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/40">
-              Active: Modern Teal Geometric
+              Active: {participationTemplatesList.find(t => t.id === participationTemplate)?.title}
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3.5 rounded-2xl bg-gradient-to-br from-teal-700/30 to-cyan-700/20 border-2 border-teal-400 text-teal-200 shadow-md">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">Portrait • Modern Polygonal</span>
-                <Check className="w-3.5 h-3.5 text-white font-bold" />
-              </div>
-              <div className="text-xs font-black text-white">Modern Teal Geometric Participation</div>
-              <p className="text-[10px] text-slate-300 mt-1">Cyan &amp; emerald geometric banner accents, multi-ring hologram seal</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {participationTemplatesList.map((tpl) => {
+              const isSelected = participationTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setParticipationTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-teal-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 5 DOMICILE & BONAFIDE TEMPLATE SWITCHER (When Doc Type is 'domicile') */}
+      {docType === 'domicile' && (
+        <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 rounded-3xl p-5 text-white border-2 border-blue-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Building className="w-4 h-4 text-blue-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                🏛️ 5 Official Domicile &amp; Bonafide Certificate Layouts
+              </h3>
             </div>
+            <span className="text-[10px] text-blue-200 bg-blue-900/80 px-2.5 py-0.5 rounded-full font-bold border border-blue-500/40">
+              Active: {domicileTemplatesList.find(t => t.id === domicileTemplate)?.title}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {domicileTemplatesList.map((tpl) => {
+              const isSelected = domicileTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setDomicileTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-blue-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-blue-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 5 CHARACTER & MIGRATION TEMPLATE SWITCHER (When Doc Type is 'migration') */}
+      {docType === 'migration' && (
+        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-3xl p-5 text-white border-2 border-emerald-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Scroll className="w-4 h-4 text-emerald-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                📜 5 Official Character &amp; Migration Certificate Layouts
+              </h3>
+            </div>
+            <span className="text-[10px] text-emerald-200 bg-emerald-900/80 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/40">
+              Active: {migrationTemplatesList.find(t => t.id === migrationTemplate)?.title}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {migrationTemplatesList.map((tpl) => {
+              const isSelected = migrationTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setMigrationTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-emerald-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-emerald-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 5 ACADEMIC REPORT CARD / MARKSHEET TEMPLATE SWITCHER (When Doc Type is 'report_card') */}
+      {docType === 'report_card' && (
+        <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-3xl p-5 text-white border-2 border-purple-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-purple-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                📊 5 Official Academic Report Card &amp; Marksheet Layouts
+              </h3>
+            </div>
+            <span className="text-[10px] text-purple-200 bg-purple-900/80 px-2.5 py-0.5 rounded-full font-bold border border-purple-500/40">
+              Active: {reportCardTemplatesList.find(t => t.id === reportCardTemplate)?.title}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {reportCardTemplatesList.map((tpl) => {
+              const isSelected = reportCardTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setReportCardTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-purple-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-purple-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 5 EXAM ADMIT CARD / HALL TICKET TEMPLATE SWITCHER (When Doc Type is 'admit_card') */}
+      {docType === 'admit_card' && (
+        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-orange-950 rounded-3xl p-5 text-white border-2 border-amber-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-amber-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                🎫 5 Official Exam Admit Card &amp; Hall Ticket Layouts
+              </h3>
+            </div>
+            <span className="text-[10px] text-amber-200 bg-amber-900/80 px-2.5 py-0.5 rounded-full font-bold border border-amber-500/40">
+              Active: {admitCardTemplatesList.find(t => t.id === admitCardTemplate)?.title}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {admitCardTemplatesList.map((tpl) => {
+              const isSelected = admitCardTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setAdmitCardTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-amber-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-amber-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
