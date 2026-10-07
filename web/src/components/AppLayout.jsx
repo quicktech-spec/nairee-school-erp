@@ -33,7 +33,8 @@ import {
   Package,
   Briefcase,
   Building2,
-  Plus
+  Plus,
+  GraduationCap
 } from 'lucide-react';
 import naireeLogo from '../assets/nairee-logo.png';
 import webMobileQr from '../assets/web_mobile_qr.png';
