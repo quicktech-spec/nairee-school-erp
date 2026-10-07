@@ -378,8 +378,16 @@ export function TenantProvider({ children }) {
       plan_tier: tenantData.plan_tier || 'Standard',
       max_students: tenantData.max_students || 2000,
       max_staff: tenantData.max_staff || 100,
-      enabled_features: [
-        'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'reports', 'parent_portal', 'student_portal', 'teacher_portal'
+      default_tc_template: tenantData.default_tc_template || 'traditional_heritage',
+      default_appreciation_template: tenantData.default_appreciation_template || 'emerald_silver_rosette',
+      default_participation_template: tenantData.default_participation_template || 'classic_gold_filigree_frame',
+      default_id_card_template: tenantData.default_id_card_template || 'navy_chevron',
+      default_report_card_template: tenantData.default_report_card_template || 'salford_skyblue_quarterly',
+      default_admit_card_template: tenantData.default_admit_card_template || 'ignou_term_end_admit',
+      principal_name: tenantData.principal_name || tenantData.admin_name || 'Dr. Ramakant Sharma',
+      principal_title: tenantData.principal_title || 'Principal / Head of Institution',
+      enabled_features: tenantData.enabled_features || [
+        'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'reports', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
       ],
       status: 'Active',
       created_at: new Date().toISOString()

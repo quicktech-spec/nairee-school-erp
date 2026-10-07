@@ -25,7 +25,14 @@ import {
   FileSpreadsheet,
   Users,
   Lock,
-  ChevronRight
+  ChevronRight,
+  FileText,
+  Trophy,
+  GraduationCap,
+  Clock,
+  Scroll,
+  Medal,
+  IdCard
 } from 'lucide-react';
 import { useTenant } from '../context/TenantContext.jsx';
 
@@ -36,6 +43,31 @@ const PRESET_PALETTES = [
   { name: 'Deep Sapphire Navy', primary: '#1e3a8a', secondary: '#3b82f6', accent: '#06b6d4' },
   { name: 'Azure Ocean (Modern STEM)', primary: '#0284c7', secondary: '#0ea5e9', accent: '#10b981' },
   { name: 'Imperial Violet (Academy)', primary: '#6d28d9', secondary: '#8b5cf6', accent: '#f43f5e' }
+];
+
+const TC_TEMPLATES_ONBOARDING = [
+  { id: 'traditional_heritage', title: 'Traditional Heritage Leaving (23-Point)', tag: 'St. Francis Model', desc: 'CBSE/ICSE statutory lines, double parchment border & triple signatures' },
+  { id: 'vintage_crimson', title: 'Character Certificate (Emerald Seal)', tag: 'DPS Birgunj Model', desc: 'Authentic circular school stamp, calligraphic flourish & moral character prose' },
+  { id: 'modern_platinum', title: 'Modern Platinum & Cobalt', tag: 'Parent Clearance Model', desc: 'Cyan & cobalt corner vectors, formal principal address block & dual sign-off' },
+  { id: 'emerald_corporate', title: 'Emerald Corporate CBSE', tag: 'CBSE Standard', desc: 'Modern geometric header with badge & two-column tabular specs' },
+  { id: 'royal_navy', title: 'Royal Navy Border Form', tag: 'Board Compliant', desc: 'Navy framed statutory layout with student photo slot & seals' },
+  { id: 'crimson_gold', title: 'Crimson & Gold Standard', tag: 'Classic CBSE', desc: 'Traditional board layout with UDISE and Admission register' },
+  { id: 'classic_ivory', title: 'Classic Ivory Filigree', tag: 'Landscape Filigree', desc: 'Ornate gold filigree borders with formal registrar signatures' }
+];
+
+const APPRECIATION_TEMPLATES_ONBOARDING = [
+  { id: 'emerald_silver_rosette', title: 'Emerald & Silver Rosette', tag: 'Excellence Award', desc: 'Luxury emerald wave ribbons with silver-gold rosette medal' },
+  { id: 'modern_navy_gold_badge', title: 'Royal Gold Guilloche & Seal', tag: 'Merit Trophy', desc: 'Gold guilloche frame, navy contrast with authentic wax seal badge' },
+  { id: 'minimalist_monochrome', title: 'Modern Minimalist Monochrome', tag: 'Clean Honors', desc: 'Sleek black & charcoal borders with bold typography and dual sigs' },
+  { id: 'cyan_emerald_curved', title: 'Dynamic Cyan Curved Sweep', tag: 'Contest Award', desc: 'Vibrant modern geometric curves with clean certificate title' },
+  { id: 'terracotta_portrait', title: 'Borcelle Terracotta Serif', tag: 'Heritage Honor', desc: 'Warm terracotta tones with vintage serif typography' }
+];
+
+const ID_CARD_TEMPLATES_ONBOARDING = [
+  { id: 'navy_chevron', title: 'Hexagon Grid Dark Luxury', tag: 'Portrait Card', desc: 'Deep navy background with gold hexagon pattern & crisp student photo' },
+  { id: 'modern_cyan_cobalt', title: 'Modern Clean Cyan & Cobalt', tag: 'Horizontal Card', desc: 'High-visibility corporate landscape with large student ID & address' },
+  { id: 'emerald_vip', title: 'Emerald Green VIP Member', tag: 'Portrait Card', desc: 'Rich emerald green theme with barcode and school crest header' },
+  { id: 'terracotta_portrait', title: 'Borcelle Terracotta Heritage', tag: 'Portrait Card', desc: 'Earthy terracotta aesthetic with full contact details & QR code' }
 ];
 
 const AVAILABLE_MODULES = [
@@ -75,13 +107,21 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
     accent_color: '#eab308',
     subdomain: '',
     custom_domain: '',
+    default_tc_template: 'traditional_heritage',
+    default_appreciation_template: 'emerald_silver_rosette',
+    default_participation_template: 'classic_gold_filigree_frame',
+    default_id_card_template: 'navy_chevron',
+    default_report_card_template: 'salford_skyblue_quarterly',
+    default_admit_card_template: 'ignou_term_end_admit',
+    principal_name: 'Dr. Ramakant Sharma',
+    principal_title: 'Principal / Head of Institution',
     enabled_features: [
-      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'communication', 'reports', 'database'
+      'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'communication', 'reports', 'database', 'id_cards', 'transfer_certificates'
     ],
     plan_tier: 'Enterprise',
     max_students: 2500,
     max_staff: 150,
-    admin_name: 'Dr. Principal Officer',
+    admin_name: 'Dr. Ramakant Sharma',
     admin_email: 'principal@school.edu',
     admin_pass: 'school123'
   });
@@ -197,17 +237,18 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
         {/* Multi-Step Progress Tracker */}
         {!provisionSuccess && (
           <div className="bg-slate-50 border-b border-slate-200 px-6 py-3">
-            <div className="flex items-center justify-between max-w-2xl mx-auto">
+            <div className="flex items-center justify-between max-w-3xl mx-auto">
               {[
                 { s: 1, label: 'Identity' },
                 { s: 2, label: 'Branding' },
-                { s: 3, label: 'Subdomain' },
-                { s: 4, label: 'Modules' },
-                { s: 5, label: 'Tier' },
-                { s: 6, label: 'Admin' },
-                { s: 7, label: 'Provision' }
+                { s: 3, label: 'Certificates' },
+                { s: 4, label: 'Subdomain' },
+                { s: 5, label: 'Modules' },
+                { s: 6, label: 'Tier' },
+                { s: 7, label: 'Admin' },
+                { s: 8, label: 'Provision' }
               ].map((item) => (
-                <div key={item.s} className="flex items-center gap-2">
+                <div key={item.s} className="flex items-center gap-1.5">
                   <div 
                     className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
                       step === item.s 
@@ -219,10 +260,10 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                   >
                     {step > item.s ? <Check className="w-3.5 h-3.5" /> : item.s}
                   </div>
-                  <span className={`text-[11px] font-semibold hidden md:inline ${step === item.s ? 'text-indigo-900' : 'text-slate-500'}`}>
+                  <span className={`text-[10.5px] font-semibold hidden lg:inline ${step === item.s ? 'text-indigo-900 font-bold' : 'text-slate-500'}`}>
                     {item.label}
                   </span>
-                  {item.s < 7 && <ChevronRight className="w-3.5 h-3.5 text-slate-300 hidden md:inline" />}
+                  {item.s < 8 && <ChevronRight className="w-3 h-3 text-slate-300 hidden md:inline" />}
                 </div>
               ))}
             </div>
@@ -537,11 +578,197 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Step 3: Subdomain & Routing */}
+          {/* Step 3: Institutional Document & Certificate Suite */}
           {step === 3 && (
+            <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
+              <div className="text-center pb-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300 mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Official Institutional Certification Defaults</span>
+                </div>
+                <h3 className="text-xl font-black text-slate-900">Step 3: Choose Default Certificate & ID Card Layouts</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-xl mx-auto">
+                  Select the default styling for official documents. Every certificate, marksheet, and student ID generated in the ERP will automatically load with these designs and your school branding.
+                </p>
+              </div>
+
+              {/* 1. Transfer Certificate Default Layout */}
+              <div className="p-5 rounded-2xl border-2 border-amber-200 bg-amber-50/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Scroll className="w-4 h-4 text-amber-700" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-amber-950">
+                      1. Default Transfer Certificate (TC) Design Template
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-full border border-amber-300">
+                    Active: {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                  {TC_TEMPLATES_ONBOARDING.map((tpl) => {
+                    const isSelected = formData.default_tc_template === tpl.id;
+                    return (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, default_tc_template: tpl.id })}
+                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? 'border-amber-600 bg-amber-100/70 shadow-sm ring-2 ring-amber-500/30 scale-[1.02]'
+                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-bold uppercase text-amber-800">{tpl.tag}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-amber-700 font-bold" />}
+                          </div>
+                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                        </div>
+                        <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                          <span>A4 Format</span>
+                          <span className={isSelected ? 'text-amber-800 font-bold' : 'text-slate-500'}>
+                            {isSelected ? '✓ Default Selected' : 'Select'}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 2. Certificate of Appreciation & Merit Layout */}
+              <div className="p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-rose-700" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-rose-950">
+                      2. Default Appreciation & Merit Certificate Design
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-bold text-rose-800 bg-rose-100/80 px-2.5 py-0.5 rounded-full border border-rose-300">
+                    Active: {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                  {APPRECIATION_TEMPLATES_ONBOARDING.map((tpl) => {
+                    const isSelected = formData.default_appreciation_template === tpl.id;
+                    return (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, default_appreciation_template: tpl.id })}
+                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? 'border-rose-600 bg-rose-100/70 shadow-sm ring-2 ring-rose-500/30 scale-[1.02]'
+                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-bold uppercase text-rose-800">{tpl.tag}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-rose-700 font-bold" />}
+                          </div>
+                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                        </div>
+                        <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[9px] font-semibold text-slate-400">
+                          <span>Landscape</span>
+                          <span className={isSelected ? 'text-rose-800 font-bold' : 'text-slate-500'}>
+                            {isSelected ? '✓ Default Selected' : 'Select'}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 3. Student ID Card Layout */}
+              <div className="p-5 rounded-2xl border-2 border-teal-200 bg-teal-50/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <IdCard className="w-4 h-4 text-teal-700" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-teal-950">
+                      3. Default Student ID Card Format
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2.5 py-0.5 rounded-full border border-teal-300">
+                    Active: {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                  {ID_CARD_TEMPLATES_ONBOARDING.map((tpl) => {
+                    const isSelected = formData.default_id_card_template === tpl.id;
+                    return (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, default_id_card_template: tpl.id })}
+                        className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? 'border-teal-600 bg-teal-100/70 shadow-sm ring-2 ring-teal-500/30 scale-[1.02]'
+                            : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-bold uppercase text-teal-800">{tpl.tag}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-teal-700 font-bold" />}
+                          </div>
+                          <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">{tpl.desc}</p>
+                        </div>
+                        <div className="mt-2 pt-1.5 border-t border-slate-100 text-[9px] font-bold text-teal-800">
+                          {isSelected ? '✓ Default Selected' : 'Select'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 4. Principal Signatory Information */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  4. Principal / Head of Institution Signatory Profile
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <label className="block font-bold text-slate-600 mb-1">Principal / Signatory Name *</label>
+                    <input
+                      type="text"
+                      value={formData.principal_name}
+                      onChange={(e) => setFormData({ ...formData, principal_name: e.target.value })}
+                      placeholder="e.g. Dr. Ramakant Sharma, Ph.D."
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-semibold text-slate-900 text-xs focus:ring-2 focus:ring-indigo-500 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-600 mb-1">Signatory Title / Designation *</label>
+                    <input
+                      type="text"
+                      value={formData.principal_title}
+                      onChange={(e) => setFormData({ ...formData, principal_title: e.target.value })}
+                      placeholder="Principal / Head of Institution"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-medium text-slate-800 text-xs focus:ring-2 focus:ring-indigo-500 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Subdomain & Routing */}
+          {step === 4 && (
             <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
               <div className="text-center pb-2">
-                <h3 className="text-xl font-black text-slate-900">Step 3: Subdomain & Domain Routing</h3>
+                <h3 className="text-xl font-black text-slate-900">Step 4: Subdomain & Domain Routing</h3>
                 <p className="text-xs text-slate-500 mt-1">Assign an isolated subdomain and optional custom domain for this school.</p>
               </div>
 
@@ -587,12 +814,12 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Step 4: Modules & Feature Flags */}
-          {step === 4 && (
+          {/* Step 5: Modules & Feature Flags */}
+          {step === 5 && (
             <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
               <div className="flex items-center justify-between pb-2">
                 <div>
-                  <h3 className="text-xl font-black text-slate-900">Step 4: Module Selection & Feature Flags</h3>
+                  <h3 className="text-xl font-black text-slate-900">Step 5: Module Selection & Feature Flags</h3>
                   <p className="text-xs text-slate-500 mt-0.5">Toggle only the modules this school has purchased or needs enabled.</p>
                 </div>
                 <button
@@ -642,11 +869,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Step 5: Plan & Limits */}
-          {step === 5 && (
+          {/* Step 6: Plan & Limits */}
+          {step === 6 && (
             <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
               <div className="text-center pb-2">
-                <h3 className="text-xl font-black text-slate-900">Step 5: Subscription Plan & Resource Tier</h3>
+                <h3 className="text-xl font-black text-slate-900">Step 6: Subscription Plan & Resource Tier</h3>
                 <p className="text-xs text-slate-500 mt-1">Define subscription level and maximum student/faculty capacity.</p>
               </div>
 
@@ -687,11 +914,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Step 6: Initial Admin Account */}
-          {step === 6 && (
+          {/* Step 7: Initial Admin Account */}
+          {step === 7 && (
             <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
               <div className="text-center pb-2">
-                <h3 className="text-xl font-black text-slate-900">Step 6: Super Admin / Principal Account</h3>
+                <h3 className="text-xl font-black text-slate-900">Step 7: Super Admin / Principal Account</h3>
                 <p className="text-xs text-slate-500 mt-1">Credentials for the school's principal or executive administrator to log in.</p>
               </div>
 
@@ -740,11 +967,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Step 7: Review & Provision */}
-          {step === 7 && !provisionSuccess && (
+          {/* Step 8: Review & Provision */}
+          {step === 8 && !provisionSuccess && (
             <div className="space-y-6 max-w-2xl mx-auto animate-in fade-in slide-in-from-right-4 duration-200">
               <div className="text-center pb-2">
-                <h3 className="text-xl font-black text-slate-900">Step 7: Confirm & Provision Instance</h3>
+                <h3 className="text-xl font-black text-slate-900">Step 8: Confirm & Provision Instance</h3>
                 <p className="text-xs text-slate-500 mt-1">Review the white-label configuration before automatic provisioning.</p>
               </div>
 
@@ -788,14 +1015,45 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                     <span className="font-semibold text-slate-800">{formData.max_students} Students</span>
                   </div>
                 </div>
+
+                {/* Certificate Defaults Summary */}
+                <div className="pt-3 border-t border-slate-200 space-y-2">
+                  <div className="text-[11px] font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Configured Certificate & Document Presets</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="p-2 bg-white rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 block font-bold">Transfer Certificate</span>
+                      <span className="font-bold text-slate-800 truncate block">
+                        {TC_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_tc_template)?.title || 'Traditional Heritage'}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-white rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 block font-bold">Appreciation Award</span>
+                      <span className="font-bold text-slate-800 truncate block">
+                        {APPRECIATION_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_appreciation_template)?.title || 'Emerald Rosette'}
+                      </span>
+                    </div>
+                    <div className="p-2 bg-white rounded-xl border border-slate-200">
+                      <span className="text-[10px] text-slate-400 block font-bold">Student ID Card</span>
+                      <span className="font-bold text-slate-800 truncate block">
+                        {ID_CARD_TEMPLATES_ONBOARDING.find(t => t.id === formData.default_id_card_template)?.title || 'Navy Hexagon'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-slate-500 italic">
+                    Principal Signatory: <strong>{formData.principal_name}</strong> ({formData.principal_title})
+                  </div>
+                </div>
               </div>
 
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 flex items-start gap-3">
                 <Sparkles className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold">Automated Multi-Tenant Partitioning:</span>
+                  <span className="font-bold">Automated Multi-Tenant Partitioning & Certificate Sync:</span>
                   <p className="text-[11px] text-emerald-700 mt-0.5">
-                    Clicking "Provision School Now" creates the tenant record, configures Row-Level Isolation (RLS), and registers the subdomain routing immediately without requiring redeployment.
+                    Clicking "Provision School Now" creates the tenant record, locks in certificate styling presets, configures Row-Level Isolation (RLS), and registers subdomain routing immediately.
                   </p>
                 </div>
               </div>
@@ -812,7 +1070,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
               <div>
                 <h3 className="text-2xl font-black text-slate-900">Instance Successfully Provisioned!</h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  <strong>{provisionedTenant?.school_name}</strong> is live and ready for staff & student logins.
+                  <strong>{provisionedTenant?.school_name}</strong> is live and ready for staff & student logins with custom certificate styling pre-configured.
                 </p>
               </div>
 
@@ -828,6 +1086,10 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
                 <div className="flex justify-between">
                   <span className="text-slate-500">Active Modules:</span>
                   <span className="font-semibold text-emerald-700">{provisionedTenant?.enabled_features?.length} Enabled</span>
+                </div>
+                <div className="flex justify-between border-t border-slate-200 pt-1.5">
+                  <span className="text-slate-500">Default TC Design:</span>
+                  <span className="font-semibold text-amber-900">{provisionedTenant?.default_tc_template || 'Traditional Heritage'}</span>
                 </div>
               </div>
 
@@ -861,11 +1123,11 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
             </button>
 
             <div className="flex items-center gap-2">
-              {step < 7 ? (
+              {step < 8 ? (
                 <button
                   type="button"
                   disabled={step === 1 && !formData.school_name.trim()}
-                  onClick={() => setStep(prev => Math.min(7, prev + 1))}
+                  onClick={() => setStep(prev => Math.min(8, prev + 1))}
                   className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span>Next Step</span>

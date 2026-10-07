@@ -188,7 +188,7 @@ export default function TransferCertificateView() {
     watermarkText: 'OFFICIAL SCHOOL RECORD'
   });
 
-  // Keep schoolInfo in sync when active tenant changes
+  // Keep schoolInfo and default templates in sync when active tenant changes
   useEffect(() => {
     if (tenant) {
       setSchoolInfo(prev => ({
@@ -200,8 +200,16 @@ export default function TransferCertificateView() {
         address: tenant.address || prev.address,
         phone: tenant.phone || prev.phone,
         email: tenant.email || prev.email,
+        principalName: tenant.principal_name || prev.principalName,
+        principalTitle: tenant.principal_title || prev.principalTitle,
         customLogoUrl: tenant.logo_url || prev.customLogoUrl
       }));
+      if (tenant.default_tc_template) setTcTemplate(tenant.default_tc_template);
+      if (tenant.default_appreciation_template) setAppreciationTemplate(tenant.default_appreciation_template);
+      if (tenant.default_participation_template) setParticipationTemplate(tenant.default_participation_template);
+      if (tenant.default_id_card_template) setIdCardTemplate(tenant.default_id_card_template);
+      if (tenant.default_report_card_template) setReportCardTemplate(tenant.default_report_card_template);
+      if (tenant.default_admit_card_template) setAdmitCardTemplate(tenant.default_admit_card_template);
     }
   }, [tenant]);
 
