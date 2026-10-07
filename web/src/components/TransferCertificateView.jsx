@@ -170,6 +170,7 @@ export default function TransferCertificateView() {
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showCustomizer, setShowCustomizer] = useState(false);
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
   
   // School Branding & Customizer State (Initialized from active school tenant, fully customizable)
   const [schoolInfo, setSchoolInfo] = useState({
@@ -208,6 +209,8 @@ export default function TransferCertificateView() {
       if (tenant.default_appreciation_template) setAppreciationTemplate(tenant.default_appreciation_template);
       if (tenant.default_participation_template) setParticipationTemplate(tenant.default_participation_template);
       if (tenant.default_id_card_template) setIdCardTemplate(tenant.default_id_card_template);
+      if (tenant.default_domicile_template) setDomicileTemplate(tenant.default_domicile_template);
+      if (tenant.default_migration_template) setMigrationTemplate(tenant.default_migration_template);
       if (tenant.default_report_card_template) setReportCardTemplate(tenant.default_report_card_template);
       if (tenant.default_admit_card_template) setAdmitCardTemplate(tenant.default_admit_card_template);
     }
@@ -6020,22 +6023,22 @@ export default function TransferCertificateView() {
                   onClick={() => {
                     setDocType(dt.id);
                     if (dt.id === 'tc') {
-                      const tpl = tcTemplatesList.find(t => t.id === tcTemplate);
+                      const tpl = tcTemplatesList.find(t => t.id === tcTemplate) || tcTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     } else if (dt.id === 'appreciation') {
-                      const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
+                      const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate) || appreciationTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     } else if (dt.id === 'participation') {
-                      const tpl = participationTemplatesList.find(t => t.id === participationTemplate);
+                      const tpl = participationTemplatesList.find(t => t.id === participationTemplate) || participationTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     } else if (dt.id === 'migration') {
-                      const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate);
+                      const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate) || migrationTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     } else if (dt.id === 'report_card') {
-                      const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate);
+                      const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate) || reportCardTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     } else if (dt.id === 'admit_card') {
-                      const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate);
+                      const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate) || admitCardTemplatesList[0];
                       if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                     }
                   }}
@@ -6177,405 +6180,221 @@ export default function TransferCertificateView() {
         </div>
       )}
 
-      {/* 7 TC TEMPLATE CAROUSEL SWITCHER (When Doc Type is 'tc') */}
-      {docType === 'tc' && (
-        <div className="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <h3 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">
-                Select Certificate Design Template (7 Official Layouts)
-              </h3>
-            </div>
-            <span className="text-[10px] text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full font-bold border border-amber-200">
-              Active: {tcTemplatesList.find(t => t.id === tcTemplate)?.title}
-            </span>
-          </div>
+      {/* INSTITUTIONAL TEMPLATE SUITE (Shows ONLY School's Chosen Design by default, with option to browse alternatives) */}
+      {(() => {
+        let list = tcTemplatesList;
+        let currentId = tcTemplate;
+        let setFn = (id) => {
+          setTcTemplate(id);
+          const tpl = tcTemplatesList.find(t => t.id === id) || tcTemplatesList[0];
+          if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+        };
+        let label = 'Transfer Certificate (TC)';
+        let themeBg = 'from-amber-950 via-slate-900 to-amber-950';
+        let borderColor = 'border-amber-500/40';
+        let badgeColor = 'text-amber-200 bg-amber-900/80 border-amber-500/40';
+        let activeBgClass = 'border-amber-500 bg-amber-500/20 shadow-md ring-2 ring-amber-400/50';
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {tcTemplatesList.map((tpl) => {
-              const isSelected = tcTemplate === tpl.id;
-              return (
+        if (docType === 'id_card') {
+          list = idCardTemplatesList;
+          currentId = idCardTemplate;
+          setFn = (id) => setIdCardTemplate(id);
+          label = 'Student ID Card';
+          themeBg = 'from-slate-900 via-teal-950 to-slate-900';
+          borderColor = 'border-teal-500/40';
+          badgeColor = 'text-teal-200 bg-teal-900/80 border-teal-500/40';
+          activeBgClass = 'border-teal-400 bg-teal-500/20 shadow-md ring-2 ring-teal-400/50';
+        } else if (docType === 'appreciation') {
+          list = appreciationTemplatesList;
+          currentId = appreciationTemplate;
+          setFn = (id) => {
+            setAppreciationTemplate(id);
+            const tpl = appreciationTemplatesList.find(t => t.id === id) || appreciationTemplatesList[0];
+            if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+          };
+          label = 'Certificate of Appreciation & Merit';
+          themeBg = 'from-rose-950 via-slate-900 to-rose-950';
+          borderColor = 'border-rose-500/40';
+          badgeColor = 'text-rose-200 bg-rose-900/80 border-rose-500/40';
+          activeBgClass = 'border-rose-400 bg-rose-500/20 shadow-md ring-2 ring-rose-400/50';
+        } else if (docType === 'participation') {
+          list = participationTemplatesList;
+          currentId = participationTemplate;
+          setFn = (id) => {
+            setParticipationTemplate(id);
+            const tpl = participationTemplatesList.find(t => t.id === id) || participationTemplatesList[0];
+            if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+          };
+          label = 'Certificate of Participation';
+          themeBg = 'from-teal-950 via-slate-900 to-cyan-950';
+          borderColor = 'border-teal-500/40';
+          badgeColor = 'text-teal-200 bg-teal-900/80 border-teal-500/40';
+          activeBgClass = 'border-cyan-400 bg-cyan-500/20 shadow-md ring-2 ring-cyan-400/50';
+        } else if (docType === 'domicile') {
+          list = domicileTemplatesList;
+          currentId = domicileTemplate;
+          setFn = (id) => setDomicileTemplate(id);
+          label = 'Domicile & Bonafide Certificate';
+          themeBg = 'from-blue-950 via-slate-900 to-indigo-950';
+          borderColor = 'border-blue-500/40';
+          badgeColor = 'text-blue-200 bg-blue-900/80 border-blue-500/40';
+          activeBgClass = 'border-blue-400 bg-blue-500/20 shadow-md ring-2 ring-blue-400/50';
+        } else if (docType === 'migration') {
+          list = migrationTemplatesList;
+          currentId = migrationTemplate;
+          setFn = (id) => {
+            setMigrationTemplate(id);
+            const tpl = migrationTemplatesList.find(t => t.id === id) || migrationTemplatesList[0];
+            if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+          };
+          label = 'Character & Migration Certificate';
+          themeBg = 'from-emerald-950 via-slate-900 to-teal-950';
+          borderColor = 'border-emerald-500/40';
+          badgeColor = 'text-emerald-200 bg-emerald-900/80 border-emerald-500/40';
+          activeBgClass = 'border-emerald-400 bg-emerald-500/20 shadow-md ring-2 ring-emerald-400/50';
+        } else if (docType === 'report_card') {
+          list = reportCardTemplatesList;
+          currentId = reportCardTemplate;
+          setFn = (id) => {
+            setReportCardTemplate(id);
+            const tpl = reportCardTemplatesList.find(t => t.id === id) || reportCardTemplatesList[0];
+            if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+          };
+          label = 'Academic Report Card';
+          themeBg = 'from-purple-950 via-slate-900 to-indigo-950';
+          borderColor = 'border-purple-500/40';
+          badgeColor = 'text-purple-200 bg-purple-900/80 border-purple-500/40';
+          activeBgClass = 'border-purple-400 bg-purple-500/20 shadow-md ring-2 ring-purple-400/50';
+        } else if (docType === 'admit_card') {
+          list = admitCardTemplatesList;
+          currentId = admitCardTemplate;
+          setFn = (id) => {
+            setAdmitCardTemplate(id);
+            const tpl = admitCardTemplatesList.find(t => t.id === id) || admitCardTemplatesList[0];
+            if (tpl && tpl.defaultConfig) setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+          };
+          label = 'Exam Admit Card';
+          themeBg = 'from-amber-950 via-slate-900 to-orange-950';
+          borderColor = 'border-amber-500/40';
+          badgeColor = 'text-amber-200 bg-amber-900/80 border-amber-500/40';
+          activeBgClass = 'border-amber-400 bg-amber-500/20 shadow-md ring-2 ring-amber-400/50';
+        }
+
+        const activeTpl = (list && list.length > 0) ? (list.find(t => t.id === currentId) || list[0]) : {};
+
+        return (
+          <div className={`bg-gradient-to-r ${themeBg} rounded-3xl p-4 sm:p-5 text-white border-2 ${borderColor} shadow-xl space-y-3`}>
+            {/* Top Bar showing Active Selection & Toggle */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
+                  <Sparkles className="w-5 h-5 text-amber-300" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                      {label}
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-400" /> School Selected Style
+                    </span>
+                  </div>
+                  <h3 className="font-extrabold text-sm sm:text-base text-white tracking-tight flex items-center gap-2 mt-0.5">
+                    <span>{activeTpl.title || 'Official Design'}</span>
+                    {activeTpl.orientation && (
+                      <span className="text-[10px] font-mono text-slate-300 bg-white/10 px-2 py-0.5 rounded capitalize">
+                        {activeTpl.orientation}
+                      </span>
+                    )}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
+                <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold border ${badgeColor}`}>
+                  Active: {activeTpl.title || 'Standard'}
+                </span>
                 <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setTcTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? 'border-amber-500 bg-amber-50/80 shadow-md ring-2 ring-amber-400/50 scale-[1.03]'
-                      : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
-                  }`}
+                  type="button"
+                  onClick={() => setShowAllTemplates(!showAllTemplates)}
+                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 shadow-sm"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-amber-600 font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span>{tpl.orientation}</span>
-                    <span className="text-amber-700 font-bold">Apply</span>
-                  </div>
+                  {showAllTemplates ? (
+                    <>
+                      <Lock className="w-3.5 h-3.5 text-amber-300" />
+                      <span>Lock Selected Only</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                      <span>Browse All Layouts ({list.length})</span>
+                    </>
+                  )}
                 </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 SMART STUDENT ID CARD CAROUSEL SWITCHER (When Doc Type is 'id_card') */}
-      {docType === 'id_card' && (
-        <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-5 text-white border-2 border-teal-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <IdCard className="w-4 h-4 text-teal-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🪪 5 Official Student ID Card Layout Templates (With Class/Section)
-              </h3>
+              </div>
             </div>
-            <span className="text-[10px] text-teal-200 bg-teal-900/80 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/40">
-              Active: {idCardTemplatesList.find(t => t.id === idCardTemplate)?.title}
-            </span>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {idCardTemplatesList.map((tpl) => {
-              const isSelected = idCardTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => setIdCardTemplate(tpl.id)}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+            {/* When NOT expanded: Display only the active selected template profile */}
+            {!showAllTemplates && (
+              <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="space-y-0.5">
+                  <div className="text-[11px] font-bold text-slate-200">
+                    {activeTpl.tag || 'Official Board Compliant Layout'}
                   </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-teal-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  <p className="text-[11px] text-slate-400 line-clamp-1">
+                    {activeTpl.desc || 'Optimized institutional layout formatted for official export and verified archival.'}
+                  </p>
+                </div>
+                <div className="text-[10px] text-slate-400 font-mono bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 shrink-0">
+                  Standard for {schoolInfo.schoolName}
+                </div>
+              </div>
+            )}
 
-      {/* 5 APPRECIATION TEMPLATE SWITCHER (When Doc Type is 'appreciation') */}
-      {docType === 'appreciation' && (
-        <div className="bg-gradient-to-r from-rose-950 via-slate-900 to-rose-950 rounded-3xl p-5 text-white border-2 border-rose-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-rose-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🏆 5 Official Appreciation &amp; Merit Certificate Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-rose-200 bg-rose-900/80 px-2.5 py-0.5 rounded-full font-bold border border-rose-500/40">
-              Active: {appreciationTemplatesList.find(t => t.id === appreciationTemplate)?.title}
-            </span>
+            {/* When expanded: Display the entire template switcher grid */}
+            {showAllTemplates && (
+              <div className="pt-3 border-t border-white/10 space-y-2.5">
+                <div className="text-[11px] text-slate-300 font-semibold flex items-center justify-between">
+                  <span>Choose an alternate template below to switch live document design:</span>
+                  <span className="text-[10px] text-slate-400 font-mono">{list.length} Layouts Available</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                  {list.map((tpl) => {
+                    const isSelected = currentId === tpl.id;
+                    return (
+                      <button
+                        key={tpl.id}
+                        type="button"
+                        onClick={() => setFn(tpl.id)}
+                        className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? (tpl.activeBg ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]` : `${activeBgClass} scale-[1.03]`)
+                            : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                        }`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-300">
+                              {tpl.tag ? tpl.tag.split('•')[0] : 'Design'}
+                            </span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                          </div>
+                          <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                          <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                          <span className="capitalize">{tpl.orientation || 'Standard'}</span>
+                          <span className="text-amber-300 font-bold">{isSelected ? '✓ Selected' : 'Select'}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {appreciationTemplatesList.map((tpl) => {
-              const isSelected = appreciationTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setAppreciationTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-rose-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-rose-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 PARTICIPATION TEMPLATE SWITCHER (When Doc Type is 'participation') */}
-      {docType === 'participation' && (
-        <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-cyan-950 rounded-3xl p-5 text-white border-2 border-teal-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Medal className="w-4 h-4 text-teal-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🏅 5 Official Participation &amp; Contest Award Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-teal-200 bg-teal-900/80 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/40">
-              Active: {participationTemplatesList.find(t => t.id === participationTemplate)?.title}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {participationTemplatesList.map((tpl) => {
-              const isSelected = participationTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setParticipationTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-teal-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 DOMICILE & BONAFIDE TEMPLATE SWITCHER (When Doc Type is 'domicile') */}
-      {docType === 'domicile' && (
-        <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 rounded-3xl p-5 text-white border-2 border-blue-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Building className="w-4 h-4 text-blue-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🏛️ 5 Official Domicile &amp; Bonafide Certificate Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-blue-200 bg-blue-900/80 px-2.5 py-0.5 rounded-full font-bold border border-blue-500/40">
-              Active: {domicileTemplatesList.find(t => t.id === domicileTemplate)?.title}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {domicileTemplatesList.map((tpl) => {
-              const isSelected = domicileTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => setDomicileTemplate(tpl.id)}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-blue-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-blue-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 CHARACTER & MIGRATION TEMPLATE SWITCHER (When Doc Type is 'migration') */}
-      {docType === 'migration' && (
-        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-3xl p-5 text-white border-2 border-emerald-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Scroll className="w-4 h-4 text-emerald-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                📜 5 Official Character &amp; Migration Certificate Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-emerald-200 bg-emerald-900/80 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/40">
-              Active: {migrationTemplatesList.find(t => t.id === migrationTemplate)?.title}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {migrationTemplatesList.map((tpl) => {
-              const isSelected = migrationTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setMigrationTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-emerald-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-emerald-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 ACADEMIC REPORT CARD / MARKSHEET TEMPLATE SWITCHER (When Doc Type is 'report_card') */}
-      {docType === 'report_card' && (
-        <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 rounded-3xl p-5 text-white border-2 border-purple-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-purple-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                📊 5 Official Academic Report Card &amp; Marksheet Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-purple-200 bg-purple-900/80 px-2.5 py-0.5 rounded-full font-bold border border-purple-500/40">
-              Active: {reportCardTemplatesList.find(t => t.id === reportCardTemplate)?.title}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {reportCardTemplatesList.map((tpl) => {
-              const isSelected = reportCardTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setReportCardTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-purple-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-purple-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5 EXAM ADMIT CARD / HALL TICKET TEMPLATE SWITCHER (When Doc Type is 'admit_card') */}
-      {docType === 'admit_card' && (
-        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-orange-950 rounded-3xl p-5 text-white border-2 border-amber-500/40 shadow-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-300" />
-              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
-                🎫 5 Official Exam Admit Card &amp; Hall Ticket Layouts
-              </h3>
-            </div>
-            <span className="text-[10px] text-amber-200 bg-amber-900/80 px-2.5 py-0.5 rounded-full font-bold border border-amber-500/40">
-              Active: {admitCardTemplatesList.find(t => t.id === admitCardTemplate)?.title}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {admitCardTemplatesList.map((tpl) => {
-              const isSelected = admitCardTemplate === tpl.id;
-              return (
-                <button
-                  key={tpl.id}
-                  onClick={() => {
-                    setAdmitCardTemplate(tpl.id);
-                    if (tpl.defaultConfig) {
-                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
-                    }
-                  }}
-                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
-                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-bold text-amber-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
-                    </div>
-                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
-                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
-                    <span className="capitalize">{tpl.orientation}</span>
-                    <span className="text-amber-300 font-bold">Select</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Main Grid: Left Settings & Right Live Document Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -6663,32 +6482,32 @@ export default function TransferCertificateView() {
                     type="button"
                     onClick={() => {
                       if (docType === 'tc') {
-                        const tpl = tcTemplatesList.find(t => t.id === tcTemplate);
+                        const tpl = tcTemplatesList.find(t => t.id === tcTemplate) || tcTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
                       } else if (docType === 'appreciation') {
-                        const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
+                        const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate) || appreciationTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
                       } else if (docType === 'participation') {
-                        const tpl = participationTemplatesList.find(t => t.id === participationTemplate);
+                        const tpl = participationTemplatesList.find(t => t.id === participationTemplate) || participationTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
                       } else if (docType === 'migration') {
-                        const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate);
+                        const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate) || migrationTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
                       } else if (docType === 'report_card') {
-                        const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate);
+                        const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate) || reportCardTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
                       } else if (docType === 'admit_card') {
-                        const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate);
+                        const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate) || admitCardTemplatesList[0];
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
@@ -6928,12 +6747,12 @@ export default function TransferCertificateView() {
                 </span>
               ) : (
                 <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
-                  {docTypesList.find(d => d.id === docType)?.title}
+                  {(docTypesList.find(d => d.id === docType) || docTypesList[0])?.title}
                 </span>
               )}
               {docType === 'tc' && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                  {tcTemplatesList.find(t => t.id === tcTemplate)?.orientation}
+                  {(tcTemplatesList.find(t => t.id === tcTemplate) || tcTemplatesList[0])?.orientation}
                 </span>
               )}
             </div>
@@ -7001,8 +6820,8 @@ export default function TransferCertificateView() {
                 <div>
                   <h3 className="font-extrabold text-sm sm:text-base">
                     {viewMode === 'all' 
-                      ? `Bulk Print: ${docTypesList.find(d => d.id === docType)?.title} (All ${studentList.length} Students)` 
-                      : `Official Print: ${docTypesList.find(d => d.id === docType)?.title} - ${activeStudent.student_name}`}
+                      ? `Bulk Print: ${(docTypesList.find(d => d.id === docType) || docTypesList[0])?.title} (All ${studentList.length} Students)` 
+                      : `Official Print: ${(docTypesList.find(d => d.id === docType) || docTypesList[0])?.title} - ${activeStudent.student_name}`}
                   </h3>
                   <p className="text-[11px] text-slate-400">
                     High-resolution Board-compliant layout &bull; Ready for physical printer or saving as PDF

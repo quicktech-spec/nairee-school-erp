@@ -29,6 +29,14 @@ export const DEFAULT_TENANTS = [
     enabled_features: [
       'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
     ],
+    default_tc_template: 'traditional_heritage',
+    default_appreciation_template: 'mint_emerald_fluid_waves',
+    default_participation_template: 'classic_gold_filigree_frame',
+    default_id_card_template: 'navy_chevron',
+    default_domicile_template: 'statutory_residence_formal',
+    default_migration_template: 'cbse_bilingual_migration',
+    default_report_card_template: 'salford_skyblue_quarterly',
+    default_admit_card_template: 'ignou_term_end_admit',
     status: 'Active',
     created_at: '2024-01-01T00:00:00.000Z'
   },
@@ -56,6 +64,14 @@ export const DEFAULT_TENANTS = [
     enabled_features: [
       'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards', 'transfer_certificates'
     ],
+    default_tc_template: 'vintage_crimson',
+    default_appreciation_template: 'modern_navy_gold_badge',
+    default_participation_template: 'modern_crystal_navy_angle',
+    default_id_card_template: 'emerald_wave',
+    default_domicile_template: 'statutory_residence_formal',
+    default_migration_template: 'cbse_bilingual_migration',
+    default_report_card_template: 'salford_skyblue_quarterly',
+    default_admit_card_template: 'ignou_term_end_admit',
     status: 'Active',
     created_at: '2024-03-15T10:30:00.000Z'
   },
@@ -83,6 +99,14 @@ export const DEFAULT_TENANTS = [
     enabled_features: [
       'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'communication', 'reports', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
     ],
+    default_tc_template: 'traditional_heritage',
+    default_appreciation_template: 'royal_navy_gold_geometric',
+    default_participation_template: 'imperial_baroque_gold_crest',
+    default_id_card_template: 'terracotta_portrait',
+    default_domicile_template: 'heritage_academic_bonafide',
+    default_migration_template: 'delhi_univ_central_migration',
+    default_report_card_template: 'salford_maroon_quarterly',
+    default_admit_card_template: 'cbse_jee_main_hall_ticket',
     status: 'Active',
     created_at: '2024-05-10T14:00:00.000Z'
   },
@@ -110,6 +134,14 @@ export const DEFAULT_TENANTS = [
     enabled_features: [
       'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'reports', 'parent_portal', 'student_portal', 'teacher_portal'
     ],
+    default_tc_template: 'modern_platinum',
+    default_appreciation_template: 'cyan_emerald_curved_sweep',
+    default_participation_template: 'modern_crystal_navy_angle',
+    default_id_card_template: 'terracotta_split',
+    default_domicile_template: 'modern_digital_bonafide',
+    default_migration_template: 'modern_cryptographic_qr_migration',
+    default_report_card_template: 'homeschool_holistic_habits',
+    default_admit_card_template: 'modern_cryptographic_qr_admit',
     status: 'Active',
     created_at: '2024-06-01T09:00:00.000Z'
   },
@@ -137,6 +169,14 @@ export const DEFAULT_TENANTS = [
     enabled_features: [
       'academics', 'attendance', 'fees', 'gradebook', 'timetable', 'homework', 'library', 'transport', 'communication', 'payroll', 'reports', 'database', 'parent_portal', 'student_portal', 'teacher_portal', 'id_cards'
     ],
+    default_tc_template: 'royal_gold',
+    default_appreciation_template: 'royal_navy_gold_geometric',
+    default_participation_template: 'royal_purple_gold_arch',
+    default_id_card_template: 'sage_khaki',
+    default_domicile_template: 'statutory_residence_formal',
+    default_migration_template: 'statutory_board_character_migration',
+    default_report_card_template: 'classic_ivy_slate_gold',
+    default_admit_card_template: 'hpu_provisional_hall_ticket',
     status: 'Active',
     created_at: '2024-08-10T11:00:00.000Z'
   }
@@ -379,9 +419,11 @@ export function TenantProvider({ children }) {
       max_students: tenantData.max_students || 2000,
       max_staff: tenantData.max_staff || 100,
       default_tc_template: tenantData.default_tc_template || 'traditional_heritage',
-      default_appreciation_template: tenantData.default_appreciation_template || 'emerald_silver_rosette',
+      default_appreciation_template: tenantData.default_appreciation_template || 'mint_emerald_fluid_waves',
       default_participation_template: tenantData.default_participation_template || 'classic_gold_filigree_frame',
       default_id_card_template: tenantData.default_id_card_template || 'navy_chevron',
+      default_domicile_template: tenantData.default_domicile_template || 'statutory_residence_formal',
+      default_migration_template: tenantData.default_migration_template || 'cbse_bilingual_migration',
       default_report_card_template: tenantData.default_report_card_template || 'salford_skyblue_quarterly',
       default_admit_card_template: tenantData.default_admit_card_template || 'ignou_term_end_admit',
       principal_name: tenantData.principal_name || tenantData.admin_name || 'Dr. Ramakant Sharma',

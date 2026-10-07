@@ -49,25 +49,26 @@ const TC_TEMPLATES_ONBOARDING = [
   { id: 'traditional_heritage', title: 'Traditional Heritage Leaving (23-Point)', tag: 'St. Francis Model', desc: 'CBSE/ICSE statutory lines, double parchment border & triple signatures' },
   { id: 'vintage_crimson', title: 'Character Certificate (Emerald Seal)', tag: 'DPS Birgunj Model', desc: 'Authentic circular school stamp, calligraphic flourish & moral character prose' },
   { id: 'modern_platinum', title: 'Modern Platinum & Cobalt', tag: 'Parent Clearance Model', desc: 'Cyan & cobalt corner vectors, formal principal address block & dual sign-off' },
-  { id: 'emerald_corporate', title: 'Emerald Corporate CBSE', tag: 'CBSE Standard', desc: 'Modern geometric header with badge & two-column tabular specs' },
-  { id: 'royal_navy', title: 'Royal Navy Border Form', tag: 'Board Compliant', desc: 'Navy framed statutory layout with student photo slot & seals' },
-  { id: 'crimson_gold', title: 'Crimson & Gold Standard', tag: 'Classic CBSE', desc: 'Traditional board layout with UDISE and Admission register' },
+  { id: 'cbse_statutory', title: 'CBSE Statutory 15-Point', tag: 'CBSE Standard', desc: 'Affiliation & School Code, 15 statutory clauses, triple signatory' },
+  { id: 'royal_gold', title: 'Royal Navy & Gold Crest', tag: 'Board Compliant', desc: 'Navy framed statutory layout with student photo slot & seals' },
+  { id: 'sunrise_chevron', title: 'Sunrise Golden Chevron', tag: 'Classic Geometric', desc: 'Angular gold/charcoal corners, laurel crest, structured clean lines' },
   { id: 'classic_ivory', title: 'Classic Ivory Filigree', tag: 'Landscape Filigree', desc: 'Ornate gold filigree borders with formal registrar signatures' }
 ];
 
 const APPRECIATION_TEMPLATES_ONBOARDING = [
-  { id: 'emerald_silver_rosette', title: 'Emerald & Silver Rosette', tag: 'Excellence Award', desc: 'Luxury emerald wave ribbons with silver-gold rosette medal' },
+  { id: 'mint_emerald_fluid_waves', title: 'Mint Emerald Fluid Waves', tag: 'Excellence Award', desc: 'Luxury emerald wave ribbons with silver-gold rosette medal' },
   { id: 'modern_navy_gold_badge', title: 'Royal Gold Guilloche & Seal', tag: 'Merit Trophy', desc: 'Gold guilloche frame, navy contrast with authentic wax seal badge' },
-  { id: 'minimalist_monochrome', title: 'Modern Minimalist Monochrome', tag: 'Clean Honors', desc: 'Sleek black & charcoal borders with bold typography and dual sigs' },
-  { id: 'cyan_emerald_curved', title: 'Dynamic Cyan Curved Sweep', tag: 'Contest Award', desc: 'Vibrant modern geometric curves with clean certificate title' },
-  { id: 'terracotta_portrait', title: 'Borcelle Terracotta Serif', tag: 'Heritage Honor', desc: 'Warm terracotta tones with vintage serif typography' }
+  { id: 'royal_navy_gold_geometric', title: 'Royal Navy & Gold Filigree', tag: 'Honors Award', desc: 'Ivory background, navy & gold diagonal angular bands' },
+  { id: 'cyan_emerald_curved_sweep', title: 'Dynamic Cyan Curved Sweep', tag: 'Contest Award', desc: 'Vibrant modern geometric curves with clean certificate title' },
+  { id: 'forest_lime_polygon_mosaic', title: 'Geometric Forest Mosaic', tag: 'Heritage Honor', desc: 'Olive, forest & lime green geometric triangle mosaic clusters' }
 ];
 
 const ID_CARD_TEMPLATES_ONBOARDING = [
-  { id: 'navy_chevron', title: 'Hexagon Grid Dark Luxury', tag: 'Portrait Card', desc: 'Deep navy background with gold hexagon pattern & crisp student photo' },
-  { id: 'modern_cyan_cobalt', title: 'Modern Clean Cyan & Cobalt', tag: 'Horizontal Card', desc: 'High-visibility corporate landscape with large student ID & address' },
-  { id: 'emerald_vip', title: 'Emerald Green VIP Member', tag: 'Portrait Card', desc: 'Rich emerald green theme with barcode and school crest header' },
-  { id: 'terracotta_portrait', title: 'Borcelle Terracotta Heritage', tag: 'Portrait Card', desc: 'Earthy terracotta aesthetic with full contact details & QR code' }
+  { id: 'navy_chevron', title: 'Navy Modern Chevron', tag: 'Star Badge & Pill Header', desc: 'Top-left navy pennant ribbon, cyan geometric corners, bold blue Student Card pill banner' },
+  { id: 'sage_khaki', title: 'Sage Khaki & Honeycomb', tag: 'Olive Crest & Watermark', desc: 'Refined olive/sage khaki header, diagonal hazard stripes, honeycomb watermark & signature overlay' },
+  { id: 'terracotta_split', title: 'Minimalist Terracotta & Olive', tag: 'Dual Split & Grid', desc: 'Sage green sidebar with orange accent border line, clean 2-column student metadata grid' },
+  { id: 'emerald_wave', title: 'Emerald & Cyan Wave Flow', tag: 'Guilloche Wave & Sine Flow', desc: 'Deep emerald/teal gradient curves, circular student portrait with glowing ring & sine wave patterns' },
+  { id: 'terracotta_portrait', title: 'Borcelle Terracotta Heritage', tag: 'Portrait Vertical Card', desc: 'Vertical ID card with warm rust geometric banner, lotus insignia, hazard accent tabs & QR code' }
 ];
 
 const AVAILABLE_MODULES = [
@@ -108,7 +109,7 @@ export default function TenantOnboardingModal({ isOpen, onClose }) {
     subdomain: '',
     custom_domain: '',
     default_tc_template: 'traditional_heritage',
-    default_appreciation_template: 'emerald_silver_rosette',
+    default_appreciation_template: 'mint_emerald_fluid_waves',
     default_participation_template: 'classic_gold_filigree_frame',
     default_id_card_template: 'navy_chevron',
     default_report_card_template: 'salford_skyblue_quarterly',
