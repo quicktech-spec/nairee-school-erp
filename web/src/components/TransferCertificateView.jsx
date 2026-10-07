@@ -1760,29 +1760,157 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* 8 Supported Document Selectors */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 mt-6 pt-6 border-t border-white/10">
-          {docTypesList.map((dt) => {
+        {/* Featured Certificate Design Showcase (9 Master Certificate Templates) */}
+        <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <h3 className="font-extrabold text-xs text-amber-300 uppercase tracking-wider">
+                🎨 9 Interchangeable Certificate &amp; Award Design Templates
+              </h3>
+            </div>
+            <span className="text-[10px] text-teal-300 bg-teal-950/60 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/30">
+              Click any design to preview instantly
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-2.5">
+            {[
+              {
+                id: 'sunrise_chevron',
+                docType: 'tc',
+                tpl: 'sunrise_chevron',
+                title: 'Sunrise Golden Chevron',
+                tag: 'Landscape • Gold Chevron',
+                icon: Sparkles,
+                activeBg: 'from-amber-600/30 to-yellow-600/20 border-amber-400 text-amber-200'
+              },
+              {
+                id: 'imperial_arch',
+                docType: 'appreciation',
+                tpl: 'imperial_arch',
+                title: 'Imperial Crimson Appreciation',
+                tag: 'Portrait • Crimson Arch',
+                icon: Trophy,
+                activeBg: 'from-rose-600/30 to-red-600/20 border-rose-400 text-rose-200'
+              },
+              {
+                id: 'modern_teal',
+                docType: 'participation',
+                tpl: 'modern_teal_geometric',
+                title: 'Modern Teal Participation',
+                tag: 'Portrait • Geometric Teal',
+                icon: Medal,
+                activeBg: 'from-teal-600/30 to-cyan-600/20 border-teal-400 text-teal-200'
+              },
+              {
+                id: 'royal_gold',
+                docType: 'tc',
+                tpl: 'royal_gold',
+                title: 'Royal Navy & Gold Crest',
+                tag: 'Landscape • Luxury Crest',
+                icon: Award,
+                activeBg: 'from-indigo-600/30 to-blue-600/20 border-indigo-400 text-indigo-200'
+              },
+              {
+                id: 'cbse_statutory',
+                docType: 'tc',
+                tpl: 'cbse_statutory',
+                title: 'CBSE Statutory 15-Point',
+                tag: 'Portrait • Board Standard',
+                icon: GraduationCap,
+                activeBg: 'from-slate-600/30 to-slate-700/20 border-slate-300 text-slate-200'
+              },
+              {
+                id: 'traditional_heritage',
+                docType: 'tc',
+                tpl: 'traditional_heritage',
+                title: 'Traditional Heritage',
+                tag: 'Portrait • Classical Filigree',
+                icon: Building,
+                activeBg: 'from-blue-600/30 to-sky-600/20 border-blue-400 text-blue-200'
+              },
+              {
+                id: 'vintage_crimson',
+                docType: 'tc',
+                tpl: 'vintage_crimson',
+                title: 'Vintage Crimson Guilloche',
+                tag: 'Portrait • Burgundy Wax',
+                icon: FileText,
+                activeBg: 'from-red-600/30 to-rose-600/20 border-red-400 text-red-200'
+              },
+              {
+                id: 'classic_ivory',
+                docType: 'tc',
+                tpl: 'classic_ivory',
+                title: 'Classic Ivory Filigree',
+                tag: 'Landscape • Banknote Grade',
+                icon: CheckCircle2,
+                activeBg: 'from-amber-700/30 to-amber-600/20 border-amber-300 text-amber-200'
+              },
+              {
+                id: 'modern_platinum',
+                docType: 'tc',
+                tpl: 'modern_platinum',
+                title: 'Modern Platinum Cobalt',
+                tag: 'Landscape • High-Tech QR',
+                icon: QrCode,
+                activeBg: 'from-cyan-600/30 to-teal-600/20 border-cyan-400 text-cyan-200'
+              }
+            ].map((tplItem) => {
+              const Icon = tplItem.icon;
+              const isSelected = docType === tplItem.docType && (tplItem.docType !== 'tc' || tcTemplate === tplItem.tpl);
+              return (
+                <button
+                  key={tplItem.id}
+                  onClick={() => {
+                    setDocType(tplItem.docType);
+                    if (tplItem.docType === 'tc') {
+                      setTcTemplate(tplItem.tpl);
+                    }
+                  }}
+                  className={`p-2.5 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tplItem.activeBg} shadow-lg ring-2 ring-white/30 scale-[1.04]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <Icon className="w-3.5 h-3.5 text-amber-300" />
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-black" />}
+                    </div>
+                    <div className="text-[11px] font-black leading-tight text-white line-clamp-2">
+                      {tplItem.title}
+                    </div>
+                  </div>
+                  <div className="mt-2 pt-1 border-t border-white/10 text-[8.5px] font-bold text-slate-400 truncate uppercase">
+                    {tplItem.tag}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Secondary Administrative Documents (Domicile, Migration, Marksheet, Hall Ticket, ID Card) */}
+        <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Other Institutional Records:</span>
+          {docTypesList.filter(d => d.id !== 'tc' && d.id !== 'appreciation' && d.id !== 'participation').map((dt) => {
             const Icon = dt.icon;
             const isSelected = docType === dt.id;
             return (
               <button
                 key={dt.id}
                 onClick={() => setDocType(dt.id)}
-                className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-teal-500/25 border-teal-400 text-white shadow-inner scale-[1.02]'
+                    ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md font-black'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-teal-300">
-                    Doc #{dt.num}
-                  </span>
-                  <Icon className="w-3.5 h-3.5 text-teal-400" />
-                </div>
-                <div className="text-xs font-black truncate">{dt.title}</div>
-                <div className="text-[9px] text-slate-400 mt-0.5 truncate">{dt.subtitle}</div>
+                <Icon className="w-3.5 h-3.5" />
+                <span>{dt.title}</span>
               </button>
             );
           })}
