@@ -155,8 +155,8 @@ export default function TransferCertificateView() {
   // 5 Academic Report Card / Marksheet Templates (Matching uploaded reference designs)
   const [reportCardTemplate, setReportCardTemplate] = useState('salford_skyblue_quarterly');
 
-  // 5 Exam Admit Card / Hall Ticket Templates
-  const [admitCardTemplate, setAdmitCardTemplate] = useState('statutory_hall_ticket');
+  // 5 Exam Admit Card / Hall Ticket Templates (Matching uploaded reference designs)
+  const [admitCardTemplate, setAdmitCardTemplate] = useState('ignou_term_end_admit');
 
   const [customClassSection, setCustomClassSection] = useState('');
   
@@ -893,44 +893,114 @@ export default function TransferCertificateView() {
 
   const admitCardTemplatesList = [
     {
-      id: 'statutory_hall_ticket',
-      title: 'Board Examination Hall Ticket',
-      tag: 'Portrait • Timetable & Center',
-      desc: 'Candidate photo, roll number barcode, statutory 6-exam timetable, and superintendent seal',
-      orientation: 'portrait',
-      activeBg: 'from-amber-700/30 to-orange-700/20 border-amber-400 text-amber-200'
-    },
-    {
-      id: 'modern_qr_admit_pass',
-      title: 'Modern Digital QR Hall Ticket',
-      tag: 'Landscape • Dynamic QR Pass',
-      desc: 'High-tech security layout with dynamic QR scanning box, seat number badge, and timetable',
+      id: 'ignou_term_end_admit',
+      title: 'IGNOU Term End Admit Card (Image 1)',
+      tag: 'Landscape • Blue Spiral Emblem & Timetable',
+      desc: 'National Open University layout with spiral logo, candidate photo, 6-course timetable, and verification QR code',
       orientation: 'landscape',
-      activeBg: 'from-cyan-700/30 to-blue-700/20 border-cyan-400 text-cyan-200'
+      activeBg: 'from-sky-800/30 to-blue-900/20 border-sky-400 text-sky-200',
+      defaultConfig: {
+        title: 'INDIRA GANDHI NATIONAL OPEN UNIVERSITY',
+        subtitle: 'ADMIT CARD – Term End Examination',
+        presentationLine: 'BACHELOR OF ARTS (BAG)',
+        recipientName: 'Rahul Verma',
+        eventTitle: 'Term End Examination 2026',
+        bodyText: 'Candidate must bring this original Hall Ticket along with valid Student Identity Card to the Examination Centre on all days of examination.',
+        awardDate: 'June 2026 Session',
+        signatory1Name: 'Registrar (SED)',
+        signatory1Title: 'Student Evaluation Division',
+        signatory2Name: 'Regional Director',
+        signatory2Title: 'Delhi-1 Regional Centre',
+        organizationName: 'INDIRA GANDHI NATIONAL OPEN UNIVERSITY'
+      }
     },
     {
-      id: 'split_photo_admit_card',
-      title: 'Dual-Photo Invigilator Pass',
-      tag: 'Portrait • Invigilator Verification',
-      desc: 'Candidate photograph, invigilator signature boxes, room allocation & identification checklist',
+      id: 'hpu_provisional_hall_ticket',
+      title: 'State University Provisional Ticket (Image 2)',
+      tag: 'Portrait • HPU Mountain Seal & 4-Paper Grid',
+      desc: 'State university header, roll number bar, candidate details, appearing paper datesheet, address box, and controller signature',
       orientation: 'portrait',
-      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
+      activeBg: 'from-emerald-800/30 to-teal-900/20 border-emerald-400 text-emerald-200',
+      defaultConfig: {
+        title: 'हिमाचल प्रदेश विश्वविद्यालय • Himachal Pradesh University',
+        subtitle: 'Admit Card (Provisional) • Hall Ticket for Entry in Examination Hall',
+        presentationLine: 'M.A. (Hindi) • Semester : Third(Fresh)',
+        recipientName: 'PRAGTI',
+        eventTitle: 'Post Graduate University Examination',
+        bodyText: 'Certificate: No Dues / Subject Code Verified / Eligibility Permission granted by the Principal with institutional seal.',
+        awardDate: 'NOV(2025-2026)',
+        signatory1Name: 'Prof. J.S. Dhiman',
+        signatory1Title: 'Controller Of Examinations',
+        signatory2Name: 'Dr. S.K. Sharma',
+        signatory2Title: 'Principal (With Seal)',
+        organizationName: 'Himachal Pradesh University, Summer Hill Shimla'
+      }
     },
     {
-      id: 'compact_slip_format',
-      title: 'Compact Slip Examination Pass',
-      tag: 'Landscape • Pocket Laminated',
-      desc: 'Pocket-sized laminated hall ticket format with subject dates, room slot, and candidate rules',
+      id: 'aai_southern_e_admit_card',
+      title: 'AAI Aviation E-Admit Card (Image 3)',
+      tag: 'Portrait • Barcode, Shift Timings & Declaration',
+      desc: 'Airports Authority of India official E-Admit Card with top 1D barcode, reporting & gate closing slots, center details, and candidate declaration box',
+      orientation: 'portrait',
+      activeBg: 'from-blue-800/30 to-slate-900/20 border-blue-400 text-blue-200',
+      defaultConfig: {
+        title: 'भारतीय विमानपत्तन प्राधिकरण / AIRPORTS AUTHORITY OF INDIA',
+        subtitle: '[SCHEDULE – \'A\' MINI RATNA - CATEGORY-1 PUBLIC SECTOR ENTERPRISE] • REGIONAL HEADQUARTERS',
+        presentationLine: 'E - ADMIT CARD',
+        recipientName: 'DILIPKUMAR S',
+        eventTitle: 'Junior Assistant (Fire Service) NE-4 Examination',
+        bodyText: 'I do hereby declare that all the information furnished above are true to the best of my knowledge and I am the same candidate appearing in the exam whose photograph & sign appear above.',
+        awardDate: '15th November 2026, Tuesday (12:30 PM - 2:30 PM)',
+        signatory1Name: 'J. Edward Raj',
+        signatory1Title: 'Examination Authority',
+        signatory2Name: 'Senior Superintendent',
+        signatory2Title: 'Invigilator Signature',
+        organizationName: 'AIRPORTS AUTHORITY OF INDIA'
+      }
+    },
+    {
+      id: 'cbse_jee_main_hall_ticket',
+      title: 'CBSE JEE (Main) National Pass (Image 4)',
+      tag: 'Portrait • National Testing & 17 Candidate Rules',
+      desc: 'Central Board / National Testing standard layout with large roll number banner, exam center box, candidate address, and comprehensive instructions',
+      orientation: 'portrait',
+      activeBg: 'from-slate-800/30 to-blue-950/20 border-sky-400 text-sky-200',
+      defaultConfig: {
+        title: 'CENTRAL BOARD OF SECONDARY EDUCATION, DELHI',
+        subtitle: 'ADMIT CARD FOR JOINT ENTRANCE EXAMINATION JEE(MAIN)',
+        presentationLine: 'JEE(Main) Paper - 1 (B.E./B.Tech.) Only',
+        recipientName: 'SHAILENDRA KUMAR',
+        eventTitle: 'Joint Entrance Examination (Main)',
+        bodyText: 'Candidates must carry this admit card, black ball-point pen, and valid photo identification. Electronic devices and study notes are strictly prohibited.',
+        awardDate: '10/04/2026 • Timings: 0930-1230 Hours (IST)',
+        signatory1Name: 'Dr. S.K. Maheshwari',
+        signatory1Title: 'Executive Director (JEE)',
+        signatory2Name: 'Centre Superintendent',
+        signatory2Title: 'Examination Center Head',
+        organizationName: 'CENTRAL BOARD OF SECONDARY EDUCATION'
+      }
+    },
+    {
+      id: 'modern_cryptographic_qr_admit',
+      title: 'Modern Cryptographic QR Hall Ticket Pass',
+      tag: 'Landscape • High-Tech Security QR & Barcode',
+      desc: 'High-resolution cryptographic verification QR pass with dynamic timetable, barcode strip, seat allocation tag, and anti-tamper security tokens',
       orientation: 'landscape',
-      activeBg: 'from-teal-700/30 to-emerald-700/20 border-teal-400 text-teal-200'
-    },
-    {
-      id: 'executive_navy_hall_ticket',
-      title: 'Executive Navy Hall Ticket & Rules',
-      tag: 'Portrait • Full Regulations',
-      desc: 'Full-page official admit card with comprehensive examination hall rules & statutory clauses',
-      orientation: 'portrait',
-      activeBg: 'from-slate-700/30 to-indigo-700/20 border-slate-400 text-slate-200'
+      activeBg: 'from-teal-800/30 to-cyan-900/20 border-teal-400 text-teal-200',
+      defaultConfig: {
+        title: 'NATIONAL TESTING & EXAMINATION COUNCIL',
+        subtitle: 'CRYPTOGRAPHIC ADMIT CARD & HALL TICKET',
+        presentationLine: 'SECURE DIGITAL EXAMINATION PASS',
+        recipientName: '',
+        eventTitle: 'National Scholastic Assessment Standard',
+        bodyText: 'Secure digital verification pass. Tampering or reproducing unauthorized copies is a punishable statutory offense. Verified via centralized database.',
+        awardDate: 'Academic Session 2025-2026',
+        signatory1Name: 'Chief Controller',
+        signatory1Title: 'National Examination Board',
+        signatory2Name: 'Dr. Rebecca Sterling',
+        signatory2Title: 'Centre Superintendent',
+        organizationName: 'NATIONAL TESTING COUNCIL'
+      }
     }
   ];
 
@@ -1395,6 +1465,46 @@ export default function TransferCertificateView() {
         <path d="M50 5 L90 22 C90 65, 75 95, 50 110 C25 95, 10 65, 10 22 Z" fill="#ffffff" stroke="#581c87" strokeWidth="6" />
         <path d="M50 12 L84 27 C84 62, 70 88, 50 102 C30 88, 16 62, 16 27 Z" fill="#581c87" />
         <text x="50" y="65" fill="#ffffff" fontSize="28" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">BLS</text>
+      </svg>
+    </div>
+  );
+
+  // 15. IGNOU Blue Spiral Logo (for Admit Card Image 1)
+  const IgnouSpiralLogo = ({ size = 64 }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+        <circle cx="50" cy="50" r="46" stroke="#0284c7" strokeWidth="6" fill="none" />
+        <path d="M 50 14 C 70 14 86 30 86 50 C 86 70 70 86 50 86 C 30 86 14 70 14 50" stroke="#0284c7" strokeWidth="6" strokeLinecap="round" fill="none" />
+        <path d="M 50 26 C 63 26 74 37 74 50 C 74 63 63 74 50 74 C 37 74 26 63 26 50 C 26 37 37 26 50 26" stroke="#0284c7" strokeWidth="5" fill="none" />
+        <path d="M 50 36 C 58 36 64 42 64 50 C 64 58 58 64 50 64 C 42 64 36 58 36 50" stroke="#0284c7" strokeWidth="5" fill="none" />
+        <circle cx="50" cy="50" r="5" fill="#0284c7" />
+      </svg>
+    </div>
+  );
+
+  // 16. HPU Shimla Seal (for Admit Card Image 2)
+  const HpuShimlaSeal = ({ size = 60 }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+        <circle cx="50" cy="50" r="46" fill="#15803d" stroke="#f59e0b" strokeWidth="3" />
+        <circle cx="50" cy="50" r="39" fill="#ffffff" stroke="#15803d" strokeWidth="1" />
+        {/* Mountain peaks */}
+        <path d="M 20 65 L 40 40 L 60 65 Z" fill="#bbf7d0" stroke="#15803d" strokeWidth="1.5" />
+        <path d="M 45 65 L 65 35 L 85 65 Z" fill="#86efac" stroke="#15803d" strokeWidth="1.5" />
+        <circle cx="50" cy="30" r="8" fill="#f59e0b" />
+        <text x="50" y="80" fill="#15803d" fontSize="6.5" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">H.P.U. SHIMLA</text>
+      </svg>
+    </div>
+  );
+
+  // 17. Airports Authority of India Aviation Logo (for Admit Card Image 3)
+  const AaiAviationLogo = ({ size = 64 }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size * 0.7 }}>
+      <svg viewBox="0 0 120 80" fill="none" className="w-full h-full">
+        <circle cx="60" cy="18" r="8" fill="#1d4ed8" />
+        <path d="M 60 28 L 30 70 L 45 70 L 60 45 L 75 70 L 90 70 Z" fill="#1d4ed8" />
+        <path d="M 15 52 L 105 52 L 60 42 Z" fill="#2563eb" opacity="0.9" />
+        <line x1="10" y1="58" x2="110" y2="58" stroke="#1d4ed8" strokeWidth="2.5" />
       </svg>
     </div>
   );
@@ -4227,6 +4337,554 @@ export default function TransferCertificateView() {
     );
   };
 
+  // =========================================================================
+  // ADMIT CARD TEMPLATE 1: IGNOU National Open University Term End (Image 1)
+  // =========================================================================
+  const renderIgnouTermEndAdmit = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Rahul Verma';
+    const certTitle = certConfig.title || 'INDIRA GANDHI NATIONAL OPEN UNIVERSITY';
+    const certSubtitle = certConfig.subtitle || 'ADMIT CARD – Term End Examination';
+    const certProgram = certConfig.presentationLine || 'BACHELOR OF ARTS (BAG)';
+    const certDob = st.dob || '15 Feb 2000';
+    const certEnrollment = st.roll_no ? `${st.roll_no}2026` : '2201712401';
+    const regNo = getDocRegNo(st, 'admit_card');
+
+    const courses = [
+      { code: 'BEVAE-181', date: '10/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' },
+      { code: 'BHIC-131', date: '14/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' },
+      { code: 'BPSC-131', date: '18/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' },
+      { code: 'BHDLA-135', date: '22/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' },
+      { code: 'BPAG-171', date: '26/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' },
+      { code: 'BSOC-131', date: '30/06/2026', time: 'Morning (10:00 AM)', centre: '0757D - Study Centre, Delhi' }
+    ];
+
+    return (
+      <div className="bg-[#fcfbf7] border-2 border-slate-900 rounded-none shadow-2xl overflow-hidden max-w-4xl mx-auto font-sans text-slate-900 p-6 sm:p-8 space-y-5">
+        {/* Top Header Row with Spiral Logo */}
+        <div className="flex items-center gap-5 border-b-2 border-slate-900 pb-4">
+          <IgnouSpiralLogo size={68} />
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-950 uppercase tracking-tight leading-tight">
+              {certTitle}
+            </h1>
+            <h2 className="text-base sm:text-lg font-bold text-slate-800 uppercase tracking-wide">
+              {certSubtitle}
+            </h2>
+          </div>
+        </div>
+
+        {/* Candidate Meta Info & Photograph */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+          <div className="md:col-span-8 space-y-1.5 text-xs font-semibold text-slate-800">
+            <div className="text-sm">
+              <span className="font-bold text-slate-700">Enrollment Number:</span>{' '}
+              <strong className="font-mono text-base font-black text-slate-950 tracking-wider underline">{certEnrollment}</strong>
+            </div>
+            <div className="text-sm">
+              <span className="font-bold text-slate-700">Candidate Name:</span>{' '}
+              <strong className="font-black text-slate-950 uppercase">{certRecipient}</strong>
+            </div>
+            <div>
+              <span className="font-bold text-slate-700">Programm:</span>{' '}
+              <strong className="font-bold text-slate-900 uppercase">{certProgram}</strong>
+            </div>
+            <div>
+              <span className="font-bold text-slate-700">Regional Centre:</span>{' '}
+              <span className="font-bold text-slate-900">Delhi-1 (Code: 07)</span>
+            </div>
+            <div>
+              <span className="font-bold text-slate-700">Date of Birth:</span>{' '}
+              <span className="font-mono font-bold text-slate-900">{certDob}</span>
+            </div>
+            <div>
+              <span className="font-bold text-slate-700">Medium:</span>{' '}
+              <span className="font-bold text-slate-900">English</span>
+            </div>
+          </div>
+
+          <div className="md:col-span-4 flex justify-end">
+            <div className="text-center">
+              <img
+                src={st.photo}
+                alt={certRecipient}
+                className="w-32 h-38 object-cover border-2 border-slate-900 shadow-md mx-auto"
+              />
+              <span className="text-[9px] font-mono text-slate-500 font-bold block mt-1">Verified Photo</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Timetable Table & Embedded QR Code */}
+        <div className="border border-slate-900 overflow-hidden">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-slate-100 border-b border-slate-900 font-bold uppercase text-[11px]">
+              <tr>
+                <th className="py-2.5 px-3 border-r border-slate-900 w-28">Course Code</th>
+                <th className="py-2.5 px-3 border-r border-slate-900 w-28">Exam Date</th>
+                <th className="py-2.5 px-3 border-r border-slate-900 w-36">Exam Time</th>
+                <th className="py-2.5 px-3">Exam Centre</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-300 text-xs font-semibold">
+              {courses.map((c, idx) => (
+                <tr key={idx}>
+                  <td className="py-2 px-3 font-mono font-bold border-r border-slate-900">{c.code}</td>
+                  <td className="py-2 px-3 font-mono border-r border-slate-900">{c.date}</td>
+                  <td className="py-2 px-3 border-r border-slate-900">{c.time}</td>
+                  <td className="py-2 px-3 flex items-center justify-between">
+                    <span>{c.centre}</span>
+                    {idx === courses.length - 1 && (
+                      <div className="p-0.5 bg-white border border-slate-900 ml-2">
+                        <QrCode className="w-8 h-8 text-slate-900" />
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Instructions / Footer Notice */}
+        <div className="pt-2 text-[10px] text-slate-600 space-y-0.5 border-t border-slate-200">
+          <p><strong>Important Note:</strong> {certConfig.bodyText || 'Candidate must bring this original Hall Ticket along with valid Student Identity Card to the Examination Centre on all days of examination.'}</p>
+          <div className="flex justify-between font-mono text-slate-500 pt-1">
+            <span>DOC-ID: {regNo}</span>
+            <span>Issued by SED Central Examination Division</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // ADMIT CARD TEMPLATE 2: State University Provisional Ticket (Image 2)
+  // =========================================================================
+  const renderHpuProvisionalHallTicket = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'PRAGTI';
+    const certTitle = certConfig.title || 'हिमाचल प्रदेश विश्वविद्यालय • Himachal Pradesh University';
+    const certSubtitle = certConfig.subtitle || 'Admit Card (Provisional) • Hall Ticket for Entry in Examination Hall';
+    const certExam = certConfig.presentationLine || 'M.A. (Hindi)';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const regNo = getDocRegNo(st, 'admit_card');
+
+    const papers = [
+      { sno: '1', code: 'MHN301', name: 'Bhartiya Kavya Shastra evam Sahityalochan', date: 'As per Datesheet' },
+      { sno: '2', code: 'MHN302', name: 'Anuvaad Vigyaan', date: 'As per Datesheet' },
+      { sno: '3', code: 'MHN303', name: 'Chhayavadi Kavya', date: 'As per Datesheet' },
+      { sno: '4', code: 'MHN304', name: 'Lok Sahitya : Saidhantik Vivechan (Ek) / Upanyaas (Do)', date: 'As per Datesheet' }
+    ];
+
+    return (
+      <div className="bg-white border-2 border-slate-900 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-900 text-xs">
+        {/* Top Note */}
+        <div className="border-b border-slate-900 text-center font-bold text-[10px] py-1 bg-slate-50">
+          Note: Candidate should possess this Admit card while entering in the examination hall.
+        </div>
+
+        {/* 3-Part Header Banner */}
+        <div className="grid grid-cols-12 border-b border-slate-900 p-3 items-center">
+          <div className="col-span-4 flex items-center gap-2 border-r border-slate-900 pr-2">
+            <HpuShimlaSeal size={48} />
+            <div className="text-[9px] font-bold leading-tight">
+              <span className="block text-emerald-900 font-black">हिमाचल प्रदेश विश्वविद्यालय</span>
+              <span>Himachal Pradesh University</span>
+            </div>
+          </div>
+          <div className="col-span-5 text-center px-2">
+            <strong className="block font-black text-xs uppercase">Admit Card (Provisional)</strong>
+            <span className="text-[10px] text-slate-600 block">Hall Ticket for Entry in Examination Hall</span>
+          </div>
+          <div className="col-span-3 text-right text-[9px] font-bold text-slate-700 pl-2">
+            <div>Himachal Pradesh University</div>
+            <div>Summer Hill Shimla 171005</div>
+          </div>
+        </div>
+
+        {/* Roll Number Bar */}
+        <div className="bg-slate-100 border-b border-slate-900 text-center py-1 font-mono font-black text-xs tracking-wider">
+          Roll Number : <span className="underline">{st.id || 'D220171240111'}</span>
+        </div>
+
+        {/* Candidate Profile Details & Photo Box */}
+        <div className="grid grid-cols-12 border-b border-slate-900">
+          <div className="col-span-8 p-3 space-y-1.5 border-r border-slate-900 text-[11px] leading-tight">
+            <div><strong>Name Of Examination (Class) :</strong> {certExam} ({studentClass})</div>
+            <div><strong>Semester :</strong> Third(Fresh) &nbsp;&nbsp;&bull;&nbsp;&nbsp; <strong>Session :</strong> {academicSession}</div>
+            <div><strong>Month/Year :</strong> November 2026</div>
+            <div><strong>Exam Centre Name :</strong> Private Shimla (Dr. Ambedkar Bhawan, H.P. University)</div>
+            <div><strong>Candidate's Name :</strong> <strong className="font-black text-slate-950 uppercase">{certRecipient}</strong></div>
+            <div className="flex justify-between">
+              <span><strong>Date Of Birth :</strong> {st.dob}</span>
+              <span><strong>Capacity :</strong> PRIVATE / REGULAR</span>
+            </div>
+            <div><strong>College Name :</strong> {schoolInfo.schoolName}</div>
+            <div><strong>Father's Name :</strong> {st.father_name}</div>
+            <div><strong>Mother's Name :</strong> {st.mother_name}</div>
+            <div><strong>Any Discrepancy :</strong> N/A</div>
+          </div>
+
+          <div className="col-span-4 p-3 flex flex-col items-center justify-between text-center bg-slate-50/50">
+            <img src={st.photo} alt={certRecipient} className="w-24 h-28 object-cover border border-slate-900 shadow-xs" />
+            <div className="w-full mt-2 border-t border-dotted border-slate-900 pt-1">
+              <HandWrittenSignature name={certRecipient} color="#000000" />
+              <div className="text-[9px] font-bold text-slate-600">Candidate's Signature</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Appearing Paper Details Table */}
+        <div className="border-b border-slate-900">
+          <div className="bg-slate-100 py-1 px-3 font-bold text-[10.5px] border-b border-slate-900 text-center">
+            Appearing Paper Details (with paper name and paper code)
+          </div>
+          <table className="w-full text-left text-[11px]">
+            <thead className="border-b border-slate-900 bg-sky-50/50 text-[10px] uppercase font-bold">
+              <tr>
+                <th className="py-1 px-2 border-r border-slate-900 w-10 text-center">S.No.</th>
+                <th className="py-1 px-3 border-r border-slate-900 w-24">papercode</th>
+                <th className="py-1 px-3 border-r border-slate-900">papername</th>
+                <th className="py-1 px-3 w-48 text-right">*Exam Date as Given in Datesheet</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-300">
+              {papers.map((p) => (
+                <tr key={p.sno}>
+                  <td className="py-1 px-2 text-center font-bold border-r border-slate-900">{p.sno}</td>
+                  <td className="py-1 px-3 font-mono font-bold border-r border-slate-900">{p.code}</td>
+                  <td className="py-1 px-3 border-r border-slate-900">{p.name}</td>
+                  <td className="py-1 px-3 text-right text-slate-600">{p.date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Contact Details */}
+        <div className="border-b border-slate-900">
+          <div className="bg-slate-100 py-0.5 px-3 font-bold text-[10px] border-b border-slate-900 text-center">
+            Contact Details
+          </div>
+          <div className="grid grid-cols-2 text-[10px] divide-x divide-slate-900">
+            <div className="p-2">
+              <strong>Present Details :</strong>
+              <div className="text-slate-700">{st.residential_address}</div>
+            </div>
+            <div className="p-2">
+              <strong>Permanent Address :</strong>
+              <div className="text-slate-700">{st.residential_address}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Signatures & Certification */}
+        <div className="p-3 grid grid-cols-3 gap-4 border-b border-slate-900 text-center items-end">
+          <div>
+            <div className="border-b border-slate-900 pb-1 mb-1 h-6"></div>
+            <div className="font-bold text-[10px]">Candidate's Signature</div>
+          </div>
+          <div>
+            <HandWrittenSignature name="Controller" color="#1e3a8a" />
+            <div className="font-bold text-[10px]">Controller Of Examinations</div>
+            <div className="text-[8px] text-slate-500">Facsimile</div>
+          </div>
+          <div>
+            <div className="font-serif italic font-bold text-xs">{schoolInfo.principalName}</div>
+            <div className="font-bold text-[10px]">Principal</div>
+            <div className="text-[8px] text-slate-500">(With Seal)</div>
+          </div>
+        </div>
+
+        {/* Certificate Line */}
+        <div className="p-2 text-[10px] text-slate-700 font-semibold bg-slate-50 flex justify-between">
+          <span><strong>Certificate :</strong> No Dues / Subject Code Verified / Eligibility Permission</span>
+          <span className="font-mono font-bold">{regNo}</span>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // ADMIT CARD TEMPLATE 3: AAI Aviation Official E-Admit Card (Image 3)
+  // =========================================================================
+  const renderAaiSouthernEAdmitCard = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'DILIPKUMAR S';
+    const certTitle = certConfig.title || 'भारतीय विमानपत्तन प्राधिकरण / AIRPORTS AUTHORITY OF INDIA';
+    const certSubtitle = certConfig.subtitle || '[SCHEDULE – \'A\' MINI RATNA - CATEGORY-1 PUBLIC SECTOR ENTERPRISE]';
+    const certPost = certConfig.eventTitle || 'Junior Assistant (Fire Service) NE-4';
+    const regNo = getDocRegNo(st, 'admit_card');
+
+    return (
+      <div className="bg-white border-2 border-slate-900 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-900 text-xs">
+        {/* Top Header Banner with Plane Emblem */}
+        <div className="bg-[#e2e8f0]/60 p-4 border-b-2 border-slate-900 text-center space-y-1">
+          <div className="flex justify-center mb-1">
+            <AaiAviationLogo size={56} />
+          </div>
+          <h1 className="text-sm sm:text-base font-black text-slate-950 uppercase">
+            {certTitle}
+          </h1>
+          <p className="text-[10px] font-bold text-slate-700 uppercase">
+            {certSubtitle}
+          </p>
+          <div className="text-[9.5px] font-bold text-slate-600 uppercase">
+            REGIONAL HEADQUARTERS, SOUTHERN REGION &bull; RECRUITMENT CELL
+          </div>
+        </div>
+
+        {/* Solid Blue E-ADMIT CARD Title Banner */}
+        <div className="bg-[#0284c7] text-white py-2 text-center font-black text-sm tracking-widest uppercase">
+          E - ADMIT CARD
+        </div>
+
+        {/* 1D Barcode Block */}
+        <div className="py-3 px-6 text-center border-b border-slate-900 bg-white">
+          <div className="flex justify-center">
+            <div className="h-12 w-64 bg-slate-900 flex items-center justify-center text-white font-mono text-xs tracking-[0.5em]">
+              ||||| | |||| || ||||| || |||
+            </div>
+          </div>
+          <span className="font-mono text-xs font-bold text-slate-800 tracking-widest mt-1 block">
+            {st.roll_no ? `${st.roll_no}12130101449` : '12130101449'}
+          </span>
+        </div>
+
+        {/* Structured Grid Layout with Candidate Photo on Right */}
+        <div className="grid grid-cols-12 border-b-2 border-slate-900">
+          {/* Left Details Grid */}
+          <div className="col-span-8 border-r border-slate-900 divide-y divide-slate-300 text-[11px]">
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">NAME OF THE CANDIDATE</span>
+              <strong className="col-span-7 font-black text-slate-950 uppercase">{certRecipient}</strong>
+            </div>
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">Post Applied</span>
+              <span className="col-span-7 font-bold text-slate-900">{certPost}</span>
+            </div>
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">Candidate's Roll. No</span>
+              <strong className="col-span-7 font-mono font-bold text-slate-900">{st.roll_no || '12130101449'}</strong>
+            </div>
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">Application Ref No</span>
+              <span className="col-span-7 font-mono font-bold text-slate-900">{st.id || 'AAI10053343'}</span>
+            </div>
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">FATHER'S NAME</span>
+              <span className="col-span-7 font-bold text-slate-900 uppercase">{st.father_name}</span>
+            </div>
+            <div className="grid grid-cols-12 p-2">
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">D.O.B. &bull; Gender</span>
+              <span className="col-span-7 font-bold text-slate-900">{st.dob} &bull; {st.gender || 'Male'}</span>
+            </div>
+            <div className="p-2 space-y-0.5">
+              <span className="font-bold uppercase text-[10px] text-slate-600 block">NAME &amp; ADDRESS OF EXAMINATION CENTRE</span>
+              <div className="font-bold text-slate-900 text-[10.5px]">iON Digital Zone iDZ Kovilambakkam, Chennai - 600117</div>
+            </div>
+            <div className="grid grid-cols-2 p-2 text-[10.5px] bg-slate-50">
+              <div><strong>Reporting Time:</strong> 11:00 AM</div>
+              <div><strong>Gate Closing:</strong> 12:00 PM</div>
+            </div>
+          </div>
+
+          {/* Right Photo & Signature Stack */}
+          <div className="col-span-4 p-3 flex flex-col justify-between items-center text-center bg-slate-50/40">
+            <img src={st.photo} alt={certRecipient} className="w-28 h-32 object-cover border border-slate-900 shadow-sm" />
+            <div className="w-full border border-slate-400 p-1 bg-white mt-2">
+              <HandWrittenSignature name={certRecipient} color="#000000" />
+              <div className="text-[8.5px] font-bold text-slate-500">(Signature of the Candidate)</div>
+            </div>
+            <div className="w-full pt-2">
+              <HandWrittenSignature name="J. Edward Raj" color="#1d4ed8" />
+              <div className="text-[8.5px] font-black text-slate-700 uppercase">(Examination Authority)</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Verbatim Paragraph Box & Candidate Declaration */}
+        <div className="p-4 space-y-3 border-b-2 border-slate-900">
+          <div className="text-[9px] font-bold text-slate-700 uppercase leading-tight">
+            A PARAGRAPH WILL APPEAR ON YOUR COMPUTER SCREEN IMMEDIATELY BEFORE STARTING THE EXAM. THIS PARAGRAPH MAY BE REPRODUCED VERBATIM IN THE SPACE GIVEN BELOW :
+          </div>
+          <div className="border border-slate-400 p-3 h-16 bg-slate-50/30 text-[10px] text-slate-400 font-mono italic">
+            [ Candidate must write the on-screen verification text in running handwriting ]
+          </div>
+          <div className="text-[9.5px] font-bold text-slate-800 leading-snug">
+            Please write the statement: <em>"I do hereby declare that all the information furnished above are true to the best of my knowledge and I am the same candidate appearing in the exam whose photograph &amp; sign appearing above"</em>
+          </div>
+        </div>
+
+        {/* Signature row */}
+        <div className="grid grid-cols-2 p-4 text-center text-xs font-bold divide-x divide-slate-400">
+          <div>
+            <div className="border-b border-slate-400 pb-1 mb-1"></div>
+            <div className="text-[10px] text-slate-700">(Signature of candidate - In presence of Invigilator)</div>
+          </div>
+          <div>
+            <div className="border-b border-slate-400 pb-1 mb-1"></div>
+            <div className="text-[10px] text-slate-700">(Invigilator Signature)</div>
+          </div>
+        </div>
+
+        <div className="bg-slate-100 py-1 text-center font-bold text-[9px] text-slate-600 border-t border-slate-300">
+          Admit Card to be collected by Invigilator &bull; Ref: {regNo}
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // ADMIT CARD TEMPLATE 4: CBSE JEE (Main) National Pass (Image 4)
+  // =========================================================================
+  const renderCbseJeeMainHallTicket = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'SHAILENDRA KUMAR';
+    const certTitle = certConfig.title || 'CENTRAL BOARD OF SECONDARY EDUCATION, DELHI';
+    const certSubtitle = certConfig.subtitle || 'ADMIT CARD FOR JOINT ENTRANCE EXAMINATION JEE(MAIN) - 2026';
+    const certPaper = certConfig.presentationLine || 'JEE(Main) Paper - 1 (B.E./B.Tech.) Only';
+    const regNo = getDocRegNo(st, 'admit_card');
+
+    return (
+      <div className="bg-white border border-slate-400 rounded-none shadow-2xl overflow-hidden max-w-4xl mx-auto font-sans text-slate-900 text-xs p-6 space-y-4">
+        {/* Top Header */}
+        <div className="flex items-center justify-between border-b border-slate-900 pb-3">
+          <CentralBoardSeal size={58} />
+          <div className="text-center flex-1 px-4">
+            <h1 className="text-base sm:text-lg font-black text-slate-950 uppercase tracking-tight">
+              {certTitle}
+            </h1>
+            <h2 className="text-xs sm:text-sm font-bold text-blue-900 uppercase tracking-wide">
+              {certSubtitle}
+            </h2>
+          </div>
+          <span className="font-mono text-[10px] text-slate-500 font-bold">PAGE 1/2</span>
+        </div>
+
+        {/* Structured Grid Table */}
+        <div className="border border-slate-900">
+          <div className="grid grid-cols-12 border-b border-slate-900 font-bold text-xs bg-slate-50 divide-x divide-slate-900">
+            <div className="col-span-3 p-2">Center Number: <span className="font-mono font-black">752883</span></div>
+            <div className="col-span-5 p-2 text-center text-blue-950">{certPaper}</div>
+            <div className="col-span-4 p-2 text-right">Roll Number: <strong className="font-mono text-base font-black underline text-slate-950">{st.roll_no ? `${st.roll_no}7520147` : '75201475'}</strong></div>
+          </div>
+
+          <div className="grid grid-cols-12 divide-x divide-slate-900">
+            {/* Left 8 Columns */}
+            <div className="col-span-8 divide-y divide-slate-300 text-[11px]">
+              <div className="p-2">
+                <span className="font-bold text-slate-600 block text-[10px]">Center of Examination :</span>
+                <strong className="text-slate-950 font-black">CORPORATE GROUP OF INSTITUTES, BHOPAL, MADHYA PRADESH - 462022</strong>
+              </div>
+              <div className="grid grid-cols-2 p-2">
+                <div>Candidate's Name: <strong className="font-black text-slate-950 uppercase">{certRecipient}</strong></div>
+                <div>Father's Name: <strong className="font-bold text-slate-900 uppercase">{st.father_name}</strong></div>
+              </div>
+              <div className="p-2 text-[10.5px]">
+                <span className="font-bold text-slate-600">Candidate Mailing Address: </span>
+                <span>{st.residential_address} &bull; Email: student@portal.edu &bull; Mobile: {st.phone || '+91 98765 00001'}</span>
+              </div>
+              <div className="grid grid-cols-3 p-2 text-[10.5px] bg-slate-50 font-bold">
+                <div>Date of Exam: <span className="font-mono">10/04/2026</span></div>
+                <div>Paper: <span>Paper - 1</span></div>
+                <div>Timings: <span className="font-mono">0930-1230 IST</span></div>
+              </div>
+              <div className="grid grid-cols-3 p-2 text-[10px]">
+                <div>Medium: <strong>ENGLISH</strong></div>
+                <div>DOB: <strong>{st.dob}</strong></div>
+                <div>App No: <strong className="font-mono">{st.id}</strong></div>
+              </div>
+            </div>
+
+            {/* Right 4 Columns: Photo + Sign */}
+            <div className="col-span-4 p-3 flex flex-col justify-between items-center text-center bg-slate-50/50">
+              <img src={st.photo} alt={certRecipient} className="w-28 h-32 object-cover border border-slate-900 shadow-sm" />
+              <div className="w-full mt-2 border-t border-dotted border-slate-900 pt-1">
+                <HandWrittenSignature name={certRecipient} color="#000000" />
+                <span className="text-[9px] font-bold text-slate-600 block">Signature of the Candidate</span>
+              </div>
+              <div className="mt-1">
+                <HandWrittenSignature name="Director JEE" color="#1e3a8a" />
+                <span className="text-[9px] font-black text-blue-950 uppercase block">Executive Director (JEE)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* DIRECTIONS FOR CANDIDATES (17 Points Official Summary) */}
+        <div className="border border-slate-300 p-3 bg-slate-50 text-[9.5px] space-y-1 text-slate-700 leading-tight">
+          <div className="font-black text-[10.5px] uppercase tracking-wider text-slate-900 text-center border-b border-slate-300 pb-1 mb-1">
+            DIRECTIONS FOR CANDIDATES (IMPORTANT INSTRUCTIONS)
+          </div>
+          <ol className="list-decimal pl-4 space-y-0.5">
+            <li>Please check Admit Card carefully for Name, Paper, Date of Birth, Gender, and Category.</li>
+            <li>Candidates must bring a black ball-point pen to the examination hall.</li>
+            <li>No candidate will be allowed to enter the exam hall without this original Admit Card and valid Government ID.</li>
+            <li>Reporting time at venue: 08:30 AM. Gate closes at 09:15 AM sharp.</li>
+            <li>Electronic devices, mobile phones, smartwatches, and study notes are strictly banned.</li>
+            <li>Candidate must preserve this Admit Card till completion of admission formalities.</li>
+          </ol>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // ADMIT CARD TEMPLATE 5: Modern Cryptographic QR Hall Ticket Pass
+  // =========================================================================
+  const renderModernCryptographicQrAdmit = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Candidate Name';
+    const certTitle = certConfig.title || 'NATIONAL TESTING & EXAMINATION COUNCIL';
+    const certSubtitle = certConfig.subtitle || 'CRYPTOGRAPHIC ADMIT CARD & HALL TICKET';
+    const regNo = getDocRegNo(st, 'admit_card');
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+
+    return (
+      <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 p-6 sm:p-8 rounded-3xl border-2 border-teal-500/50 text-white space-y-5 shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto">
+        <div className="flex items-center justify-between border-b border-teal-500/30 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center border border-teal-500/40">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="font-black text-lg sm:text-xl text-teal-300 uppercase tracking-wider">{certTitle}</h1>
+              <p className="text-xs text-slate-400 uppercase font-mono">{certSubtitle}</p>
+            </div>
+          </div>
+          <div className="px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 text-xs font-mono font-bold">
+            TOKEN: {regNo}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 bg-white/5 rounded-2xl border border-white/10">
+          <img src={st.photo} alt={certRecipient} className="w-20 h-24 rounded-xl object-cover border border-teal-400/50 shadow-md" />
+          <div className="md:col-span-8 space-y-1 text-xs">
+            <div className="text-sm font-black text-white uppercase">{certRecipient}</div>
+            <div className="text-teal-300 font-semibold">{studentClass} &bull; Roll #{st.roll_no}</div>
+            <div className="text-slate-400 font-mono">Exam Center: Central Main Auditorium &bull; Slot: Morning Session</div>
+          </div>
+          <div className="md:col-span-3 flex justify-end">
+            <div className="p-2 bg-white rounded-xl">
+              <QrCode className="w-16 h-16 text-slate-950" />
+            </div>
+          </div>
+        </div>
+
+        <p className="text-xs text-slate-300 leading-relaxed font-sans">{certConfig.bodyText}</p>
+
+        <div className="pt-4 border-t border-white/10 flex justify-between items-end text-xs">
+          <div>
+            <div className="font-mono text-teal-400 text-[10px]">VERIFIED SECURITY HASH</div>
+            <div className="text-slate-400 text-[9px]">Timestamp: {certConfig.awardDate || issueDate}</div>
+          </div>
+          <div className="text-right">
+            <HandWrittenSignature name={certConfig.signatory1Name || 'Chief Controller'} color="#2dd4bf" />
+            <div className="font-bold text-white text-xs">{certConfig.signatory1Name || 'Chief Controller'}</div>
+            <div className="text-[9px] text-slate-400 uppercase font-mono">{certConfig.signatory1Title || 'National Examination Board'}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
@@ -4440,181 +5098,15 @@ export default function TransferCertificateView() {
         }
       }
 
-      // 7. EXAM ADMIT CARD (HALL TICKET - 5 Master Design Layouts)
+      // 7. EXAM ADMIT CARD (HALL TICKET - 5 Master Design Layouts from User Upload)
       case 'admit_card': {
         switch (admitCardTemplate) {
-          case 'statutory_hall_ticket':
-            return (
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-amber-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
-                <div className="text-center space-y-1 border-b-2 border-amber-900 pb-3">
-                  <div className="text-[10px] font-bold tracking-widest text-amber-800 uppercase">
-                    Central Examination Cell &bull; Hall Ticket {academicSession}
-                  </div>
-                  <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                    {schoolInfo.schoolName}
-                  </h2>
-                  <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-amber-900 text-amber-200 font-bold text-[11px] uppercase tracking-wider">
-                    Official Examination Hall Ticket &bull; Roll #{st.roll_no}
-                  </div>
-                </div>
-
-                <div className="flex items-start justify-between gap-4 p-3 bg-amber-50/50 rounded-xl border border-amber-200">
-                  <div className="space-y-1 text-xs">
-                    <div>Candidate Name: <strong className="text-slate-900 text-sm font-black">{st.student_name}</strong></div>
-                    <div>Registration ID: <strong className="font-mono text-slate-900 font-bold">{regNo}</strong></div>
-                    <div>Class &amp; Batch: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></div>
-                    <div>Exam Center: <strong className="text-slate-900">Main Examination Hall, {schoolInfo.schoolName}</strong></div>
-                  </div>
-                  <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 shadow-sm" />
-                </div>
-
-                <div className="border border-slate-200 rounded-xl overflow-hidden">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-amber-900 text-white text-[10px] uppercase font-bold">
-                      <tr>
-                        <th className="py-2 px-3">Date</th>
-                        <th className="py-2 px-3">Time Slot</th>
-                        <th className="py-2 px-3">Subject Name</th>
-                        <th className="py-2 px-3">Exam Hall</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200 text-[11px] font-medium">
-                      <tr className="hover:bg-amber-50/30">
-                        <td className="py-2 px-3 font-mono font-bold">14 Oct 2026</td>
-                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                        <td className="py-2 px-3 font-bold text-slate-900">Advanced Mathematics (MATH-101)</td>
-                        <td className="py-2 px-3">Room 204</td>
-                      </tr>
-                      <tr className="hover:bg-amber-50/30">
-                        <td className="py-2 px-3 font-mono font-bold">16 Oct 2026</td>
-                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                        <td className="py-2 px-3 font-bold text-slate-900">Physics &amp; Dynamics (PHYS-102)</td>
-                        <td className="py-2 px-3">Lab 2</td>
-                      </tr>
-                      <tr className="hover:bg-amber-50/30">
-                        <td className="py-2 px-3 font-mono font-bold">19 Oct 2026</td>
-                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                        <td className="py-2 px-3 font-bold text-slate-900">Chemistry &amp; Applied Sciences (CHEM-103)</td>
-                        <td className="py-2 px-3">Lab 1</td>
-                      </tr>
-                      <tr className="hover:bg-amber-50/30">
-                        <td className="py-2 px-3 font-mono font-bold">21 Oct 2026</td>
-                        <td className="py-2 px-3">09:00 AM - 12:00 PM</td>
-                        <td className="py-2 px-3 font-bold text-slate-900">Computer Applications &amp; AI (CS-104)</td>
-                        <td className="py-2 px-3">Computer Lab</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
-                  <div className="text-center">
-                    <div className="w-24 border-b border-slate-400 pb-1 font-mono text-[10px] text-slate-400">Candidate Signature</div>
-                    <span className="text-[9px] text-slate-500">Sign before invigilator</span>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="w-32 border-b-2 border-amber-900 pb-1 font-serif italic text-amber-900 font-bold text-sm">
-                      Controller of Exams
-                    </div>
-                    <div className="font-black text-[9px] text-slate-900 uppercase">Board Officer Stamp</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'modern_qr_admit_pass':
-            return (
-              <div className="bg-white p-7 rounded-3xl border-2 border-blue-600 shadow-xl space-y-4 text-xs font-sans">
-                <div className="flex justify-between items-center border-b pb-3">
-                  <div>
-                    <h2 className="font-black text-lg text-blue-950 uppercase">{schoolInfo.schoolName}</h2>
-                    <div className="text-[10px] font-bold text-blue-600">DYNAMIC DIGITAL ADMIT CARD</div>
-                  </div>
-                  <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center border">
-                    <QrCode className="w-6 h-6 text-slate-900" />
-                  </div>
-                </div>
-                <div className="flex gap-4 items-center p-3 bg-blue-50/60 rounded-xl">
-                  <img src={st.photo} alt={st.student_name} className="w-14 h-14 rounded-xl object-cover border" />
-                  <div>
-                    <div className="font-black text-sm text-slate-950">{st.student_name}</div>
-                    <div className="text-xs text-blue-800 font-bold">Class: {st.class_batch} &bull; Seat: #{st.roll_no}</div>
-                  </div>
-                </div>
-                <div className="pt-3 border-t flex justify-between text-xs">
-                  <span>Reporting Time: 08:30 AM</span>
-                  <strong>Exam In-Charge</strong>
-                </div>
-              </div>
-            );
-
-          case 'split_photo_admit_card':
-            return (
-              <div className="bg-white p-7 rounded-3xl border-4 border-slate-800 text-slate-900 space-y-4 text-xs font-sans shadow-xl">
-                <div className="text-center border-b pb-2">
-                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-[10px] text-slate-500 uppercase">DUAL-PHOTO VERIFIED ADMIT CARD</div>
-                </div>
-                <div className="flex justify-around items-center p-3 bg-slate-50 rounded-xl border">
-                  <div className="text-center">
-                    <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-xl object-cover border mx-auto" />
-                    <span className="text-[9px] text-slate-500 font-bold block mt-1">Candidate</span>
-                  </div>
-                  <div className="text-left space-y-1">
-                    <div className="font-black text-sm">{st.student_name}</div>
-                    <div className="text-xs text-slate-600">Class: {st.class_batch}</div>
-                    <div className="text-xs font-mono font-bold text-blue-900">Roll #{st.roll_no}</div>
-                  </div>
-                </div>
-                <div className="pt-3 border-t flex justify-between text-xs">
-                  <span>Sign: _________________</span>
-                  <strong>Invigilator Attestation</strong>
-                </div>
-              </div>
-            );
-
-          case 'compact_slip_format':
-            return (
-              <div className="bg-[#fafaf9] p-6 rounded-2xl border-2 border-slate-400 text-slate-900 space-y-3 text-xs font-sans">
-                <div className="flex justify-between items-center border-b pb-1.5">
-                  <strong className="text-xs uppercase">{schoolInfo.schoolName}</strong>
-                  <span className="text-[10px] font-mono font-bold text-amber-800">SLIP #{st.roll_no}</span>
-                </div>
-                <div>Candidate: <strong>{st.student_name}</strong> ({st.class_batch})</div>
-                <div className="p-2 bg-white rounded border text-[11px]">Center: Examination Hall B &bull; Slot: Morning</div>
-                <div className="pt-2 border-t flex justify-between text-[10px]">
-                  <span>Date: {issueDate}</span>
-                  <strong>Authorized Controller</strong>
-                </div>
-              </div>
-            );
-
-          case 'executive_navy_hall_ticket':
-          default:
-            return (
-              <div className="bg-gradient-to-br from-slate-900 to-blue-950 text-white p-7 rounded-3xl border-2 border-amber-400 shadow-2xl space-y-4 text-xs font-sans">
-                <div className="text-center border-b border-white/20 pb-2">
-                  <h2 className="text-lg font-black text-amber-300 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-[10px] text-slate-300 uppercase">EXECUTIVE HALL TICKET &amp; REGULATIONS</div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-white/10 rounded-xl">
-                  <div>
-                    <div className="text-sm font-black text-white">{st.student_name}</div>
-                    <div className="text-xs text-amber-300">Grade: {st.class_batch}</div>
-                  </div>
-                  <div className="font-mono text-xs font-bold bg-amber-400 text-slate-950 px-3 py-1 rounded-lg">
-                    ROLL #{st.roll_no}
-                  </div>
-                </div>
-                <p className="text-[10px] text-slate-300 leading-relaxed">
-                  Rules: 1. Electronic gadgets strictly prohibited. 2. Arrive 30 mins before commencement. 3. Carry physical photo ID.
-                </p>
-                <div className="pt-3 border-t border-white/20 flex justify-between text-xs text-slate-400">
-                  <span>Session: {academicSession}</span>
-                  <span className="text-white font-bold">{schoolInfo.principalName}</span>
-                </div>
-              </div>
-            );
+          case 'ignou_term_end_admit': return renderIgnouTermEndAdmit(st);
+          case 'hpu_provisional_hall_ticket': return renderHpuProvisionalHallTicket(st);
+          case 'aai_southern_e_admit_card': return renderAaiSouthernEAdmitCard(st);
+          case 'cbse_jee_main_hall_ticket': return renderCbseJeeMainHallTicket(st);
+          case 'modern_cryptographic_qr_admit': return renderModernCryptographicQrAdmit(st);
+          default: return renderIgnouTermEndAdmit(st);
         }
       }
 
@@ -5683,7 +6175,12 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={tpl.id}
-                  onClick={() => setAdmitCardTemplate(tpl.id)}
+                  onClick={() => {
+                    setAdmitCardTemplate(tpl.id);
+                    if (tpl.defaultConfig) {
+                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
@@ -5783,13 +6280,13 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            {/* Full Live Customizer for Certificate of Appreciation, Participation, Migration & Report Card */}
-            {(docType === 'appreciation' || docType === 'participation' || docType === 'migration' || docType === 'report_card') && (
+            {/* Full Live Customizer for Certificate of Appreciation, Participation, Migration, Report Card & Admit Card */}
+            {(docType === 'appreciation' || docType === 'participation' || docType === 'migration' || docType === 'report_card' || docType === 'admit_card') && (
               <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50/80 to-rose-50/60 rounded-2xl border-2 border-amber-300/80 shadow-sm">
                 <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
                   <div className="flex items-center gap-1.5 font-black text-[11px] text-amber-950 uppercase tracking-wide">
                     <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    <span>🎨 Live Document &amp; Report Card Text Customizer</span>
+                    <span>🎨 Live Document &amp; Admit Card Text Customizer</span>
                   </div>
                   <button
                     type="button"
@@ -5811,6 +6308,11 @@ export default function TransferCertificateView() {
                         }
                       } else if (docType === 'report_card') {
                         const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate);
+                        if (tpl && tpl.defaultConfig) {
+                          setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                        }
+                      } else if (docType === 'admit_card') {
+                        const tpl = admitCardTemplatesList.find(t => t.id === admitCardTemplate);
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
