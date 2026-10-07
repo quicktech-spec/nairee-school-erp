@@ -21,10 +21,11 @@ import {
   Check,
   Download,
   Building2,
-  HeartHandshake,
   AlertCircle,
   Clock,
-  IdCard
+  IdCard,
+  Upload,
+  Scroll
 } from 'lucide-react';
 import { useTenant } from '../context/TenantContext.jsx';
 import { api } from '../api.js';
@@ -583,6 +584,66 @@ export default function OnlineAdmissionView({ initialData = {}, onBackToLogin, o
                         <option value="Applied (Awaiting from School)">Applied (Awaiting from Previous School)</option>
                         <option value="Not Applicable (First Admission)">Not Applicable (First Admission)</option>
                       </select>
+                    </div>
+
+                    {/* Official Document & Certificate Attachments */}
+                    <div className="sm:col-span-2 pt-3 border-t border-slate-100 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Scroll className="w-4 h-4 text-teal-600" />
+                        <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                          Attach Required Certificates &amp; Documents
+                        </h4>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-3 rounded-2xl border border-dashed border-teal-300 bg-teal-50/40 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-teal-950">1. Transfer Certificate (TC)</span>
+                            <span className="text-[10px] text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full font-semibold">PDF / Image</span>
+                          </div>
+                          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-white border border-teal-200 text-teal-800 text-xs font-bold hover:bg-teal-50 transition-colors cursor-pointer">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload Previous School TC</span>
+                            <input type="file" accept=".pdf,image/*" className="hidden" />
+                          </label>
+                        </div>
+
+                        <div className="p-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900">2. Previous Class Marksheet</span>
+                            <span className="text-[10px] text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full font-semibold">PDF / Image</span>
+                          </div>
+                          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload Report Card / Marksheet</span>
+                            <input type="file" accept=".pdf,image/*" className="hidden" />
+                          </label>
+                        </div>
+
+                        <div className="p-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900">3. Birth / Domicile Certificate</span>
+                            <span className="text-[10px] text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full font-semibold">Mandatory</span>
+                          </div>
+                          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload Birth Certificate</span>
+                            <input type="file" accept=".pdf,image/*" className="hidden" />
+                          </label>
+                        </div>
+
+                        <div className="p-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900">4. Migration / Character Cert</span>
+                            <span className="text-[10px] text-slate-600 bg-slate-200 px-2 py-0.5 rounded-full font-semibold">Optional</span>
+                          </div>
+                          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition-colors cursor-pointer">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload Migration / Character Cert</span>
+                            <input type="file" accept=".pdf,image/*" className="hidden" />
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
