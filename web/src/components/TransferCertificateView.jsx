@@ -34,7 +34,9 @@ import {
   Check,
   Trophy,
   Medal,
-  Star
+  Star,
+  Lock,
+  ShieldAlert
 } from 'lucide-react';
 import { FALLBACK_STUDENTS } from '../fallbackData.js';
 import { getMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
@@ -220,8 +222,9 @@ export default function TransferCertificateView() {
   const [eventName, setEventName] = useState('Annual Fitness & Sports Championship');
   const [organizerName, setOrganizerName] = useState('Faculty of Co-Curricular & Sports');
 
-  // Active student object
+  // Active student object & Fee clearance validation
   const activeStudent = studentList.find(s => s.id === selectedStudentId || s.name === selectedStudentId) || studentList[0] || {};
+  const isFeePending = activeStudent.fee_status === 'Pending' || activeStudent.fee_status === 'Unpaid' || activeStudent.fee_status === 'Due' || (activeStudent.feeDues && activeStudent.feeDues > 0);
 
   // Auto-sync updates across app (transfers, admissions, fee clearances)
   useEffect(() => {
@@ -5643,13 +5646,24 @@ export default function TransferCertificateView() {
               <Users className="w-4 h-4 text-amber-300" />
               <span>Bulk Print ({studentList.length})</span>
             </button>
-            <button
-              onClick={() => { setViewMode('single'); setShowPrintModal(true); }}
-              className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Print Certificate</span>
-            </button>
+            {isFeePending ? (
+              <button
+                disabled={true}
+                className="px-5 py-2.5 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center space-x-2 cursor-not-allowed opacity-80"
+                title="Printing locked: Outstanding fee dues pending"
+              >
+                <Lock className="w-4 h-4 text-rose-400" />
+                <span>Print Locked (Fee Due)</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => { setViewMode('single'); setShowPrintModal(true); }}
+                className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print Certificate</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -6509,15 +6523,34 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => { setViewMode('single'); setShowPrintModal(true); }}
-                className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md shadow-teal-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Open Printable View / Download PDF</span>
-              </button>
+            <div className="pt-2 space-y-2">
+              {isFeePending ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={true}
+                    className="w-full py-2.5 rounded-xl bg-slate-100 border-2 border-dashed border-rose-300 text-rose-600 font-black text-xs flex items-center justify-center gap-2 cursor-not-allowed opacity-85 shadow-sm"
+                  >
+                    <Lock className="w-4 h-4 text-rose-500" />
+                    <span>Download Locked &bull; Fee Due ₹{(activeStudent.feeDues || 35000).toLocaleString('en-IN')}</span>
+                  </button>
+                  <div className="p-3 bg-rose-50/90 rounded-2xl border border-rose-200 text-[10.5px] text-rose-800 flex items-start gap-2 shadow-xs">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    <span className="leading-tight">
+                      <strong>Fee Clearance Required:</strong> Clear outstanding dues in Accounts / Fee Portal to unlock high-resolution printable document &amp; PDF download.
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => { setViewMode('single'); setShowPrintModal(true); }}
+                  className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md shadow-teal-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Open Printable View / Download PDF</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -6532,9 +6565,16 @@ export default function TransferCertificateView() {
               </h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
-                {docTypesList.find(d => d.id === docType)?.title}
-              </span>
+              {isFeePending ? (
+                <span className="text-[10px] font-black uppercase tracking-wider text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 flex items-center gap-1 shadow-xs">
+                  <Lock className="w-3 h-3 text-rose-600" />
+                  <span>Preview Locked (Fee Dues)</span>
+                </span>
+              ) : (
+                <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                  {docTypesList.find(d => d.id === docType)?.title}
+                </span>
+              )}
               {docType === 'tc' && (
                 <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                   {tcTemplatesList.find(t => t.id === tcTemplate)?.orientation}
@@ -6543,8 +6583,48 @@ export default function TransferCertificateView() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            {renderDocumentContent(activeStudent, docType)}
+          <div className="relative overflow-hidden rounded-2xl">
+            {/* The Document Content (Rendered crystal clear if paid, and heavily blurred if unpaid/fee pending) */}
+            <div className={`transition-all duration-300 overflow-x-auto ${isFeePending ? 'filter blur-[8px] select-none pointer-events-none opacity-45' : ''}`}>
+              {renderDocumentContent(activeStudent, docType)}
+            </div>
+
+            {/* Locked Fee Pending Security Shield Overlay (Only appears on unpaid students) */}
+            {isFeePending && (
+              <div className="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 bg-slate-950/30 backdrop-blur-[2px]">
+                <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-rose-400 text-center space-y-4 transform animate-fadeIn">
+                  <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner border border-rose-200">
+                    <Lock className="w-8 h-8" />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <div className="inline-block px-3 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-black uppercase tracking-widest border border-rose-300">
+                      🔒 Official Issuance Restricted
+                    </div>
+                    <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                      Document Access Locked
+                    </h4>
+                    <p className="text-xs font-semibold text-slate-600 leading-relaxed">
+                      Outstanding fee dues of <strong className="text-rose-600 font-bold">₹{(activeStudent.feeDues || 35000).toLocaleString('en-IN')}</strong> are pending for <strong className="text-slate-900">{activeStudent.student_name}</strong>.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 bg-rose-50/80 rounded-2xl border border-rose-200 text-[11px] text-rose-800 text-left space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-rose-900">
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                      <span>Institutional Clearance Policy:</span>
+                    </div>
+                    <p className="text-[10.5px] leading-snug text-slate-600">
+                      As per statutory institution bylaws, Transfer Certificates, Academic Marksheets, and Official Hall Tickets cannot be viewed or downloaded until all outstanding school fees are settled.
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] text-slate-400 font-mono">
+                    Candidate ID: {activeStudent.id} &bull; Roll #{activeStudent.roll_no}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -6582,19 +6662,64 @@ export default function TransferCertificateView() {
             </div>
 
             {/* Scrollable Printable Documents Area */}
+            {/* Scrollable Printable Documents Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-100/60">
               {viewMode === 'all' ? (
-                studentList.map((st, idx) => (
-                  <div key={st.id || idx} className="space-y-2 print:page-break-after-always">
-                    <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1 print:hidden">
-                      <span>Document #{idx + 1} of {studentList.length} &bull; {st.student_name}</span>
-                      <span className="font-mono">{getDocRegNo(st, docType)}</span>
+                studentList.map((st, idx) => {
+                  const isStFeePending = st.fee_status === 'Pending' || st.fee_status === 'Unpaid' || st.fee_status === 'Due' || (st.feeDues && st.feeDues > 0);
+                  return (
+                    <div key={st.id || idx} className="space-y-2 print:page-break-after-always">
+                      <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1 print:hidden">
+                        <span>Document #{idx + 1} of {studentList.length} &bull; {st.student_name}</span>
+                        <div className="flex items-center gap-2">
+                          {isStFeePending ? (
+                            <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold border border-rose-300">
+                              Fee Dues Pending (Locked)
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold border border-emerald-300">
+                              Fee Cleared
+                            </span>
+                          )}
+                          <span className="font-mono">{getDocRegNo(st, docType)}</span>
+                        </div>
+                      </div>
+                      <div className="relative overflow-hidden rounded-2xl">
+                        <div className={`${isStFeePending ? 'filter blur-[7px] select-none pointer-events-none opacity-40' : ''}`}>
+                          {renderDocumentContent(st, docType)}
+                        </div>
+                        {isStFeePending && (
+                          <div className="absolute inset-0 z-20 flex items-center justify-center p-4 bg-slate-950/20">
+                            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-5 border-2 border-rose-400 text-center space-y-2 shadow-xl max-w-sm">
+                              <Lock className="w-7 h-7 text-rose-600 mx-auto" />
+                              <h4 className="font-black text-slate-900 text-xs uppercase">Certificate Withheld &bull; Fee Due</h4>
+                              <p className="text-[10.5px] text-slate-600">Accounts clearance required for {st.student_name} before official release.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {renderDocumentContent(st, docType)}
-                  </div>
-                ))
+                  );
+                })
               ) : (
-                renderDocumentContent(activeStudent, docType)
+                isFeePending ? (
+                  <div className="p-12 text-center bg-white rounded-3xl border-2 border-rose-300 space-y-4 max-w-lg mx-auto my-8 shadow-xl">
+                    <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner border border-rose-200">
+                      <Lock className="w-8 h-8" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-black text-slate-900 text-lg">Official Print Restricted</h3>
+                      <p className="text-xs text-slate-600">
+                        Outstanding fee dues of <strong className="text-rose-600 font-bold">₹{(activeStudent.feeDues || 35000).toLocaleString('en-IN')}</strong> are pending for <strong className="text-slate-900">{activeStudent.student_name}</strong>.
+                      </p>
+                    </div>
+                    <p className="text-[11px] text-slate-500 bg-rose-50 p-3 rounded-xl border border-rose-200">
+                      This certificate cannot be downloaded, printed, or saved as PDF until school dues are cleared in the accounts department.
+                    </p>
+                  </div>
+                ) : (
+                  renderDocumentContent(activeStudent, docType)
+                )
               )}
             </div>
 
@@ -6605,14 +6730,25 @@ export default function TransferCertificateView() {
                 <span>Includes dynamic verification QR code &amp; institutional seal</span>
               </div>
               <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/25 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span>Print Document(s)</span>
-                </button>
+                {(!isFeePending || viewMode === 'all') ? (
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/25 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>Print Document(s)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={true}
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 border border-slate-300 text-slate-400 font-bold text-xs flex items-center space-x-2 cursor-not-allowed opacity-80"
+                  >
+                    <Lock className="w-4 h-4 text-rose-500" />
+                    <span>Print Disabled (Fee Due)</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setShowPrintModal(false)}
