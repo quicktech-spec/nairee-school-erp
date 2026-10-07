@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { 
   X, 
   Building2, 
+  Building,
   Palette, 
   Globe, 
   Layers, 
