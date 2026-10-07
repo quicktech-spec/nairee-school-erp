@@ -125,6 +125,11 @@ export default function TransferCertificateView() {
   // Appreciation / Merit Templates
   // 'imperial_arch' | 'modern_teal_geometric' | 'royal_gold_merit'
   const [appreciationTemplate, setAppreciationTemplate] = useState('imperial_arch');
+
+  // 5 Student ID Card Templates
+  // 'navy_chevron' | 'sage_khaki' | 'terracotta_split' | 'emerald_wave' | 'terracotta_portrait'
+  const [idCardTemplate, setIdCardTemplate] = useState('navy_chevron');
+  const [customClassSection, setCustomClassSection] = useState('');
   
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
@@ -258,9 +263,9 @@ export default function TransferCertificateView() {
     {
       id: 'id_card',
       num: '8',
-      title: 'Student Smart ID Card',
-      subtitle: 'Front & Back RFID Photo Identity Card',
-      icon: Award,
+      title: '🪪 Student ID Card (5 Templates)',
+      subtitle: '5 Official Custom Layouts with Class/Section & Barcode',
+      icon: IdCard,
       color: 'rose'
     }
   ];
@@ -321,6 +326,54 @@ export default function TransferCertificateView() {
       desc: 'Angular modern geometric frames, digital QR badge, barcode security',
       orientation: 'landscape',
       borderStyle: 'border-blue-700'
+    }
+  ];
+
+  const idCardTemplatesList = [
+    {
+      id: 'navy_chevron',
+      title: 'Navy Modern Chevron',
+      tag: 'Landscape • Star Badge & Pill Header',
+      desc: 'Top-left navy pennant ribbon, cyan geometric corners, bold blue Student Card pill banner',
+      orientation: 'landscape',
+      borderStyle: 'border-blue-800',
+      activeBg: 'from-blue-600/30 to-indigo-600/20 border-blue-400 text-blue-200'
+    },
+    {
+      id: 'sage_khaki',
+      title: 'Sage Khaki & Honeycomb',
+      tag: 'Landscape • Olive Crest & Signature',
+      desc: 'Refined olive/sage khaki header, diagonal hazard stripes, honeycomb watermark & signature overlay',
+      orientation: 'landscape',
+      borderStyle: 'border-[#706e48]',
+      activeBg: 'from-yellow-700/30 to-amber-700/20 border-yellow-500 text-yellow-200'
+    },
+    {
+      id: 'terracotta_split',
+      title: 'Minimalist Terracotta & Olive',
+      tag: 'Landscape • Dual Color Split & Grid',
+      desc: 'Sage green sidebar with orange accent border line, clean 2-column student metadata grid',
+      orientation: 'landscape',
+      borderStyle: 'border-orange-500',
+      activeBg: 'from-orange-600/30 to-amber-600/20 border-orange-400 text-orange-200'
+    },
+    {
+      id: 'emerald_wave',
+      title: 'Emerald & Cyan Wave Flow',
+      tag: 'Landscape • Guilloche Wave & Circular Photo',
+      desc: 'Deep emerald/teal gradient curves, circular student portrait with glowing ring & sine wave patterns',
+      orientation: 'landscape',
+      borderStyle: 'border-teal-600',
+      activeBg: 'from-teal-600/30 to-emerald-600/20 border-teal-400 text-teal-200'
+    },
+    {
+      id: 'terracotta_portrait',
+      title: 'Terracotta & Chocolate Heritage',
+      tag: 'Portrait • Vertical Badge & Chevron',
+      desc: 'Vertical ID card with warm rust geometric banner, lotus insignia, hazard accent tabs',
+      orientation: 'portrait',
+      borderStyle: 'border-[#9a4b27]',
+      activeBg: 'from-amber-800/30 to-orange-800/20 border-amber-600 text-amber-200'
     }
   ];
 
@@ -1654,58 +1707,493 @@ export default function TransferCertificateView() {
           </div>
         );
 
-      // 8. STUDENT SMART ID CARD (FRONT & BACK)
-      case 'id_card':
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* FRONT SIDE */}
-            <div className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white p-5 rounded-2xl border-2 border-teal-500/40 shadow-lg relative overflow-hidden flex flex-col justify-between h-72">
-              <div className="flex items-center justify-between border-b border-teal-500/30 pb-2">
-                <div>
-                  <div className="font-black tracking-wider text-xs text-teal-300 uppercase">{schoolInfo.schoolName}</div>
-                  <div className="text-[8px] text-slate-300">STUDENT IDENTITY CARD</div>
+      // 8. 5 SMART STUDENT ID CARD DESIGNS (Pixel-perfect matching reference images + Class/Section support)
+      case 'id_card': {
+        const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+        
+        switch (idCardTemplate) {
+          // Template 1: Rimberio Navy Modern Chevron (Landscape) [Reference 1]
+          case 'navy_chevron':
+            return (
+              <div className="w-full max-w-[620px] aspect-[1.58/1] bg-white rounded-3xl border-2 border-blue-900/40 shadow-2xl overflow-hidden relative font-sans flex flex-col justify-between p-5 mx-auto print:border-none">
+                {/* Background Chevron Vector Shapes */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
+                  <svg className="w-full h-full" viewBox="0 0 600 380" preserveAspectRatio="none">
+                    <polygon points="0,0 220,0 120,240 0,160" fill="#0284c7" />
+                    <polygon points="200,0 350,0 450,380 300,380" fill="#2563eb" />
+                    <polygon points="400,0 600,0 600,200" fill="#38bdf8" />
+                  </svg>
                 </div>
-                <div className="w-6 h-6 rounded-full bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-[10px]">
-                  {schoolInfo.schoolCode?.slice(0, 3) || 'SCH'}
+
+                {/* Top Bar Header */}
+                <div className="relative z-10 flex items-start justify-between">
+                  {/* Left Pennant Shield with Cap Icon */}
+                  <div className="flex items-start gap-4">
+                    <div className="relative -mt-5 -ml-1">
+                      <div className="w-16 h-20 bg-[#1a2e5a] shadow-lg flex flex-col items-center justify-center text-white relative" style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%)' }}>
+                        <GraduationCap className="w-8 h-8 text-white mb-2" />
+                      </div>
+                      <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-cyan-400 -z-10 rotate-45 transform"></div>
+                    </div>
+
+                    <div className="pt-0.5">
+                      <h2 className="font-serif font-black text-xl sm:text-2xl text-[#1a2e5a] tracking-tight uppercase leading-none">
+                        {schoolInfo.schoolName || 'RIMBERIO UNIVERSITY'}
+                      </h2>
+                      <p className="text-[10px] sm:text-xs text-slate-600 font-medium mt-1">
+                        {schoolInfo.address || '123 Anywhere St., Any City, ST 12345'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Top Right Star Badge Tab */}
+                  <div className="-mt-5 -mr-5 bg-[#0284c7] text-white w-14 h-14 rounded-bl-3xl flex items-center justify-center shadow-md">
+                    <Star className="w-6 h-6 fill-white text-white translate-x-1 -translate-y-1" />
+                  </div>
+                </div>
+
+                {/* Center Grid: Left Boxed Photo & Right Detail List */}
+                <div className="relative z-10 grid grid-cols-12 gap-5 items-center my-auto">
+                  {/* Framed Photo Box */}
+                  <div className="col-span-4 flex justify-center">
+                    <div className="p-1.5 bg-[#1a2e5a] rounded-2xl shadow-xl">
+                      <img
+                        src={st.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}
+                        alt={st.student_name}
+                        className="w-28 h-36 sm:w-32 sm:h-40 object-cover rounded-xl"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Info Section */}
+                  <div className="col-span-8 space-y-2">
+                    <div className="bg-gradient-to-r from-[#0284c7] to-[#1e40af] text-white font-black text-sm sm:text-base tracking-wider px-6 py-1.5 rounded-r-full inline-block shadow-md uppercase">
+                      STUDENT CARD
+                    </div>
+
+                    <div className="space-y-1.5 text-xs sm:text-sm pl-1 font-semibold">
+                      <div className="flex items-center">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">NAME :</span>
+                        <span className="font-black text-[#1a2e5a] uppercase text-xs sm:text-sm tracking-wide">{st.student_name}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">CLASS :</span>
+                        <span className="font-extrabold text-[#0284c7] bg-cyan-50 px-2.5 py-0.5 rounded-lg border border-cyan-200 text-xs sm:text-sm uppercase tracking-wide">
+                          {studentClass}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">BIRTH :</span>
+                        <span className="font-bold text-[#1a2e5a] text-xs sm:text-sm">{st.dob}</span>
+                      </div>
+                      <div className="flex items-start">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs shrink-0">ADRESS :</span>
+                        <span className="font-bold text-slate-700 text-[10px] sm:text-xs leading-tight line-clamp-1">
+                          {st.residential_address || '123 ANYWHERE ST., ANY CITY'}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">ID NO :</span>
+                        <span className="font-mono font-black text-[#1a2e5a] text-xs sm:text-sm">{st.id}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Barcode */}
+                <div className="relative z-10 flex items-center justify-end border-t border-slate-100 pt-2">
+                  <div className="text-right">
+                    <div className="font-mono text-slate-800 font-bold tracking-widest text-[9px]">
+                      |||||| |||| |||||||| ||| ||||||| || |||||||||||
+                    </div>
+                    <div className="text-[7.5px] font-mono text-slate-500 tracking-wider text-center">
+                      0 35545 82336 78 1
+                    </div>
+                  </div>
                 </div>
               </div>
+            );
 
-              <div className="flex items-center gap-4 my-auto">
-                <img src={st.photo} alt={st.student_name} className="w-20 h-20 rounded-xl object-cover ring-2 ring-teal-400 shadow-md" />
-                <div className="space-y-1 text-xs">
-                  <div className="font-black text-sm text-white">{st.student_name}</div>
-                  <div className="text-[10px] text-teal-300 font-mono">ID: {st.id} &bull; Roll: #{st.roll_no}</div>
-                  <div className="text-[10px] text-slate-200">Class: <strong>{st.class_batch}</strong></div>
-                  <div className="text-[10px] text-slate-200">Blood: <strong className="text-rose-400 font-bold">{st.blood_group}</strong> &bull; DOB: {st.dob}</div>
+          // Template 2: Rimberio Sage Khaki & Honeycomb (Landscape) [Reference 2]
+          case 'sage_khaki':
+            return (
+              <div className="w-full max-w-[620px] aspect-[1.58/1] bg-[#faf9f2] rounded-3xl border-2 border-[#8c8860] shadow-2xl overflow-hidden relative font-sans flex flex-col justify-between p-6 mx-auto print:border-none">
+                {/* Honeycomb Watermark Vector */}
+                <div className="absolute right-0 top-12 bottom-0 w-56 opacity-20 pointer-events-none">
+                  <svg viewBox="0 0 200 240" className="w-full h-full stroke-[#706e48]" fill="none" strokeWidth="1.5">
+                    <polygon points="100,20 130,37 130,73 100,90 70,73 70,37" />
+                    <polygon points="160,55 190,72 190,108 160,125 130,108 130,72" />
+                    <polygon points="100,92 130,109 130,145 100,162 70,145 70,109" />
+                    <polygon points="160,127 190,144 190,180 160,197 130,180 130,144" />
+                    <polygon points="40,55 70,72 70,108 40,125 10,108 10,72" />
+                    <polygon points="40,127 70,144 70,180 40,197 10,180 10,144" />
+                  </svg>
+                </div>
+
+                {/* Top Header */}
+                <div className="relative z-10 flex items-center justify-between border-b border-[#8c8860]/30 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full border border-[#706e48] bg-[#f0eee0] flex items-center justify-center text-[#706e48]">
+                      <svg viewBox="0 0 24 24" className="w-6 h-6 stroke-current fill-none stroke-2">
+                        <circle cx="12" cy="12" r="2" fill="currentColor" />
+                        <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(30 12 12)" />
+                        <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(-30 12 12)" />
+                        <ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(90 12 12)" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="font-black text-base sm:text-lg text-[#383724] tracking-wider uppercase leading-none">
+                        {schoolInfo.schoolName || 'RIMBERIO'}
+                      </h2>
+                      <p className="text-[10px] font-black text-[#706e48] tracking-widest uppercase mt-0.5">
+                        HIGH SCHOOL
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1.5 opacity-80">
+                    {[1, 2, 3, 4].map(k => (
+                      <div key={k} className="w-2.5 h-6 bg-[#8c8860] skew-x-[-25deg] rounded-sm"></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main Grid: Left Photo + Signature + Barcode, Right Info */}
+                <div className="relative z-10 grid grid-cols-12 gap-6 items-center my-auto">
+                  <div className="col-span-4 flex flex-col items-center">
+                    <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-[#8c8860] bg-[#e8e6d5] w-28 h-36 sm:w-32 sm:h-40">
+                      <img
+                        src={st.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300'}
+                        alt={st.student_name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-1 right-1 font-serif italic text-slate-900 font-extrabold text-sm opacity-90 drop-shadow-sm rotate-[-8deg] pointer-events-none select-none">
+                        {st.student_name?.split(' ')[0] || 'Signature'}
+                      </div>
+                    </div>
+
+                    <div className="mt-2 text-center">
+                      <div className="font-mono text-[#383724] font-bold text-[8.5px] tracking-widest">
+                        |||||||||||||||||||||||||||
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-8 space-y-3">
+                    <h3 className="font-black text-2xl sm:text-3xl text-[#383724] uppercase tracking-wide">
+                      STUDENT ID CARD
+                    </h3>
+
+                    <div className="space-y-1.5 text-xs sm:text-sm font-medium text-[#383724]">
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">Name</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-black text-[#2e2d1d] uppercase">{st.student_name}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">Class</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-extrabold text-[#706e48] bg-[#ebe9d8] px-2 py-0.5 rounded border border-[#8c8860]/40 inline-block uppercase text-xs">
+                          {studentClass}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">Student ID</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-mono font-bold text-[#2e2d1d]">{st.id}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">D.O.B</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-semibold text-[#2e2d1d]">{st.dob}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">Address</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-semibold text-[#2e2d1d] text-[10.5px] leading-tight line-clamp-1">
+                          {st.residential_address || '123 Anywhere St., Any City'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between pt-2 border-t border-[#8c8860]/20">
+                  <div className="flex gap-1 opacity-70">
+                    {[1, 2, 3].map(k => (
+                      <div key={k} className="w-3 h-2 bg-[#8c8860] skew-x-[-25deg] rounded-sm"></div>
+                    ))}
+                  </div>
+                  <div className="text-[8.5px] font-bold text-[#706e48] uppercase tracking-wider">
+                    Official Board Validated Identity Card
+                  </div>
                 </div>
               </div>
+            );
 
-              <div className="flex items-center justify-between border-t border-teal-500/30 pt-2 text-[9px] text-slate-300 font-mono">
-                <span>Valid: {academicSession}</span>
-                <span className="text-teal-300 font-bold">RFID ENCRYPTED</span>
-              </div>
-            </div>
+          // Template 3: Borcelle Minimalist Terracotta & Olive Split (Landscape) [Reference 3]
+          case 'terracotta_split':
+            return (
+              <div className="w-full max-w-[620px] aspect-[1.58/1] bg-white rounded-3xl border-2 border-slate-200 shadow-2xl overflow-hidden relative font-sans flex flex-col justify-between p-5 mx-auto print:border-none">
+                <div className="absolute top-0 bottom-0 left-0 w-28 bg-[#dbe4c6] -z-0"></div>
 
-            {/* BACK SIDE */}
-            <div className="bg-white text-slate-800 p-5 rounded-2xl border-2 border-slate-300 shadow-lg flex flex-col justify-between h-72 text-[10px]">
-              <div className="space-y-1.5 border-b pb-2">
-                <div>Father's Name: <strong className="text-slate-900">{st.father_name}</strong></div>
-                <div>Emergency Contact: <strong className="text-teal-700 font-mono">{st.father_phone || st.phone}</strong></div>
-                <div>Address: <strong className="text-slate-700 block text-[9px] leading-tight">{st.residential_address}</strong></div>
-              </div>
+                <div className="relative z-10 flex items-start justify-between pl-28">
+                  <div>
+                    <h2 className="font-black text-sm sm:text-base text-slate-800 uppercase tracking-widest leading-none">
+                      {schoolInfo.schoolName || 'BORCELLE'}
+                    </h2>
+                    <p className="text-[10px] text-slate-500 font-medium mt-0.5">
+                      {schoolInfo.address || '123 Anywhere St., Any City'}
+                    </p>
+                  </div>
 
-              <div className="text-center space-y-1">
-                <div className="font-mono text-[9px] tracking-widest text-slate-500">||||||||||||||||||||||||||||||||||||||||</div>
-                <div className="text-[8px] text-slate-400 font-mono">CODE128: {regNo}</div>
-              </div>
+                  <div className="w-8 h-8 flex flex-col items-center justify-center">
+                    <div className="w-5 h-2.5 bg-[#cbd5b1] rounded-t-md"></div>
+                    <div className="w-5 h-2.5 bg-[#ea580c] rounded-b-md"></div>
+                  </div>
+                </div>
 
-              <div className="flex items-center justify-between border-t pt-2 text-[9px]">
-                <span className="text-[8px] text-slate-400">If found, return to {schoolInfo.schoolName}</span>
-                <div className="text-center font-serif italic font-bold text-slate-900">{schoolInfo.principalName}</div>
+                <div className="relative z-10 grid grid-cols-12 gap-5 items-center my-auto">
+                  <div className="col-span-4 flex justify-start pl-2">
+                    <div className="relative flex items-center">
+                      <div className="w-3 h-36 sm:h-40 bg-[#ea580c] rounded-l-xl"></div>
+                      <img
+                        src={st.photo || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300'}
+                        alt={st.student_name}
+                        className="w-24 h-36 sm:w-28 sm:h-40 object-cover rounded-r-xl shadow-md"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-span-8 space-y-2">
+                    <div>
+                      <h3 className="font-black text-2xl sm:text-3xl text-[#ea580c] uppercase tracking-wide">
+                        STUDENT ID CARD
+                      </h3>
+                      <h4 className="font-black text-base sm:text-lg text-slate-800 uppercase tracking-wide mt-0.5">
+                        {st.student_name}
+                      </h4>
+                    </div>
+
+                    <div className="border-b-2 border-[#cbd5b1]/80 my-2"></div>
+
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px] sm:text-xs">
+                      <div>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">DATE OF BIRTH</span>
+                        <span className="font-extrabold text-slate-800">{st.dob}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">STUDENT ID</span>
+                        <span className="font-black font-mono text-slate-800">{st.id}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">CLASS &amp; SEC</span>
+                        <span className="font-black text-[#ea580c] uppercase bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200 inline-block text-[10px] sm:text-xs">
+                          {studentClass}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">PHONE</span>
+                        <span className="font-bold text-slate-800">{st.father_phone || st.phone || '+91 98765 00000'}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">ADDRESS</span>
+                        <span className="font-bold text-slate-700 text-[9.5px] leading-tight line-clamp-1">
+                          {st.residential_address || '123 Anywhere St., Any City'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10 flex items-center justify-between border-t border-slate-100 pt-2 pl-28 text-[9px] text-slate-400 font-mono">
+                  <span>SESSION: {academicSession}</span>
+                  <span className="text-[#ea580c] font-bold">RFID CHIP INTEGRATED</span>
+                </div>
               </div>
-            </div>
-          </div>
-        );
+            );
+
+          // Template 4: Hanover Emerald & Cyan Wave Sine-Flow (Landscape) [Reference 4]
+          case 'emerald_wave':
+            return (
+              <div className="w-full max-w-[620px] aspect-[1.58/1] bg-white rounded-3xl border-2 border-teal-800 shadow-2xl overflow-hidden relative font-sans flex flex-col justify-between p-0 mx-auto print:border-none">
+                <div className="bg-gradient-to-r from-[#042f2e] via-[#0f766e] to-[#06b6d4] text-white px-6 py-3 flex items-center justify-between relative overflow-hidden">
+                  <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-teal-200" />
+                    </div>
+                    <div>
+                      <h2 className="font-extrabold text-sm sm:text-base tracking-wide uppercase leading-none">
+                        {schoolInfo.schoolName || 'HANOVER AND TYKE'}
+                      </h2>
+                      <p className="text-[9px] text-teal-200 font-medium tracking-wider uppercase mt-0.5">
+                        ELEMENTARY &amp; HIGH SCHOOL
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute inset-x-0 top-16 bottom-12 pointer-events-none opacity-25 overflow-hidden">
+                  <svg viewBox="0 0 600 200" className="w-full h-full stroke-teal-600" fill="none" strokeWidth="1">
+                    <path d="M 0,50 C 150,150 350,-50 600,80" />
+                    <path d="M 0,65 C 150,165 350,-35 600,95" />
+                    <path d="M 0,80 C 150,180 350,-20 600,110" />
+                    <path d="M 0,95 C 150,195 350,-5 600,125" />
+                    <path d="M 0,110 C 150,210 350,10 600,140" />
+                  </svg>
+                </div>
+
+                <div className="relative z-10 p-5 grid grid-cols-12 gap-5 items-center my-auto">
+                  <div className="col-span-4 flex flex-col items-center">
+                    <div className="relative">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-teal-800 to-cyan-500 p-1 shadow-xl">
+                        <img
+                          src={st.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}
+                          alt={st.student_name}
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-3 font-mono text-[#042f2e] font-bold text-[8.5px] tracking-widest">
+                      |||||||||||||||||||||||||||
+                    </div>
+                  </div>
+
+                  <div className="col-span-8 space-y-2">
+                    <h3 className="font-serif font-black text-2xl sm:text-3xl text-[#0f766e] uppercase tracking-wide leading-none">
+                      STUDENT ID CARD
+                    </h3>
+
+                    <div className="space-y-1.5 text-xs sm:text-sm font-medium text-slate-800 pt-1">
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">Name</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-black text-slate-900 uppercase">{st.student_name}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">Class</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-extrabold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200 inline-block uppercase text-xs">
+                          {studentClass}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">Student ID</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-mono font-bold text-slate-900">{st.id}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">D.O.B</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-semibold text-slate-800">{st.dob}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">Address</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-semibold text-slate-700 text-[10.5px] leading-tight line-clamp-1">
+                          {st.residential_address || '123 Anywhere St., Any City'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-[#042f2e] via-[#0f766e] to-[#06b6d4] text-white px-6 py-2 flex items-center justify-between text-[9px] font-mono">
+                  <span>VALID: {academicSession}</span>
+                  <span className="font-bold">VERIFIED CARD</span>
+                </div>
+              </div>
+            );
+
+          // Template 5: Borcelle Terracotta & Chocolate Heritage (Portrait / Vertical) [Reference 5]
+          case 'terracotta_portrait':
+          default:
+            return (
+              <div className="w-full max-w-[340px] aspect-[1/1.65] bg-[#fff6ee] rounded-3xl border-2 border-[#9a4b27] shadow-2xl overflow-hidden relative font-sans flex flex-col justify-between p-4 mx-auto print:border-none">
+                <div className="bg-[#9a4b27] text-white p-3 rounded-2xl relative overflow-hidden shadow-md">
+                  <div className="absolute right-0 top-0 w-16 h-16 opacity-30 pointer-events-none">
+                    <svg viewBox="0 0 100 100" fill="currentColor">
+                      <polygon points="100,0 0,0 100,100" />
+                      <polygon points="100,50 50,0 100,0" fill="#f59e0b" />
+                    </svg>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 relative z-10">
+                    <div className="w-9 h-9 rounded-full bg-white/10 ring-2 ring-amber-300/60 flex items-center justify-center shrink-0">
+                      <Award className="w-5 h-5 text-amber-300" />
+                    </div>
+                    <div>
+                      <h2 className="font-black text-sm tracking-wider uppercase leading-none text-white">
+                        {schoolInfo.schoolName || 'BORCELLE'}
+                      </h2>
+                      <p className="text-[9px] font-black text-amber-200 tracking-widest uppercase mt-0.5">
+                        HIGH SCHOOL
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-1 my-1.5 pl-2 opacity-80">
+                  {[1, 2, 3, 4, 5, 6].map(k => (
+                    <div key={k} className="w-2 h-1.5 bg-[#9a4b27] skew-x-[-25deg] rounded-xs"></div>
+                  ))}
+                </div>
+
+                <div className="flex justify-center my-auto">
+                  <div className="w-36 h-44 rounded-2xl overflow-hidden shadow-lg border-2 border-[#9a4b27]/30 bg-white">
+                    <img
+                      src={st.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}
+                      alt={st.student_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 text-xs font-semibold text-[#4a2211] px-1">
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">Name</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-black text-[#4a2211] uppercase">{st.student_name}</span>
+                  </div>
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">Class</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-extrabold text-[#9a4b27] bg-amber-50 px-2 py-0.5 rounded border border-[#9a4b27]/30 inline-block uppercase text-xs">
+                      {studentClass}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">ID</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-mono font-bold text-[#4a2211]">{st.id}</span>
+                  </div>
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">Email</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-medium text-[#4a2211] text-[10.5px] truncate">
+                      {st.email || 'student@reallygreatsite.com'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">Address</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-medium text-[#4a2211] text-[10px] leading-tight line-clamp-1">
+                      {st.residential_address || '123 Anywhere St., Any City'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end pt-1">
+                  <div className="flex gap-1 opacity-80">
+                    {[1, 2, 3, 4].map(k => (
+                      <div key={k} className="w-2.5 h-2 bg-[#9a4b27] skew-x-[-25deg] rounded-xs"></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+        }
+      }
 
       default:
         return null;
@@ -2072,6 +2560,53 @@ export default function TransferCertificateView() {
         </div>
       )}
 
+      {/* 5 SMART STUDENT ID CARD CAROUSEL SWITCHER (When Doc Type is 'id_card') */}
+      {docType === 'id_card' && (
+        <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 rounded-3xl p-5 text-white border-2 border-teal-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <IdCard className="w-4 h-4 text-teal-300" />
+              <h3 className="font-extrabold text-xs text-white uppercase tracking-wider">
+                🪪 5 Official Student ID Card Layout Templates (With Class/Section)
+              </h3>
+            </div>
+            <span className="text-[10px] text-teal-200 bg-teal-900/80 px-2.5 py-0.5 rounded-full font-bold border border-teal-500/40">
+              Active: {idCardTemplatesList.find(t => t.id === idCardTemplate)?.title}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {idCardTemplatesList.map((tpl) => {
+              const isSelected = idCardTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setIdCardTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-teal-300 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-white leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-300 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span className="capitalize">{tpl.orientation}</span>
+                    <span className="text-teal-300 font-bold">Select</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Main Grid: Left Settings & Right Live Document Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
@@ -2093,7 +2628,11 @@ export default function TransferCertificateView() {
               <label className="block font-bold text-slate-700 mb-1">Select Candidate / Student</label>
               <select
                 value={selectedStudentId}
-                onChange={(e) => setSelectedStudentId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedStudentId(e.target.value);
+                  const found = studentList.find(s => s.id === e.target.value);
+                  if (found) setCustomClassSection(found.class_batch || '');
+                }}
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer bg-slate-50/50"
               >
                 {studentList.map(s => (
@@ -2125,6 +2664,21 @@ export default function TransferCertificateView() {
                   </span>
                 )}
               </div>
+            </div>
+
+            {/* Class / Section Editable Field (Key Requirement for ID Cards & Documents) */}
+            <div>
+              <label className="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Class / Grade &amp; Section</span>
+                <span className="text-[10px] font-normal text-teal-600">Appears on ID Card &amp; Certificates</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Class 10 - Section A"
+                value={customClassSection || activeStudent.class_batch || 'Class 10 - Section A'}
+                onChange={(e) => setCustomClassSection(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-teal-200 bg-teal-50/40 text-slate-900 font-bold text-xs outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
 
             {/* Event & Appreciation Specific Fields */}
