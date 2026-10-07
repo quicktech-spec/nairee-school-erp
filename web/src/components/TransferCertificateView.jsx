@@ -24,10 +24,57 @@ import {
   BookOpen,
   Clock,
   IdCard,
-  Barcode
+  Barcode,
+  Palette,
+  Settings2,
+  Upload,
+  RefreshCw,
+  Stamp,
+  Sliders,
+  Check
 } from 'lucide-react';
-import { INITIAL_DB_STORE, FALLBACK_STUDENTS } from '../fallbackData.js';
+import { FALLBACK_STUDENTS } from '../fallbackData.js';
 import { getMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
+import { useTenant } from '../context/TenantContext.jsx';
+
+// Utility: Convert number to English words
+function numberToWords(num) {
+  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  
+  if (num === 0) return 'Zero';
+  if (num < 20) return ones[num];
+  if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + ones[num % 10] : '');
+  if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 !== 0 ? ' ' + numberToWords(num % 100) : '');
+  if (num < 100000) return numberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 !== 0 ? ' ' + numberToWords(num % 1000) : '');
+  return String(num);
+}
+
+// Utility: Convert standard Date string (YYYY-MM-DD) to full English words (e.g. "Twelfth of April Two Thousand Eleven")
+function dateToWords(dateStr) {
+  if (!dateStr) return '';
+  const parts = String(dateStr).split('-');
+  if (parts.length !== 3) return dateStr;
+  
+  const year = parseInt(parts[0], 10);
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  
+  if (isNaN(year) || isNaN(monthIdx) || isNaN(day)) return dateStr;
+
+  const dayOrdinals = [
+    '', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth',
+    'Eleventh', 'Twelfth', 'Thirteenth', 'Fourteenth', 'Fifteenth', 'Sixteenth', 'Seventeenth', 'Eighteenth', 'Nineteenth', 'Twentieth',
+    'Twenty-First', 'Twenty-Second', 'Twenty-Third', 'Twenty-Fourth', 'Twenty-Fifth', 'Twenty-Sixth', 'Twenty-Seventh', 'Twenty-Eighth', 'Twenty-Ninth', 'Thirtieth', 'Thirty-First'
+  ];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  const dayWord = dayOrdinals[day] || String(day);
+  const monthWord = months[monthIdx] || '';
+  const yearWord = numberToWords(year);
+  
+  return `${dayWord} of ${monthWord} ${yearWord}`;
+}
 
 function getSynchronizedStudents() {
   const master = getMasterStudents();
@@ -42,12 +89,14 @@ function getSynchronizedStudents() {
       stream: s.stream || 'Science & Advanced Mathematics',
       photo: s.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
       dob: s.dob || '2011-04-12',
-      religion: s.religion || 'Hindu',
+      religion: s.religion || 'General',
+      caste_category: s.caste_category || 'General / Unreserved',
       nationality: s.nationality || 'Indian',
       blood_group: s.blood_group || 'O+',
       gender: s.gender || 'Male',
       aadhaar_no: s.aadhaar_no || '9876 5432 1091',
       admission_date: s.admission_date || '2024-06-15',
+      admission_class: s.admission_class || 'Class 9',
       phone: s.phone || '+91 98765 00001',
       father_name: s.father_name || 'Rajesh Patel',
       father_phone: s.father_phone || '+91 98765 43212',
@@ -61,8 +110,14 @@ function getSynchronizedStudents() {
 }
 
 export default function TransferCertificateView() {
-  // 6 Supported Document Types: 'tc', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
+  const { tenant } = useTenant();
+  
+  // Document Type: 'tc', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
   const [docType, setDocType] = useState('tc');
+  
+  // 6 Certificate Templates for TC
+  // 'royal_gold' | 'cbse_statutory' | 'traditional_heritage' | 'vintage_crimson' | 'classic_ivory' | 'modern_platinum'
+  const [tcTemplate, setTcTemplate] = useState('royal_gold');
   
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
@@ -71,13 +126,53 @@ export default function TransferCertificateView() {
   });
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showCustomizer, setShowCustomizer] = useState(false);
   
+  // School Branding & Customizer State (Initialized from active school tenant, fully customizable)
+  const [schoolInfo, setSchoolInfo] = useState({
+    schoolName: tenant?.school_name || 'International Model Academy',
+    motto: tenant?.tagline || 'Excellence in Knowledge • Character • Leadership',
+    affiliationNo: tenant?.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '883921' : '883921',
+    schoolCode: tenant?.school_code || '45091',
+    udiseNo: '29280601244',
+    bookNo: '042',
+    address: tenant?.address || '100 Knowledge Boulevard, Indiranagar, Bengaluru - 560038',
+    phone: tenant?.phone || '+91 98765 00000',
+    email: tenant?.email || 'principal@school.edu',
+    principalName: 'Dr. Marcus Vance, Ph.D.',
+    principalTitle: 'Principal / Head of Institution',
+    customLogoUrl: tenant?.logo_url || '',
+    watermarkText: 'OFFICIAL SCHOOL RECORD'
+  });
+
+  // Keep schoolInfo in sync when active tenant changes
+  useEffect(() => {
+    if (tenant) {
+      setSchoolInfo(prev => ({
+        ...prev,
+        schoolName: tenant.school_name || prev.schoolName,
+        motto: tenant.tagline || prev.motto,
+        affiliationNo: tenant.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || prev.affiliationNo : prev.affiliationNo,
+        schoolCode: tenant.school_code || prev.schoolCode,
+        address: tenant.address || prev.address,
+        phone: tenant.phone || prev.phone,
+        email: tenant.email || prev.email,
+        customLogoUrl: tenant.logo_url || prev.customLogoUrl
+      }));
+    }
+  }, [tenant]);
+
   // Customizable Document Parameters
   const [academicSession, setAcademicSession] = useState('2025 - 2026');
-  const [examName, setExamName] = useState('Annual Board & Mid-Term Examination 2026');
+  const [examName, setExamName] = useState('All India Secondary School Examination (AISSE 2026)');
+  const [examResult, setExamResult] = useState('Passed with First Class & Distinction (94.2%)');
   const [conduct, setConduct] = useState('Exemplary, Diligent & Obedient');
-  const [reasonForLeaving, setReasonForLeaving] = useState('Course Completion / Higher Education Migration');
-  const [promotedTo, setPromotedTo] = useState('Promoted to Senior Secondary Grade 11');
+  const [reasonForLeaving, setReasonForLeaving] = useState('Parent Transfer / Higher Secondary Admission');
+  const [promotedTo, setPromotedTo] = useState('Promoted to Senior Secondary Grade 11 (Science)');
+  const [subjectsStudied, setSubjectsStudied] = useState('English Core, Mathematics, Physics, Chemistry, Computer Science / AI');
+  const [feeConcession, setFeeConcession] = useState('None (Merit Scholar)');
+  const [totalWorkingDays, setTotalWorkingDays] = useState('220');
+  const [totalDaysPresent, setTotalDaysPresent] = useState('214 (97.2%)');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Active student object
@@ -85,7 +180,7 @@ export default function TransferCertificateView() {
 
   // Auto-sync updates across app (transfers, admissions, fee clearances)
   useEffect(() => {
-    const unsub = subscribeLiveEvents((event) => {
+    const unsub = subscribeLiveEvents(() => {
       const freshList = getSynchronizedStudents();
       setStudentList(freshList);
     });
@@ -97,7 +192,7 @@ export default function TransferCertificateView() {
       id: 'tc',
       num: '1',
       title: 'Transfer Certificate (TC)',
-      subtitle: 'Official School Leaving & Migration Record',
+      subtitle: '6 Official Certificate Designs & Layouts',
       icon: GraduationCap,
       color: 'teal'
     },
@@ -105,15 +200,15 @@ export default function TransferCertificateView() {
       id: 'domicile',
       num: '2',
       title: 'Domicile / Bonafide',
-      subtitle: 'State & Institutional Residence Certificate',
+      subtitle: 'Institutional Residence & Identity Record',
       icon: Building,
       color: 'blue'
     },
     {
       id: 'migration',
       num: '3',
-      title: 'Character & Conduct',
-      subtitle: 'Discipline & Board Migration Clearance',
+      title: 'Character & Migration',
+      subtitle: 'Conduct & Board Clearance Certificate',
       icon: ShieldCheck,
       color: 'emerald'
     },
@@ -121,7 +216,7 @@ export default function TransferCertificateView() {
       id: 'report_card',
       num: '4',
       title: 'Academic Report Card',
-      subtitle: 'Cumulative Marksheet & Performance Grade',
+      subtitle: 'Cumulative Marksheet & Evaluation',
       icon: BookOpen,
       color: 'purple'
     },
@@ -129,7 +224,7 @@ export default function TransferCertificateView() {
       id: 'admit_card',
       num: '5',
       title: 'Exam Admit Card',
-      subtitle: 'Hall Ticket & Examination Timetable',
+      subtitle: 'Examination Hall Ticket with Timetable',
       icon: Calendar,
       color: 'amber'
     },
@@ -143,88 +238,700 @@ export default function TransferCertificateView() {
     }
   ];
 
-  // Helper for generating document numbers
+  const tcTemplatesList = [
+    {
+      id: 'royal_gold',
+      title: 'Royal Navy & Gold Crest',
+      tag: 'Landscape • Luxury Crest',
+      desc: 'Ornate gold corners, ribbon motto header, gold embossed stamp',
+      orientation: 'landscape',
+      borderStyle: 'border-amber-400 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/30'
+    },
+    {
+      id: 'cbse_statutory',
+      title: 'CBSE Statutory 15-Point',
+      tag: 'Portrait • Board Standard',
+      desc: 'Affiliation & School Code, 15 statutory clauses, triple signatory',
+      orientation: 'portrait',
+      borderStyle: 'border-slate-800 bg-white'
+    },
+    {
+      id: 'traditional_heritage',
+      title: 'Traditional Heritage Leaving',
+      tag: 'Portrait • Classical Filigree',
+      desc: 'Double border, central watermark emblem, formal certification prose',
+      orientation: 'portrait',
+      borderStyle: 'border-blue-900 bg-amber-50/20'
+    },
+    {
+      id: 'vintage_crimson',
+      title: 'Vintage Crimson Guilloche',
+      tag: 'Portrait • Elegant Burgundy',
+      desc: 'Crimson guilloche filigree border, parchment texture, wax seal',
+      orientation: 'portrait',
+      borderStyle: 'border-red-900 bg-rose-50/30'
+    },
+    {
+      id: 'classic_ivory',
+      title: 'Classic Ivory Filigree',
+      tag: 'Landscape • Banknote Grade',
+      desc: 'Intricate currency-grade filigree borders, gold rosette medallion',
+      orientation: 'landscape',
+      borderStyle: 'border-amber-600 bg-amber-50/20'
+    },
+    {
+      id: 'modern_platinum',
+      title: 'Modern Platinum & Cobalt',
+      tag: 'Landscape • High-Tech Security',
+      desc: 'Angular modern geometric frames, digital QR badge, barcode security',
+      orientation: 'landscape',
+      borderStyle: 'border-blue-700 bg-slate-50/40'
+    }
+  ];
+
+  // Helper for generating document registration numbers
   const getDocRegNo = (st, type) => {
     const r = st.roll_no || '101';
+    const code = schoolInfo.schoolCode || 'SCH';
     switch (type) {
-      case 'tc': return `NAIREE/TC/2026/${r}`;
-      case 'domicile': return `DOM/NAIREE/2026/${r}`;
-      case 'migration': return `MIG/CBSE/2026/${r}`;
-      case 'report_card': return `MARK/2026/SEC/${r}`;
-      case 'admit_card': return `HT/EXAM/2026/${r}`;
+      case 'tc': return `TC/${code}/${academicSession.replace(/\s+/g, '')}/${r}`;
+      case 'domicile': return `DOM/${code}/2026/${r}`;
+      case 'migration': return `MIG/${code}/2026/${r}`;
+      case 'report_card': return `MARK/${code}/2026/${r}`;
+      case 'admit_card': return `HT/${code}/2026/${r}`;
       case 'id_card': return `ID-${st.id || 'STU'}-${r}`;
-      default: return `DOC/2026/${r}`;
+      default: return `DOC/${code}/2026/${r}`;
     }
+  };
+
+  // Reusable Golden School Seal SVG Component
+  const GoldenSchoolSeal = ({ size = 84, schoolName = schoolInfo.schoolName }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md text-amber-600">
+        <circle cx="50" cy="50" r="46" fill="#fef3c7" stroke="#b45309" strokeWidth="2.5" strokeDasharray="3 1.5" />
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#d97706" strokeWidth="1" />
+        <circle cx="50" cy="50" r="34" fill="#fffbeb" stroke="#b45309" strokeWidth="1.5" />
+        
+        {/* Curving text on path */}
+        <path id={`sealPath-${size}`} d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0" fill="none" />
+        <text className="text-[6.5px] font-black uppercase tracking-widest fill-amber-900">
+          <textPath href={`#sealPath-${size}`} startOffset="50%" textAnchor="middle">
+            ★ OFFICIAL INSTITUTION SEAL ★
+          </textPath>
+        </text>
+        
+        {/* Center Star / Crest */}
+        <g transform="translate(50, 50)">
+          <path
+            d="M 0,-14 L 3.5,-4 L 14,-4 L 6,2 L 9,12 L 0,6 L -9,12 L -6,2 L -14,-4 L -3.5,-4 Z"
+            fill="#d97706"
+            stroke="#92400e"
+            strokeWidth="0.8"
+          />
+          <circle cx="0" cy="0" r="4" fill="#fef3c7" />
+        </g>
+      </svg>
+      <span className="absolute bottom-2 text-[7px] font-bold font-mono uppercase text-amber-950 tracking-tighter">
+        VERIFIED
+      </span>
+    </div>
+  );
+
+  // Reusable Red Wax / Stamp SVG Component
+  const CrimsonStampSeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none rotate-[-6deg]" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full text-rose-700 opacity-90">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="6 2" />
+        <circle cx="50" cy="50" r="39" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="50" cy="50" r="32" fill="#fff1f2" stroke="currentColor" strokeWidth="2" />
+        <text x="50" y="38" textAnchor="middle" className="text-[7px] font-black uppercase tracking-wider fill-rose-900">
+          OFFICIAL SEAT
+        </text>
+        <text x="50" y="52" textAnchor="middle" className="text-[10px] font-black tracking-widest fill-rose-950">
+          APPROVED
+        </text>
+        <text x="50" y="66" textAnchor="middle" className="text-[6.5px] font-bold uppercase fill-rose-800">
+          {new Date().getFullYear()} ACADEMIC
+        </text>
+      </svg>
+    </div>
+  );
+
+  // ==========================================
+  // RENDER TRANSFER CERTIFICATE TEMPLATES
+  // ==========================================
+
+  // Template 1: Royal Navy & Gold Luxury Crest (Landscape)
+  const renderRoyalGoldTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const isFeeCleared = st.fee_status === 'Paid' || (st.feeDues || 0) === 0;
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-gradient-to-b from-amber-50/60 via-white to-amber-50/40 p-8 sm:p-10 rounded-2xl border-8 border-double border-amber-500/80 text-slate-900 space-y-6 shadow-xl relative overflow-hidden font-serif">
+        {/* Luxury Gold Corner Ornaments */}
+        <div className="absolute top-2 left-2 w-14 h-14 border-t-4 border-l-4 border-amber-600 pointer-events-none" />
+        <div className="absolute top-2 right-2 w-14 h-14 border-t-4 border-r-4 border-amber-600 pointer-events-none" />
+        <div className="absolute bottom-2 left-2 w-14 h-14 border-b-4 border-l-4 border-amber-600 pointer-events-none" />
+        <div className="absolute bottom-2 right-2 w-14 h-14 border-b-4 border-r-4 border-amber-600 pointer-events-none" />
+
+        {/* Top Header & Ribbon */}
+        <div className="text-center space-y-2 border-b-2 border-amber-400/60 pb-5 relative">
+          <div className="flex items-center justify-center gap-3">
+            {schoolInfo.customLogoUrl ? (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-14 h-14 object-contain rounded-full border border-amber-400 shadow-sm" />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 text-amber-100 flex items-center justify-center font-black text-xl shadow-md border-2 border-amber-300">
+                {schoolInfo.schoolName.charAt(0)}
+              </div>
+            )}
+            <div>
+              <div className="text-[11px] font-sans font-extrabold tracking-widest text-amber-800 uppercase">
+                Affiliation No: {schoolInfo.affiliationNo} &bull; School Code: {schoolInfo.schoolCode}
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-wider text-slate-950 uppercase font-serif">
+                {schoolInfo.schoolName}
+              </h2>
+              <p className="text-xs font-sans text-slate-600 font-medium italic">
+                {schoolInfo.address}
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <div className="inline-block px-8 py-1.5 rounded-full bg-gradient-to-r from-blue-950 via-slate-900 to-blue-950 text-amber-300 font-sans font-extrabold text-xs uppercase tracking-widest shadow-md border border-amber-400/50">
+              ✦ Transfer &amp; Character Certificate ✦
+            </div>
+          </div>
+          
+          <p className="text-[11px] text-amber-900 font-sans tracking-wide">
+            {schoolInfo.motto}
+          </p>
+        </div>
+
+        {/* Certificate Metadata Bar */}
+        <div className="flex justify-between items-center text-xs font-mono border-b border-amber-200 pb-2 text-slate-700 px-2">
+          <span>Certificate No: <strong className="text-amber-900 font-bold">{regNo}</strong></span>
+          <span>Admission / Scholar ID: <strong className="text-slate-900">{st.id}</strong></span>
+          <span>Academic Session: <strong className="text-slate-900">{academicSession}</strong></span>
+          <span>Date of Issue: <strong className="text-slate-900">{issueDate}</strong></span>
+        </div>
+
+        {/* Formal Calligraphic Certification Body */}
+        <div className="space-y-4 px-2 font-serif text-sm leading-relaxed text-slate-800">
+          <p className="text-justify indent-8">
+            This is to officially certify that <strong className="text-slate-950 text-base underline underline-offset-4 decoration-amber-500 font-sans font-bold">{st.student_name}</strong>, 
+            Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
+            residing at <span className="text-slate-800 italic">{st.residential_address}</span>, 
+            was admitted to this institution on <strong className="text-slate-900 font-sans">{st.admission_date}</strong> and was a bonafide student of this school.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-2 px-4 bg-amber-50/50 rounded-xl border border-amber-200/80 font-sans text-xs">
+            <p>1. Date of Birth (in Figures): <strong className="text-slate-900 font-bold">{st.dob}</strong></p>
+            <p>2. Date of Birth (in Words): <strong className="text-amber-950 italic">{dobWords}</strong></p>
+            <p>3. Class in which Last Studied: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></p>
+            <p>4. Board / School Annual Result: <strong className="text-emerald-800 font-bold">{examResult}</strong></p>
+            <p>5. Subjects Studied: <strong className="text-slate-900">{subjectsStudied}</strong></p>
+            <p>6. Whether Promoted to Higher Grade: <strong className="text-slate-900 font-bold">{promotedTo}</strong></p>
+            <p>7. School Dues Clearance Status: <strong className={isFeeCleared ? 'text-emerald-800 font-bold' : 'text-rose-700 font-bold'}>{isFeeCleared ? 'Cleared (Nil Dues Outstanding)' : 'Dues Pending'}</strong></p>
+            <p>8. Total Attendance: <strong className="text-slate-900">{totalDaysPresent} of {totalWorkingDays} Working Days</strong></p>
+            <p className="sm:col-span-2">9. Reason for School Leaving: <strong className="text-slate-900">{reasonForLeaving}</strong></p>
+            <p className="sm:col-span-2">10. Moral Character &amp; Conduct: <strong className="text-teal-900 font-bold">{conduct}</strong></p>
+          </div>
+        </div>
+
+        {/* Signatures & Seal Area */}
+        <div className="pt-6 border-t-2 border-amber-300/80 flex items-end justify-between px-2">
+          <div className="text-center space-y-1">
+            <div className="w-36 border-b border-slate-700 pb-1 font-sans text-xs text-slate-600 font-medium">
+              Class Teacher
+            </div>
+            <div className="font-sans font-bold text-[10px] text-slate-800 uppercase tracking-wider">
+              Prepared &amp; Verified By
+            </div>
+          </div>
+
+          <div className="text-center">
+            <GoldenSchoolSeal size={88} />
+          </div>
+
+          <div className="text-center space-y-1">
+            <div className="w-44 border-b-2 border-slate-900 pb-1 font-serif italic text-amber-950 font-bold text-base">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-black text-[10px] text-slate-900 uppercase tracking-wider">
+              {schoolInfo.principalTitle}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 2: CBSE Statutory 15-Point Transfer Certificate (Portrait)
+  const renderCbseStatutoryTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const isFeeCleared = st.fee_status === 'Paid' || (st.feeDues || 0) === 0;
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-white p-7 sm:p-9 rounded-2xl border-4 border-slate-900 text-slate-900 space-y-4 shadow-sm text-xs relative font-sans">
+        {/* Top Statutory Details Header */}
+        <div className="flex justify-between items-start border-b-2 border-slate-900 pb-3 text-[11px] font-bold">
+          <div>
+            <div>UDISE Code: <span className="font-mono">{schoolInfo.udiseNo}</span></div>
+            <div>School Code: <span className="font-mono">{schoolInfo.schoolCode}</span></div>
+          </div>
+          <div className="text-center">
+            <div className="text-[10px] font-bold tracking-widest text-slate-700 uppercase">
+              Affiliated to CBSE, New Delhi &bull; Affiliation No: {schoolInfo.affiliationNo}
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase mt-0.5">
+              {schoolInfo.schoolName}
+            </h2>
+            <p className="text-[10px] text-slate-600 font-normal">
+              {schoolInfo.address} &bull; Ph: {schoolInfo.phone}
+            </p>
+          </div>
+          <div className="text-right">
+            <div>Book No: <span className="font-mono">{schoolInfo.bookNo}</span></div>
+            <div>Sr. No: <span className="font-mono font-bold text-red-700">{st.roll_no ? String(st.roll_no).padStart(4, '0') : '0101'}</span></div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center py-1 bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded">
+          TRANSFER CERTIFICATE
+        </div>
+
+        <div className="flex justify-between items-center text-[11px] font-mono border-b pb-1 text-slate-700">
+          <span>TC Number: <strong>{regNo}</strong></span>
+          <span>Admission / General Register No: <strong>{st.id}</strong></span>
+        </div>
+
+        {/* 15 Statutory Clauses */}
+        <div className="space-y-2 text-[11.5px] leading-relaxed text-slate-800 divide-y divide-slate-100">
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">1. Name of the Pupil:</span>
+            <strong className="w-1/3 text-right uppercase text-slate-950 font-bold">{st.student_name}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">2. Mother's Name:</span>
+            <strong className="w-1/3 text-right uppercase">{st.mother_name}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">3. Father's / Guardian's Name:</span>
+            <strong className="w-1/3 text-right uppercase">{st.father_name}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">4. Nationality &amp; Religion:</span>
+            <strong className="w-1/3 text-right">{st.nationality} &bull; {st.religion}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">5. Whether candidate belongs to SC / ST / OBC:</span>
+            <strong className="w-1/3 text-right">{st.caste_category || 'General Category'}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">6. Date of First Admission in School with Class:</span>
+            <strong className="w-1/3 text-right">{st.admission_date} ({st.admission_class || 'Class 9'})</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-1/2">7. Date of Birth according to Admission Register:</span>
+            <div className="w-1/2 text-right">
+              <div><strong>{st.dob}</strong> (in figures)</div>
+              <div className="text-[10.5px] italic text-slate-600 font-serif">"{dobWords}" (in words)</div>
+            </div>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">8. Class in which the pupil last studied:</span>
+            <strong className="w-1/3 text-right font-bold">{st.class_batch}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">9. School / Board Annual Examination last taken:</span>
+            <strong className="w-1/3 text-right text-emerald-800 font-bold">{examResult}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">10. Whether failed, if so once/twice in the same class:</span>
+            <strong className="w-1/3 text-right">No (Passed in First Attempt)</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-1/3">11. Subjects Studied:</span>
+            <strong className="w-2/3 text-right text-[11px]">{subjectsStudied}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">12. Whether qualified for promotion to higher class:</span>
+            <strong className="w-1/3 text-right font-bold text-slate-900">{promotedTo}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">13. Month up to which the school dues have been paid:</span>
+            <strong className={`w-1/3 text-right font-bold ${isFeeCleared ? 'text-emerald-800' : 'text-rose-700'}`}>
+              {isFeeCleared ? 'March 2026 (Fully Cleared)' : 'Dues Pending ₹35,000'}
+            </strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">14. Total No. of working days &amp; days present:</span>
+            <strong className="w-1/3 text-right">{totalDaysPresent} / {totalWorkingDays} Days</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">15. Reasons for leaving the school:</span>
+            <strong className="w-1/3 text-right">{reasonForLeaving}</strong>
+          </div>
+          <div className="flex justify-between pt-1">
+            <span className="w-2/3">16. General Conduct:</span>
+            <strong className="w-1/3 text-right text-teal-800 font-bold">{conduct}</strong>
+          </div>
+        </div>
+
+        {/* Prepared By, Checked By & Principal Signatures */}
+        <div className="pt-6 border-t-2 border-slate-800 grid grid-cols-3 gap-4 items-end text-center">
+          <div className="space-y-1">
+            <div className="border-b border-slate-500 pb-1 font-mono text-[10px] text-slate-600">Class Teacher</div>
+            <div className="font-bold text-[10px] uppercase">Prepared By</div>
+          </div>
+          <div className="space-y-1">
+            <div className="border-b border-slate-500 pb-1 font-mono text-[10px] text-slate-600">Head Clerk / Admin</div>
+            <div className="font-bold text-[10px] uppercase">Checked By</div>
+          </div>
+          <div className="space-y-1">
+            <div className="border-b-2 border-slate-900 pb-1 font-serif italic font-bold text-slate-950 text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-black text-[10px] uppercase text-slate-900">Principal &amp; Official Seal</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 3: Traditional Heritage School Leaving Certificate (Portrait)
+  const renderTraditionalHeritageTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-amber-50/20 p-8 sm:p-10 rounded-2xl border-8 border-double border-blue-950 text-slate-900 space-y-5 shadow-md relative overflow-hidden font-serif">
+        {/* Heritage Watermark Emblem in Background */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+          <GraduationCap className="w-96 h-96 text-blue-900" />
+        </div>
+
+        {/* Header */}
+        <div className="text-center space-y-1.5 border-b-2 border-blue-950 pb-4">
+          <div className="text-[10px] font-sans font-bold tracking-widest text-blue-900 uppercase">
+            Recognized by Department of Public Instruction &bull; Code: {schoolInfo.schoolCode}
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <p className="text-xs text-slate-700 italic">
+            {schoolInfo.address}
+          </p>
+          <div className="inline-block mt-2 px-6 py-1 rounded bg-blue-950 text-white font-sans font-bold text-xs uppercase tracking-widest">
+            School Leaving Certificate
+          </div>
+        </div>
+
+        {/* Certificate No & Date */}
+        <div className="flex justify-between items-center text-xs font-sans font-semibold border-b border-slate-300 pb-2">
+          <span>Serial No: <strong className="text-blue-950 font-mono">{regNo}</strong></span>
+          <span>Date of Issue: <strong className="text-slate-900 font-mono">{issueDate}</strong></span>
+        </div>
+
+        {/* Traditional Certification Paragraph */}
+        <div className="space-y-4 text-sm leading-relaxed text-slate-800 text-justify">
+          <p className="indent-8">
+            This is to certify that Master / Kumari <strong className="text-blue-950 font-sans text-base underline decoration-blue-900 decoration-2">{st.student_name}</strong>, 
+            Admission No: <strong className="font-mono text-slate-900">{st.id}</strong>, 
+            Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
+            was admitted into this institution on <strong className="font-sans">{st.admission_date}</strong> and left on <strong className="font-sans">{issueDate}</strong>.
+          </p>
+
+          <p>
+            His / Her Date of Birth according to the General Admission Register is <strong className="text-slate-950 font-sans font-bold">{st.dob}</strong> (in words: <span className="italic font-bold text-blue-950">"{dobWords}"</span>).
+          </p>
+
+          <div className="p-4 bg-white/80 rounded-xl border border-blue-900/30 space-y-2 text-xs font-sans">
+            <div className="grid grid-cols-2 gap-2">
+              <div>Class last studied: <strong className="text-slate-950">{st.class_batch}</strong></div>
+              <div>Academic Record: <strong className="text-emerald-800">{examResult}</strong></div>
+              <div>Character &amp; Conduct: <strong className="text-blue-950 font-bold">{conduct}</strong></div>
+              <div>Reasons for leaving: <strong className="text-slate-950">{reasonForLeaving}</strong></div>
+            </div>
+          </div>
+
+          <p>
+            All institutional dues and library books have been satisfactorily accounted for and returned. We wish the student all success in future academic endeavors.
+          </p>
+        </div>
+
+        {/* Seal & Signatures */}
+        <div className="pt-6 border-t-2 border-blue-950 flex items-end justify-between">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center border border-blue-200 mx-auto mb-1">
+              <QrCode className="w-12 h-12 text-blue-950" />
+            </div>
+            <span className="text-[9px] font-sans text-slate-500 font-mono">Institutional Verification</span>
+          </div>
+
+          <div className="text-center">
+            <GoldenSchoolSeal size={78} />
+          </div>
+
+          <div className="text-center space-y-1">
+            <div className="w-40 border-b-2 border-blue-950 pb-1 font-serif italic text-blue-950 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-black text-[10px] text-blue-950 uppercase tracking-wider">
+              Headmaster / Principal
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 4: Vintage Crimson Guilloche TC (Portrait)
+  const renderVintageCrimsonTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-rose-50/30 p-8 sm:p-10 rounded-2xl border-8 border-red-900 text-slate-900 space-y-5 shadow-lg relative overflow-hidden font-serif">
+        {/* Ornate Crimson Corners */}
+        <div className="absolute top-2 left-2 w-12 h-12 border-t-4 border-l-4 border-red-800 pointer-events-none" />
+        <div className="absolute top-2 right-2 w-12 h-12 border-t-4 border-r-4 border-red-800 pointer-events-none" />
+        <div className="absolute bottom-2 left-2 w-12 h-12 border-b-4 border-l-4 border-red-800 pointer-events-none" />
+        <div className="absolute bottom-2 right-2 w-12 h-12 border-b-4 border-r-4 border-red-800 pointer-events-none" />
+
+        {/* Header */}
+        <div className="text-center space-y-2 border-b-2 border-red-900/60 pb-4">
+          <div className="text-[10px] font-sans font-extrabold tracking-widest text-red-900 uppercase">
+            Autonomous Educational Board &bull; Code: {schoolInfo.schoolCode}
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-red-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <p className="text-xs text-slate-600 font-sans italic">
+            {schoolInfo.address}
+          </p>
+          <div className="inline-block px-6 py-1 rounded bg-red-900 text-rose-100 font-sans font-bold text-xs uppercase tracking-widest shadow">
+            Official Transfer &amp; Graduation Record
+          </div>
+        </div>
+
+        {/* Certificate No */}
+        <div className="flex justify-between items-center text-xs font-mono border-b border-red-200 pb-2 text-red-950 font-bold">
+          <span>Certificate No: {regNo}</span>
+          <span>Admission ID: {st.id}</span>
+          <span>Issued: {issueDate}</span>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-3.5 text-sm leading-relaxed text-slate-800">
+          <p className="text-justify indent-6">
+            This instrument certifies that <strong className="text-red-950 font-sans font-bold text-base">{st.student_name}</strong>, 
+            Child of <strong className="text-slate-900">{st.father_name}</strong> &amp; <strong className="text-slate-900">{st.mother_name}</strong>, 
+            completed studies in <strong className="text-slate-900 font-sans">{st.class_batch}</strong> during academic session <strong className="font-sans">{academicSession}</strong>.
+          </p>
+
+          <div className="grid grid-cols-2 gap-3 p-4 bg-white/90 rounded-xl border border-red-200 font-sans text-xs">
+            <div>DOB (Figures): <strong className="text-slate-900">{st.dob}</strong></div>
+            <div>DOB (Words): <strong className="text-red-900 italic">{dobWords}</strong></div>
+            <div>Examination Result: <strong className="text-emerald-800 font-bold">{examResult}</strong></div>
+            <div>Promotion Status: <strong className="text-slate-900 font-bold">{promotedTo}</strong></div>
+            <div>Reason for Leaving: <strong className="text-slate-900">{reasonForLeaving}</strong></div>
+            <div>General Character: <strong className="text-red-950 font-bold">{conduct}</strong></div>
+          </div>
+        </div>
+
+        {/* Signatures & Red Stamp */}
+        <div className="pt-6 border-t-2 border-red-900 flex items-end justify-between">
+          <div className="text-center space-y-1">
+            <div className="w-32 border-b border-slate-500 pb-1 font-sans text-[10px] text-slate-600">Class Incharge</div>
+            <div className="font-sans font-bold text-[10px] text-slate-800 uppercase">Verified By</div>
+          </div>
+
+          <CrimsonStampSeal size={84} />
+
+          <div className="text-center space-y-1">
+            <div className="w-40 border-b-2 border-red-950 pb-1 font-serif italic text-red-950 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-black text-[10px] text-red-950 uppercase">Principal Signature</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 5: Classic Ivory Filigree TC (Landscape)
+  const renderClassicIvoryTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-amber-50/30 p-8 sm:p-10 rounded-2xl border-8 border-amber-600/90 text-slate-900 space-y-5 shadow-xl relative overflow-hidden font-serif">
+        <div className="text-center space-y-2 border-b-2 border-amber-600/60 pb-4">
+          <div className="text-[10px] font-sans font-black tracking-widest text-amber-900 uppercase">
+            Affiliation No: {schoolInfo.affiliationNo} &bull; School Code: {schoolInfo.schoolCode}
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-wider text-slate-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <p className="text-xs text-slate-700 italic font-sans">{schoolInfo.address}</p>
+          <div className="inline-block px-6 py-1 rounded bg-amber-800 text-amber-100 font-sans font-bold text-xs uppercase tracking-widest">
+            Certificate of Transfer &amp; Merit
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center text-xs font-mono border-b border-amber-300 pb-2 text-slate-700">
+          <span>Certificate ID: <strong className="text-amber-900 font-bold">{regNo}</strong></span>
+          <span>Admission ID: <strong>{st.id}</strong></span>
+          <span>Date of Issue: <strong>{issueDate}</strong></span>
+        </div>
+
+        <div className="space-y-3 font-serif text-sm leading-relaxed text-slate-800">
+          <p className="indent-8 text-justify">
+            This is to certify that <strong className="text-slate-950 text-base font-sans font-bold underline decoration-amber-600">{st.student_name}</strong>, 
+            Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
+            has been a regular and disciplined student of this academy in <strong className="text-slate-950 font-sans">{st.class_batch}</strong>.
+          </p>
+
+          <div className="grid grid-cols-2 gap-x-6 gap-y-2 p-3 bg-amber-100/40 rounded-xl border border-amber-300 text-xs font-sans">
+            <p>Date of Birth: <strong>{st.dob} ({dobWords})</strong></p>
+            <p>Annual Examination: <strong className="text-emerald-800">{examResult}</strong></p>
+            <p>Promotion Status: <strong className="text-slate-900">{promotedTo}</strong></p>
+            <p>Character &amp; Conduct: <strong className="text-amber-950 font-bold">{conduct}</strong></p>
+            <p className="col-span-2">Reason for Leaving: <strong>{reasonForLeaving}</strong></p>
+          </div>
+        </div>
+
+        <div className="pt-6 border-t-2 border-amber-600/70 flex items-end justify-between">
+          <div className="text-center space-y-1">
+            <div className="w-32 border-b border-slate-600 pb-1 font-sans text-xs text-slate-600">Prepared By</div>
+            <div className="font-sans font-bold text-[10px] text-slate-800 uppercase">Office Registrar</div>
+          </div>
+          <GoldenSchoolSeal size={84} />
+          <div className="text-center space-y-1">
+            <div className="w-40 border-b-2 border-slate-900 pb-1 font-serif italic text-amber-950 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-black text-[10px] text-slate-900 uppercase">{schoolInfo.principalTitle}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 6: Modern Platinum & Cobalt (Landscape)
+  const renderModernPlatinumTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-slate-50/70 p-8 sm:p-10 rounded-2xl border-4 border-blue-700 text-slate-900 space-y-5 shadow-xl relative overflow-hidden font-sans">
+        <div className="flex items-center justify-between border-b-2 border-blue-700 pb-4">
+          <div className="flex items-center gap-4">
+            {schoolInfo.customLogoUrl ? (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-14 h-14 object-contain rounded-xl border border-blue-300" />
+            ) : (
+              <div className="w-14 h-14 rounded-xl bg-blue-700 text-white flex items-center justify-center font-black text-2xl shadow-md">
+                {schoolInfo.schoolName.charAt(0)}
+              </div>
+            )}
+            <div>
+              <div className="text-[10px] font-bold text-blue-700 uppercase tracking-widest">
+                International School Code: {schoolInfo.schoolCode} &bull; Affiliation #{schoolInfo.affiliationNo}
+              </div>
+              <h2 className="text-2xl font-black tracking-tight text-slate-950 uppercase">
+                {schoolInfo.schoolName}
+              </h2>
+              <p className="text-xs text-slate-500">{schoolInfo.address}</p>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <div className="px-3 py-1 rounded-full bg-blue-100 text-blue-900 font-black text-xs uppercase tracking-wider border border-blue-300">
+              Transfer Certificate
+            </div>
+            <div className="text-[10px] font-mono text-slate-500 mt-1">ID: {regNo}</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-white rounded-xl border border-slate-200 text-xs">
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Candidate Name</span>
+            <strong className="text-slate-900 text-sm font-black">{st.student_name}</strong>
+          </div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Scholar ID / Roll No</span>
+            <strong className="font-mono text-slate-900">{st.id} / #{st.roll_no}</strong>
+          </div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Date of Birth</span>
+            <strong className="text-slate-900">{st.dob} ({dobWords})</strong>
+          </div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Father's Name</span>
+            <strong className="text-slate-900">{st.father_name}</strong>
+          </div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Mother's Name</span>
+            <strong className="text-slate-900">{st.mother_name}</strong>
+          </div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Class Last Studied</span>
+            <strong className="text-blue-700 font-bold">{st.class_batch}</strong>
+          </div>
+        </div>
+
+        <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200 text-xs space-y-1.5">
+          <div>Academic Evaluation: <strong className="text-emerald-800 font-bold">{examResult}</strong></div>
+          <div>Promotion Qualification: <strong className="text-slate-900 font-bold">{promotedTo}</strong></div>
+          <div>Reason for Withdrawal: <strong className="text-slate-900">{reasonForLeaving}</strong></div>
+          <div>Moral Character &amp; Conduct: <strong className="text-blue-900 font-bold">{conduct}</strong></div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-300 flex items-end justify-between text-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white rounded-lg border border-slate-300 flex items-center justify-center">
+              <QrCode className="w-9 h-9 text-slate-800" />
+            </div>
+            <div>
+              <div className="font-bold text-slate-700 text-[10px]">Digital Verification</div>
+              <div className="font-mono text-[9px] text-slate-400">{regNo}</div>
+            </div>
+          </div>
+
+          <div className="text-center space-y-1">
+            <div className="w-36 border-b-2 border-blue-900 pb-1 font-serif italic text-blue-900 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-black text-[10px] text-slate-900 uppercase tracking-wider">
+              {schoolInfo.principalTitle}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
-    const isFeeCleared = st.fee_status === 'Paid' || (st.feeDues || 0) === 0;
 
     switch (type) {
-      // 1. TRANSFER CERTIFICATE (TC)
+      // 1. TRANSFER CERTIFICATE (TC) - Switches between the 6 Templates!
       case 'tc':
-        return (
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-slate-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
-            <div className="text-center space-y-1 border-b-2 border-slate-900 pb-4">
-              <div className="text-[10px] font-bold tracking-widest text-teal-800 uppercase">
-                CBSE Affiliation No: 88392 &bull; School Code: 14022
-              </div>
-              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                NAIREE INTERNATIONAL SCHOOL
-              </h2>
-              <p className="text-[11px] text-slate-600 font-medium">
-                100 Knowledge Boulevard, Indiranagar, Bengaluru, Karnataka - 560038
-              </p>
-              <div className="inline-block mt-2 px-4 py-1 rounded-full bg-slate-900 text-amber-300 font-bold text-xs uppercase tracking-wider">
-                Official School Leaving &amp; Transfer Certificate
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
-              <span>TC No: <strong className="text-slate-900">{regNo}</strong></span>
-              <span>Admission No: <strong className="text-slate-900">{st.id}</strong></span>
-              <span>Issue Date: <strong className="text-slate-900">{issueDate}</strong></span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 leading-relaxed">
-              <p>1. Name of Pupil: <strong className="text-slate-900 text-sm">{st.student_name}</strong></p>
-              <p>2. Father's / Guardian's Name: <strong className="text-slate-900">{st.father_name}</strong></p>
-              <p>3. Mother's Name: <strong className="text-slate-900">{st.mother_name}</strong></p>
-              <p>4. Nationality: <strong className="text-slate-900">{st.nationality}</strong> &bull; Religion: <strong>{st.religion}</strong></p>
-              <p>5. Date of First Admission in School: <strong className="text-slate-900">{st.admission_date}</strong></p>
-              <p>6. Date of Birth (DOB): <strong className="text-slate-900">{st.dob}</strong></p>
-              <p>7. Class in which the pupil last studied: <strong className="text-slate-900">{st.class_batch}</strong></p>
-              <p>8. School / Board Annual Exam Result: <strong className="text-emerald-700">Passed with Distinction (92.4%)</strong></p>
-              <p>9. Whether qualified for promotion: <strong className="text-slate-900">{promotedTo}</strong></p>
-              <p>10. Month up to which school dues paid: <strong className={isFeeCleared ? 'text-emerald-700' : 'text-rose-700'}>{isFeeCleared ? 'Cleared (No Dues)' : 'Clearance Pending'}</strong></p>
-              <p>11. Total No. of Working Days: <strong className="text-slate-900">220 Days</strong></p>
-              <p>12. Total Days Present: <strong className="text-slate-900">214 Days (97.2%)</strong></p>
-              <p className="sm:col-span-2">13. Reason for Leaving School: <strong className="text-slate-900">{reasonForLeaving}</strong></p>
-              <p className="sm:col-span-2">14. General Conduct &amp; Character: <strong className="text-teal-800">{conduct}</strong></p>
-            </div>
-
-            <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-              <div className="text-center">
-                <div className="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center border mx-auto mb-1">
-                  <QrCode className="w-10 h-10 text-slate-800" />
-                </div>
-                <span className="text-[9px] text-slate-400 font-mono">Scan for Verification</span>
-              </div>
-              <div className="text-center space-y-1">
-                <div className="w-28 border-b border-slate-500 pb-1 font-mono text-[10px] text-slate-500">Class Teacher</div>
-                <div className="font-bold text-[10px] text-slate-700">Prepared By</div>
-              </div>
-              <div className="text-center space-y-1">
-                <div className="w-32 border-b-2 border-slate-900 pb-1 font-serif italic text-teal-800 font-bold text-sm">
-                  Dr. Marcus Vance
-                </div>
-                <div className="font-black text-[10px] text-slate-900 uppercase">Principal Seal &amp; Signature</div>
-              </div>
-            </div>
-          </div>
-        );
+        switch (tcTemplate) {
+          case 'royal_gold': return renderRoyalGoldTC(st);
+          case 'cbse_statutory': return renderCbseStatutoryTC(st);
+          case 'traditional_heritage': return renderTraditionalHeritageTC(st);
+          case 'vintage_crimson': return renderVintageCrimsonTC(st);
+          case 'classic_ivory': return renderClassicIvoryTC(st);
+          case 'modern_platinum': return renderModernPlatinumTC(st);
+          default: return renderRoyalGoldTC(st);
+        }
 
       // 2. DOMICILE & BONAFIDE CERTIFICATE
       case 'domicile':
@@ -232,10 +939,10 @@ export default function TransferCertificateView() {
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-blue-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
             <div className="text-center space-y-1 border-b-2 border-blue-900 pb-4">
               <div className="text-[10px] font-bold tracking-widest text-blue-800 uppercase">
-                Government of Karnataka &bull; Department of Public Instruction
+                Department of Public Instruction &bull; Code: {schoolInfo.schoolCode}
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                NAIREE INTERNATIONAL ACADEMY
+                {schoolInfo.schoolName}
               </h2>
               <div className="inline-block mt-2 px-4 py-1 rounded-full bg-blue-900 text-white font-bold text-xs uppercase tracking-wider">
                 Bonafide &amp; Institutional Domicile Certificate
@@ -256,7 +963,7 @@ export default function TransferCertificateView() {
                 is a bonafide continuous student of this institution studying in <strong className="text-slate-900">{st.class_batch}</strong>.
               </p>
               <p>
-                As per the official school admission and revenue registrar records, the candidate is a permanent resident residing at:
+                As per the official school admission records, the candidate is a permanent resident residing at:
               </p>
               <div className="p-3 bg-white rounded-lg border border-blue-200 font-semibold text-slate-800 text-[11px]">
                 {st.residential_address}
@@ -278,9 +985,9 @@ export default function TransferCertificateView() {
               </div>
               <div className="text-center space-y-1">
                 <div className="w-36 border-b-2 border-blue-900 pb-1 font-serif italic text-blue-900 font-bold text-sm">
-                  Dr. Marcus Vance
+                  {schoolInfo.principalName}
                 </div>
-                <div className="font-black text-[10px] text-slate-900 uppercase">Headmaster / Principal Seal</div>
+                <div className="font-black text-[10px] text-slate-900 uppercase">{schoolInfo.principalTitle}</div>
               </div>
             </div>
           </div>
@@ -295,7 +1002,7 @@ export default function TransferCertificateView() {
                 Board of Secondary &amp; Senior Secondary Education
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                NAIREE INTERNATIONAL SCHOOL
+                {schoolInfo.schoolName}
               </h2>
               <div className="inline-block mt-2 px-4 py-1 rounded-full bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider">
                 Character &amp; Inter-State Migration Clearance
@@ -315,7 +1022,7 @@ export default function TransferCertificateView() {
                 has been a student of this school from <strong className="text-slate-900">{st.admission_date}</strong> to <strong className="text-slate-900">{issueDate}</strong>.
               </p>
               <p>
-                During his/her tenure at Nairee International School, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>. 
+                During his/her tenure at {schoolInfo.schoolName}, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>. 
                 He/She actively participated in academic workshops, sports, and institutional co-curricular events.
               </p>
               <p>
@@ -332,7 +1039,7 @@ export default function TransferCertificateView() {
               </div>
               <div className="text-center space-y-1">
                 <div className="w-36 border-b-2 border-emerald-900 pb-1 font-serif italic text-emerald-900 font-bold text-sm">
-                  Dr. Marcus Vance
+                  {schoolInfo.principalName}
                 </div>
                 <div className="font-black text-[10px] text-slate-900 uppercase">Authorized Signatory</div>
               </div>
@@ -349,7 +1056,7 @@ export default function TransferCertificateView() {
                 Annual Academic Performance &amp; Evaluation Statement
               </div>
               <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                NAIREE INTERNATIONAL ACADEMY
+                {schoolInfo.schoolName}
               </h2>
               <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-purple-900 text-white font-bold text-[11px] uppercase tracking-wider">
                 Official Report Card &bull; Academic Year {academicSession}
@@ -360,7 +1067,7 @@ export default function TransferCertificateView() {
               <div>Student Name: <strong className="block text-slate-900 font-bold text-xs">{st.student_name}</strong></div>
               <div>Roll No: <strong className="block text-slate-900 font-mono font-bold">{st.roll_no}</strong></div>
               <div>Class &amp; Section: <strong className="block text-slate-900 font-bold">{st.class_batch}</strong></div>
-              <div>Attendance: <strong className="block text-emerald-700 font-bold">96.8% (214/220 Days)</strong></div>
+              <div>Attendance: <strong className="block text-emerald-700 font-bold">{totalDaysPresent}</strong></div>
             </div>
 
             {/* Subject Marks Table */}
@@ -426,7 +1133,7 @@ export default function TransferCertificateView() {
               </div>
               <div className="text-center space-y-1">
                 <div className="w-32 border-b-2 border-purple-900 pb-1 font-serif italic text-purple-900 font-bold text-sm">
-                  Dr. Marcus Vance
+                  {schoolInfo.principalName}
                 </div>
                 <div className="font-black text-[9px] text-slate-900 uppercase">Principal Signature &amp; Stamp</div>
               </div>
@@ -440,10 +1147,10 @@ export default function TransferCertificateView() {
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-amber-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
             <div className="text-center space-y-1 border-b-2 border-amber-900 pb-3">
               <div className="text-[10px] font-bold tracking-widest text-amber-800 uppercase">
-                Central Board Examination Cell &bull; Admit Card 2026
+                Central Examination Cell &bull; Hall Ticket {academicSession}
               </div>
               <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                NAIREE INTERNATIONAL ACADEMY
+                {schoolInfo.schoolName}
               </h2>
               <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-amber-900 text-amber-200 font-bold text-[11px] uppercase tracking-wider">
                 Official Examination Hall Ticket &bull; Roll #{st.roll_no}
@@ -455,7 +1162,7 @@ export default function TransferCertificateView() {
                 <div>Candidate Name: <strong className="text-slate-900 text-sm font-black">{st.student_name}</strong></div>
                 <div>Registration ID: <strong className="font-mono text-slate-900 font-bold">{regNo}</strong></div>
                 <div>Class &amp; Batch: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></div>
-                <div>Exam Center: <strong className="text-slate-900">Center #042 - Nairee Main Campus, Bengaluru</strong></div>
+                <div>Exam Center: <strong className="text-slate-900">Main Examination Hall, {schoolInfo.schoolName}</strong></div>
               </div>
               <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 shadow-sm" />
             </div>
@@ -523,11 +1230,11 @@ export default function TransferCertificateView() {
             <div className="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white p-5 rounded-2xl border-2 border-teal-500/40 shadow-lg relative overflow-hidden flex flex-col justify-between h-72">
               <div className="flex items-center justify-between border-b border-teal-500/30 pb-2">
                 <div>
-                  <div className="font-black tracking-wider text-xs text-teal-300 uppercase">NAIREE INTERNATIONAL</div>
+                  <div className="font-black tracking-wider text-xs text-teal-300 uppercase">{schoolInfo.schoolName}</div>
                   <div className="text-[8px] text-slate-300">STUDENT IDENTITY CARD</div>
                 </div>
                 <div className="w-6 h-6 rounded-full bg-teal-500/20 text-teal-300 flex items-center justify-center font-black text-[10px]">
-                  NIS
+                  {schoolInfo.schoolCode?.slice(0, 3) || 'SCH'}
                 </div>
               </div>
 
@@ -542,7 +1249,7 @@ export default function TransferCertificateView() {
               </div>
 
               <div className="flex items-center justify-between border-t border-teal-500/30 pt-2 text-[9px] text-slate-300 font-mono">
-                <span>Valid: 2025 - 2027</span>
+                <span>Valid: {academicSession}</span>
                 <span className="text-teal-300 font-bold">RFID ENCRYPTED</span>
               </div>
             </div>
@@ -561,8 +1268,8 @@ export default function TransferCertificateView() {
               </div>
 
               <div className="flex items-center justify-between border-t pt-2 text-[9px]">
-                <span className="text-[8px] text-slate-400">If found, return to Nairee Office</span>
-                <div className="text-center font-serif italic font-bold text-slate-900">Dr. Marcus Vance (Principal)</div>
+                <span className="text-[8px] text-slate-400">If found, return to {schoolInfo.schoolName}</span>
+                <div className="text-center font-serif italic font-bold text-slate-900">{schoolInfo.principalName}</div>
               </div>
             </div>
           </div>
@@ -580,28 +1287,43 @@ export default function TransferCertificateView() {
         <div className="absolute right-0 top-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-black uppercase tracking-wider border border-teal-500/30">
+                Official Certification Hub
+              </span>
+              <span className="text-xs text-slate-400">&bull; {schoolInfo.schoolName}</span>
+            </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              Document Generator
+              Transfer Certificate &amp; Document Generator
             </h1>
             <p className="text-xs text-slate-300 mt-1">
-              Select any student or generate all certificates, marksheet reports, and identity cards in high-resolution printable format
+              Generate Board-compliant Transfer Certificates with 6 interchangeable designs, custom school crests, and dynamic synchronization
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowCustomizer(!showCustomizer)}
+              className={`px-4 py-2.5 rounded-2xl font-bold text-xs border flex items-center space-x-2 transition-all cursor-pointer ${
+                showCustomizer ? 'bg-amber-400 text-slate-950 border-amber-300 shadow-md' : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
+              }`}
+            >
+              <Settings2 className="w-4 h-4 text-amber-300" />
+              <span>{showCustomizer ? 'Hide Branding Customizer' : '🎨 Customize School Branding'}</span>
+            </button>
             <button
               onClick={() => { setViewMode('all'); setShowPrintModal(true); }}
-              className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 flex items-center space-x-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 flex items-center space-x-2 transition-all cursor-pointer"
             >
               <Users className="w-4 h-4 text-amber-300" />
-              <span>Bulk Print for All Students (6)</span>
+              <span>Bulk Print ({studentList.length})</span>
             </button>
             <button
               onClick={() => { setViewMode('single'); setShowPrintModal(true); }}
-              className="px-5 py-3 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
+              className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/30 flex items-center space-x-2 transition-transform hover:scale-105 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>Print Current Document</span>
+              <span>Print Certificate</span>
             </button>
           </div>
         </div>
@@ -635,7 +1357,162 @@ export default function TransferCertificateView() {
         </div>
       </div>
 
-      {/* Main Grid: Left Settings & Right Document Preview */}
+      {/* EXPANDABLE SCHOOL BRANDING & CERTIFICATE CUSTOMIZER PANEL */}
+      {showCustomizer && (
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white border-2 border-amber-400/40 shadow-2xl space-y-4 animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2">
+              <Palette className="w-5 h-5 text-amber-400" />
+              <h3 className="font-black text-sm text-white">School Branding &amp; Certificate Customizer</h3>
+              <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full font-bold border border-amber-400/30">
+                Live Dynamic Overrides
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                if (tenant) {
+                  setSchoolInfo({
+                    schoolName: tenant.school_name || 'International Model Academy',
+                    motto: tenant.tagline || 'Excellence in Knowledge • Character • Leadership',
+                    affiliationNo: tenant.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '883921' : '883921',
+                    schoolCode: tenant.school_code || '45091',
+                    udiseNo: '29280601244',
+                    bookNo: '042',
+                    address: tenant.address || '100 Knowledge Boulevard, Indiranagar, Bengaluru - 560038',
+                    phone: tenant.phone || '+91 98765 00000',
+                    email: tenant.email || 'principal@school.edu',
+                    principalName: 'Dr. Marcus Vance, Ph.D.',
+                    principalTitle: 'Principal / Head of Institution',
+                    customLogoUrl: tenant.logo_url || '',
+                    watermarkText: 'OFFICIAL SCHOOL RECORD'
+                  });
+                }
+              }}
+              className="text-[11px] text-amber-300 hover:text-amber-200 flex items-center gap-1 font-bold cursor-pointer"
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>Reset to School Defaults</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">Institution / School Name</label>
+              <input
+                type="text"
+                value={schoolInfo.schoolName}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, schoolName: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-bold outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">School Motto / Tagline</label>
+              <input
+                type="text"
+                value={schoolInfo.motto}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, motto: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-semibold outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">Affiliation / Reg No.</label>
+              <input
+                type="text"
+                value={schoolInfo.affiliationNo}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, affiliationNo: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-mono outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">School Code / UDISE No.</label>
+              <input
+                type="text"
+                value={schoolInfo.schoolCode}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, schoolCode: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-mono outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-slate-300 font-bold mb-1">Campus Address &amp; Location</label>
+              <input
+                type="text"
+                value={schoolInfo.address}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, address: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-medium outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">Principal / Signatory Name</label>
+              <input
+                type="text"
+                value={schoolInfo.principalName}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, principalName: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-bold outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+            <div>
+              <label className="block text-slate-300 font-bold mb-1">Official School Crest / Logo URL</label>
+              <input
+                type="text"
+                placeholder="https://... (or leave blank for generated gold seal)"
+                value={schoolInfo.customLogoUrl}
+                onChange={(e) => setSchoolInfo(prev => ({ ...prev, customLogoUrl: e.target.value }))}
+                className="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs outline-none focus:ring-2 focus:ring-amber-400"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6 TC TEMPLATE CAROUSEL SWITCHER (When Doc Type is 'tc') */}
+      {docType === 'tc' && (
+        <div className="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <h3 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">
+                Select Certificate Design Template (6 Official Layouts)
+              </h3>
+            </div>
+            <span className="text-[10px] text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full font-bold border border-amber-200">
+              Active: {tcTemplatesList.find(t => t.id === tcTemplate)?.title}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {tcTemplatesList.map((tpl) => {
+              const isSelected = tcTemplate === tpl.id;
+              return (
+                <button
+                  key={tpl.id}
+                  onClick={() => setTcTemplate(tpl.id)}
+                  className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                    isSelected
+                      ? 'border-amber-500 bg-amber-50/80 shadow-md ring-2 ring-amber-400/50 scale-[1.03]'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-bold text-amber-800 uppercase tracking-wider">{tpl.tag.split('•')[0]}</span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-amber-600 font-bold" />}
+                    </div>
+                    <div className="text-xs font-black text-slate-900 leading-tight">{tpl.title}</div>
+                    <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{tpl.desc}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                    <span>{tpl.orientation}</span>
+                    <span className="text-amber-700 font-bold">Apply</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Main Grid: Left Settings & Right Live Document Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: Student Selector & Parameters */}
@@ -643,7 +1520,7 @@ export default function TransferCertificateView() {
           <div className="flex items-center justify-between border-b pb-3">
             <h3 className="font-bold text-slate-800 text-sm flex items-center space-x-2">
               <FileText className="w-4 h-4 text-teal-600" />
-              <span>Document &amp; Student Configuration</span>
+              <span>Candidate Record &amp; Variables</span>
             </h3>
             <span className="text-[10px] font-mono text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full font-bold border border-teal-200">
               {getDocRegNo(activeStudent, docType)}
@@ -674,17 +1551,17 @@ export default function TransferCertificateView() {
                 <div>
                   <div className="font-bold text-slate-900 text-xs">{activeStudent.student_name}</div>
                   <div className="text-[11px] text-slate-500">{activeStudent.class_batch} &bull; Roll #{activeStudent.roll_no}</div>
-                  <div className="text-[10px] text-slate-400 font-mono">Blood Group: {activeStudent.blood_group} &bull; DOB: {activeStudent.dob}</div>
+                  <div className="text-[10px] text-slate-400 font-mono">DOB: {activeStudent.dob} &bull; Category: {activeStudent.caste_category || 'General'}</div>
                 </div>
               </div>
               <div>
                 {activeStudent.fee_status === 'Paid' ? (
                   <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-300">
-                    Fee Paid
+                    Fee Cleared
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold border border-rose-300">
-                    Fee Due ₹35,000
+                    Fee Due ₹35k
                   </span>
                 )}
               </div>
@@ -713,11 +1590,11 @@ export default function TransferCertificateView() {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">General Conduct / Evaluation</label>
+              <label className="block font-bold text-slate-700 mb-1">Reason for Leaving</label>
               <input
                 type="text"
-                value={conduct}
-                onChange={(e) => setConduct(e.target.value)}
+                value={reasonForLeaving}
+                onChange={(e) => setReasonForLeaving(e.target.value)}
                 className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
               />
             </div>
@@ -732,6 +1609,16 @@ export default function TransferCertificateView() {
               />
             </div>
 
+            <div>
+              <label className="block font-bold text-slate-700 mb-1">General Conduct / Evaluation</label>
+              <input
+                type="text"
+                value={conduct}
+                onChange={(e) => setConduct(e.target.value)}
+                className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
+              />
+            </div>
+
             <div className="pt-2">
               <button
                 type="button"
@@ -739,7 +1626,7 @@ export default function TransferCertificateView() {
                 className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md shadow-teal-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
                 <Printer className="w-4 h-4" />
-                <span>Open Printable Certificate</span>
+                <span>Open Printable View / Download PDF</span>
               </button>
             </div>
           </div>
@@ -751,12 +1638,19 @@ export default function TransferCertificateView() {
             <div className="flex items-center space-x-2">
               <Award className="w-4 h-4 text-teal-600" />
               <h3 className="font-bold text-slate-800 text-sm">
-                Official Document Live Preview
+                Official Live Document Preview
               </h3>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
-              {docTypesList.find(d => d.id === docType)?.title}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                {docTypesList.find(d => d.id === docType)?.title}
+              </span>
+              {docType === 'tc' && (
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                  {tcTemplatesList.find(t => t.id === tcTemplate)?.orientation}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -771,7 +1665,7 @@ export default function TransferCertificateView() {
           onClick={(e) => { if (e.target === e.currentTarget) setShowPrintModal(false); }}
           className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-md animate-fadeIn"
         >
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
             {/* Modal Header */}
             <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="flex items-center space-x-3">
@@ -780,10 +1674,12 @@ export default function TransferCertificateView() {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm sm:text-base">
-                    {viewMode === 'all' ? `Bulk Print: ${docTypesList.find(d => d.id === docType)?.title} (All 6 Students)` : `Official Print: ${docTypesList.find(d => d.id === docType)?.title}`}
+                    {viewMode === 'all' 
+                      ? `Bulk Print: ${docTypesList.find(d => d.id === docType)?.title} (All ${studentList.length} Students)` 
+                      : `Official Print: ${docTypesList.find(d => d.id === docType)?.title} - ${activeStudent.student_name}`}
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    High-resolution Board-compliant layout &bull; Ready for physical printer or PDF saving
+                    High-resolution Board-compliant layout &bull; Ready for physical printer or saving as PDF
                   </p>
                 </div>
               </div>
@@ -799,8 +1695,8 @@ export default function TransferCertificateView() {
             <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-100/60">
               {viewMode === 'all' ? (
                 studentList.map((st, idx) => (
-                  <div key={st.id || idx} className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
+                  <div key={st.id || idx} className="space-y-2 print:page-break-after-always">
+                    <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1 print:hidden">
                       <span>Document #{idx + 1} of {studentList.length} &bull; {st.student_name}</span>
                       <span className="font-mono">{getDocRegNo(st, docType)}</span>
                     </div>
@@ -816,7 +1712,7 @@ export default function TransferCertificateView() {
             <div className="p-4 px-6 bg-white border-t border-slate-200 flex items-center justify-between shrink-0">
               <div className="text-xs text-slate-500 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>Includes digital verification QR code &amp; institutional seal</span>
+                <span>Includes dynamic verification QR code &amp; institutional seal</span>
               </div>
               <div className="flex items-center gap-3">
                 <button
