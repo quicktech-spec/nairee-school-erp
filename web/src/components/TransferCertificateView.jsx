@@ -152,8 +152,8 @@ export default function TransferCertificateView() {
   // 5 Domicile & Bonafide Templates
   const [domicileTemplate, setDomicileTemplate] = useState('statutory_residence_formal');
 
-  // 5 Academic Report Card / Marksheet Templates
-  const [reportCardTemplate, setReportCardTemplate] = useState('cbse_cce_holistic');
+  // 5 Academic Report Card / Marksheet Templates (Matching uploaded reference designs)
+  const [reportCardTemplate, setReportCardTemplate] = useState('salford_skyblue_quarterly');
 
   // 5 Exam Admit Card / Hall Ticket Templates
   const [admitCardTemplate, setAdmitCardTemplate] = useState('statutory_hall_ticket');
@@ -780,44 +780,114 @@ export default function TransferCertificateView() {
 
   const reportCardTemplatesList = [
     {
-      id: 'cbse_cce_holistic',
-      title: 'CBSE Holistic Term Marksheet',
-      tag: 'Portrait • Scholastic & Co-Scholastic',
-      desc: '8-subject table, attendance percentage, scholastic grades (A1-E), and teacher evaluation',
+      id: 'salford_skyblue_quarterly',
+      title: 'Salford Sky-Blue Quarterly (Image 1)',
+      tag: 'Portrait • 4 Quarters & Grading Scale',
+      desc: 'Sky-blue graduation logo, 4-quarterly marks table for 10 subjects, percentage grading scale, and teacher comments box',
       orientation: 'portrait',
-      activeBg: 'from-purple-700/30 to-indigo-700/20 border-purple-400 text-purple-200'
+      activeBg: 'from-sky-700/30 to-blue-700/20 border-sky-400 text-sky-200',
+      defaultConfig: {
+        title: 'REPORT CARD',
+        subtitle: 'Salford High School',
+        presentationLine: 'Academic Performance & Term Evaluation Record',
+        recipientName: '',
+        eventTitle: 'High School / Senior Secondary',
+        bodyText: 'Demonstrates consistent academic effort, excellent analytical skills, and exemplary classroom participation throughout all four academic quarters.',
+        awardDate: 'Academic Session 2025-2026',
+        signatory1Name: 'Mrs. Eleanor Vance',
+        signatory1Title: 'Class Teacher',
+        signatory2Name: 'Dr. Marcus Vance',
+        signatory2Title: 'Principal',
+        organizationName: 'Salford High School'
+      }
     },
     {
-      id: 'modern_analytics_dashboard',
-      title: 'Modern Visual Performance Matrix',
-      tag: 'Landscape • Percentile & Progress',
-      desc: 'Subject marks with visual progress bars, percentile graphs, rank badge, and grading breakdown',
-      orientation: 'landscape',
-      activeBg: 'from-cyan-700/30 to-purple-700/20 border-cyan-400 text-cyan-200'
-    },
-    {
-      id: 'classic_heritage_transcript',
-      title: 'Classic Academic Transcript',
-      tag: 'Portrait • Distinction Honors',
-      desc: 'Traditional double-border marksheet with maximum/minimum/obtained marks breakdown',
+      id: 'homeschool_holistic_habits',
+      title: 'Homeschool & Habits Profile (Image 2)',
+      tag: 'Portrait • 5-Star Habits & Term Focus',
+      desc: 'Pastel yellow & clean double-border layout, subject evaluations, 5-star learning habits, term highlights, and next term focus',
       orientation: 'portrait',
-      activeBg: 'from-blue-700/30 to-slate-700/20 border-blue-400 text-blue-200'
+      activeBg: 'from-amber-700/30 to-yellow-700/20 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'HOMESCHOOL REPORT CARD',
+        subtitle: 'Comprehensive Student Evaluation & Learning Profile',
+        presentationLine: 'Individualized Academic Growth & Habit Assessment',
+        recipientName: '',
+        eventTitle: 'Middle & Senior Years Curriculum',
+        bodyText: 'Outstanding self-directed learning, thorough project documentation, and proactive problem-solving throughout the term.',
+        awardDate: 'Academic Term 2025-2026',
+        signatory1Name: 'Elena Rostova',
+        signatory1Title: 'Instructor Signature',
+        signatory2Name: 'Rajesh Patel',
+        signatory2Title: 'Parent Signature',
+        organizationName: 'Homeschool Academic Academy'
+      }
     },
     {
-      id: 'cambridge_igcse_gradebook',
-      title: 'Cambridge IGCSE Gradebook',
-      tag: 'Portrait • Letter Grade Scale',
-      desc: 'International letter grades (A*, A, B...), component credits, GPA scale, and principal sign-off',
+      id: 'salford_maroon_quarterly',
+      title: 'Salford Burgundy Laurel (Image 3)',
+      tag: 'Portrait • Laurel Crest & Dual Corner Swooshes',
+      desc: 'Rich burgundy header, laurel wreath crest, 4-quarter subject grading table, grading scale card, and dedicated comment box',
       orientation: 'portrait',
-      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+      activeBg: 'from-rose-900/40 to-red-950 border-rose-400 text-rose-200',
+      defaultConfig: {
+        title: 'REPORT CARD',
+        subtitle: 'SALFORD HIGH SCHOOL',
+        presentationLine: 'Comprehensive Scholastic Evaluation & Progress Record',
+        recipientName: '',
+        eventTitle: 'Secondary School Certification (Class 10)',
+        bodyText: 'Shows outstanding scholastic progress, consistent homework completion, and great enthusiasm in STEM and language studies.',
+        awardDate: 'Session 2025-2026',
+        signatory1Name: 'Margaret Thatcher',
+        signatory1Title: 'Academic Coordinator',
+        signatory2Name: 'Harold McMillan',
+        signatory2Title: 'Head of School',
+        organizationName: 'SALFORD HIGH SCHOOL'
+      }
     },
     {
-      id: 'executive_split_semester',
-      title: 'Bi-Semester Comparative Sheet',
-      tag: 'Landscape • Term 1 vs Term 2',
-      desc: 'Side-by-side Term 1 vs Term 2 comparative performance table with cumulative CGPA',
-      orientation: 'landscape',
-      activeBg: 'from-rose-700/30 to-purple-700/20 border-rose-400 text-rose-200'
+      id: 'classic_ivy_slate_gold',
+      title: 'Classic Ivy League Slate & Gold (Image 4)',
+      tag: 'Portrait • Slate Blue Ribbons & Serif Typography',
+      desc: 'Dark slate blue section banners with gold serif lettering, attendance record, subject grades, and teacher feedback',
+      orientation: 'portrait',
+      activeBg: 'from-slate-800/40 to-blue-950 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'REPORT CARD',
+        subtitle: 'Ivy League Academic Standards & Transcript',
+        presentationLine: 'Official Student Academic Record & Evaluation',
+        recipientName: '',
+        eventTitle: 'Senior Grade 10 Honors',
+        bodyText: 'Exceptional academic discipline, intellectual curiosity, and top-tier performance across humanities and science subjects.',
+        awardDate: 'Term Ending March 2026',
+        signatory1Name: 'Prof. Alistair Finch',
+        signatory1Title: 'Senior Master',
+        signatory2Name: 'Dr. Rebecca Sterling',
+        signatory2Title: 'Dean of Studies',
+        organizationName: 'St. Jude International Academy'
+      }
+    },
+    {
+      id: 'borcelle_lavender_pill',
+      title: 'Borcelle Lavender Pill Gradebook (Image 5)',
+      tag: 'Portrait • Purple Banner, BLS Shield & Pill Badges',
+      desc: 'Deep purple header with BLS shield crest, lavender rounded containers, white pill inputs for grades, and ruled comments area',
+      orientation: 'portrait',
+      activeBg: 'from-purple-800/30 to-violet-900/20 border-purple-400 text-purple-200',
+      defaultConfig: {
+        title: 'STUDENT REPORT CARD',
+        subtitle: 'BORCELLE LANGUAGE SCHOOL',
+        presentationLine: 'FIRST TERM EVALUATION',
+        recipientName: '',
+        eventTitle: 'Advanced English & Multilingual Studies',
+        bodyText: 'Excellent linguistic competence, active participation in oral discussions, and high accuracy in written assignments.',
+        awardDate: 'First Term 2025-2026',
+        signatory1Name: 'Madame Clara Laurent',
+        signatory1Title: 'Lead Teacher',
+        signatory2Name: 'Dr. Antoine Borcelle',
+        signatory2Title: 'School Director',
+        organizationName: 'BORCELLE LANGUAGE SCHOOL'
+      }
     }
   ];
 
@@ -1282,6 +1352,49 @@ export default function TransferCertificateView() {
         <text x="50" y="78" textAnchor="middle" className="text-[4.5px] font-black fill-white uppercase tracking-wider font-sans">
           KAPURTHALA
         </text>
+      </svg>
+    </div>
+  );
+
+  // 12. Salford High Sky-Blue Graduation Cap & Book Logo (for Report Card Image 1)
+  const SalfordGraduationBookLogo = ({ size = 76 }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size * 0.75 }}>
+      <svg viewBox="0 0 100 75" fill="none" className="w-full h-full">
+        {/* Open book green & blue wings */}
+        <path d="M50 60 C35 55, 18 52, 6 62 C18 45, 36 48, 50 54 Z" fill="#48bb78" />
+        <path d="M50 60 C65 55, 82 52, 94 62 C82 45, 64 48, 50 54 Z" fill="#2b6cb0" />
+        <path d="M50 54 C35 48, 20 45, 12 50 C24 38, 38 41, 50 46 Z" fill="#319795" />
+        <path d="M50 54 C65 48, 80 45, 88 50 C76 38, 62 41, 50 46 Z" fill="#3182ce" />
+        {/* Graduation cap */}
+        <path d="M50 10 L84 25 L50 40 L16 25 Z" fill="#2b6cb0" />
+        <path d="M30 32 L30 46 C30 52, 70 52, 70 46 L70 32 C64 36, 36 36, 30 32 Z" fill="#1e4e8c" />
+        {/* Tassel */}
+        <path d="M16 25 L16 42" stroke="#2b6cb0" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="16" cy="43" r="2.5" fill="#2b6cb0" />
+      </svg>
+    </div>
+  );
+
+  // 13. Laurel Wreath Logo (for Report Card Image 3)
+  const LaurelWreathLogo = ({ size = 68, color = "#881337" }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
+        {/* Left wreath branch */}
+        <path d="M50 90 C30 85, 14 65, 14 45 C14 30, 22 18, 32 10 C28 20, 28 35, 38 48 C42 42, 38 28, 42 20 C42 32, 48 40, 48 48 C42 55, 30 65, 35 78 C40 70, 48 65, 50 60" fill={color} />
+        {/* Right wreath branch */}
+        <path d="M50 90 C70 85, 86 65, 86 45 C86 30, 78 18, 68 10 C72 20, 72 35, 62 48 C58 42, 62 28, 58 20 C58 32, 52 40, 52 48 C58 55, 70 65, 65 78 C60 70, 52 65, 50 60" fill={color} />
+        <text x="50" y="55" fill={color} fontSize="14" fontWeight="900" textAnchor="middle" fontFamily="sans-serif" letterSpacing="1">LOGO</text>
+      </svg>
+    </div>
+  );
+
+  // 14. Borcelle Shield Crest (for Report Card Image 5)
+  const BorcelleShieldCrest = ({ size = 44 }) => (
+    <div className="relative inline-flex items-center justify-center select-none shrink-0" style={{ width: size, height: size * 1.15 }}>
+      <svg viewBox="0 0 100 115" fill="none" className="w-full h-full">
+        <path d="M50 5 L90 22 C90 65, 75 95, 50 110 C25 95, 10 65, 10 22 Z" fill="#ffffff" stroke="#581c87" strokeWidth="6" />
+        <path d="M50 12 L84 27 C84 62, 70 88, 50 102 C30 88, 16 62, 16 27 Z" fill="#581c87" />
+        <text x="50" y="65" fill="#ffffff" fontSize="28" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">BLS</text>
       </svg>
     </div>
   );
@@ -3490,6 +3603,630 @@ export default function TransferCertificateView() {
     );
   };
 
+  // =========================================================================
+  // REPORT CARD TEMPLATE 1: Salford High Sky-Blue Quarterly (Image 1)
+  // =========================================================================
+  const renderSalfordSkyblueQuarterlyReport = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'REPORT CARD';
+    const certSubtitle = certConfig.subtitle || 'Salford High School';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certLevel = certConfig.eventTitle || 'High School / Senior Secondary';
+    const certBody = certConfig.bodyText || 'Demonstrates consistent academic effort, excellent analytical skills, and exemplary classroom participation throughout all four academic quarters.';
+
+    const subjects = [
+      { name: 'English', q1: '92%', q2: '94%', q3: '90%', q4: '95%' },
+      { name: 'Economic', q1: '88%', q2: '85%', q3: '90%', q4: '92%' },
+      { name: 'History', q1: '85%', q2: '89%', q3: '91%', q4: '93%' },
+      { name: 'Biology', q1: '94%', q2: '91%', q3: '95%', q4: '96%' },
+      { name: 'Math', q1: '98%', q2: '96%', q3: '99%', q4: '98%' },
+      { name: 'Science', q1: '92%', q2: '90%', q3: '94%', q4: '93%' },
+      { name: 'Social Studies', q1: '89%', q2: '92%', q3: '90%', q4: '91%' },
+      { name: 'Art', q1: '95%', q2: '97%', q3: '96%', q4: '98%' },
+      { name: 'Physical Education', q1: '96%', q2: '98%', q3: '97%', q4: '99%' },
+      { name: 'Chemistry', q1: '91%', q2: '93%', q3: '90%', q4: '94%' }
+    ];
+
+    return (
+      <div className="bg-white border border-sky-200 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-800 flex flex-col min-h-[950px]">
+        {/* Sky-Blue Top Header Banner */}
+        <div className="bg-[#dcf0fa] px-8 py-6 border-b border-sky-200">
+          <div className="flex items-center gap-6">
+            <SalfordGraduationBookLogo size={76} />
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-black text-[#1f6390] tracking-tight uppercase leading-none">
+                {certTitle}
+              </h1>
+              <p className="text-sm sm:text-base font-semibold text-[#3b7a9e] mt-1.5">
+                {certSubtitle}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Student Meta Details */}
+        <div className="p-8 pb-4 space-y-3">
+          <div className="flex items-center text-sm font-bold text-[#1f6390]">
+            <span className="w-24 shrink-0 text-slate-800">Student</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-extrabold text-slate-900 uppercase">
+              {certRecipient}
+            </div>
+          </div>
+          <div className="flex items-center text-sm font-bold text-[#1f6390]">
+            <span className="w-24 shrink-0 text-slate-800">Level</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-medium text-slate-700">
+              {certLevel}
+            </div>
+          </div>
+          <div className="flex items-center text-sm font-bold text-[#1f6390]">
+            <span className="w-24 shrink-0 text-slate-800">Class</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-bold text-slate-900">
+              {studentClass}
+            </div>
+          </div>
+        </div>
+
+        {/* Quarterly Marks Table */}
+        <div className="px-8 pb-6 flex-1">
+          <div className="border border-[#5b97bc] overflow-hidden">
+            <table className="w-full text-center text-xs">
+              <thead className="bg-[#5b97bc] text-white font-bold text-xs uppercase">
+                <tr>
+                  <th className="py-3 px-4 text-left w-1/3 border-r border-[#4782a7]">Subject</th>
+                  <th className="py-3 px-2 border-r border-[#4782a7]">1st Quarter</th>
+                  <th className="py-3 px-2 border-r border-[#4782a7]">2nd Quarter</th>
+                  <th className="py-3 px-2 border-r border-[#4782a7]">3rd Quarter</th>
+                  <th className="py-3 px-2">4th Quarter</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#7cb5d6] text-xs font-semibold text-slate-800">
+                {subjects.map((sub, idx) => (
+                  <tr key={idx} className="hover:bg-sky-50/40">
+                    <td className="py-2.5 px-4 text-left font-bold text-slate-900 border-r border-[#7cb5d6]">{sub.name}</td>
+                    <td className="py-2.5 px-2 border-r border-[#7cb5d6]">{sub.q1}</td>
+                    <td className="py-2.5 px-2 border-r border-[#7cb5d6]">{sub.q2}</td>
+                    <td className="py-2.5 px-2 border-r border-[#7cb5d6]">{sub.q3}</td>
+                    <td className="py-2.5 px-2 font-bold text-[#1f6390]">{sub.q4}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Grading Scale Banner & Teacher Comment Box */}
+        <div className="bg-[#dcf0fa] p-8 border-t border-sky-200 space-y-4">
+          <div className="text-xs font-black text-[#1f6390] tracking-wider flex flex-wrap items-center justify-between">
+            <span className="uppercase">GRADING SCALE :</span>
+            <span>A = 90% -100%</span>
+            <span>B = 80% - 89%</span>
+            <span>C = 60% - 79%</span>
+            <span>D = 0% - 59%</span>
+          </div>
+
+          <div className="bg-white border border-sky-300 p-4 min-h-[100px] text-xs">
+            <div className="font-bold text-[#1f6390] mb-1">Comment :</div>
+            <p className="text-slate-700 leading-relaxed font-medium">{certBody}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // REPORT CARD TEMPLATE 2: Homeschool Holistic Learning Habits (Image 2)
+  // =========================================================================
+  const renderHomeschoolHolisticHabitsReport = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'HOMESCHOOL REPORT CARD';
+    const certSubtitle = certConfig.subtitle || 'Individual Learning & Habit Assessment';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certBody = certConfig.bodyText || 'Demonstrates exceptional focus, self-directed research initiative, and strong analytical problem-solving skills throughout the academic term.';
+    const certDate = certConfig.awardDate || academicSession || '15 June 2026';
+    const certSig1Name = certConfig.signatory1Name || 'Elena Rostova';
+    const certSig2Name = certConfig.signatory2Name || 'Rajesh Patel';
+
+    const subjects = [
+      { name: 'Language Arts', grade: 'A', comment: 'Strong comprehension and written expression' },
+      { name: 'Mathematics', grade: 'A-', comment: 'Confident with multi-step problem solving' },
+      { name: 'Science', grade: 'A', comment: 'Curious and engaged in independent research' },
+      { name: 'History', grade: 'B+', comment: 'Good understanding with developing analysis' },
+      { name: 'Art', grade: 'A', comment: 'Creative, experimental, and highly engaged' },
+      { name: 'Physical Education', grade: 'A-', comment: 'Consistent participation and effort' }
+    ];
+
+    const habits = [
+      { title: 'INDEPENDENCE', desc: 'Completes familiar work with minimal guidance.', stars: 5 },
+      { title: 'ORGANIZATION', desc: 'Maintains a consistent learning routine.', stars: 4 },
+      { title: 'CURIOSITY', desc: 'Frequently explores topics beyond assigned lessons.', stars: 5 },
+      { title: 'PROBLEM SOLVING', desc: 'Approaches unfamiliar tasks thoughtfully.', stars: 4 }
+    ];
+
+    return (
+      <div className="bg-white border-2 border-slate-900 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-900">
+        {/* Top Yellow Header Banner */}
+        <div className="bg-[#fef9c3] p-6 border-b-2 border-slate-900 text-center">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="flex justify-between items-center text-xs font-bold text-slate-700 mt-2 px-2">
+            <span>Student: <strong className="text-slate-950 underline">{certRecipient}</strong></span>
+            <span>Class: <strong className="text-slate-950">{studentClass}</strong></span>
+            <span>Date: <strong className="text-slate-950 font-mono">{certDate}</strong></span>
+          </div>
+        </div>
+
+        {/* Academic Subjects Table */}
+        <div className="border-b-2 border-slate-900">
+          <table className="w-full text-xs text-left">
+            <thead className="border-b border-slate-900 font-bold">
+              <tr>
+                <th className="py-2 px-4 w-1/3 border-r border-slate-900">Subject</th>
+                <th className="py-2 px-3 w-20 text-center border-r border-slate-900">Grade</th>
+                <th className="py-2 px-4">Comment</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-300 font-medium">
+              {subjects.map((sub, idx) => (
+                <tr key={idx}>
+                  <td className="py-2 px-4 font-bold border-r border-slate-900">{sub.name}</td>
+                  <td className="py-2 px-3 font-black text-center border-r border-slate-900">{sub.grade}</td>
+                  <td className="py-2 px-4 text-slate-700 text-[11px]">{sub.comment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Learning Habits Section */}
+        <div className="border-b-2 border-slate-900">
+          <div className="px-4 py-2 font-black text-xs uppercase tracking-wider border-b border-slate-900">
+            LEARNING HABITS
+          </div>
+          <div className="divide-y divide-slate-300">
+            {habits.map((h, idx) => (
+              <div key={idx} className="px-4 py-2 flex items-center justify-between text-xs">
+                <div>
+                  <strong className="block text-[11px] font-black uppercase text-slate-900">{h.title}</strong>
+                  <span className="text-[10.5px] text-slate-600">{h.desc}</span>
+                </div>
+                <div className="flex text-slate-950 text-sm tracking-widest pl-2">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <span key={s}>{s <= h.stars ? '★' : '☆'}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Term Highlights vs Next Term Focus (2 Column Split) */}
+        <div className="grid grid-cols-2 border-b-2 border-slate-900">
+          {/* Term Highlights */}
+          <div className="border-r border-slate-900">
+            <div className="bg-[#fef9c3] px-3 py-1.5 font-black text-xs uppercase text-center border-b border-slate-900">
+              TERM HIGHLIGHTS
+            </div>
+            <div className="p-3 text-xs space-y-1 font-semibold text-slate-800">
+              <div>&bull; 18 Books Completed</div>
+              <div>&bull; 05 Independent Projects</div>
+              <div>&bull; 11 Major Assignments</div>
+              <div>&bull; 94% On-Time Completion</div>
+            </div>
+          </div>
+
+          {/* Next Term Focus */}
+          <div>
+            <div className="bg-[#fef9c3] px-3 py-1.5 font-black text-xs uppercase text-center border-b border-slate-900">
+              NEXT TERM FOCUS
+            </div>
+            <div className="p-3 text-[11px] space-y-1 text-slate-800 font-medium">
+              <div><strong>1. BUILD</strong> Advanced writing skills</div>
+              <div><strong>2. EXPLORE</strong> Longer independent projects</div>
+              <div><strong>3. STRENGTHEN</strong> Multi-step mathematical reasoning</div>
+              <div><strong>4. MAINTAIN</strong> Consistent study routines</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Term Assessment */}
+        <div className="border-b-2 border-slate-900">
+          <div className="bg-[#fef9c3] px-3 py-1.5 font-black text-xs uppercase text-center border-b border-slate-900">
+            TERM ASSESSMENT
+          </div>
+          <div className="p-2.5 flex justify-around text-xs font-bold text-slate-900">
+            <span>ACADEMIC PROGRESS &bull; <strong className="text-emerald-800 font-black">Strong</strong></span>
+            <span>LEARNING HABITS &bull; <strong className="text-emerald-800 font-black">Excellent</strong></span>
+            <span>INDEPENDENCE &bull; <strong className="text-emerald-800 font-black">Excellent</strong></span>
+          </div>
+        </div>
+
+        {/* Instructor Notes */}
+        <div className="border-b-2 border-slate-900">
+          <div className="bg-[#fef9c3] px-3 py-1.5 font-black text-xs uppercase text-center border-b border-slate-900">
+            INSTRUCTOR NOTES
+          </div>
+          <div className="p-4 text-xs leading-relaxed text-slate-800 min-h-[90px]">
+            {certBody}
+          </div>
+        </div>
+
+        {/* Signatures Row */}
+        <div className="p-6 grid grid-cols-3 gap-6 text-xs text-center font-bold">
+          <div>
+            <div className="font-serif italic text-slate-800 text-sm mb-1">{certSig1Name}</div>
+            <div className="border-t border-dotted border-slate-900 pt-1 text-[11px]">Instructor Signature</div>
+          </div>
+          <div>
+            <div className="font-serif italic text-slate-800 text-sm mb-1">{certSig2Name}</div>
+            <div className="border-t border-dotted border-slate-900 pt-1 text-[11px]">Parent Signature</div>
+          </div>
+          <div>
+            <div className="font-mono text-slate-900 text-xs mb-1">{certDate}</div>
+            <div className="border-t border-dotted border-slate-900 pt-1 text-[11px]">Date</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // REPORT CARD TEMPLATE 3: Salford High Maroon / Burgundy Laurel (Image 3)
+  // =========================================================================
+  const renderSalfordMaroonQuarterlyReport = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'REPORT CARD';
+    const certSubtitle = certConfig.subtitle || 'SALFORD HIGH SCHOOL';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certLevel = certConfig.eventTitle || 'Senior Secondary';
+    const certBody = certConfig.bodyText || 'Demonstrates outstanding academic focus, thorough project work, and great participation across all scholastic disciplines.';
+
+    const subjects = [
+      { name: 'English', q1: '92%', q2: '94%', q3: '90%', q4: '95%' },
+      { name: 'Economic', q1: '88%', q2: '85%', q3: '90%', q4: '92%' },
+      { name: 'Biology', q1: '94%', q2: '91%', q3: '95%', q4: '96%' },
+      { name: 'History', q1: '85%', q2: '89%', q3: '91%', q4: '93%' },
+      { name: 'Math', q1: '98%', q2: '96%', q3: '99%', q4: '98%' },
+      { name: 'Science', q1: '92%', q2: '90%', q3: '94%', q4: '93%' },
+      { name: 'Social Studies', q1: '89%', q2: '92%', q3: '90%', q4: '91%' },
+      { name: 'Art', q1: '95%', q2: '97%', q3: '96%', q4: '98%' },
+      { name: 'Physical Education', q1: '96%', q2: '98%', q3: '97%', q4: '99%' },
+      { name: 'Chemistry', q1: '91%', q2: '93%', q3: '90%', q4: '94%' }
+    ];
+
+    return (
+      <div className="bg-white border border-slate-300 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-800 relative flex flex-col min-h-[960px]">
+        {/* Top-Left Burgundy Swoosh */}
+        <div className="absolute top-0 left-0 w-44 h-16 bg-[#881337] [clip-path:polygon(0_0,100%_0,0_100%)] pointer-events-none" />
+        
+        {/* Bottom-Right Burgundy Swoosh */}
+        <div className="absolute bottom-0 right-0 w-44 h-16 bg-[#881337] [clip-path:polygon(100%_100%,100%_0,0_100%)] pointer-events-none" />
+
+        {/* Center Header */}
+        <div className="pt-10 pb-6 text-center space-y-2 relative z-10">
+          <div className="flex justify-center">
+            <LaurelWreathLogo size={68} color="#881337" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#881337] tracking-wider uppercase font-sans">
+            {certTitle}
+          </h1>
+          <p className="text-xs sm:text-sm font-bold text-[#881337] tracking-widest uppercase">
+            {certSubtitle}
+          </p>
+        </div>
+
+        {/* Student Meta Details */}
+        <div className="px-10 pb-4 space-y-3 relative z-10">
+          <div className="flex items-center text-sm font-bold text-[#881337]">
+            <span className="w-24 shrink-0 text-slate-800">Student</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-extrabold text-slate-900 uppercase">
+              {certRecipient}
+            </div>
+          </div>
+          <div className="flex items-center text-sm font-bold text-[#881337]">
+            <span className="w-24 shrink-0 text-slate-800">Level</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-medium text-slate-700">
+              {certLevel}
+            </div>
+          </div>
+          <div className="flex items-center text-sm font-bold text-[#881337]">
+            <span className="w-24 shrink-0 text-slate-800">Class</span>
+            <span className="mr-2">:</span>
+            <div className="flex-1 border-b border-slate-300 pb-0.5 font-bold text-slate-900">
+              {studentClass}
+            </div>
+          </div>
+        </div>
+
+        {/* Quarterly Marks Table */}
+        <div className="px-10 pb-6 flex-1 relative z-10">
+          <div className="border border-[#881337] overflow-hidden">
+            <table className="w-full text-center text-xs">
+              <thead className="bg-[#881337] text-white font-bold text-xs uppercase">
+                <tr>
+                  <th className="py-3 px-4 text-left w-1/3 border-r border-rose-900">Subject</th>
+                  <th className="py-3 px-2 border-r border-rose-900">1st Quarter</th>
+                  <th className="py-3 px-2 border-r border-rose-900">2nd Quarter</th>
+                  <th className="py-3 px-2 border-r border-rose-900">3rd Quarter</th>
+                  <th className="py-3 px-2">4th Quarter</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-300 text-xs font-semibold text-slate-800">
+                {subjects.map((sub, idx) => (
+                  <tr key={idx} className="hover:bg-rose-50/40">
+                    <td className="py-2.5 px-4 text-left font-bold text-slate-900 border-r border-slate-300">{sub.name}</td>
+                    <td className="py-2.5 px-2 border-r border-slate-300">{sub.q1}</td>
+                    <td className="py-2.5 px-2 border-r border-slate-300">{sub.q2}</td>
+                    <td className="py-2.5 px-2 border-r border-slate-300">{sub.q3}</td>
+                    <td className="py-2.5 px-2 font-bold text-[#881337]">{sub.q4}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Bottom Section: Grading Scale Block & Comment Block */}
+        <div className="px-10 pb-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch relative z-10">
+          {/* Left Burgundy Box: Grading Scale */}
+          <div className="md:col-span-4 bg-[#881337] text-white p-4 space-y-2 text-xs flex flex-col justify-center">
+            <div className="font-black tracking-wider uppercase border-b border-rose-700/80 pb-1">
+              GRADING SCALE :
+            </div>
+            <div className="space-y-1 font-bold text-[11px] pt-1 text-rose-100">
+              <div>A = 90% -100%</div>
+              <div>B = 80% - 89%</div>
+              <div>C = 60% - 79%</div>
+              <div>D = 0% - 59%</div>
+            </div>
+          </div>
+
+          {/* Right Bordered Box: Comment */}
+          <div className="md:col-span-8 border border-slate-400 p-3 min-h-[110px] relative flex flex-col">
+            <div className="absolute -top-3 left-3 bg-[#881337] text-white text-[11px] font-bold px-3 py-0.5">
+              Comment :
+            </div>
+            <p className="text-xs text-slate-700 leading-relaxed font-medium pt-2">
+              {certBody}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // REPORT CARD TEMPLATE 4: Classic Ivy League Slate & Gold (Image 4)
+  // =========================================================================
+  const renderClassicIvySlateGoldReport = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'REPORT CARD';
+    const studentClass = customClassSection || st.class_batch || 'GRADE 10 - A';
+    const certTeacher = certConfig.signatory1Name || 'Mrs. Eleanor Vance';
+    const certBody = certConfig.bodyText || 'Exhibits exemplary academic diligence, outstanding mastery of critical concepts, and a high degree of intellectual curiosity across all subjects.';
+
+    const subjects = [
+      { name: 'ARTS', grade: 'A+ (97)' },
+      { name: 'ENGLISH', grade: 'A (93)' },
+      { name: 'HISTORY', grade: 'A- (90)' },
+      { name: 'MATH', grade: 'A+ (98)' },
+      { name: 'MUSIC', grade: 'A (95)' },
+      { name: 'SCIENCE', grade: 'A (94)' },
+      { name: 'SOCIAL STUDIES', grade: 'A- (91)' },
+      { name: 'PHYSICAL EDUCATION', grade: 'A+ (99)' }
+    ];
+
+    return (
+      <div className="bg-white border border-slate-300 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-serif text-slate-900">
+        {/* Top Solid Navy Header Banner */}
+        <div className="bg-[#264653] text-[#dfa251] py-5 text-center">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-[0.35em] uppercase font-serif">
+            {certTitle.split('').join(' ')}
+          </h1>
+        </div>
+
+        {/* Student Meta Details in 2-Columns */}
+        <div className="p-8 pb-6 grid grid-cols-2 gap-y-4 gap-x-8 text-xs tracking-wider uppercase font-serif">
+          <div className="flex justify-between border-b border-slate-300 pb-1">
+            <span className="font-bold text-slate-700">NAME</span>
+            <strong className="text-slate-950 font-black">{certRecipient}</strong>
+          </div>
+          <div className="flex justify-between border-b border-slate-300 pb-1">
+            <span className="font-bold text-slate-700">GRADE</span>
+            <strong className="text-slate-950 font-black">{studentClass}</strong>
+          </div>
+          <div className="flex justify-between border-b border-slate-300 pb-1">
+            <span className="font-bold text-slate-700">TEACHER</span>
+            <strong className="text-slate-950 font-black">{certTeacher}</strong>
+          </div>
+          <div className="flex justify-between border-b border-slate-300 pb-1">
+            <span className="font-bold text-slate-700">ATTENDANCE</span>
+            <strong className="text-slate-950 font-black">96.8% (182 / 188)</strong>
+          </div>
+        </div>
+
+        {/* Section 1: SUBJECT & GRADE */}
+        <div>
+          <div className="bg-[#264653] text-[#dfa251] py-2 px-8 flex justify-between text-xs font-black tracking-[0.25em] uppercase font-serif">
+            <span>SUBJECT</span>
+            <span>GRADE</span>
+          </div>
+          <div className="p-8 py-4 divide-y divide-slate-200 text-xs tracking-wider uppercase font-serif">
+            {subjects.map((sub, idx) => (
+              <div key={idx} className="py-2.5 flex justify-between items-center">
+                <span className="font-bold text-slate-800">{sub.name}</span>
+                <span className="font-black text-[#264653] text-sm">{sub.grade}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 2: TEACHER'S COMMENTS AND FEEDBACK */}
+        <div>
+          <div className="bg-[#264653] text-[#dfa251] py-2 px-8 text-center text-xs font-black tracking-[0.25em] uppercase font-serif">
+            TEACHER'S COMMENTS AND FEEDBACK
+          </div>
+          <div className="p-8 py-6 text-xs font-sans leading-relaxed text-slate-700 min-h-[90px]">
+            {certBody}
+          </div>
+        </div>
+
+        {/* Section 3: GRADING SCALE */}
+        <div>
+          <div className="bg-[#264653] text-[#dfa251] py-2 px-8 text-center text-xs font-black tracking-[0.25em] uppercase font-serif">
+            GRADING SCALE
+          </div>
+          <div className="p-8 py-6 grid grid-cols-3 gap-6 text-xs text-center font-serif tracking-widest uppercase">
+            <div className="space-y-1">
+              <div>A &nbsp;&nbsp; 90 - 100</div>
+              <div>B &nbsp;&nbsp; 80 - 89</div>
+            </div>
+            <div className="space-y-1">
+              <div>C &nbsp;&nbsp; 70 - 79</div>
+              <div>D &nbsp;&nbsp; 60 - 69</div>
+            </div>
+            <div className="space-y-1 font-bold">
+              <div>FAIL</div>
+              <div>59 AND BELOW</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // REPORT CARD TEMPLATE 5: Borcelle Modern Lavender Pill Gradebook (Image 5)
+  // =========================================================================
+  const renderBorcelleLavenderPillReport = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'STUDENT REPORT CARD';
+    const certSubtitle = certConfig.subtitle || 'BORCELLE LANGUAGE SCHOOL';
+    const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
+    const certTeacher = certConfig.signatory1Name || 'Madame Clara Laurent';
+    const certCourse = certConfig.eventTitle || 'Language & Academic Studies';
+    const certYear = certConfig.awardDate || academicSession || '2025 - 2026';
+    const certBody = certConfig.bodyText || 'Shows exceptional linguistic proficiency, active oral participation, and consistently high marks on coursework and assignments.';
+
+    const pillGrades = [
+      { name: 'Reading', grade: '95% (A+)' },
+      { name: 'Writing', grade: '92% (A)' },
+      { name: 'Listening', grade: '98% (A+)' },
+      { name: 'Speaking', grade: '94% (A)' },
+      { name: 'Attendance', grade: '98% (185/188)' },
+      { name: 'Assignments', grade: '96% (Grade A)' }
+    ];
+
+    return (
+      <div className="bg-white border border-purple-200 rounded-none shadow-2xl overflow-hidden max-w-3xl mx-auto font-sans text-slate-900 pb-8">
+        {/* Purple Top Header Banner */}
+        <div className="bg-[#581c87] text-white px-8 py-5 flex items-center justify-between">
+          <div className="border-2 border-white px-5 py-1 rounded-full text-xs font-mono font-black tracking-widest uppercase">
+            FIRST TERM
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="font-mono font-black text-sm tracking-wider uppercase text-right">
+              {certSubtitle}
+            </span>
+            <BorcelleShieldCrest size={44} />
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center my-5">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#581c87] font-mono tracking-widest uppercase">
+            {certTitle}
+          </h1>
+        </div>
+
+        {/* Student Meta Details Card (Lavender Rounded Container) */}
+        <div className="mx-8 bg-[#f3e8ff] p-5 rounded-3xl border border-[#d8b4fe] space-y-3 text-xs">
+          <div className="flex items-center gap-3">
+            <span className="w-28 font-bold text-[#581c87] shrink-0">Student's name</span>
+            <div className="flex-1 bg-white py-2 px-4 rounded-full font-black text-slate-900 uppercase border border-purple-200 shadow-xs">
+              {certRecipient}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="w-28 font-bold text-[#581c87] shrink-0">Teacher's name</span>
+            <div className="flex-1 bg-white py-2 px-4 rounded-full font-bold text-slate-800 border border-purple-200 shadow-xs">
+              {certTeacher}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-28 font-bold text-[#581c87] shrink-0">Course/Level</span>
+              <div className="flex-1 bg-white py-2 px-4 rounded-full font-semibold text-slate-800 border border-purple-200 shadow-xs truncate">
+                {certCourse}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="w-12 font-bold text-[#581c87] shrink-0">Year</span>
+              <div className="flex-1 bg-white py-2 px-4 rounded-full font-bold text-slate-800 border border-purple-200 shadow-xs font-mono">
+                {certYear}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: GRADES */}
+        <div className="mx-8 mt-6">
+          <div className="text-center -mb-3 relative z-10">
+            <span className="border-2 border-[#581c87] bg-white text-[#581c87] px-8 py-1 rounded-full font-mono font-black text-xs uppercase tracking-widest inline-block">
+              GRADES
+            </span>
+          </div>
+          <div className="bg-[#f3e8ff] p-6 pt-7 rounded-3xl border border-[#d8b4fe] grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            {/* Left Column: Pill Subject Badges */}
+            <div className="md:col-span-7 space-y-2 text-xs">
+              {pillGrades.map((g, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <span className="font-bold text-[#581c87] w-28">{g.name}</span>
+                  <div className="flex-1 bg-white py-1.5 px-4 rounded-full font-black text-[#581c87] text-center border border-purple-200 shadow-xs">
+                    {g.grade}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right Column: Inset Grading System Card */}
+            <div className="md:col-span-5 bg-[#e9d5ff] p-4 rounded-2xl border border-[#c084fc] text-center space-y-2 text-xs font-mono text-[#581c87]">
+              <div className="font-black tracking-wider uppercase border-b border-purple-300 pb-1">
+                GRADING SYSTEM
+              </div>
+              <div className="space-y-1 font-bold text-[11px] pt-1">
+                <div className="flex justify-between px-4"><span>A</span><span>90 - 100</span></div>
+                <div className="flex justify-between px-4"><span>B</span><span>80 - 89</span></div>
+                <div className="flex justify-between px-4"><span>C</span><span>70 - 79</span></div>
+                <div className="flex justify-between px-4"><span>D</span><span>60 - 69</span></div>
+                <div className="flex justify-between px-4"><span>E</span><span>0 - 59</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: COMMENTS */}
+        <div className="mx-8 mt-6">
+          <div className="text-center -mb-3 relative z-10">
+            <span className="border-2 border-[#581c87] bg-white text-[#581c87] px-8 py-1 rounded-full font-mono font-black text-xs uppercase tracking-widest inline-block">
+              COMMENTS
+            </span>
+          </div>
+          <div className="bg-[#f3e8ff] p-6 pt-7 rounded-3xl border border-[#d8b4fe]">
+            <div className="bg-white p-4 rounded-2xl border border-purple-200 text-xs font-medium text-slate-700 leading-relaxed min-h-[90px] shadow-xs">
+              {certBody}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
@@ -3691,202 +4428,15 @@ export default function TransferCertificateView() {
         }
       }
 
-      // 6. ACADEMIC REPORT CARD (MARKSHEET - 5 Master Design Layouts)
+      // 6. ACADEMIC REPORT CARD (MARKSHEET - 5 Master Design Layouts from User Upload)
       case 'report_card': {
         switch (reportCardTemplate) {
-          case 'cbse_cce_holistic':
-            return (
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-purple-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
-                <div className="text-center space-y-1 border-b-2 border-purple-900 pb-3">
-                  <div className="text-[10px] font-bold tracking-widest text-purple-800 uppercase">
-                    Annual Academic Performance &amp; Evaluation Statement
-                  </div>
-                  <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">
-                    {schoolInfo.schoolName}
-                  </h2>
-                  <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-purple-900 text-white font-bold text-[11px] uppercase tracking-wider">
-                    Official Report Card &bull; Academic Year {academicSession}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] bg-purple-50/50 p-3 rounded-xl border border-purple-100">
-                  <div>Student Name: <strong className="block text-slate-900 font-bold text-xs">{st.student_name}</strong></div>
-                  <div>Roll No: <strong className="block text-slate-900 font-mono font-bold">{st.roll_no}</strong></div>
-                  <div>Class &amp; Section: <strong className="block text-slate-900 font-bold">{st.class_batch}</strong></div>
-                  <div>Attendance: <strong className="block text-emerald-700 font-bold">{totalDaysPresent}</strong></div>
-                </div>
-
-                <div className="border border-slate-200 rounded-xl overflow-hidden">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-purple-900 text-white text-[10px] uppercase font-bold">
-                      <tr>
-                        <th className="py-2 px-3">Subject</th>
-                        <th className="py-2 px-3">Theory (80)</th>
-                        <th className="py-2 px-3">Practical (20)</th>
-                        <th className="py-2 px-3">Total (100)</th>
-                        <th className="py-2 px-3">Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200 text-[11px] font-semibold">
-                      <tr className="hover:bg-purple-50/30">
-                        <td className="py-2 px-3 font-bold">Advanced Mathematics</td>
-                        <td className="py-2 px-3">78</td>
-                        <td className="py-2 px-3">19</td>
-                        <td className="py-2 px-3 text-purple-900 font-black">97</td>
-                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                      </tr>
-                      <tr className="hover:bg-purple-50/30">
-                        <td className="py-2 px-3 font-bold">Physics &amp; Dynamics</td>
-                        <td className="py-2 px-3">75</td>
-                        <td className="py-2 px-3">19</td>
-                        <td className="py-2 px-3 text-purple-900 font-black">94</td>
-                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                      </tr>
-                      <tr className="hover:bg-purple-50/30">
-                        <td className="py-2 px-3 font-bold">Chemistry &amp; Applied Sciences</td>
-                        <td className="py-2 px-3">72</td>
-                        <td className="py-2 px-3">19</td>
-                        <td className="py-2 px-3 text-purple-900 font-black">91</td>
-                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                      </tr>
-                      <tr className="hover:bg-purple-50/30">
-                        <td className="py-2 px-3 font-bold">Computer Applications &amp; AI</td>
-                        <td className="py-2 px-3">79</td>
-                        <td className="py-2 px-3">20</td>
-                        <td className="py-2 px-3 text-purple-900 font-black">99</td>
-                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                      </tr>
-                      <tr className="hover:bg-purple-50/30">
-                        <td className="py-2 px-3 font-bold">English Language &amp; Literature</td>
-                        <td className="py-2 px-3">74</td>
-                        <td className="py-2 px-3">18</td>
-                        <td className="py-2 px-3 text-purple-900 font-black">92</td>
-                        <td className="py-2 px-3 text-emerald-700 font-black">A1</td>
-                      </tr>
-                      <tr className="bg-purple-50 font-black text-slate-900">
-                        <td className="py-2.5 px-3">Grand Total: 473 / 500</td>
-                        <td colSpan="2" className="py-2.5 px-3 text-right">Aggregate Score: 94.6%</td>
-                        <td colSpan="2" className="py-2.5 px-3 text-emerald-700 font-black text-right">RESULT: PASSED (DISTINCTION)</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="pt-4 border-t border-slate-200 flex items-end justify-between">
-                  <div className="text-[10px] text-slate-500">
-                    Teacher Remark: <strong className="text-slate-800">Outstanding academic aptitude and problem-solving skills!</strong>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="w-32 border-b-2 border-purple-900 pb-1 font-serif italic text-purple-900 font-bold text-sm">
-                      {schoolInfo.principalName}
-                    </div>
-                    <div className="font-black text-[9px] text-slate-900 uppercase">Principal Signature &amp; Stamp</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'modern_analytics_dashboard':
-            return (
-              <div className="bg-slate-900 text-white p-7 rounded-3xl border-2 border-cyan-500 shadow-2xl space-y-4 text-xs font-sans">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div>
-                    <h2 className="font-black text-lg text-cyan-400 uppercase">{schoolInfo.schoolName}</h2>
-                    <div className="text-[10px] text-slate-400">ANALYTIC PERFORMANCE MATRIX &bull; {academicSession}</div>
-                  </div>
-                  <div className="px-3 py-1 bg-cyan-500/20 text-cyan-300 font-bold rounded-full border border-cyan-500/40 text-xs">
-                    CLASS RANK: #02 (94.6%)
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <span className="text-slate-400 block text-[10px]">CANDIDATE</span>
-                    <strong className="text-white text-sm">{st.student_name}</strong>
-                  </div>
-                  <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <span className="text-slate-400 block text-[10px]">GRADE / SECTION</span>
-                    <strong className="text-cyan-300 text-sm">{st.class_batch}</strong>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { sub: 'Advanced Mathematics', score: 97 },
-                    { sub: 'Physics & Dynamics', score: 94 },
-                    { sub: 'Chemistry & Applied Sciences', score: 91 },
-                    { sub: 'Computer Applications & AI', score: 99 },
-                    { sub: 'English Language', score: 92 }
-                  ].map((item, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex justify-between text-[11px]">
-                        <span>{item.sub}</span>
-                        <strong className="text-cyan-300">{item.score}/100</strong>
-                      </div>
-                      <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                        <div className="bg-gradient-to-r from-cyan-500 to-teal-400 h-full rounded-full" style={{ width: `${item.score}%` }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="pt-3 border-t border-white/10 flex justify-between text-xs text-slate-400">
-                  <span>Status: <strong className="text-emerald-400">Promoted with Honors</strong></span>
-                  <span>{schoolInfo.principalName}</span>
-                </div>
-              </div>
-            );
-
-          case 'classic_heritage_transcript':
-            return (
-              <div className="bg-[#fbf9f2] p-8 rounded-3xl border-4 border-slate-700 text-slate-900 space-y-4 text-xs font-serif shadow-xl">
-                <div className="text-center border-b pb-3">
-                  <h2 className="text-2xl font-black uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-xs font-bold italic">Official Transcript of Academic Record</div>
-                </div>
-                <div className="flex justify-between font-sans text-xs">
-                  <span>Candidate: <strong>{st.student_name}</strong></span>
-                  <span>Class: <strong>{st.class_batch}</strong></span>
-                  <span>CGPA: <strong className="text-blue-900">9.46 / 10</strong></span>
-                </div>
-                <div className="pt-4 border-t flex justify-between items-end font-sans text-xs">
-                  <span>Academic Clearance Confirmed</span>
-                  <div className="text-center italic font-serif font-bold text-sm">{schoolInfo.principalName}</div>
-                </div>
-              </div>
-            );
-
-          case 'cambridge_igcse_gradebook':
-            return (
-              <div className="bg-white p-7 rounded-3xl border-4 border-emerald-900 text-slate-900 space-y-4 text-xs font-sans shadow-xl">
-                <div className="text-center border-b pb-2">
-                  <h2 className="text-xl font-black text-emerald-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-[10px] font-bold text-emerald-800 uppercase">INTERNATIONAL CURRICULUM STATEMENT OF GRADES</div>
-                </div>
-                <div className="p-3 bg-emerald-50 rounded-xl flex justify-between items-center text-xs">
-                  <span>Student: <strong>{st.student_name}</strong></span>
-                  <span>Grade: <strong>{st.class_batch}</strong></span>
-                  <span className="font-black text-emerald-900">OVERALL: A* (DISTINCTION)</span>
-                </div>
-                <div className="pt-4 border-t flex justify-between items-end">
-                  <span className="font-mono text-[10px] text-slate-400">IGCSE-VERIFIED</span>
-                  <div className="font-bold">{schoolInfo.principalName}</div>
-                </div>
-              </div>
-            );
-
-          case 'executive_split_semester':
-          default:
-            return (
-              <div className="bg-white p-7 rounded-3xl border-2 border-slate-300 text-slate-900 space-y-4 text-xs font-sans shadow-md">
-                <div className="flex justify-between items-center border-b pb-2">
-                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
-                  <span className="font-mono text-xs font-bold">BI-SEMESTER REPORT</span>
-                </div>
-                <p>Term 1 Score: <strong>94.2%</strong> &bull; Term 2 Score: <strong>95.0%</strong> &bull; Cumulative CGPA: <strong className="text-emerald-700 font-black">9.46</strong></p>
-                <div className="pt-3 border-t flex justify-between text-xs">
-                  <span>Result: <strong>PASSED WITH HONORS</strong></span>
-                  <strong>{schoolInfo.principalName}</strong>
-                </div>
-              </div>
-            );
+          case 'salford_skyblue_quarterly': return renderSalfordSkyblueQuarterlyReport(st);
+          case 'homeschool_holistic_habits': return renderHomeschoolHolisticHabitsReport(st);
+          case 'salford_maroon_quarterly': return renderSalfordMaroonQuarterlyReport(st);
+          case 'classic_ivy_slate_gold': return renderClassicIvySlateGoldReport(st);
+          case 'borcelle_lavender_pill': return renderBorcelleLavenderPillReport(st);
+          default: return renderSalfordSkyblueQuarterlyReport(st);
         }
       }
 
@@ -5082,7 +5632,12 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={tpl.id}
-                  onClick={() => setReportCardTemplate(tpl.id)}
+                  onClick={() => {
+                    setReportCardTemplate(tpl.id);
+                    if (tpl.defaultConfig) {
+                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
@@ -5228,13 +5783,13 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            {/* Full Live Customizer for Certificate of Appreciation, Participation & Migration */}
-            {(docType === 'appreciation' || docType === 'participation' || docType === 'migration') && (
+            {/* Full Live Customizer for Certificate of Appreciation, Participation, Migration & Report Card */}
+            {(docType === 'appreciation' || docType === 'participation' || docType === 'migration' || docType === 'report_card') && (
               <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50/80 to-rose-50/60 rounded-2xl border-2 border-amber-300/80 shadow-sm">
                 <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
                   <div className="flex items-center gap-1.5 font-black text-[11px] text-amber-950 uppercase tracking-wide">
                     <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    <span>🎨 Live Certificate Text &amp; Citation Customizer</span>
+                    <span>🎨 Live Document &amp; Report Card Text Customizer</span>
                   </div>
                   <button
                     type="button"
@@ -5251,6 +5806,11 @@ export default function TransferCertificateView() {
                         }
                       } else if (docType === 'migration') {
                         const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate);
+                        if (tpl && tpl.defaultConfig) {
+                          setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                        }
+                      } else if (docType === 'report_card') {
+                        const tpl = reportCardTemplatesList.find(t => t.id === reportCardTemplate);
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
