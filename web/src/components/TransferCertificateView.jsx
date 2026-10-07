@@ -31,7 +31,10 @@ import {
   RefreshCw,
   Stamp,
   Sliders,
-  Check
+  Check,
+  Trophy,
+  Medal,
+  Star
 } from 'lucide-react';
 import { FALLBACK_STUDENTS } from '../fallbackData.js';
 import { getMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
@@ -112,12 +115,16 @@ function getSynchronizedStudents() {
 export default function TransferCertificateView() {
   const { tenant } = useTenant();
   
-  // Document Type: 'tc', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
+  // Document Type: 'tc', 'appreciation', 'participation', 'domicile', 'migration', 'report_card', 'admit_card', 'id_card'
   const [docType, setDocType] = useState('tc');
   
-  // 6 Certificate Templates for TC
-  // 'royal_gold' | 'cbse_statutory' | 'traditional_heritage' | 'vintage_crimson' | 'classic_ivory' | 'modern_platinum'
-  const [tcTemplate, setTcTemplate] = useState('royal_gold');
+  // 7 Transfer Certificate Templates
+  // 'sunrise_chevron' | 'royal_gold' | 'cbse_statutory' | 'traditional_heritage' | 'vintage_crimson' | 'classic_ivory' | 'modern_platinum'
+  const [tcTemplate, setTcTemplate] = useState('sunrise_chevron');
+
+  // Appreciation / Merit Templates
+  // 'imperial_arch' | 'modern_teal_geometric' | 'royal_gold_merit'
+  const [appreciationTemplate, setAppreciationTemplate] = useState('imperial_arch');
   
   const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
@@ -131,9 +138,9 @@ export default function TransferCertificateView() {
   // School Branding & Customizer State (Initialized from active school tenant, fully customizable)
   const [schoolInfo, setSchoolInfo] = useState({
     schoolName: tenant?.school_name || 'International Model Academy',
-    motto: tenant?.tagline || 'Excellence in Knowledge • Character • Leadership',
-    affiliationNo: tenant?.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '883921' : '883921',
-    schoolCode: tenant?.school_code || '45091',
+    motto: tenant?.tagline || 'Learn • Grow • Lead',
+    affiliationNo: tenant?.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '123456' : '123456',
+    schoolCode: tenant?.school_code || '654321',
     udiseNo: '29280601244',
     bookNo: '042',
     address: tenant?.address || '100 Knowledge Boulevard, Indiranagar, Bengaluru - 560038',
@@ -170,10 +177,14 @@ export default function TransferCertificateView() {
   const [reasonForLeaving, setReasonForLeaving] = useState('Parent Transfer / Higher Secondary Admission');
   const [promotedTo, setPromotedTo] = useState('Promoted to Senior Secondary Grade 11 (Science)');
   const [subjectsStudied, setSubjectsStudied] = useState('English Core, Mathematics, Physics, Chemistry, Computer Science / AI');
-  const [feeConcession, setFeeConcession] = useState('None (Merit Scholar)');
   const [totalWorkingDays, setTotalWorkingDays] = useState('220');
   const [totalDaysPresent, setTotalDaysPresent] = useState('214 (97.2%)');
   const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // Appreciation & Competition Fields
+  const [awardTitle, setAwardTitle] = useState('Marvellous Performer');
+  const [eventName, setEventName] = useState('Annual Fitness & Sports Championship');
+  const [organizerName, setOrganizerName] = useState('Faculty of Co-Curricular & Sports');
 
   // Active student object
   const activeStudent = studentList.find(s => s.id === selectedStudentId || s.name === selectedStudentId) || studentList[0] || {};
@@ -192,13 +203,29 @@ export default function TransferCertificateView() {
       id: 'tc',
       num: '1',
       title: 'Transfer Certificate (TC)',
-      subtitle: '6 Official Certificate Designs & Layouts',
+      subtitle: '7 Interchangeable Official TC Designs',
       icon: GraduationCap,
       color: 'teal'
     },
     {
-      id: 'domicile',
+      id: 'appreciation',
       num: '2',
+      title: 'Certificate of Appreciation',
+      subtitle: 'Imperial Arch & Merit Recognition',
+      icon: Trophy,
+      color: 'amber'
+    },
+    {
+      id: 'participation',
+      num: '3',
+      title: 'Certificate of Participation',
+      subtitle: 'Modern Geometric Contest & Event Record',
+      icon: Medal,
+      color: 'emerald'
+    },
+    {
+      id: 'domicile',
+      num: '4',
       title: 'Domicile / Bonafide',
       subtitle: 'Institutional Residence & Identity Record',
       icon: Building,
@@ -206,7 +233,7 @@ export default function TransferCertificateView() {
     },
     {
       id: 'migration',
-      num: '3',
+      num: '5',
       title: 'Character & Migration',
       subtitle: 'Conduct & Board Clearance Certificate',
       icon: ShieldCheck,
@@ -214,7 +241,7 @@ export default function TransferCertificateView() {
     },
     {
       id: 'report_card',
-      num: '4',
+      num: '6',
       title: 'Academic Report Card',
       subtitle: 'Cumulative Marksheet & Evaluation',
       icon: BookOpen,
@@ -222,7 +249,7 @@ export default function TransferCertificateView() {
     },
     {
       id: 'admit_card',
-      num: '5',
+      num: '7',
       title: 'Exam Admit Card',
       subtitle: 'Examination Hall Ticket with Timetable',
       icon: Calendar,
@@ -230,7 +257,7 @@ export default function TransferCertificateView() {
     },
     {
       id: 'id_card',
-      num: '6',
+      num: '8',
       title: 'Student Smart ID Card',
       subtitle: 'Front & Back RFID Photo Identity Card',
       icon: Award,
@@ -240,12 +267,20 @@ export default function TransferCertificateView() {
 
   const tcTemplatesList = [
     {
+      id: 'sunrise_chevron',
+      title: 'Sunrise Golden Chevron',
+      tag: 'Landscape • Geometric Chevron',
+      desc: 'Angular gold/charcoal corners, laurel crest, structured clean lines',
+      orientation: 'landscape',
+      borderStyle: 'border-amber-400'
+    },
+    {
       id: 'royal_gold',
       title: 'Royal Navy & Gold Crest',
       tag: 'Landscape • Luxury Crest',
       desc: 'Ornate gold corners, ribbon motto header, gold embossed stamp',
       orientation: 'landscape',
-      borderStyle: 'border-amber-400 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/30'
+      borderStyle: 'border-amber-400'
     },
     {
       id: 'cbse_statutory',
@@ -253,7 +288,7 @@ export default function TransferCertificateView() {
       tag: 'Portrait • Board Standard',
       desc: 'Affiliation & School Code, 15 statutory clauses, triple signatory',
       orientation: 'portrait',
-      borderStyle: 'border-slate-800 bg-white'
+      borderStyle: 'border-slate-800'
     },
     {
       id: 'traditional_heritage',
@@ -261,7 +296,7 @@ export default function TransferCertificateView() {
       tag: 'Portrait • Classical Filigree',
       desc: 'Double border, central watermark emblem, formal certification prose',
       orientation: 'portrait',
-      borderStyle: 'border-blue-900 bg-amber-50/20'
+      borderStyle: 'border-blue-900'
     },
     {
       id: 'vintage_crimson',
@@ -269,7 +304,7 @@ export default function TransferCertificateView() {
       tag: 'Portrait • Elegant Burgundy',
       desc: 'Crimson guilloche filigree border, parchment texture, wax seal',
       orientation: 'portrait',
-      borderStyle: 'border-red-900 bg-rose-50/30'
+      borderStyle: 'border-red-900'
     },
     {
       id: 'classic_ivory',
@@ -277,7 +312,7 @@ export default function TransferCertificateView() {
       tag: 'Landscape • Banknote Grade',
       desc: 'Intricate currency-grade filigree borders, gold rosette medallion',
       orientation: 'landscape',
-      borderStyle: 'border-amber-600 bg-amber-50/20'
+      borderStyle: 'border-amber-600'
     },
     {
       id: 'modern_platinum',
@@ -285,7 +320,7 @@ export default function TransferCertificateView() {
       tag: 'Landscape • High-Tech Security',
       desc: 'Angular modern geometric frames, digital QR badge, barcode security',
       orientation: 'landscape',
-      borderStyle: 'border-blue-700 bg-slate-50/40'
+      borderStyle: 'border-blue-700'
     }
   ];
 
@@ -295,6 +330,8 @@ export default function TransferCertificateView() {
     const code = schoolInfo.schoolCode || 'SCH';
     switch (type) {
       case 'tc': return `TC/${code}/${academicSession.replace(/\s+/g, '')}/${r}`;
+      case 'appreciation': return `APPR/${code}/2026/${r}`;
+      case 'participation': return `PART/${code}/2026/${r}`;
       case 'domicile': return `DOM/${code}/2026/${r}`;
       case 'migration': return `MIG/${code}/2026/${r}`;
       case 'report_card': return `MARK/${code}/2026/${r}`;
@@ -305,14 +342,13 @@ export default function TransferCertificateView() {
   };
 
   // Reusable Golden School Seal SVG Component
-  const GoldenSchoolSeal = ({ size = 84, schoolName = schoolInfo.schoolName }) => (
+  const GoldenSchoolSeal = ({ size = 84 }) => (
     <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md text-amber-600">
         <circle cx="50" cy="50" r="46" fill="#fef3c7" stroke="#b45309" strokeWidth="2.5" strokeDasharray="3 1.5" />
         <circle cx="50" cy="50" r="41" fill="none" stroke="#d97706" strokeWidth="1" />
         <circle cx="50" cy="50" r="34" fill="#fffbeb" stroke="#b45309" strokeWidth="1.5" />
         
-        {/* Curving text on path */}
         <path id={`sealPath-${size}`} d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0" fill="none" />
         <text className="text-[6.5px] font-black uppercase tracking-widest fill-amber-900">
           <textPath href={`#sealPath-${size}`} startOffset="50%" textAnchor="middle">
@@ -320,7 +356,6 @@ export default function TransferCertificateView() {
           </textPath>
         </text>
         
-        {/* Center Star / Crest */}
         <g transform="translate(50, 50)">
           <path
             d="M 0,-14 L 3.5,-4 L 14,-4 L 6,2 L 9,12 L 0,6 L -9,12 L -6,2 L -14,-4 L -3.5,-4 Z"
@@ -334,6 +369,66 @@ export default function TransferCertificateView() {
       <span className="absolute bottom-2 text-[7px] font-bold font-mono uppercase text-amber-950 tracking-tighter">
         VERIFIED
       </span>
+    </div>
+  );
+
+  // Triple-Star Gold Medallion SVG Component (for Appreciation Certificate)
+  const GoldStarMedallion = ({ size = 96 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
+        {/* Outer Radiant Sunburst / Star Polygon */}
+        <polygon
+          points="50,2 62,14 78,8 84,24 100,26 98,42 108,54 98,66 100,82 84,84 78,100 62,94 50,106 38,94 22,100 16,84 0,82 2,66 -8,54 2,42 0,26 16,24 22,8 38,14"
+          fill="#d97706"
+          stroke="#78350f"
+          strokeWidth="1.5"
+          transform="scale(0.85) translate(8, 8)"
+        />
+        <circle cx="50" cy="50" r="38" fill="url(#goldGrad)" stroke="#fef3c7" strokeWidth="2.5" />
+        <circle cx="50" cy="50" r="32" fill="#7f1d1d" stroke="#f59e0b" strokeWidth="1.5" />
+        
+        <defs>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" />
+            <stop offset="50%" stopColor="#d97706" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+        </defs>
+
+        {/* 3 Stars at the Top */}
+        <g fill="#fef08a" transform="translate(0, -6)">
+          <polygon points="50,25 52,30 57,30 53,33 55,38 50,35 45,38 47,33 43,30 48,30" />
+          <polygon points="38,28 39.5,32 44,32 40.5,34.5 42,38.5 38,36 34,38.5 35.5,34.5 32,32 36.5,32" transform="scale(0.8) translate(10, 8)" />
+          <polygon points="62,28 63.5,32 68,32 64.5,34.5 66,38.5 62,36 58,38.5 59.5,34.5 56,32 60.5,32" transform="scale(0.8) translate(16, 8)" />
+        </g>
+
+        {/* Large Center Star */}
+        <polygon
+          points="50,38 53.5,49 65,49 56,56 59.5,67 50,60 40.5,67 44,56 35,49 46.5,49"
+          fill="#fef08a"
+          stroke="#b45309"
+          strokeWidth="0.8"
+        />
+      </svg>
+    </div>
+  );
+
+  // Modern Multi-Ring Hologram Seal (for Participation Certificate)
+  const ModernHologramSeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+        <circle cx="50" cy="50" r="46" fill="#fef3c7" stroke="#b45309" strokeWidth="2.5" />
+        <circle cx="50" cy="50" r="38" fill="#1e293b" stroke="#0ea5e9" strokeWidth="2" />
+        <circle cx="50" cy="50" r="28" fill="#0f172a" stroke="#f59e0b" strokeWidth="1.5" />
+        
+        {/* Modern aperture / energy iris icon */}
+        <g stroke="#38bdf8" strokeWidth="2" fill="none" transform="translate(50, 50)">
+          <circle cx="0" cy="0" r="14" stroke="#f97316" strokeWidth="2.5" />
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="#06b6d4" />
+          <line x1="0" y1="-12" x2="0" y2="12" stroke="#06b6d4" />
+          <circle cx="0" cy="0" r="4" fill="#38bdf8" />
+        </g>
+      </svg>
     </div>
   );
 
@@ -361,7 +456,156 @@ export default function TransferCertificateView() {
   // RENDER TRANSFER CERTIFICATE TEMPLATES
   // ==========================================
 
-  // Template 1: Royal Navy & Gold Luxury Crest (Landscape)
+  // Template 1: Sunrise Golden Chevron TC (Landscape - EXACT MATCH to Image 1)
+  const renderSunriseChevronTC = (st) => {
+    const regNo = getDocRegNo(st, 'tc');
+    const dobWords = dateToWords(st.dob);
+
+    return (
+      <div className="bg-white p-8 sm:p-10 rounded-2xl border-4 border-amber-400/90 text-slate-900 space-y-6 shadow-xl relative overflow-hidden font-serif">
+        {/* Top-Left Charcoal & Gold Chevron Corner Banner */}
+        <div className="absolute top-0 left-0 w-28 h-28 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="0,0 100,0 0,100" fill="#1e293b" />
+            <polygon points="0,0 70,0 0,70" fill="#0f172a" />
+            <polygon points="70,0 100,0 0,100 0,70" fill="#f59e0b" opacity="0.9" />
+          </svg>
+        </div>
+
+        {/* Bottom-Right Charcoal & Gold Chevron Corner Banner */}
+        <div className="absolute bottom-0 right-0 w-28 h-28 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="100,100 0,100 100,0" fill="#1e293b" />
+            <polygon points="100,100 30,100 100,30" fill="#0f172a" />
+            <polygon points="30,100 0,100 100,0 100,30" fill="#f59e0b" opacity="0.9" />
+          </svg>
+        </div>
+
+        {/* Top Header Bar */}
+        <div className="flex justify-between items-start pt-2 px-6">
+          <div className="text-[10px] font-sans font-bold tracking-widest text-slate-600 uppercase pl-8">
+            DISCIPLINE &nbsp;|&nbsp; KNOWLEDGE &nbsp;|&nbsp; EXCELLENCE
+          </div>
+          <div className="text-right text-[11px] font-sans font-semibold text-slate-700 pr-4">
+            <div>Affiliation No. : <strong className="font-mono text-slate-900">{schoolInfo.affiliationNo}</strong></div>
+            <div>School Code &nbsp; : <strong className="font-mono text-slate-900">{schoolInfo.schoolCode}</strong></div>
+          </div>
+        </div>
+
+        {/* Center Crest & School Name */}
+        <div className="text-center space-y-1 relative">
+          <div className="flex items-center justify-center mb-1">
+            {schoolInfo.customLogoUrl ? (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-14 h-14 object-contain rounded-full border-2 border-amber-400" />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-600 to-amber-900 text-amber-100 flex items-center justify-center font-black text-xl border-2 border-amber-300 shadow-md">
+                <BookOpen className="w-7 h-7 text-amber-200" />
+              </div>
+            )}
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-wider text-slate-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <div className="text-xs font-sans tracking-widest text-slate-600 uppercase font-bold">
+            {schoolInfo.motto}
+          </div>
+
+          <div className="pt-3">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-wider text-slate-950 uppercase font-serif">
+              TRANSFER CERTIFICATE
+            </h1>
+            {/* Gold Flourish Divider */}
+            <div className="flex items-center justify-center gap-2 text-amber-600 my-1">
+              <span className="h-[1.5px] w-24 bg-gradient-to-r from-transparent to-amber-500"></span>
+              <span className="text-sm">✦ ❦ ✦</span>
+              <span className="h-[1.5px] w-24 bg-gradient-to-l from-transparent to-amber-500"></span>
+            </div>
+          </div>
+
+          <p className="text-sm italic text-slate-800 font-serif pt-1">
+            This is to certify that
+          </p>
+        </div>
+
+        {/* Clean Structured Fill-In Form Lines */}
+        <div className="max-w-2xl mx-auto space-y-3.5 text-xs font-sans px-4">
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Name of the Pupil</span>
+            <span className="text-slate-400">:</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 font-bold text-slate-950 text-sm uppercase">
+              {st.student_name}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Admission No.</span>
+            <span className="text-slate-400">:</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 font-mono font-bold text-slate-900">
+              {st.id} &bull; Roll No: #{st.roll_no}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Date of Birth</span>
+            <span className="text-slate-400">:</span>
+            <span className="w-40 border-b border-slate-400 pb-0.5 font-bold text-slate-900">
+              {st.dob}
+            </span>
+            <span className="text-slate-500 italic text-[11px]">(in words)</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 italic font-serif text-slate-900 text-[11.5px]">
+              {dobWords}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Class / Grade</span>
+            <span className="text-slate-400">:</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 font-bold text-slate-900">
+              {st.class_batch}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Date of Issue</span>
+            <span className="text-slate-400">:</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 font-mono font-bold text-slate-900">
+              {issueDate}
+            </span>
+          </div>
+        </div>
+
+        {/* Official Statutory Relief Paragraph */}
+        <div className="max-w-2xl mx-auto pt-2 text-justify text-xs font-serif leading-relaxed text-slate-800 indent-6">
+          This is to certify that the above named pupil was a bonafide student of this School and has successfully completed the prescribed course of study. He / She is hereby relieved of all dues and is permitted to join the new School / Institution.
+        </div>
+
+        {/* Dual Signatures and Golden Circular Seal */}
+        <div className="pt-6 border-t border-slate-200 flex items-end justify-between px-6">
+          <div className="text-center space-y-1">
+            <div className="w-40 border-b border-slate-600 pb-1 font-sans text-xs text-slate-700 font-medium">
+              Class Teacher
+            </div>
+            <div className="text-[10px] text-slate-500 font-sans">(Signature)</div>
+          </div>
+
+          <div className="text-center">
+            <GoldenSchoolSeal size={84} />
+          </div>
+
+          <div className="text-center space-y-1">
+            <div className="w-40 border-b-2 border-slate-900 pb-1 font-serif italic text-amber-950 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-bold text-[10px] text-slate-900 uppercase">
+              Principal (Signature)
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Template 2: Royal Navy & Gold Luxury Crest (Landscape)
   const renderRoyalGoldTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const isFeeCleared = st.fee_status === 'Paid' || (st.feeDues || 0) === 0;
@@ -369,13 +613,11 @@ export default function TransferCertificateView() {
 
     return (
       <div className="bg-gradient-to-b from-amber-50/60 via-white to-amber-50/40 p-8 sm:p-10 rounded-2xl border-8 border-double border-amber-500/80 text-slate-900 space-y-6 shadow-xl relative overflow-hidden font-serif">
-        {/* Luxury Gold Corner Ornaments */}
         <div className="absolute top-2 left-2 w-14 h-14 border-t-4 border-l-4 border-amber-600 pointer-events-none" />
         <div className="absolute top-2 right-2 w-14 h-14 border-t-4 border-r-4 border-amber-600 pointer-events-none" />
         <div className="absolute bottom-2 left-2 w-14 h-14 border-b-4 border-l-4 border-amber-600 pointer-events-none" />
         <div className="absolute bottom-2 right-2 w-14 h-14 border-b-4 border-r-4 border-amber-600 pointer-events-none" />
 
-        {/* Top Header & Ribbon */}
         <div className="text-center space-y-2 border-b-2 border-amber-400/60 pb-5 relative">
           <div className="flex items-center justify-center gap-3">
             {schoolInfo.customLogoUrl ? (
@@ -409,15 +651,13 @@ export default function TransferCertificateView() {
           </p>
         </div>
 
-        {/* Certificate Metadata Bar */}
         <div className="flex justify-between items-center text-xs font-mono border-b border-amber-200 pb-2 text-slate-700 px-2">
           <span>Certificate No: <strong className="text-amber-900 font-bold">{regNo}</strong></span>
-          <span>Admission / Scholar ID: <strong className="text-slate-900">{st.id}</strong></span>
-          <span>Academic Session: <strong className="text-slate-900">{academicSession}</strong></span>
-          <span>Date of Issue: <strong className="text-slate-900">{issueDate}</strong></span>
+          <span>Admission ID: <strong className="text-slate-900">{st.id}</strong></span>
+          <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
+          <span>Date: <strong className="text-slate-900">{issueDate}</strong></span>
         </div>
 
-        {/* Formal Calligraphic Certification Body */}
         <div className="space-y-4 px-2 font-serif text-sm leading-relaxed text-slate-800">
           <p className="text-justify indent-8">
             This is to officially certify that <strong className="text-slate-950 text-base underline underline-offset-4 decoration-amber-500 font-sans font-bold">{st.student_name}</strong>, 
@@ -440,7 +680,6 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Signatures & Seal Area */}
         <div className="pt-6 border-t-2 border-amber-300/80 flex items-end justify-between px-2">
           <div className="text-center space-y-1">
             <div className="w-36 border-b border-slate-700 pb-1 font-sans text-xs text-slate-600 font-medium">
@@ -468,7 +707,7 @@ export default function TransferCertificateView() {
     );
   };
 
-  // Template 2: CBSE Statutory 15-Point Transfer Certificate (Portrait)
+  // Template 3: CBSE Statutory 15-Point Transfer Certificate (Portrait)
   const renderCbseStatutoryTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const isFeeCleared = st.fee_status === 'Paid' || (st.feeDues || 0) === 0;
@@ -476,7 +715,6 @@ export default function TransferCertificateView() {
 
     return (
       <div className="bg-white p-7 sm:p-9 rounded-2xl border-4 border-slate-900 text-slate-900 space-y-4 shadow-sm text-xs relative font-sans">
-        {/* Top Statutory Details Header */}
         <div className="flex justify-between items-start border-b-2 border-slate-900 pb-3 text-[11px] font-bold">
           <div>
             <div>UDISE Code: <span className="font-mono">{schoolInfo.udiseNo}</span></div>
@@ -499,7 +737,6 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Title */}
         <div className="text-center py-1 bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded">
           TRANSFER CERTIFICATE
         </div>
@@ -509,7 +746,6 @@ export default function TransferCertificateView() {
           <span>Admission / General Register No: <strong>{st.id}</strong></span>
         </div>
 
-        {/* 15 Statutory Clauses */}
         <div className="space-y-2 text-[11.5px] leading-relaxed text-slate-800 divide-y divide-slate-100">
           <div className="flex justify-between pt-1">
             <span className="w-2/3">1. Name of the Pupil:</span>
@@ -582,7 +818,6 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Prepared By, Checked By & Principal Signatures */}
         <div className="pt-6 border-t-2 border-slate-800 grid grid-cols-3 gap-4 items-end text-center">
           <div className="space-y-1">
             <div className="border-b border-slate-500 pb-1 font-mono text-[10px] text-slate-600">Class Teacher</div>
@@ -603,19 +838,13 @@ export default function TransferCertificateView() {
     );
   };
 
-  // Template 3: Traditional Heritage School Leaving Certificate (Portrait)
+  // Template 4: Traditional Heritage School Leaving Certificate (Portrait)
   const renderTraditionalHeritageTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const dobWords = dateToWords(st.dob);
 
     return (
       <div className="bg-amber-50/20 p-8 sm:p-10 rounded-2xl border-8 border-double border-blue-950 text-slate-900 space-y-5 shadow-md relative overflow-hidden font-serif">
-        {/* Heritage Watermark Emblem in Background */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-          <GraduationCap className="w-96 h-96 text-blue-900" />
-        </div>
-
-        {/* Header */}
         <div className="text-center space-y-1.5 border-b-2 border-blue-950 pb-4">
           <div className="text-[10px] font-sans font-bold tracking-widest text-blue-900 uppercase">
             Recognized by Department of Public Instruction &bull; Code: {schoolInfo.schoolCode}
@@ -631,13 +860,11 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Certificate No & Date */}
         <div className="flex justify-between items-center text-xs font-sans font-semibold border-b border-slate-300 pb-2">
           <span>Serial No: <strong className="text-blue-950 font-mono">{regNo}</strong></span>
           <span>Date of Issue: <strong className="text-slate-900 font-mono">{issueDate}</strong></span>
         </div>
 
-        {/* Traditional Certification Paragraph */}
         <div className="space-y-4 text-sm leading-relaxed text-slate-800 text-justify">
           <p className="indent-8">
             This is to certify that Master / Kumari <strong className="text-blue-950 font-sans text-base underline decoration-blue-900 decoration-2">{st.student_name}</strong>, 
@@ -664,7 +891,6 @@ export default function TransferCertificateView() {
           </p>
         </div>
 
-        {/* Seal & Signatures */}
         <div className="pt-6 border-t-2 border-blue-950 flex items-end justify-between">
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center border border-blue-200 mx-auto mb-1">
@@ -690,20 +916,13 @@ export default function TransferCertificateView() {
     );
   };
 
-  // Template 4: Vintage Crimson Guilloche TC (Portrait)
+  // Template 5: Vintage Crimson Guilloche TC (Portrait)
   const renderVintageCrimsonTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const dobWords = dateToWords(st.dob);
 
     return (
       <div className="bg-rose-50/30 p-8 sm:p-10 rounded-2xl border-8 border-red-900 text-slate-900 space-y-5 shadow-lg relative overflow-hidden font-serif">
-        {/* Ornate Crimson Corners */}
-        <div className="absolute top-2 left-2 w-12 h-12 border-t-4 border-l-4 border-red-800 pointer-events-none" />
-        <div className="absolute top-2 right-2 w-12 h-12 border-t-4 border-r-4 border-red-800 pointer-events-none" />
-        <div className="absolute bottom-2 left-2 w-12 h-12 border-b-4 border-l-4 border-red-800 pointer-events-none" />
-        <div className="absolute bottom-2 right-2 w-12 h-12 border-b-4 border-r-4 border-red-800 pointer-events-none" />
-
-        {/* Header */}
         <div className="text-center space-y-2 border-b-2 border-red-900/60 pb-4">
           <div className="text-[10px] font-sans font-extrabold tracking-widest text-red-900 uppercase">
             Autonomous Educational Board &bull; Code: {schoolInfo.schoolCode}
@@ -719,14 +938,12 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Certificate No */}
         <div className="flex justify-between items-center text-xs font-mono border-b border-red-200 pb-2 text-red-950 font-bold">
           <span>Certificate No: {regNo}</span>
           <span>Admission ID: {st.id}</span>
           <span>Issued: {issueDate}</span>
         </div>
 
-        {/* Body */}
         <div className="space-y-3.5 text-sm leading-relaxed text-slate-800">
           <p className="text-justify indent-6">
             This instrument certifies that <strong className="text-red-950 font-sans font-bold text-base">{st.student_name}</strong>, 
@@ -744,7 +961,6 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* Signatures & Red Stamp */}
         <div className="pt-6 border-t-2 border-red-900 flex items-end justify-between">
           <div className="text-center space-y-1">
             <div className="w-32 border-b border-slate-500 pb-1 font-sans text-[10px] text-slate-600">Class Incharge</div>
@@ -764,7 +980,7 @@ export default function TransferCertificateView() {
     );
   };
 
-  // Template 5: Classic Ivory Filigree TC (Landscape)
+  // Template 6: Classic Ivory Filigree TC (Landscape)
   const renderClassicIvoryTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const dobWords = dateToWords(st.dob);
@@ -823,7 +1039,7 @@ export default function TransferCertificateView() {
     );
   };
 
-  // Template 6: Modern Platinum & Cobalt (Landscape)
+  // Template 7: Modern Platinum & Cobalt (Landscape)
   const renderModernPlatinumTC = (st) => {
     const regNo = getDocRegNo(st, 'tc');
     const dobWords = dateToWords(st.dob);
@@ -916,24 +1132,242 @@ export default function TransferCertificateView() {
     );
   };
 
+  // =========================================================================
+  // CERTIFICATE OF APPRECIATION (EXACT MATCH to Image 3 - Imperial Crimson Arch)
+  // =========================================================================
+  const renderImperialArchAppreciation = (st) => {
+    return (
+      <div className="bg-white p-7 sm:p-10 rounded-3xl border-8 border-amber-400 text-slate-900 space-y-5 shadow-2xl relative overflow-hidden font-sans">
+        {/* Left & Right Crimson Gradient Borders with Gold Trims */}
+        <div className="absolute top-0 left-0 bottom-0 w-6 sm:w-8 bg-gradient-to-b from-amber-400 via-rose-900 to-amber-500 pointer-events-none" />
+        <div className="absolute top-0 right-0 bottom-0 w-6 sm:w-8 bg-gradient-to-b from-amber-400 via-rose-900 to-amber-500 pointer-events-none" />
+        
+        {/* Top & Bottom Arch Curves */}
+        <div className="absolute top-0 left-0 right-0 h-4 bg-amber-400 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-r from-amber-500 via-rose-950 to-amber-500 pointer-events-none" />
+
+        {/* Top Crest / Logo */}
+        <div className="text-center space-y-1 relative pt-2">
+          <div className="flex items-center justify-center">
+            {schoolInfo.customLogoUrl ? (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-16 h-16 object-contain rounded-full border-2 border-amber-400 p-1 shadow-md bg-white" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 via-blue-950 to-slate-900 text-amber-200 flex items-center justify-center border-2 border-amber-400 shadow-md">
+                <Trophy className="w-8 h-8 text-amber-400" />
+              </div>
+            )}
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-blue-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <p className="text-[11px] text-slate-600 font-medium">
+            {schoolInfo.address}
+          </p>
+        </div>
+
+        {/* Cursive Red Script Title */}
+        <div className="text-center py-2">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-wide text-rose-700 italic font-serif">
+            Certificate of Appreciation
+          </h1>
+          <div className="w-24 h-0.5 bg-rose-300 mx-auto mt-1 rounded-full"></div>
+        </div>
+
+        {/* Certificate Text with Clean Underline Fields */}
+        <div className="space-y-4 text-center px-4 font-serif text-sm leading-loose text-slate-800">
+          <div className="flex flex-wrap items-baseline justify-center gap-2">
+            <span className="italic text-base">This is to certify that</span>
+            <span className="font-sans font-black text-slate-950 text-xl border-b-2 border-slate-900 px-4 pb-0.5">
+              {st.student_name}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-baseline justify-center gap-2">
+            <span className="italic">of</span>
+            <span className="font-sans font-bold text-slate-900 text-sm border-b-2 border-slate-800 px-4 pb-0.5">
+              {st.class_batch}
+            </span>
+            <span className="italic">has been adjudged as the</span>
+          </div>
+
+          <div className="flex flex-wrap items-baseline justify-center gap-2">
+            <span className="font-sans font-black text-rose-800 text-lg border-b-2 border-rose-800 px-6 pb-0.5 uppercase tracking-wide">
+              {awardTitle}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-baseline justify-center gap-2">
+            <span className="italic">in the</span>
+            <span className="font-sans font-extrabold text-blue-950 text-base border-b-2 border-blue-950 px-6 pb-0.5">
+              {eventName}
+            </span>
+          </div>
+
+          <p className="italic text-slate-700 pt-2 text-xs font-sans max-w-lg mx-auto leading-relaxed">
+            We appreciate his / her exemplary efforts, discipline, and dedication, and wish him / her continued success in all future endeavours.
+          </p>
+        </div>
+
+        {/* Bottom Signatures and Golden 3-Star Medallion */}
+        <div className="pt-6 relative flex items-end justify-between px-6 pb-4">
+          <div className="text-center space-y-1">
+            <div className="w-32 border-b-2 border-dotted border-slate-800 pb-1 font-mono font-bold text-xs text-slate-900">
+              {issueDate}
+            </div>
+            <div className="font-sans font-bold text-[10px] text-slate-700 uppercase tracking-wider">
+              Date
+            </div>
+          </div>
+
+          {/* Central 3-Star Gold Medallion */}
+          <div className="text-center -mb-2">
+            <GoldStarMedallion size={92} />
+          </div>
+
+          <div className="text-center space-y-1">
+            <div className="w-36 border-b-2 border-dotted border-slate-800 pb-1 font-serif italic text-blue-950 font-bold text-sm">
+              {schoolInfo.principalName}
+            </div>
+            <div className="font-sans font-bold text-[10px] text-slate-700 uppercase tracking-wider">
+              Principal
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // CERTIFICATE OF PARTICIPATION (EXACT MATCH to Image 2 - Modern Teal Geometric)
+  // =========================================================================
+  const renderModernTealParticipation = (st) => {
+    return (
+      <div className="bg-white p-7 sm:p-10 rounded-2xl border-4 border-teal-600 text-slate-900 space-y-6 shadow-2xl relative overflow-hidden font-sans">
+        {/* Modern Teal / Emerald Faceted Geometric Side Polygons */}
+        <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-16 pointer-events-none opacity-90">
+          <svg viewBox="0 0 100 800" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="0,0 80,0 0,160" fill="#0f766e" />
+            <polygon points="0,160 100,260 0,380" fill="#0d9488" />
+            <polygon points="0,380 90,520 0,660" fill="#047857" />
+            <polygon points="0,660 100,800 0,800" fill="#065f46" />
+          </svg>
+        </div>
+
+        <div className="absolute top-0 right-0 bottom-0 w-12 sm:w-16 pointer-events-none opacity-90">
+          <svg viewBox="0 0 100 800" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="100,0 20,0 100,160" fill="#0f766e" />
+            <polygon points="100,160 0,260 100,380" fill="#0d9488" />
+            <polygon points="100,380 10,520 100,660" fill="#047857" />
+            <polygon points="100,660 0,800 100,800" fill="#065f46" />
+          </svg>
+        </div>
+
+        {/* Institution / Brand Top Header */}
+        <div className="text-center space-y-1 relative pl-6 pr-6">
+          <h2 className="text-2xl font-black tracking-widest text-teal-900 uppercase">
+            {schoolInfo.schoolName}
+          </h2>
+          <div className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+            ANNUAL CO-CURRICULAR &amp; DIGITAL EXCELLENCE
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center space-y-1 pt-2">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-widest text-slate-950 uppercase font-sans">
+            CERTIFICATE
+          </h1>
+          <div className="text-lg font-serif italic text-slate-700">
+            of PARTICIPATION
+          </div>
+          <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-teal-50 text-teal-900 font-extrabold text-[11px] uppercase tracking-widest border border-teal-200">
+            {eventName}
+          </div>
+        </div>
+
+        {/* Award Presentation Callout */}
+        <div className="text-center space-y-2 pt-2 px-8">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
+            THIS CERTIFICATE IS PROUDLY PRESENTED TO
+          </p>
+          <p className="text-xs font-serif italic text-slate-500">Mr. / Miss.</p>
+          
+          <div className="py-1">
+            <div className="text-2xl sm:text-3xl font-serif italic font-black text-slate-950 tracking-wide underline decoration-teal-500 decoration-2 underline-offset-4">
+              {st.student_name}
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-700 leading-relaxed max-w-lg mx-auto font-sans pt-2">
+            For being declared as <strong className="text-teal-900 uppercase font-bold">"{awardTitle}"</strong>. 
+            He / She participated and exhibited tremendous creativity and talent in the official event. 
+            We wish him / her a prosperous and successful future.
+          </p>
+        </div>
+
+        {/* Center Modern Hologram Seal */}
+        <div className="text-center">
+          <ModernHologramSeal size={74} />
+        </div>
+
+        {/* 4-Way Signatures Grid */}
+        <div className="pt-4 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 items-end text-center px-6">
+          <div className="space-y-1">
+            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
+              Prof. Anil Kushwaha
+            </div>
+            <div className="text-[9px] font-bold text-slate-600 uppercase">Event Organiser</div>
+          </div>
+          <div className="space-y-1">
+            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
+              Dr. S. K. Nair
+            </div>
+            <div className="text-[9px] font-bold text-slate-600 uppercase">Faculty Head</div>
+          </div>
+          <div className="space-y-1">
+            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
+              Dr. J. Kaur
+            </div>
+            <div className="text-[9px] font-bold text-slate-600 uppercase">Dean of Arts</div>
+          </div>
+          <div className="space-y-1">
+            <div className="border-b-2 border-teal-900 pb-1 font-serif italic font-bold text-xs text-teal-950">
+              {schoolInfo.principalName}
+            </div>
+            <div className="text-[9px] font-black text-teal-950 uppercase">{schoolInfo.principalTitle}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
 
     switch (type) {
-      // 1. TRANSFER CERTIFICATE (TC) - Switches between the 6 Templates!
+      // 1. TRANSFER CERTIFICATE (TC) - Switches between the 7 Templates!
       case 'tc':
         switch (tcTemplate) {
+          case 'sunrise_chevron': return renderSunriseChevronTC(st);
           case 'royal_gold': return renderRoyalGoldTC(st);
           case 'cbse_statutory': return renderCbseStatutoryTC(st);
           case 'traditional_heritage': return renderTraditionalHeritageTC(st);
           case 'vintage_crimson': return renderVintageCrimsonTC(st);
           case 'classic_ivory': return renderClassicIvoryTC(st);
           case 'modern_platinum': return renderModernPlatinumTC(st);
-          default: return renderRoyalGoldTC(st);
+          default: return renderSunriseChevronTC(st);
         }
 
-      // 2. DOMICILE & BONAFIDE CERTIFICATE
+      // 2. CERTIFICATE OF APPRECIATION
+      case 'appreciation':
+        return renderImperialArchAppreciation(st);
+
+      // 3. CERTIFICATE OF PARTICIPATION
+      case 'participation':
+        return renderModernTealParticipation(st);
+
+      // 4. DOMICILE & BONAFIDE CERTIFICATE
       case 'domicile':
         return (
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-blue-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
@@ -993,7 +1427,7 @@ export default function TransferCertificateView() {
           </div>
         );
 
-      // 3. CHARACTER & CONDUCT MIGRATION CERTIFICATE
+      // 5. CHARACTER & CONDUCT MIGRATION CERTIFICATE
       case 'migration':
         return (
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-emerald-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
@@ -1047,7 +1481,7 @@ export default function TransferCertificateView() {
           </div>
         );
 
-      // 4. ACADEMIC REPORT CARD (MARKSHEET)
+      // 6. ACADEMIC REPORT CARD (MARKSHEET)
       case 'report_card':
         return (
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-purple-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
@@ -1070,7 +1504,6 @@ export default function TransferCertificateView() {
               <div>Attendance: <strong className="block text-emerald-700 font-bold">{totalDaysPresent}</strong></div>
             </div>
 
-            {/* Subject Marks Table */}
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs text-slate-700">
                 <thead className="bg-purple-900 text-white text-[10px] uppercase font-bold">
@@ -1141,7 +1574,7 @@ export default function TransferCertificateView() {
           </div>
         );
 
-      // 5. EXAM ADMIT CARD (HALL TICKET)
+      // 7. EXAM ADMIT CARD (HALL TICKET)
       case 'admit_card':
         return (
           <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-amber-300 text-slate-800 space-y-4 shadow-sm text-xs relative overflow-hidden">
@@ -1167,7 +1600,6 @@ export default function TransferCertificateView() {
               <img src={st.photo} alt={st.student_name} className="w-16 h-16 rounded-lg object-cover border-2 border-amber-300 shadow-sm" />
             </div>
 
-            {/* Exam Timetable */}
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs text-slate-700">
                 <thead className="bg-amber-900 text-white text-[10px] uppercase font-bold">
@@ -1222,7 +1654,7 @@ export default function TransferCertificateView() {
           </div>
         );
 
-      // 6. STUDENT SMART ID CARD (FRONT & BACK)
+      // 8. STUDENT SMART ID CARD (FRONT & BACK)
       case 'id_card':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1297,7 +1729,7 @@ export default function TransferCertificateView() {
               Transfer Certificate &amp; Document Generator
             </h1>
             <p className="text-xs text-slate-300 mt-1">
-              Generate Board-compliant Transfer Certificates with 6 interchangeable designs, custom school crests, and dynamic synchronization
+              Generate Board-compliant Transfer Certificates, Certificates of Appreciation, and Participation awards with dynamic school branding
             </p>
           </div>
 
@@ -1309,7 +1741,7 @@ export default function TransferCertificateView() {
               }`}
             >
               <Settings2 className="w-4 h-4 text-amber-300" />
-              <span>{showCustomizer ? 'Hide Branding Customizer' : '🎨 Customize School Branding'}</span>
+              <span>{showCustomizer ? 'Hide Customizer' : '🎨 Customize School Branding'}</span>
             </button>
             <button
               onClick={() => { setViewMode('all'); setShowPrintModal(true); }}
@@ -1328,8 +1760,8 @@ export default function TransferCertificateView() {
           </div>
         </div>
 
-        {/* 6 Supported Document Selectors */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mt-6 pt-6 border-t border-white/10">
+        {/* 8 Supported Document Selectors */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 mt-6 pt-6 border-t border-white/10">
           {docTypesList.map((dt) => {
             const Icon = dt.icon;
             const isSelected = docType === dt.id;
@@ -1337,20 +1769,20 @@ export default function TransferCertificateView() {
               <button
                 key={dt.id}
                 onClick={() => setDocType(dt.id)}
-                className={`p-3.5 rounded-2xl text-left border transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-teal-500/25 border-teal-400 text-white shadow-inner scale-[1.02]'
                     : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
                 }`}
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-teal-300">
                     Doc #{dt.num}
                   </span>
-                  <Icon className="w-4 h-4 text-teal-400" />
+                  <Icon className="w-3.5 h-3.5 text-teal-400" />
                 </div>
                 <div className="text-xs font-black truncate">{dt.title}</div>
-                <div className="text-[10px] text-slate-400 mt-0.5 truncate">{dt.subtitle}</div>
+                <div className="text-[9px] text-slate-400 mt-0.5 truncate">{dt.subtitle}</div>
               </button>
             );
           })}
@@ -1373,9 +1805,9 @@ export default function TransferCertificateView() {
                 if (tenant) {
                   setSchoolInfo({
                     schoolName: tenant.school_name || 'International Model Academy',
-                    motto: tenant.tagline || 'Excellence in Knowledge • Character • Leadership',
-                    affiliationNo: tenant.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '883921' : '883921',
-                    schoolCode: tenant.school_code || '45091',
+                    motto: tenant.tagline || 'Learn • Grow • Lead',
+                    affiliationNo: tenant.board_affiliation ? tenant.board_affiliation.replace(/[^0-9]/g, '') || '123456' : '123456',
+                    schoolCode: tenant.school_code || '654321',
                     udiseNo: '29280601244',
                     bookNo: '042',
                     address: tenant.address || '100 Knowledge Boulevard, Indiranagar, Bengaluru - 560038',
@@ -1465,14 +1897,14 @@ export default function TransferCertificateView() {
         </div>
       )}
 
-      {/* 6 TC TEMPLATE CAROUSEL SWITCHER (When Doc Type is 'tc') */}
+      {/* 7 TC TEMPLATE CAROUSEL SWITCHER (When Doc Type is 'tc') */}
       {docType === 'tc' && (
         <div className="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-600" />
               <h3 className="font-extrabold text-xs text-slate-900 uppercase tracking-wider">
-                Select Certificate Design Template (6 Official Layouts)
+                Select Certificate Design Template (7 Official Layouts)
               </h3>
             </div>
             <span className="text-[10px] text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full font-bold border border-amber-200">
@@ -1480,7 +1912,7 @@ export default function TransferCertificateView() {
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
             {tcTemplatesList.map((tpl) => {
               const isSelected = tcTemplate === tpl.id;
               return (
@@ -1567,6 +1999,31 @@ export default function TransferCertificateView() {
               </div>
             </div>
 
+            {/* Event & Appreciation Specific Fields */}
+            {(docType === 'appreciation' || docType === 'participation') && (
+              <div className="space-y-3 p-3 bg-amber-50/60 rounded-2xl border border-amber-200">
+                <div className="text-[11px] font-bold text-amber-900 uppercase">Award &amp; Event Details</div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Award / Honor Title</label>
+                  <input
+                    type="text"
+                    value={awardTitle}
+                    onChange={(e) => setAwardTitle(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Competition / Event Name</label>
+                  <input
+                    type="text"
+                    value={eventName}
+                    onChange={(e) => setEventName(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Configurable Parameters */}
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -1589,25 +2046,29 @@ export default function TransferCertificateView() {
               </div>
             </div>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Reason for Leaving</label>
-              <input
-                type="text"
-                value={reasonForLeaving}
-                onChange={(e) => setReasonForLeaving(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
-              />
-            </div>
+            {docType === 'tc' && (
+              <>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Reason for Leaving</label>
+                  <input
+                    type="text"
+                    value={reasonForLeaving}
+                    onChange={(e) => setReasonForLeaving(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
+                  />
+                </div>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Promotion / Status Remark</label>
-              <input
-                type="text"
-                value={promotedTo}
-                onChange={(e) => setPromotedTo(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
-              />
-            </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Promotion / Status Remark</label>
+                  <input
+                    type="text"
+                    value={promotedTo}
+                    onChange={(e) => setPromotedTo(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold"
+                  />
+                </div>
+              </>
+            )}
 
             <div>
               <label className="block font-bold text-slate-700 mb-1">General Conduct / Evaluation</label>
