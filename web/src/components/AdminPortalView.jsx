@@ -463,8 +463,12 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 </div>
               </div>
               <div className="mt-2.5 sm:mt-3 min-w-0">
-                <div className="text-sm sm:text-base font-black text-slate-800 truncate">Mid-Term Exams</div>
-                <div className="text-[11px] text-amber-600 font-medium mt-0.5 truncate">Oct 14, 2026 (In 13 Days)</div>
+                <div className="text-sm sm:text-base font-black text-slate-800 truncate">
+                  {isMasterSchool ? 'Mid-Term Exams' : 'No Exams Scheduled'}
+                </div>
+                <div className="text-[11px] text-amber-600 font-medium mt-0.5 truncate">
+                  {isMasterSchool ? 'Oct 14, 2026 (In 13 Days)' : 'Schedule clear (0 active)'}
+                </div>
               </div>
             </div>
           </div>

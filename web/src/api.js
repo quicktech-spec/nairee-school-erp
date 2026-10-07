@@ -2670,10 +2670,22 @@ export const api = {
 
   async getAnnouncements(targetRole = '', tenantId = '') {
     const activeTenantId = tenantId || (typeof localStorage !== 'undefined' ? localStorage.getItem('nairee_active_tenant_id') : 'tenant-default') || 'tenant-default';
-    let list = (FALLBACK_DATA.announcements || []).filter(a => {
-      const aTenant = a.tenant_id || 'tenant-default';
-      return aTenant === activeTenantId || aTenant === 'all_tenants';
-    });
+    const isDemo = isMasterOrDemoTenant(activeTenantId);
+    
+    let list = [];
+    try {
+      const saved = localStorage.getItem(`nairee_announcements_${activeTenantId}`);
+      if (saved) {
+        list = JSON.parse(saved);
+      } else if (isDemo) {
+        list = (FALLBACK_DATA.announcements || []).filter(a => {
+          const aTenant = a.tenant_id || 'tenant-default';
+          return aTenant === 'tenant-default' || aTenant === 'all_tenants';
+        });
+      }
+    } catch {
+      list = isDemo ? (FALLBACK_DATA.announcements || []) : [];
+    }
 
     if (targetRole && targetRole !== 'all' && targetRole !== 'All') {
       const tr = targetRole.toLowerCase();
@@ -2700,8 +2712,19 @@ export const api = {
       created_at: 'Just now',
       sender: notice.posted_by || notice.sender || 'Principal Office'
     };
-    if (!FALLBACK_DATA.announcements) FALLBACK_DATA.announcements = [];
-    FALLBACK_DATA.announcements.unshift(newNotice);
+
+    let list = [];
+    try {
+      const saved = localStorage.getItem(`nairee_announcements_${activeTenantId}`);
+      if (saved) list = JSON.parse(saved);
+      else if (isMasterOrDemoTenant(activeTenantId)) list = [...(FALLBACK_DATA.announcements || [])];
+    } catch {}
+
+    list.unshift(newNotice);
+    try {
+      localStorage.setItem(`nairee_announcements_${activeTenantId}`, JSON.stringify(list));
+    } catch {}
+
     broadcastLiveEvent('announcement_created', newNotice);
     return { success: true, announcement: newNotice };
   },

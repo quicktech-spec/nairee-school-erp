@@ -29,11 +29,15 @@ import {
   Flame
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
+import { useTenant } from '../context/TenantContext.jsx';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
 import OnlineAdmissionView from './OnlineAdmissionView.jsx';
 
 export default function TeacherPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
+  const { tenant } = useTenant();
+  const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
+
   const [internalTab, setInternalTab] = useState('dashboard');
   const activeTab = propTab !== undefined ? propTab : internalTab;
   const setActiveTab = propSetTab || setInternalTab;
@@ -45,14 +49,19 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [assessmentPlans, setAssessmentPlans] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedBatch, setSelectedBatch] = useState('CLS-10A');
+  const [selectedBatch, setSelectedBatch] = useState(isMasterSchool ? 'CLS-10A' : '');
   const [attendanceRecords, setAttendanceRecords] = useState({});
-  const [batches, setBatches] = useState([
-    { name: 'CLS-10A', batch_name: 'Class 10 - Section A' },
-    { name: 'CLS-10B', batch_name: 'Class 10 - Section B' },
-    { name: 'CLS-11A', batch_name: 'Class 11 - Section A' },
-    { name: 'CLS-12A', batch_name: 'Class 12 - Section A' }
-  ]);
+  const [batches, setBatches] = useState(() => {
+    if (isMasterSchool) {
+      return [
+        { name: 'CLS-10A', batch_name: 'Class 10 - Section A' },
+        { name: 'CLS-10B', batch_name: 'Class 10 - Section B' },
+        { name: 'CLS-11A', batch_name: 'Class 11 - Section A' },
+        { name: 'CLS-12A', batch_name: 'Class 12 - Section A' }
+      ];
+    }
+    return [];
+  });
   const [toastMessage, setToastMessage] = useState('');
   const [punchStatus, setPunchStatus] = useState(() => {
     try { return localStorage.getItem('nairee_teacher_punch') || 'in'; } catch { return 'in'; }
@@ -101,12 +110,17 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [substituteSuccess, setSubstituteSuccess] = useState(false);
 
   // House Cup & Merit Badges State
-  const [houseLeaderboard, setHouseLeaderboard] = useState([
-    { house: 'Emerald Dragons', points: 420, color: 'from-emerald-500 to-teal-600', badge: 'Emerald', leader: 'Grade 10-A' },
-    { house: 'Sapphire Phoenix', points: 395, color: 'from-blue-500 to-indigo-600', badge: 'Sapphire', leader: 'Grade 10-B' },
-    { house: 'Ruby Lions', points: 380, color: 'from-rose-500 to-red-600', badge: 'Ruby', leader: 'Grade 11-A' },
-    { house: 'Topaz Falcons', points: 360, color: 'from-amber-500 to-yellow-600', badge: 'Topaz', leader: 'Grade 12-A' }
-  ]);
+  const [houseLeaderboard, setHouseLeaderboard] = useState(() => {
+    if (isMasterSchool) {
+      return [
+        { house: 'Emerald Dragons', points: 420, color: 'from-emerald-500 to-teal-600', badge: 'Emerald', leader: 'Grade 10-A' },
+        { house: 'Sapphire Phoenix', points: 395, color: 'from-blue-500 to-indigo-600', badge: 'Sapphire', leader: 'Grade 10-B' },
+        { house: 'Ruby Lions', points: 380, color: 'from-rose-500 to-red-600', badge: 'Ruby', leader: 'Grade 11-A' },
+        { house: 'Topaz Falcons', points: 360, color: 'from-amber-500 to-yellow-600', badge: 'Topaz', leader: 'Grade 12-A' }
+      ];
+    }
+    return [];
+  });
   const [showAwardPointsModal, setShowAwardPointsModal] = useState(false);
   const [selectedStudentForAward, setSelectedStudentForAward] = useState(null);
   const [awardType, setAwardType] = useState('STEM Innovation');
@@ -663,23 +677,23 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                 <div className="space-y-2.5 text-xs">
                   <div className="flex items-center justify-between text-slate-700">
                     <span className="font-semibold text-slate-500">Total assignments</span>
-                    <span className="font-extrabold text-slate-900 text-sm">10</span>
+                    <span className="font-extrabold text-slate-900 text-sm">{isMasterSchool ? 10 : homeworkList.length}</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-700">
                     <span className="font-semibold text-slate-500">Class work assignments</span>
-                    <span className="font-extrabold text-slate-900 text-sm">12</span>
+                    <span className="font-extrabold text-slate-900 text-sm">{isMasterSchool ? 12 : syllabusList.length}</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-700">
                     <span className="font-semibold text-slate-500">Home work assignments</span>
-                    <span className="font-extrabold text-slate-900 text-sm">18</span>
+                    <span className="font-extrabold text-slate-900 text-sm">{isMasterSchool ? 18 : homeworkList.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-emerald-600">Submissions graded</span>
-                    <span className="font-black text-emerald-600 text-sm">20</span>
+                    <span className="font-black text-emerald-600 text-sm">{isMasterSchool ? 20 : 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-[#ff5252]">Awaiting review</span>
-                    <span className="font-black text-[#ff5252] text-sm">2</span>
+                    <span className="font-black text-[#ff5252] text-sm">{isMasterSchool ? 2 : 0}</span>
                   </div>
                 </div>
               </div>
@@ -697,45 +711,54 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Differential Calculus</div>
-                      <div className="text-[10px] text-slate-400">Due: 23 June &bull; Grade 10-A</div>
+                  {!isMasterSchool && homeworkList.length === 0 ? (
+                    <div className="py-6 text-center text-slate-400">
+                      <p className="text-xs font-medium">No assignments pending review</p>
+                      <p className="text-[10px] text-slate-400 mt-1">Assigned coursework will appear here once created</p>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
-                      Awaiting review
-                    </span>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                        <div>
+                          <div className="font-bold text-xs text-slate-800">Differential Calculus</div>
+                          <div className="text-[10px] text-slate-400">Due: 23 June &bull; Grade 10-A</div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
+                          Awaiting review
+                        </span>
+                      </div>
 
-                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Trigonometry Quiz</div>
-                      <div className="text-[10px] text-slate-400">Due: 23 June &bull; Grade 10-A</div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
-                      Awaiting review
-                    </span>
-                  </div>
+                      <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                        <div>
+                          <div className="font-bold text-xs text-slate-800">Trigonometry Quiz</div>
+                          <div className="text-[10px] text-slate-400">Due: 23 June &bull; Grade 10-A</div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold whitespace-nowrap">
+                          Awaiting review
+                        </span>
+                      </div>
 
-                  <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Linear Algebra Mid-Term</div>
-                      <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
-                      Graded
-                    </span>
-                  </div>
+                      <div className="flex items-center justify-between py-1.5 border-b border-slate-50">
+                        <div>
+                          <div className="font-bold text-xs text-slate-800">Linear Algebra Mid-Term</div>
+                          <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
+                          Graded
+                        </span>
+                      </div>
 
-                  <div className="flex items-center justify-between py-1.5">
-                    <div>
-                      <div className="font-bold text-xs text-slate-800">Vectors Practice Set</div>
-                      <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
-                      Graded
-                    </span>
-                  </div>
+                      <div className="flex items-center justify-between py-1.5">
+                        <div>
+                          <div className="font-bold text-xs text-slate-800">Vectors Practice Set</div>
+                          <div className="text-[10px] text-slate-400">Submitted on 19 June</div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold whitespace-nowrap">
+                          Graded
+                        </span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -857,24 +880,32 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                   </button>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-rose-50 text-[#ff5252] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Umbrella className="w-4 h-4" />
+                {isMasterSchool ? (
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-rose-50 text-[#ff5252] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Umbrella className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-800 leading-snug">
+                        Due to heavy rainfall next 2 days (December 10 & 11) holidays
+                      </h4>
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
+                        Faculty to conduct asynchronous online review lectures through Nairee portal.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-800 leading-snug">
-                      Due to heavy rainfall next 2 days (December 10 & 11) holidays
-                    </h4>
-                    <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">
-                      Faculty to conduct asynchronous online review lectures through Nairee portal.
-                    </p>
+                ) : (
+                  <div className="py-4 text-center">
+                    <Umbrella className="w-6 h-6 text-slate-300 mx-auto mb-1" />
+                    <p className="text-xs font-semibold text-slate-600">No active circulars</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Notices issued by management will display here</p>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
                 <span className="text-slate-400">Office of Principal</span>
-                <span className="text-teal-700 font-bold">Official Notice</span>
+                <span className="text-teal-700 font-bold">{isMasterSchool ? 'Official Notice' : '0 Active'}</span>
               </div>
             </div>
 
@@ -892,7 +923,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                   <div>
                     <h3 className="font-bold text-slate-800 text-sm flex items-center space-x-1.5">
                       <span>Annual Inter-House Cup & Student Merit Badges</span>
-                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">LIVE</span>
+                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold">{houseLeaderboard.length > 0 ? 'LIVE' : '0 HOUSES'}</span>
                     </h3>
                     <p className="text-[11px] text-slate-400">Emerald, Sapphire, Ruby & Topaz real-time competition leaderboard</p>
                   </div>
@@ -910,30 +941,38 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {houseLeaderboard.map((h, idx) => (
-                  <div key={h.house} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 hover:border-teal-200 transition-all">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="w-6 h-6 rounded-full bg-slate-900 text-white font-mono text-xs font-bold flex items-center justify-center">
-                          #{idx + 1}
-                        </span>
-                        <span className="font-bold text-slate-800 text-xs">{h.house}</span>
+              {houseLeaderboard.length === 0 ? (
+                <div className="py-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                  <Award className="w-8 h-8 text-slate-300 mx-auto mb-1.5" />
+                  <p className="text-xs font-bold text-slate-700">No House Teams Registered</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Award merit points to initialize inter-house point tracking for this school.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {houseLeaderboard.map((h, idx) => (
+                    <div key={h.house} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 hover:border-teal-200 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="w-6 h-6 rounded-full bg-slate-900 text-white font-mono text-xs font-bold flex items-center justify-center">
+                            #{idx + 1}
+                          </span>
+                          <span className="font-bold text-slate-800 text-xs">{h.house}</span>
+                        </div>
+                        <span className="font-black text-slate-900 text-sm font-mono">{h.points} pts</span>
                       </div>
-                      <span className="font-black text-slate-900 text-sm font-mono">{h.points} pts</span>
-                    </div>
 
-                    <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-                      <div className={`h-full bg-gradient-to-r ${h.color} rounded-full transition-all`} style={{ width: `${(h.points / 500) * 100}%` }} />
-                    </div>
+                      <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                        <div className={`h-full bg-gradient-to-r ${h.color} rounded-full transition-all`} style={{ width: `${(h.points / 500) * 100}%` }} />
+                      </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-slate-500">
-                      <span>Top Contributor: <strong>{h.leader}</strong></span>
-                      <span className="text-teal-600 font-bold">+15 pts this week</span>
+                      <div className="flex items-center justify-between text-[10px] text-slate-500">
+                        <span>Top Contributor: <strong>{h.leader}</strong></span>
+                        <span className="text-teal-600 font-bold">+15 pts this week</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* 1-Click AI Teacher Substitute Resolver (Idea 2) */}

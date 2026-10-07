@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Package,
   Layers,
@@ -16,16 +16,29 @@ import {
   Download,
   X
 } from 'lucide-react';
+import { useTenant } from '../context/TenantContext.jsx';
+
+const DEFAULT_ASSETS = [
+  { id: 'AST-LAB-01', name: 'Digital Optical Microscope 1000x', category: 'Science Lab', location: 'Biology Lab 2', quantity: 12, status: 'Good', lastService: '2026-08-15', condition: 'Optimal', cost: 350 },
+  { id: 'AST-IT-04', name: 'Interactive Smartboard 75-inch', category: 'Smart Classroom', location: 'Grade 10-A Room', quantity: 4, status: 'Good', lastService: '2026-09-01', condition: 'Optimal', cost: 1200 },
+  { id: 'AST-ROB-09', name: 'Robotics Microcontroller & Sensor Kits', category: 'Robotics & STEM', location: 'Innovation Hub', quantity: 25, status: 'Good', lastService: '2026-09-10', condition: 'Optimal', cost: 85 },
+  { id: 'AST-SPT-03', name: 'Basketball & Volleyball Official Nets & Balls', category: 'Sports Arena', location: 'Indoor Gymnasium', quantity: 18, status: 'Maintenance', lastService: '2026-07-20', condition: 'Needs Stringing', cost: 45 },
+  { id: 'AST-LAB-14', name: 'Chemical Titration Burette & Glassware Set', category: 'Science Lab', location: 'Chemistry Lab 1', quantity: 30, status: 'Good', lastService: '2026-08-28', condition: 'Cleaned & Calibrated', cost: 28 },
+  { id: 'AST-LIB-02', name: 'Automated RFID Library Book Scanner', category: 'Library', location: 'Central Library Desk', quantity: 2, status: 'Good', lastService: '2026-09-12', condition: 'Optimal', cost: 650 }
+];
 
 export default function InventoryAssetsView() {
-  const [assets, setAssets] = useState([
-    { id: 'AST-LAB-01', name: 'Digital Optical Microscope 1000x', category: 'Science Lab', location: 'Biology Lab 2', quantity: 12, status: 'Good', lastService: '2026-08-15', condition: 'Optimal', cost: 350 },
-    { id: 'AST-IT-04', name: 'Interactive Smartboard 75-inch', category: 'Smart Classroom', location: 'Grade 10-A Room', quantity: 4, status: 'Good', lastService: '2026-09-01', condition: 'Optimal', cost: 1200 },
-    { id: 'AST-ROB-09', name: 'Robotics Microcontroller & Sensor Kits', category: 'Robotics & STEM', location: 'Innovation Hub', quantity: 25, status: 'Good', lastService: '2026-09-10', condition: 'Optimal', cost: 85 },
-    { id: 'AST-SPT-03', name: 'Basketball & Volleyball Official Nets & Balls', category: 'Sports Arena', location: 'Indoor Gymnasium', quantity: 18, status: 'Maintenance', lastService: '2026-07-20', condition: 'Needs Stringing', cost: 45 },
-    { id: 'AST-LAB-14', name: 'Chemical Titration Burette & Glassware Set', category: 'Science Lab', location: 'Chemistry Lab 1', quantity: 30, status: 'Good', lastService: '2026-08-28', condition: 'Cleaned & Calibrated', cost: 28 },
-    { id: 'AST-LIB-02', name: 'Automated RFID Library Book Scanner', category: 'Library', location: 'Central Library Desk', quantity: 2, status: 'Good', lastService: '2026-09-12', condition: 'Optimal', cost: 650 }
-  ]);
+  const { tenant } = useTenant();
+  const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
+  const tenantKey = tenant?.tenant_id || 'default';
+
+  const [assets, setAssets] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`nairee_assets_${tenantKey}`);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return isMasterSchool ? DEFAULT_ASSETS : [];
+  });
 
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,6 +51,12 @@ export default function InventoryAssetsView() {
     cost: '',
     condition: 'Optimal'
   });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(`nairee_assets_${tenantKey}`, JSON.stringify(assets));
+    } catch {}
+  }, [assets, tenantKey]);
 
   const filteredAssets = assets.filter(a => {
     const matchesCat = categoryFilter === 'all' || a.category === categoryFilter;
@@ -82,10 +101,10 @@ export default function InventoryAssetsView() {
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold border border-teal-500/30">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Campus Infrastructure & Asset Governance</span>
+              <span>Campus Infrastructure &amp; Asset Governance</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              Science Lab, IT & Campus Asset Tracker
+              Science Lab, IT &amp; Campus Asset Tracker
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
               Track real-time inventory of optical microscopes, smartboards, STEM robotics kits, sports gear, and laboratory glassware with maintenance schedules and QR tagging.
@@ -105,21 +124,27 @@ export default function InventoryAssetsView() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/10">
           <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
             <span className="text-[11px] text-slate-400 font-semibold block">Total Registered Items</span>
-            <span className="text-2xl font-black text-white mt-1 block">{assets.reduce((sum, a) => sum + a.quantity, 0)} units</span>
+            <span className="text-2xl font-black text-white mt-1 block">
+              {assets.reduce((sum, a) => sum + (Number(a.quantity) || 1), 0)} units
+            </span>
           </div>
           <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
             <span className="text-[11px] text-slate-400 font-semibold block">Total Asset Valuation</span>
             <span className="text-2xl font-black text-emerald-400 mt-1 block">
-              ${assets.reduce((sum, a) => sum + (a.cost * a.quantity), 0).toLocaleString()}
+              ₹{assets.reduce((sum, a) => sum + ((Number(a.cost) || 0) * (Number(a.quantity) || 1)), 0).toLocaleString('en-IN')}
             </span>
           </div>
           <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
             <span className="text-[11px] text-slate-400 font-semibold block">Condition Health</span>
-            <span className="text-2xl font-black text-teal-300 mt-1 block">96.4% Optimal</span>
+            <span className="text-2xl font-black text-teal-300 mt-1 block">
+              {assets.length > 0 ? `${((assets.filter(a => a.status === 'Good').length / assets.length) * 100).toFixed(1)}% Optimal` : '100% Optimal'}
+            </span>
           </div>
           <div className="bg-white/5 rounded-2xl p-3.5 border border-white/10">
             <span className="text-[11px] text-slate-400 font-semibold block">In Maintenance</span>
-            <span className="text-2xl font-black text-amber-400 mt-1 block">1 Item Active</span>
+            <span className="text-2xl font-black text-amber-400 mt-1 block">
+              {assets.filter(a => a.status === 'Maintenance').length} Items Active
+            </span>
           </div>
         </div>
       </div>
@@ -153,50 +178,72 @@ export default function InventoryAssetsView() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600">
-            <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
-              <tr>
-                <th className="py-3.5 px-4">Asset ID</th>
-                <th className="py-3.5 px-4">Asset Description</th>
-                <th className="py-3.5 px-4">Category</th>
-                <th className="py-3.5 px-4">Location</th>
-                <th className="py-3.5 px-4">Qty</th>
-                <th className="py-3.5 px-4">Unit Cost</th>
-                <th className="py-3.5 px-4">Condition</th>
-                <th className="py-3.5 px-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
-              {filteredAssets.map(a => (
-                <tr key={a.id} className="hover:bg-teal-50/20 transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-teal-800">{a.id}</td>
-                  <td className="py-3 px-4 font-bold text-slate-800">{a.name}</td>
-                  <td className="py-3 px-4">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                      {a.category}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-slate-600">{a.location}</td>
-                  <td className="py-3 px-4 font-bold">{a.quantity}</td>
-                  <td className="py-3 px-4 font-bold text-slate-700">${a.cost}</td>
-                  <td className="py-3 px-4 text-slate-500">{a.condition}</td>
-                  <td className="py-3 px-4">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center space-x-1 w-fit ${
-                      a.status === 'Good' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                    }`}>
-                      {a.status === 'Good' ? <CheckCircle2 className="w-3 h-3" /> : <Wrench className="w-3 h-3" />}
-                      <span>{a.status}</span>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Table or Empty State */}
+      {filteredAssets.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 border border-slate-200/80 shadow-xs text-center space-y-4 max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mx-auto">
+            <Package className="w-7 h-7" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-800">No Asset Records Found</h3>
+            <p className="text-xs text-slate-500">
+              {searchQuery ? 'No assets match your search query.' : 'No laboratory equipment, IT hardware, or campus assets have been registered yet.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAddModal(true)}
+            className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 inline-flex items-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Register First Asset</span>
+          </button>
         </div>
-      </div>
+      ) : (
+        <div className="bg-white rounded-3xl border border-teal-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-600">
+              <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
+                <tr>
+                  <th className="py-3.5 px-4">Asset ID</th>
+                  <th className="py-3.5 px-4">Asset Description</th>
+                  <th className="py-3.5 px-4">Category</th>
+                  <th className="py-3.5 px-4">Location</th>
+                  <th className="py-3.5 px-4">Qty</th>
+                  <th className="py-3.5 px-4">Unit Cost</th>
+                  <th className="py-3.5 px-4">Condition</th>
+                  <th className="py-3.5 px-4">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {filteredAssets.map(a => (
+                  <tr key={a.id} className="hover:bg-teal-50/20 transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-teal-800">{a.id}</td>
+                    <td className="py-3 px-4 font-bold text-slate-800">{a.name}</td>
+                    <td className="py-3 px-4">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                        {a.category}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-slate-600">{a.location}</td>
+                    <td className="py-3 px-4 font-bold">{a.quantity}</td>
+                    <td className="py-3 px-4 font-bold text-slate-700">₹{Number(a.cost || 0).toLocaleString('en-IN')}</td>
+                    <td className="py-3 px-4 text-slate-500">{a.condition}</td>
+                    <td className="py-3 px-4">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center space-x-1 w-fit ${
+                        a.status === 'Good' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {a.status === 'Good' ? <CheckCircle2 className="w-3 h-3" /> : <Wrench className="w-3 h-3" />}
+                        <span>{a.status}</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* ADD ASSET MODAL */}
       {showAddModal && (

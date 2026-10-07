@@ -368,8 +368,9 @@ export default function AppLayout({
     try {
       const readIds = getReadNotifIds();
       const currentTenantId = tenant?.tenant_id || 'tenant-default';
+      const isDemo = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
       const annList = await api.getAnnouncements(normalizedRole || 'all', currentTenantId).catch(() => []);
-      const fallbackList = (FALLBACK_DATA.announcements || []).filter(a => (a.tenant_id || 'tenant-default') === currentTenantId || a.tenant_id === 'all_tenants');
+      const fallbackList = isDemo ? (FALLBACK_DATA.announcements || []).filter(a => (a.tenant_id || 'tenant-default') === currentTenantId || a.tenant_id === 'all_tenants') : [];
       const activeList = annList && annList.length > 0 ? annList : fallbackList;
 
       const combined = activeList.map((ann, idx) => {
@@ -387,10 +388,10 @@ export default function AppLayout({
         };
       });
 
-      const samples = SAMPLE_NOTIFICATIONS.filter(s => (s.tenant_id || 'tenant-default') === currentTenantId).map(s => ({
+      const samples = isDemo ? SAMPLE_NOTIFICATIONS.filter(s => (s.tenant_id || 'tenant-default') === currentTenantId).map(s => ({
         ...s,
         unread: !readIds.includes(String(s.id)) && s.unread
-      }));
+      })) : [];
 
       const allMerged = [
         ...combined,
