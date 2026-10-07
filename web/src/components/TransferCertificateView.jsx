@@ -121,8 +121,24 @@ export default function TransferCertificateView() {
   // 7 Transfer Certificate Templates
   const [tcTemplate, setTcTemplate] = useState('sunrise_chevron');
 
-  // 5 Appreciation / Merit Templates
-  const [appreciationTemplate, setAppreciationTemplate] = useState('imperial_crimson_arch');
+  // 5 Appreciation & Merit Templates (Matching uploaded reference designs)
+  const [appreciationTemplate, setAppreciationTemplate] = useState('modern_navy_gold_badge');
+
+  // Fully customizable certificate text, citation, dates & signatories
+  const [certConfig, setCertConfig] = useState({
+    title: 'CERTIFICATE',
+    subtitle: 'OF APPRECIATION',
+    presentationLine: 'This certificate is presented to',
+    recipientName: '', // empty means dynamically uses selected student name
+    eventTitle: 'ANNUAL SCHOOL EXHIBITION',
+    bodyText: 'For your participation and insightful contributions during the "ANNUAL SCHOOL EXHIBITION". Your creativity, curiosity, and enthusiasm have inspired others and greatly enriched the event.',
+    awardDate: '10th of January, 2026',
+    signatory1Name: 'Aaron Loeb',
+    signatory1Title: 'School Principal',
+    signatory2Name: 'Estelle Darcy',
+    signatory2Title: 'Science Department Head',
+    organizationName: 'Liceria & Co.'
+  });
 
   // 5 Participation / Event Templates
   const [participationTemplate, setParticipationTemplate] = useState('modern_teal_geometric');
@@ -392,44 +408,109 @@ export default function TransferCertificateView() {
 
   const appreciationTemplatesList = [
     {
-      id: 'imperial_crimson_arch',
-      title: 'Imperial Crimson & Gold Arch',
-      tag: 'Portrait • Regal Arch',
-      desc: 'Ornate crimson arch, 3-star gold sunburst medallion, serif typography',
-      orientation: 'portrait',
-      activeBg: 'from-rose-700/30 to-amber-700/20 border-rose-400 text-rose-200'
-    },
-    {
-      id: 'royal_navy_gold_merit',
-      title: 'Royal Navy & Golden Laurel',
-      tag: 'Landscape • Luxury Crest',
-      desc: 'Midnight navy frame, ornate corner filigree, embossed gold laurel crest',
+      id: 'modern_navy_gold_badge',
+      title: 'Modern Navy & Gold (Olivia Wilson)',
+      tag: 'Landscape • Blue Rosette & Angled Chevron',
+      desc: 'Deep navy borders, gold & silver chevron stripes, blue ribbon rosette, and graduation cap emblem',
       orientation: 'landscape',
-      activeBg: 'from-indigo-700/30 to-blue-700/20 border-indigo-400 text-indigo-200'
+      activeBg: 'from-blue-900/40 to-slate-900 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF APPRECIATION',
+        presentationLine: 'This certificate is presented to',
+        recipientName: '',
+        eventTitle: 'ANNUAL SCHOOL EXHIBITION',
+        bodyText: 'For your participation and insightful contributions during the "ANNUAL SCHOOL EXHIBITION". Your creativity, curiosity, and enthusiasm have inspired others and greatly enriched the event.',
+        awardDate: '10th of January, 2026',
+        signatory1Name: 'Aaron Loeb',
+        signatory1Title: 'School Principal',
+        signatory2Name: 'Estelle Darcy',
+        signatory2Title: 'Science Department Head'
+      }
     },
     {
-      id: 'vintage_parchment_honor',
-      title: 'Vintage Antique Parchment Honor',
-      tag: 'Landscape • Banknote Filigree',
-      desc: 'Warm textured parchment background, Gothic lettering, crimson wax seal',
+      id: 'royal_navy_gold_geometric',
+      title: 'Royal Navy & Gold Filigree (Noah Schumacher)',
+      tag: 'Landscape • 3D Gold Medallion Rosette',
+      desc: 'Ivory background, navy & gold diagonal angular bands, gold filigree flourishes, and large metallic gold seal',
       orientation: 'landscape',
-      activeBg: 'from-amber-700/30 to-yellow-700/20 border-amber-400 text-amber-200'
+      activeBg: 'from-amber-900/40 to-blue-950 border-amber-300 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE OF',
+        subtitle: 'APPRECIATION',
+        presentationLine: 'PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Liceria & Co. Initiative',
+        bodyText: 'In recognition of your outstanding dedication and invaluable contributions as a volunteer for Liceria & Co. Your commitment has significantly helped us achieve our goals.',
+        awardDate: '10TH OF JANUARY, 2026',
+        signatory1Name: 'MURAD NASER',
+        signatory1Title: 'DIRECTOR',
+        signatory2Name: '',
+        signatory2Title: ''
+      }
     },
     {
-      id: 'modern_platinum_distinction',
-      title: 'Modern Platinum & Sapphire',
-      tag: 'Landscape • High-Tech Security',
-      desc: 'High-tech platinum geometric frames, dynamic QR verification, cobalt accents',
+      id: 'mint_emerald_fluid_waves',
+      title: 'Mint Emerald Fluid Waves (Alexander Aronowitz)',
+      tag: 'Landscape • Fluid Waves & Silver/Gold Rosette',
+      desc: 'Organic emerald & mint fluid ribbon sweeps in 4 corners, silver-gold rosette medal, green monogram logo, and dual script signatures',
       orientation: 'landscape',
-      activeBg: 'from-cyan-700/30 to-blue-700/20 border-cyan-400 text-cyan-200'
+      activeBg: 'from-emerald-900/40 to-teal-950 border-emerald-400 text-emerald-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF COMPLETION',
+        presentationLine: 'This is to certify that',
+        recipientName: '',
+        eventTitle: 'Professional Training Program',
+        bodyText: 'has successfully completed a professional training program conducted on January 15, 2026. Her dedication and commitment to the learning process are truly commendable.',
+        awardDate: 'February 2, 2026',
+        signatory1Name: 'Muhammad Patel',
+        signatory1Title: 'Training Director',
+        signatory2Name: 'Richard Sanchez',
+        signatory2Title: 'Program Instructor'
+      }
     },
     {
-      id: 'emerald_excellence_crest',
-      title: 'Emerald & Champagne Excellence',
-      tag: 'Portrait • Commendation Layout',
-      desc: 'Forest emerald dual borders, gold filigree starburst, formal commendation',
-      orientation: 'portrait',
-      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+      id: 'cyan_emerald_curved_sweep',
+      title: 'Dynamic Cyan & Emerald Sweep (Henrietta Mitchell)',
+      tag: 'Landscape • Tech Lines & Hanging Gold Medal',
+      desc: 'Layered forest green, emerald & cyan curved sweeps with fine raster lines, thin green border, and hanging golden medal',
+      orientation: 'landscape',
+      activeBg: 'from-cyan-900/40 to-emerald-950 border-cyan-400 text-cyan-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF PARTICIPATION',
+        presentationLine: 'This Certificate Proudly Presented to:',
+        recipientName: '',
+        eventTitle: 'Wardiere Charity Run',
+        bodyText: 'Actively participated in the Wardiere Charity Run, demonstrating dedication and enthusiasm. Your involvement helped make the event a resounding success. Presented on 20 Juni 2040.',
+        awardDate: '20 Juni 2040',
+        signatory1Name: 'SAMIRA HADID',
+        signatory1Title: 'Event Director',
+        signatory2Name: 'ALFREDO TORRES',
+        signatory2Title: 'Co-Organizer'
+      }
+    },
+    {
+      id: 'forest_lime_polygon_mosaic',
+      title: 'Geometric Forest & Lime Mosaic (Brigita Tsamara)',
+      tag: 'Landscape • Geometric Triangle Mosaic',
+      desc: 'Olive, forest & lime green geometric triangle mosaic clusters with zigzag lines, clover floral divider, and handwritten signature',
+      orientation: 'landscape',
+      activeBg: 'from-lime-900/40 to-emerald-950 border-lime-400 text-lime-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF PARTICIPATION',
+        presentationLine: 'This certificate is proudly presented to',
+        recipientName: '',
+        eventTitle: 'Youth Engagement Program',
+        bodyText: 'In recognition of active participation and meaningful contribution to the program. Your dedication and engagement are sincerely appreciated.',
+        awardDate: '15th of March, 2026',
+        signatory1Name: 'AVERY DAVIS',
+        signatory1Title: 'Program Manager',
+        signatory2Name: '',
+        signatory2Title: ''
+      }
     }
   ];
 
@@ -774,6 +855,164 @@ export default function TransferCertificateView() {
         </text>
       </svg>
     </div>
+  );
+
+  // 1. Blue Ribbon Rosette Badge (for Olivia Wilson Design)
+  const BlueRosetteRibbonBadge = ({ size = 88 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size * 1.25 }}>
+      <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-xl">
+        <defs>
+          <linearGradient id="goldRibbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="40%" stopColor="#f59e0b" />
+            <stop offset="80%" stopColor="#b45309" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+          <linearGradient id="blueDiscGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" />
+            <stop offset="50%" stopColor="#1d4ed8" />
+            <stop offset="100%" stopColor="#1e3a8a" />
+          </linearGradient>
+        </defs>
+        {/* Ribbon tails */}
+        <polygon points="32,65 32,120 45,108 45,65" fill="#1e3a8a" stroke="#d97706" strokeWidth="1.5" />
+        <polygon points="68,65 68,120 55,108 55,65" fill="#1e3a8a" stroke="#d97706" strokeWidth="1.5" />
+        <polygon points="36,65 36,114 45,108 45,65" fill="#2563eb" opacity="0.6" />
+        <polygon points="64,65 64,114 55,108 55,65" fill="#2563eb" opacity="0.6" />
+
+        {/* Fluted Starburst Rosette */}
+        <polygon
+          points="50,2 56,12 68,6 72,18 84,16 84,28 96,30 92,42 100,48 92,58 98,66 88,74 90,86 78,88 76,100 64,96 58,106 50,98 42,106 36,96 24,100 22,88 10,86 12,74 2,66 8,58 0,48 8,42 4,30 16,28 16,16 28,18 32,6 44,12"
+          fill="url(#goldRibbonGrad)"
+          stroke="#78350f"
+          strokeWidth="1"
+        />
+        <circle cx="50" cy="50" r="38" fill="url(#goldRibbonGrad)" stroke="#fef08a" strokeWidth="1.5" />
+        <circle cx="50" cy="50" r="34" fill="#0f172a" />
+        <circle cx="50" cy="50" r="32" fill="url(#blueDiscGrad)" stroke="#fef08a" strokeWidth="2" />
+        <circle cx="50" cy="50" r="28" fill="none" stroke="#93c5fd" strokeWidth="1" strokeDasharray="2 1" />
+      </svg>
+    </div>
+  );
+
+  // 2. Gold Medallion Rosette with Ribbon (for Noah Schumacher Design)
+  const GoldMedallionRosette = ({ size = 92 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size * 1.3 }}>
+      <svg viewBox="0 0 100 130" className="w-full h-full drop-shadow-xl">
+        <defs>
+          <linearGradient id="richGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fffbeb" />
+            <stop offset="25%" stopColor="#fde047" />
+            <stop offset="50%" stopColor="#d97706" />
+            <stop offset="75%" stopColor="#b45309" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+          <radialGradient id="goldRadial" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="60%" stopColor="#d97706" />
+            <stop offset="100%" stopColor="#92400e" />
+          </radialGradient>
+        </defs>
+        {/* Golden ribbon tails */}
+        <polygon points="30,65 30,122 44,110 44,65" fill="url(#richGoldGrad)" stroke="#78350f" strokeWidth="1" />
+        <polygon points="70,65 70,122 56,110 56,65" fill="url(#richGoldGrad)" stroke="#78350f" strokeWidth="1" />
+        
+        {/* Metallic disc & sunburst */}
+        <circle cx="50" cy="46" r="44" fill="url(#richGoldGrad)" stroke="#78350f" strokeWidth="1.5" />
+        <circle cx="50" cy="46" r="39" fill="#fffbeb" stroke="#b45309" strokeWidth="1" />
+        <circle cx="50" cy="46" r="35" fill="url(#goldRadial)" stroke="#fef08a" strokeWidth="1.5" />
+        <circle cx="50" cy="46" r="28" fill="url(#richGoldGrad)" />
+        <g stroke="#fffbeb" strokeWidth="1" opacity="0.65">
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(deg => (
+            <line key={deg} x1="50" y1="18" x2="50" y2="46" transform={`rotate(${deg} 50 46)`} />
+          ))}
+        </g>
+        <circle cx="50" cy="46" r="12" fill="#fef08a" stroke="#b45309" strokeWidth="1" />
+      </svg>
+    </div>
+  );
+
+  // 3. Silver & Gold Rosette (for Alexander Aronowitz Design)
+  const SilverGoldRosette = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size * 1.25 }}>
+      <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-md">
+        <defs>
+          <linearGradient id="silverRibbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f8fafc" />
+            <stop offset="50%" stopColor="#cbd5e1" />
+            <stop offset="100%" stopColor="#94a3b8" />
+          </linearGradient>
+          <linearGradient id="goldCoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="60%" stopColor="#d97706" />
+            <stop offset="100%" stopColor="#92400e" />
+          </linearGradient>
+        </defs>
+        <polygon points="34,58 34,115 45,105 45,58" fill="url(#silverRibbonGrad)" stroke="#cbd5e1" strokeWidth="1" />
+        <polygon points="66,58 66,115 55,105 55,58" fill="url(#silverRibbonGrad)" stroke="#cbd5e1" strokeWidth="1" />
+        
+        <circle cx="50" cy="44" r="38" fill="url(#silverRibbonGrad)" stroke="#94a3b8" strokeWidth="1.5" />
+        <circle cx="50" cy="44" r="32" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+        <circle cx="50" cy="44" r="26" fill="url(#goldCoreGrad)" stroke="#fde047" strokeWidth="2" />
+        <circle cx="50" cy="44" r="18" fill="url(#silverRibbonGrad)" stroke="#ffffff" strokeWidth="1" />
+      </svg>
+    </div>
+  );
+
+  // 4. Hanging Gold Medal (for Henrietta Mitchell Design)
+  const HangingGoldMedal = ({ size = 68 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size * 1.35 }}>
+      <svg viewBox="0 0 100 135" className="w-full h-full drop-shadow-xl">
+        <defs>
+          <linearGradient id="medalGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fef08a" />
+            <stop offset="40%" stopColor="#f59e0b" />
+            <stop offset="80%" stopColor="#b45309" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+        </defs>
+        <polygon points="38,0 50,28 34,28 22,0" fill="#f59e0b" />
+        <polygon points="62,0 50,28 66,28 78,0" fill="#d97706" />
+        <polygon points="45,22 55,22 55,34 45,34" fill="#92400e" />
+
+        <circle cx="50" cy="76" r="40" fill="#1e293b" />
+        <circle cx="50" cy="76" r="38" fill="url(#medalGoldGrad)" stroke="#fef08a" strokeWidth="2" />
+        <circle cx="50" cy="76" r="32" fill="#fef3c7" stroke="#b45309" strokeWidth="1.5" />
+        <circle cx="50" cy="76" r="28" fill="url(#medalGoldGrad)" />
+        <polygon points="50,64 53,72 61,72 55,77 57,85 50,80 43,85 45,77 39,72 47,72" fill="#fef3c7" stroke="#78350f" strokeWidth="0.8" />
+      </svg>
+    </div>
+  );
+
+  // 5. Baroque Corner Filigree
+  const CornerBaroqueFiligree = ({ className = "" }) => (
+    <svg viewBox="0 0 100 100" fill="currentColor" className={className}>
+      <path d="M 5,5 Q 30,10 50,30 Q 70,10 95,5 Q 90,30 70,50 Q 90,70 95,95 Q 70,90 50,70 Q 30,90 5,95 Q 10,70 30,50 Q 10,30 5,5 Z M 50,42 Q 54,46 50,50 Q 46,46 50,42 Z" opacity="0.9" />
+      <circle cx="20" cy="20" r="3" />
+      <circle cx="80" cy="20" r="3" />
+      <circle cx="20" cy="80" r="3" />
+      <circle cx="80" cy="80" r="3" />
+    </svg>
+  );
+
+  // 6. Realistic Cursive Handwriting Signature
+  const HandWrittenSignature = ({ name = "Avery Davis", color = "#1e293b" }) => (
+    <svg viewBox="0 0 200 60" className="w-28 sm:w-32 h-8 sm:h-10 mx-auto pointer-events-none select-none opacity-85">
+      <path
+        d="M 15 35 Q 35 10 55 25 T 85 40 Q 100 15 120 30 T 150 20 Q 170 45 185 25"
+        fill="none"
+        stroke={color}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 30 45 Q 90 40 170 38"
+        fill="none"
+        stroke={color}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 
   // ==========================================
@@ -1457,103 +1696,105 @@ export default function TransferCertificateView() {
   };
 
   // =========================================================================
-  // CERTIFICATE OF APPRECIATION (EXACT MATCH to Image 3 - Imperial Crimson Arch)
+  // TEMPLATE 1: Modern Navy & Gold with Blue Rosette (Olivia Wilson Design)
   // =========================================================================
-  const renderImperialArchAppreciation = (st) => {
+  const renderModernNavyGoldBadgeAppreciation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Olivia Wilson';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF APPRECIATION';
+    const certPresentation = certConfig.presentationLine || 'This certificate is presented to';
+    const certBody = certConfig.bodyText || `For your participation and insightful contributions during the "${certConfig.eventTitle || 'ANNUAL SCHOOL EXHIBITION'}". Your creativity, curiosity, and enthusiasm have inspired others and greatly enriched the event.`;
+    const certSig1Name = certConfig.signatory1Name || 'Aaron Loeb';
+    const certSig1Title = certConfig.signatory1Title || 'School Principal';
+    const certSig2Name = certConfig.signatory2Name || 'Estelle Darcy';
+    const certSig2Title = certConfig.signatory2Title || 'Science Department Head';
+
     return (
-      <div className="bg-white p-7 sm:p-10 rounded-3xl border-8 border-amber-400 text-slate-900 space-y-5 shadow-2xl relative overflow-hidden font-sans">
-        {/* Left & Right Crimson Gradient Borders with Gold Trims */}
-        <div className="absolute top-0 left-0 bottom-0 w-6 sm:w-8 bg-gradient-to-b from-amber-400 via-rose-900 to-amber-500 pointer-events-none" />
-        <div className="absolute top-0 right-0 bottom-0 w-6 sm:w-8 bg-gradient-to-b from-amber-400 via-rose-900 to-amber-500 pointer-events-none" />
-        
-        {/* Top & Bottom Arch Curves */}
-        <div className="absolute top-0 left-0 right-0 h-4 bg-amber-400 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-r from-amber-500 via-rose-950 to-amber-500 pointer-events-none" />
-
-        {/* Top Crest / Logo */}
-        <div className="text-center space-y-1 relative pt-2">
-          <div className="flex items-center justify-center">
-            {schoolInfo.customLogoUrl ? (
-              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-16 h-16 object-contain rounded-full border-2 border-amber-400 p-1 shadow-md bg-white" />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-900 via-blue-950 to-slate-900 text-amber-200 flex items-center justify-center border-2 border-amber-400 shadow-md">
-                <Trophy className="w-8 h-8 text-amber-400" />
-              </div>
-            )}
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-blue-950 uppercase font-serif">
-            {schoolInfo.schoolName}
-          </h2>
-          <p className="text-[11px] text-slate-600 font-medium">
-            {schoolInfo.address}
-          </p>
+      <div className="bg-[#151c38] p-4 sm:p-6 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto">
+        {/* Left and Right Angled Yellow-Gold and Silver Chevron Stripes */}
+        <div className="absolute top-0 left-0 bottom-0 w-20 pointer-events-none">
+          <svg viewBox="0 0 100 500" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="0,0 60,0 100,180 0,180" fill="#f59e0b" />
+            <polygon points="0,180 100,180 40,340 0,340" fill="#e2e8f0" />
+            <polygon points="0,340 40,340 80,500 0,500" fill="#f59e0b" />
+          </svg>
+        </div>
+        <div className="absolute top-0 right-0 bottom-0 w-20 pointer-events-none">
+          <svg viewBox="0 0 100 500" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="40,0 100,0 100,180 0,180" fill="#f59e0b" />
+            <polygon points="0,180 100,180 100,340 60,340" fill="#e2e8f0" />
+            <polygon points="60,340 100,340 100,500 20,500" fill="#f59e0b" />
+          </svg>
         </div>
 
-        {/* Cursive Red Script Title */}
-        <div className="text-center py-2">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-wide text-rose-700 italic font-serif">
-            Certificate of Appreciation
+        {/* Main White Certificate Card */}
+        <div className="bg-white rounded-2xl p-6 sm:p-10 relative z-10 text-center shadow-lg border border-slate-100 overflow-hidden">
+          {/* Top-Left Blue Rosette Badge */}
+          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20">
+            <BlueRosetteRibbonBadge size={82} />
+          </div>
+
+          {/* Bottom-Right Halftone Dotted Triangle Grid */}
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 opacity-40 pointer-events-none">
+            <div className="grid grid-cols-6 gap-1.5 w-16 h-16">
+              {[...Array(21)].map((_, i) => (
+                <div key={i} className="w-1.5 h-1.5 rounded-full bg-[#151c38]"></div>
+              ))}
+            </div>
+          </div>
+
+          {/* Center Graduation Cap Emblem */}
+          <div className="flex justify-center mb-2">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-[#151c38]">
+              <GraduationCap className="w-7 h-7 text-[#1e293b]" />
+            </div>
+          </div>
+
+          {/* Certificate Title */}
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-wider uppercase font-sans">
+            {certTitle}
           </h1>
-          <div className="w-24 h-0.5 bg-rose-300 mx-auto mt-1 rounded-full"></div>
-        </div>
-
-        {/* Certificate Text with Clean Underline Fields */}
-        <div className="space-y-4 text-center px-4 font-serif text-sm leading-loose text-slate-800">
-          <div className="flex flex-wrap items-baseline justify-center gap-2">
-            <span className="italic text-base">This is to certify that</span>
-            <span className="font-sans font-black text-slate-950 text-xl border-b-2 border-slate-900 px-4 pb-0.5">
-              {st.student_name}
-            </span>
+          <div className="text-xs sm:text-sm font-bold text-slate-700 tracking-widest uppercase mt-0.5">
+            {certSubtitle}
           </div>
 
-          <div className="flex flex-wrap items-baseline justify-center gap-2">
-            <span className="italic">of</span>
-            <span className="font-sans font-bold text-slate-900 text-sm border-b-2 border-slate-800 px-4 pb-0.5">
-              {st.class_batch}
-            </span>
-            <span className="italic">has been adjudged as the</span>
-          </div>
-
-          <div className="flex flex-wrap items-baseline justify-center gap-2">
-            <span className="font-sans font-black text-rose-800 text-lg border-b-2 border-rose-800 px-6 pb-0.5 uppercase tracking-wide">
-              {awardTitle}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-baseline justify-center gap-2">
-            <span className="italic">in the</span>
-            <span className="font-sans font-extrabold text-blue-950 text-base border-b-2 border-blue-950 px-6 pb-0.5">
-              {eventName}
-            </span>
-          </div>
-
-          <p className="italic text-slate-700 pt-2 text-xs font-sans max-w-lg mx-auto leading-relaxed">
-            We appreciate his / her exemplary efforts, discipline, and dedication, and wish him / her continued success in all future endeavours.
+          {/* Presentation Subtitle */}
+          <p className="text-xs font-semibold text-slate-500 mt-4 tracking-wide">
+            {certPresentation}
           </p>
-        </div>
 
-        {/* Bottom Signatures and Golden 3-Star Medallion */}
-        <div className="pt-6 relative flex items-end justify-between px-6 pb-4">
-          <div className="text-center space-y-1">
-            <div className="w-32 border-b-2 border-dotted border-slate-800 pb-1 font-mono font-bold text-xs text-slate-900">
-              {issueDate}
-            </div>
-            <div className="font-sans font-bold text-[10px] text-slate-700 uppercase tracking-wider">
-              Date
-            </div>
+          {/* Recipient Name in Elegant Gold Calligraphy */}
+          <div className="my-2 max-w-md mx-auto">
+            <h2 className="text-3xl sm:text-5xl font-serif italic text-[#c89229] font-normal tracking-wide capitalize" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h2>
+            <div className="w-48 h-0.5 bg-gradient-to-r from-transparent via-[#c89229] to-transparent mx-auto mt-1" />
           </div>
 
-          {/* Central 3-Star Gold Medallion */}
-          <div className="text-center -mb-2">
-            <GoldStarMedallion size={92} />
-          </div>
-
-          <div className="text-center space-y-1">
-            <div className="w-36 border-b-2 border-dotted border-slate-800 pb-1 font-serif italic text-blue-950 font-bold text-sm">
-              {schoolInfo.principalName}
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-slate-800 font-extrabold">{customClassSection || st.class_batch}</span>
             </div>
-            <div className="font-sans font-bold text-[10px] text-slate-700 uppercase tracking-wider">
-              Principal
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-sans font-normal">
+            {certBody}
+          </p>
+
+          {/* Signatories (Left & Right with clean lines) */}
+          <div className="pt-8 sm:pt-10 flex items-end justify-between px-4 sm:px-12">
+            <div className="text-center min-w-[120px]">
+              <div className="w-32 sm:w-40 h-0.5 bg-slate-900 mx-auto mb-1.5" />
+              <strong className="text-xs font-black text-slate-900 block">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <div className="w-32 sm:w-40 h-0.5 bg-slate-900 mx-auto mb-1.5" />
+              <strong className="text-xs font-black text-slate-900 block">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
             </div>
           </div>
         </div>
@@ -1562,103 +1803,432 @@ export default function TransferCertificateView() {
   };
 
   // =========================================================================
-  // CERTIFICATE OF PARTICIPATION (EXACT MATCH to Image 2 - Modern Teal Geometric)
+  // TEMPLATE 2: Royal Navy & Gold Geometric Filigree (Noah Schumacher Design)
   // =========================================================================
-  const renderModernTealParticipation = (st) => {
+  const renderRoyalNavyGoldGeometricAppreciation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Noah Schumacher';
+    const certTitle = certConfig.title || 'CERTIFICATE OF';
+    const certSubtitle = certConfig.subtitle || 'APPRECIATION';
+    const certPresentation = certConfig.presentationLine || 'PRESENTED TO';
+    const certBody = certConfig.bodyText || 'In recognition of your outstanding dedication and invaluable contributions as a volunteer for Liceria & Co. Your commitment has significantly helped us achieve our goals.';
+    const certDate = certConfig.awardDate || 'AWARDED THIS 10TH OF JANUARY, 2026';
+    const certSig1Name = certConfig.signatory1Name || 'MURAD NASER';
+    const certSig1Title = certConfig.signatory1Title || 'DIRECTOR';
+
     return (
-      <div className="bg-white p-7 sm:p-10 rounded-2xl border-4 border-teal-600 text-slate-900 space-y-6 shadow-2xl relative overflow-hidden font-sans">
-        {/* Modern Teal / Emerald Faceted Geometric Side Polygons */}
-        <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-16 pointer-events-none opacity-90">
-          <svg viewBox="0 0 100 800" preserveAspectRatio="none" className="w-full h-full">
-            <polygon points="0,0 80,0 0,160" fill="#0f766e" />
-            <polygon points="0,160 100,260 0,380" fill="#0d9488" />
-            <polygon points="0,380 90,520 0,660" fill="#047857" />
-            <polygon points="0,660 100,800 0,800" fill="#065f46" />
+      <div className="bg-[#fefcf6] p-6 sm:p-9 rounded-3xl shadow-2xl relative overflow-hidden font-serif max-w-4xl mx-auto border-4 border-[#d4af37]/60">
+        {/* Left & Right Navy and Gold Geometric Angular Bands */}
+        <div className="absolute top-0 left-0 bottom-0 w-28 pointer-events-none">
+          <svg viewBox="0 0 120 500" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="0,0 80,0 0,220" fill="#1e2547" />
+            <polygon points="0,0 120,0 0,350" fill="#c99a3e" opacity="0.9" />
+            <polygon points="0,150 100,500 0,500" fill="#1e2547" />
+            <polygon points="0,280 60,500 0,500" fill="#c99a3e" />
+          </svg>
+        </div>
+        <div className="absolute top-0 right-0 bottom-0 w-28 pointer-events-none">
+          <svg viewBox="0 0 120 500" preserveAspectRatio="none" className="w-full h-full">
+            <polygon points="40,0 120,0 120,220" fill="#c99a3e" />
+            <polygon points="0,0 120,0 120,350" fill="#1e2547" opacity="0.95" />
+            <polygon points="20,500 120,150 120,500" fill="#c99a3e" />
+            <polygon points="60,500 120,280 120,500" fill="#1e2547" />
           </svg>
         </div>
 
-        <div className="absolute top-0 right-0 bottom-0 w-12 sm:w-16 pointer-events-none opacity-90">
-          <svg viewBox="0 0 100 800" preserveAspectRatio="none" className="w-full h-full">
-            <polygon points="100,0 20,0 100,160" fill="#0f766e" />
-            <polygon points="100,160 0,260 100,380" fill="#0d9488" />
-            <polygon points="100,380 10,520 100,660" fill="#047857" />
-            <polygon points="100,660 0,800 100,800" fill="#065f46" />
-          </svg>
+        {/* Inner Gold Thin Border */}
+        <div className="absolute top-4 left-4 right-4 bottom-4 border border-[#c99a3e]/60 rounded-xl pointer-events-none" />
+
+        {/* Baroque Corner Filigree Accents */}
+        <div className="absolute top-6 right-6 w-12 h-12 text-[#c99a3e] pointer-events-none opacity-80">
+          <CornerBaroqueFiligree />
+        </div>
+        <div className="absolute bottom-6 right-6 w-12 h-12 text-[#c99a3e] pointer-events-none opacity-80 rotate-90">
+          <CornerBaroqueFiligree />
         </div>
 
-        {/* Institution / Brand Top Header */}
-        <div className="text-center space-y-1 relative pl-6 pr-6">
-          <h2 className="text-2xl font-black tracking-widest text-teal-900 uppercase">
-            {schoolInfo.schoolName}
-          </h2>
-          <div className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
-            ANNUAL CO-CURRICULAR &amp; DIGITAL EXCELLENCE
+        {/* Main Certificate Content */}
+        <div className="relative z-10 text-center px-8 sm:px-14 py-4">
+          {/* Left Gold Medallion Rosette */}
+          <div className="absolute left-0 sm:left-4 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+            <GoldMedallionRosette size={96} />
           </div>
-        </div>
 
-        {/* Title */}
-        <div className="text-center space-y-1 pt-2">
-          <h1 className="text-3xl sm:text-4xl font-black tracking-widest text-slate-950 uppercase font-sans">
-            CERTIFICATE
+          {/* Top Title */}
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-[#1e2547] tracking-wider uppercase">
+            {certTitle}
           </h1>
-          <div className="text-lg font-serif italic text-slate-700">
-            of PARTICIPATION
+          <h2 className="text-xl sm:text-3xl font-serif font-bold text-[#1e2547] tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </h2>
+
+          {/* Subtitle Presentation */}
+          <div className="text-[10px] font-bold tracking-widest text-[#1e2547] uppercase mt-4">
+            {certPresentation}
           </div>
-          <div className="inline-block mt-1 px-4 py-0.5 rounded-full bg-teal-50 text-teal-900 font-extrabold text-[11px] uppercase tracking-widest border border-teal-200">
-            {eventName}
+
+          {/* Recipient Name in Dark Navy Flowing Script */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h3 className="text-4xl sm:text-5xl text-[#1e2547] font-serif italic tracking-wide" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h3>
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-[#c99a3e] uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-[#1e2547] font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Body Citation */}
+          <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed max-w-md mx-auto px-4 mt-2 font-serif font-medium">
+            {certBody}
+          </p>
+
+          {/* Award Date */}
+          <div className="text-[10px] sm:text-[11px] font-bold text-[#1e2547] tracking-widest uppercase mt-6">
+            {certDate.toUpperCase().includes('AWARDED') ? certDate : `AWARDED THIS ${certDate.toUpperCase()}`}
+          </div>
+
+          {/* Signatory Director */}
+          <div className="pt-4 text-center">
+            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">
+              {certSig1Title}
+            </div>
+            <strong className="text-xs font-bold text-[#1e2547] uppercase tracking-wider block">
+              {certSig1Name}
+            </strong>
           </div>
         </div>
+      </div>
+    );
+  };
 
-        {/* Award Presentation Callout */}
-        <div className="text-center space-y-2 pt-2 px-8">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600">
-            THIS CERTIFICATE IS PROUDLY PRESENTED TO
-          </p>
-          <p className="text-xs font-serif italic text-slate-500">Mr. / Miss.</p>
+  // =========================================================================
+  // TEMPLATE 3: Mint Emerald Fluid Ribbon Waves (Alexander Aronowitz Design)
+  // =========================================================================
+  const renderMintEmeraldFluidWavesAppreciation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Alexander Aronowitz';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF COMPLETION';
+    const certPresentation = certConfig.presentationLine || 'This is to certify that';
+    const certBody = certConfig.bodyText || `has successfully completed a professional training program conducted on January 15, 2026. Her dedication and commitment to the learning process are truly commendable.`;
+    const certDate = certConfig.awardDate || 'February 2, 2026';
+    const certSig1Name = certConfig.signatory1Name || 'Muhammad Patel';
+    const certSig1Title = certConfig.signatory1Title || 'Training Director';
+    const certSig2Name = certConfig.signatory2Name || 'Richard Sanchez';
+    const certSig2Title = certConfig.signatory2Title || 'Program Instructor';
+
+    return (
+      <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-2 border-emerald-100">
+        {/* Mint & Emerald Fluid Abstract Wave Curves on all 4 Corners */}
+        <div className="absolute top-0 left-0 w-48 h-48 pointer-events-none opacity-85">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <path d="M 0,0 C 80,20 120,60 160,0 L 0,0 Z" fill="#2dd4bf" opacity="0.6" />
+            <path d="M 0,0 C 40,80 80,120 0,180 L 0,0 Z" fill="#0f766e" opacity="0.8" />
+            <path d="M 0,0 C 60,60 100,100 0,140 Z" fill="#14b8a6" opacity="0.7" />
+          </svg>
+        </div>
+        <div className="absolute top-0 right-0 w-48 h-48 pointer-events-none opacity-85">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <path d="M 200,0 C 120,20 80,60 40,0 L 200,0 Z" fill="#0f766e" opacity="0.7" />
+            <path d="M 200,0 C 160,80 120,120 200,180 L 200,0 Z" fill="#2dd4bf" opacity="0.8" />
+            <path d="M 200,0 C 140,60 100,100 200,140 Z" fill="#14b8a6" opacity="0.6" />
+          </svg>
+        </div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 pointer-events-none opacity-85">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <path d="M 0,200 C 40,120 80,80 0,20 L 0,200 Z" fill="#0f766e" opacity="0.7" />
+            <path d="M 0,200 C 80,180 120,140 160,200 L 0,200 Z" fill="#2dd4bf" opacity="0.8" />
+          </svg>
+        </div>
+        <div className="absolute bottom-0 right-0 w-48 h-48 pointer-events-none opacity-85">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <path d="M 200,200 C 160,120 120,80 200,20 L 200,200 Z" fill="#2dd4bf" opacity="0.6" />
+            <path d="M 200,200 C 120,180 80,140 40,200 L 200,200 Z" fill="#0f766e" opacity="0.8" />
+          </svg>
+        </div>
+
+        {/* Top Header: Left Silver/Gold Rosette & Right Emerald Monogram Logo */}
+        <div className="flex items-start justify-between relative z-10 px-2 sm:px-6">
+          <SilverGoldRosette size={76} />
           
-          <div className="py-1">
-            <div className="text-2xl sm:text-3xl font-serif italic font-black text-slate-950 tracking-wide underline decoration-teal-500 decoration-2 underline-offset-4">
-              {st.student_name}
-            </div>
+          <div className="flex items-center gap-2">
+            {schoolInfo.customLogoUrl ? (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-12 h-12 object-contain" />
+            ) : (
+              <div className="text-right">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 border-2 border-emerald-600 flex items-center justify-center font-black text-emerald-800 text-lg ml-auto shadow-sm">
+                  S
+                </div>
+                <div className="text-[9px] font-bold text-emerald-800 uppercase tracking-widest mt-0.5">LOGO</div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Center Main Title */}
+        <div className="text-center relative z-10 -mt-6 sm:-mt-8">
+          <h1 className="text-3xl sm:text-4xl font-sans font-black text-[#136f4b] tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-bold text-[#136f4b] tracking-widest uppercase mt-0.5">
+            {certSubtitle}
           </div>
 
-          <p className="text-xs text-slate-700 leading-relaxed max-w-lg mx-auto font-sans pt-2">
-            For being declared as <strong className="text-teal-900 uppercase font-bold">"{awardTitle}"</strong>. 
-            He / She participated and exhibited tremendous creativity and talent in the official event. 
-            We wish him / her a prosperous and successful future.
+          <p className="text-xs font-serif italic text-slate-500 mt-4">
+            {certPresentation}
           </p>
+
+          {/* Recipient Name in Refined Emerald Serif */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif text-[#136f4b] font-normal tracking-wide">
+              {certRecipient}
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-[#136f4b] my-1">
+              <span className="w-16 h-0.5 bg-[#136f4b]"></span>
+              <span className="text-xs">◆</span>
+              <span className="w-16 h-0.5 bg-[#136f4b]"></span>
+            </div>
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-slate-900 font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-sans font-normal">
+            {certBody}
+          </p>
+
+          {/* Award Date */}
+          <div className="text-xs font-bold text-slate-900 mt-4">
+            {certDate.toLowerCase().includes('awarded') ? certDate : `Awarded on ${certDate}`}
+          </div>
+
+          {/* Signatories with Handwritten Signatures */}
+          <div className="pt-6 sm:pt-8 flex items-end justify-between px-6 sm:px-14">
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig1Name} color="#0f766e" />
+              <strong className="text-xs font-bold text-slate-900 block mt-1">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig2Name} color="#0f766e" />
+              <strong className="text-xs font-bold text-slate-900 block mt-1">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 4: Dynamic Cyan & Emerald Curved Sweep (Henrietta Mitchell Design)
+  // =========================================================================
+  const renderCyanEmeraldCurvedSweepAppreciation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Henrietta Mitchell';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'This Certificate Proudly Presented to:';
+    const certBody = certConfig.bodyText || `Actively participated in the ${certConfig.eventTitle || 'Wardiere Charity Run'}, demonstrating dedication and enthusiasm. Your involvement helped make the event a resounding success. Presented on ${certConfig.awardDate || '20 Juni 2040'}.`;
+    const certSig1Name = certConfig.signatory1Name || 'SAMIRA HADID';
+    const certSig2Name = certConfig.signatory2Name || 'ALFREDO TORRES';
+
+    return (
+      <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-2 border-emerald-500">
+        {/* Dynamic Sweeping Curves on Top-Left & Bottom-Right */}
+        <div className="absolute top-0 left-0 w-64 h-64 pointer-events-none">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            {/* Tech horizontal raster lines */}
+            <g stroke="#10b981" strokeWidth="0.8" opacity="0.35">
+              {[10, 20, 30, 40, 50, 60, 70].map(y => (
+                <line key={y} x1="0" y1={y} x2="160" y2={y} />
+              ))}
+            </g>
+            <path d="M 0,0 C 100,20 140,80 200,0 L 0,0 Z" fill="#047857" />
+            <path d="M 0,0 C 60,100 120,140 0,200 L 0,0 Z" fill="#06b6d4" opacity="0.85" />
+            <path d="M 0,0 C 80,60 140,100 0,160 Z" fill="#10b981" opacity="0.75" />
+          </svg>
         </div>
 
-        {/* Center Modern Hologram Seal */}
-        <div className="text-center">
-          <ModernHologramSeal size={74} />
+        <div className="absolute bottom-0 right-0 w-64 h-64 pointer-events-none">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            {/* Tech horizontal raster lines */}
+            <g stroke="#06b6d4" strokeWidth="0.8" opacity="0.35">
+              {[130, 140, 150, 160, 170, 180, 190].map(y => (
+                <line key={y} x1="40" y1={y} x2="200" y2={y} />
+              ))}
+            </g>
+            <path d="M 200,200 C 100,180 60,120 0,200 L 200,200 Z" fill="#06b6d4" />
+            <path d="M 200,200 C 140,100 80,60 200,0 L 200,200 Z" fill="#047857" opacity="0.85" />
+            <path d="M 200,200 C 120,140 60,100 200,40 Z" fill="#10b981" opacity="0.75" />
+          </svg>
         </div>
 
-        {/* 4-Way Signatures Grid */}
-        <div className="pt-4 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 items-end text-center px-6">
-          <div className="space-y-1">
-            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
-              Prof. Anil Kushwaha
-            </div>
-            <div className="text-[9px] font-bold text-slate-600 uppercase">Event Organiser</div>
+        {/* Inner Green Border Box */}
+        <div className="absolute top-4 left-4 right-4 bottom-4 border-2 border-emerald-500/70 pointer-events-none rounded-xl" />
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-4 sm:px-12 py-4">
+          <h1 className="text-4xl sm:text-5xl font-serif text-slate-900 tracking-wider uppercase font-bold">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-serif text-slate-700 tracking-widest uppercase mt-0.5">
+            {certSubtitle}
           </div>
-          <div className="space-y-1">
-            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
-              Dr. S. K. Nair
-            </div>
-            <div className="text-[9px] font-bold text-slate-600 uppercase">Faculty Head</div>
+
+          <p className="text-xs font-sans text-slate-500 mt-4">
+            {certPresentation}
+          </p>
+
+          {/* Recipient in Flowing Cursive Script */}
+          <div className="my-2 max-w-md mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif italic text-slate-900" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h2>
+            <div className="w-56 h-0.5 bg-slate-900 mx-auto mt-1" />
           </div>
-          <div className="space-y-1">
-            <div className="border-b border-slate-400 pb-1 font-serif italic font-bold text-xs text-slate-800">
-              Dr. J. Kaur
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-slate-900 font-extrabold">{customClassSection || st.class_batch}</span>
             </div>
-            <div className="text-[9px] font-bold text-slate-600 uppercase">Dean of Arts</div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-lg mx-auto px-4 mt-2 font-sans font-normal">
+            {certBody}
+          </p>
+
+          {/* Hanging Medal in Center with Left & Right Signatures */}
+          <div className="pt-8 sm:pt-10 flex items-end justify-between px-4 sm:px-12">
+            <div className="text-center min-w-[120px]">
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-900 mx-auto mb-1.5" />
+              <strong className="text-xs font-bold text-slate-900 tracking-wider uppercase block">{certSig1Name}</strong>
+            </div>
+
+            <div className="text-center -mb-2">
+              <HangingGoldMedal size={64} />
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-900 mx-auto mb-1.5" />
+              <strong className="text-xs font-bold text-slate-900 tracking-wider uppercase block">{certSig2Name}</strong>
+            </div>
           </div>
-          <div className="space-y-1">
-            <div className="border-b-2 border-teal-900 pb-1 font-serif italic font-bold text-xs text-teal-950">
-              {schoolInfo.principalName}
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 5: Geometric Forest & Lime Polygon Mosaic (Brigita Tsamara Design)
+  // =========================================================================
+  const renderForestLimePolygonMosaicAppreciation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Brigita Tsamara';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'This certificate is proudly presented to';
+    const certBody = certConfig.bodyText || 'In recognition of active participation and meaningful contribution to the program. Your dedication and engagement are sincerely appreciated.';
+    const certSig1Name = certConfig.signatory1Name || 'AVERY DAVIS';
+    const certSig1Title = certConfig.signatory1Title || 'Program Manager';
+
+    return (
+      <div className="bg-[#fbfaf5] p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-4 border-[#3d5a1f]/30">
+        {/* Geometric Olive, Lime & Forest Triangle Clusters with Zigzags */}
+        <div className="absolute top-0 left-0 w-44 h-44 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="0,0 60,0 0,70" fill="#3d5a1f" />
+            <polygon points="0,0 40,0 15,35" fill="#84cc16" />
+            <polygon points="20,10 50,25 35,45" fill="#ca8a04" />
+            <polygon points="0,40 25,60 0,90" fill="#4d7c0f" />
+            <polygon points="40,0 70,0 55,20" fill="#a3e635" opacity="0.8" />
+          </svg>
+        </div>
+
+        <div className="absolute top-0 right-0 w-44 h-44 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="40,0 100,0 100,70" fill="#3d5a1f" />
+            <polygon points="60,0 100,0 85,35" fill="#84cc16" />
+            <polygon points="50,25 80,10 65,45" fill="#ca8a04" />
+            <polygon points="75,60 100,40 100,90" fill="#4d7c0f" />
+            <path d="M 30,15 L 45,5 L 60,15 L 75,5" fill="none" stroke="#2e5927" strokeWidth="2.5" />
+          </svg>
+        </div>
+
+        <div className="absolute bottom-0 left-0 w-44 h-44 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="0,30 60,100 0,100" fill="#3d5a1f" />
+            <polygon points="0,65 40,100 15,65" fill="#84cc16" />
+            <polygon points="20,90 50,75 35,55" fill="#ca8a04" />
+            <polygon points="0,10 25,40 0,60" fill="#4d7c0f" />
+            <path d="M 15,85 L 30,95 L 45,85 L 60,95" fill="none" stroke="#2e5927" strokeWidth="2.5" />
+          </svg>
+        </div>
+
+        <div className="absolute bottom-0 right-0 w-44 h-44 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="40,100 100,30 100,100" fill="#3d5a1f" />
+            <polygon points="60,100 100,65 85,65" fill="#84cc16" />
+            <polygon points="50,75 80,90 65,55" fill="#ca8a04" />
+            <polygon points="75,40 100,10 100,60" fill="#4d7c0f" />
+          </svg>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-6 sm:px-14 py-4">
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-[#2e5927] tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-sans font-bold text-[#2e5927] tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </div>
+
+          <p className="text-xs font-sans text-slate-600 mt-4">
+            {certPresentation}
+          </p>
+
+          {/* Recipient in Flowing Calligraphy */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl text-[#2e5927] font-serif italic tracking-wide" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-[#2e5927] my-1">
+              <span className="w-20 h-0.5 bg-[#2e5927]"></span>
+              <span className="text-sm">✦ ✤ ✦</span>
+              <span className="w-20 h-0.5 bg-[#2e5927]"></span>
             </div>
-            <div className="text-[9px] font-black text-teal-950 uppercase">{schoolInfo.principalTitle}</div>
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-[#2e5927] uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-slate-900 font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed max-w-md mx-auto px-4 mt-2 font-sans font-medium">
+            {certBody}
+          </p>
+
+          {/* Center Signatory with Realistic Signature */}
+          <div className="pt-6 sm:pt-8 text-center max-w-xs mx-auto">
+            <HandWrittenSignature name={certSig1Name} color="#2e5927" />
+            <div className="w-36 h-0.5 bg-[#2e5927] mx-auto mt-1 mb-1.5" />
+            <strong className="text-xs font-black text-slate-900 uppercase tracking-wider block">
+              {certSig1Name}
+            </strong>
+            <span className="text-[10px] text-[#2e5927] italic block font-serif">
+              {certSig1Title}
+            </span>
           </div>
         </div>
       </div>
@@ -1683,187 +2253,15 @@ export default function TransferCertificateView() {
           default: return renderSunriseChevronTC(st);
         }
 
-      // 2. CERTIFICATE OF APPRECIATION (5 Master Design Layouts)
+      // 2. CERTIFICATE OF APPRECIATION (5 Master Design Layouts from User Upload)
       case 'appreciation': {
         switch (appreciationTemplate) {
-          case 'imperial_crimson_arch': return renderImperialArchAppreciation(st);
-          
-          case 'royal_navy_gold_merit':
-            return (
-              <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-7 sm:p-10 rounded-3xl border-8 border-amber-400 shadow-2xl relative overflow-hidden font-sans">
-                <div className="absolute top-3 left-3 right-3 bottom-3 border-2 border-amber-300/40 rounded-2xl pointer-events-none" />
-                <div className="text-center space-y-2 relative z-10 pt-2">
-                  <div className="flex justify-center">
-                    <div className="w-16 h-16 rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-300 shadow-lg">
-                      <Award className="w-9 h-9 text-amber-300" />
-                    </div>
-                  </div>
-                  <h2 className="font-serif font-black text-2xl sm:text-3xl text-amber-200 uppercase tracking-widest leading-none">
-                    {schoolInfo.schoolName}
-                  </h2>
-                  <p className="text-xs text-slate-300 font-medium tracking-wide">
-                    {schoolInfo.address}
-                  </p>
-                  <div className="pt-2">
-                    <h1 className="text-3xl sm:text-4xl font-serif italic text-amber-400 font-extrabold tracking-wide">
-                      Certificate of Merit &amp; Excellence
-                    </h1>
-                    <div className="w-32 h-0.5 bg-amber-400 mx-auto mt-2 rounded-full" />
-                  </div>
-                </div>
-
-                <div className="space-y-4 text-center px-6 py-4 font-serif text-sm leading-loose text-slate-100 relative z-10">
-                  <p className="text-base italic text-slate-300">
-                    This prestigious commendation is proudly bestowed upon
-                  </p>
-                  <div className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider font-sans border-b-2 border-amber-400 pb-1 max-w-md mx-auto">
-                    {st.student_name}
-                  </div>
-                  <div className="text-xs font-sans text-slate-300">
-                    Class &amp; Batch: <strong className="text-amber-300">{st.class_batch}</strong> &bull; Scholar ID: <strong className="font-mono text-amber-300">{st.id}</strong>
-                  </div>
-                  <p className="text-sm italic text-amber-200">
-                    In recognition of outstanding performance, leadership, and exemplary dedication as
-                  </p>
-                  <div className="text-xl font-black text-amber-400 uppercase tracking-wide font-sans py-1">
-                    "{awardTitle}"
-                  </div>
-                  <p className="text-xs text-slate-300 max-w-lg mx-auto font-sans leading-relaxed">
-                    Presented during the <strong className="text-white">{eventName}</strong>. We applaud your remarkable dedication and commitment to highest excellence.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-amber-400/30 flex items-end justify-between px-6 pb-2 relative z-10 text-xs">
-                  <div className="text-center space-y-1">
-                    <div className="font-mono text-amber-200 font-bold">{issueDate}</div>
-                    <div className="text-[10px] text-slate-400 uppercase">Date of Conferment</div>
-                  </div>
-                  <div className="text-center">
-                    <GoldenSchoolSeal size={80} />
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="font-serif italic font-bold text-amber-200 text-sm">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] text-slate-400 uppercase">{schoolInfo.principalTitle}</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'vintage_parchment_honor':
-            return (
-              <div className="bg-[#fcf8ee] text-slate-900 p-8 sm:p-11 rounded-3xl border-8 border-amber-700 shadow-2xl relative overflow-hidden font-serif">
-                <div className="absolute top-2 left-2 right-2 bottom-2 border-4 border-double border-amber-900/40 pointer-events-none" />
-                <div className="text-center space-y-2 relative z-10">
-                  <div className="text-xs font-bold uppercase tracking-widest text-amber-900 font-sans">
-                    ★ INSTITUTIONAL ROLL OF HONOR ★
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-amber-950 uppercase">
-                    {schoolInfo.schoolName}
-                  </h2>
-                  <h1 className="text-3xl sm:text-4xl font-extrabold text-amber-900 italic pt-2">
-                    Honorary Certificate of Appreciation
-                  </h1>
-                </div>
-                <div className="space-y-4 text-center px-6 py-6 text-sm leading-loose text-slate-800 relative z-10">
-                  <p className="text-base italic">Be it known to all that</p>
-                  <div className="text-3xl font-black text-amber-950 border-b-2 border-amber-900 max-w-md mx-auto pb-1">
-                    {st.student_name}
-                  </div>
-                  <p className="text-xs font-sans text-slate-600">
-                    of Grade <strong className="text-amber-950">{st.class_batch}</strong>
-                  </p>
-                  <p className="italic text-base">
-                    has attained the distinguished status of <strong className="text-amber-900 font-black uppercase underline">"{awardTitle}"</strong> at <strong className="text-amber-950">{eventName}</strong>.
-                  </p>
-                </div>
-                <div className="pt-6 border-t border-amber-800/30 flex items-end justify-between px-6 pb-2 relative z-10">
-                  <div className="text-center space-y-1">
-                    <div className="font-mono text-xs font-bold text-amber-950">{issueDate}</div>
-                    <div className="text-[10px] uppercase text-slate-600">Conferred On</div>
-                  </div>
-                  <CrimsonStampSeal size={84} />
-                  <div className="text-center space-y-1">
-                    <div className="font-serif italic font-bold text-base text-amber-950">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] uppercase text-slate-600">Head of Institution</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'modern_platinum_distinction':
-            return (
-              <div className="bg-white text-slate-900 p-8 sm:p-10 rounded-3xl border-4 border-slate-400 shadow-2xl relative overflow-hidden font-sans">
-                <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-r from-blue-700 via-indigo-600 to-cyan-500 pointer-events-none" />
-                <div className="flex items-start justify-between border-b pb-4 relative z-10">
-                  <div>
-                    <h2 className="font-black text-xl sm:text-2xl text-slate-950 uppercase tracking-wide">
-                      {schoolInfo.schoolName}
-                    </h2>
-                    <p className="text-xs text-blue-700 font-bold uppercase tracking-wider mt-0.5">
-                      Academic Excellence &amp; Distinction Award
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-slate-100 rounded-xl border border-slate-300 flex items-center justify-center">
-                    <QrCode className="w-8 h-8 text-slate-800" />
-                  </div>
-                </div>
-                <div className="space-y-4 text-center py-6 relative z-10">
-                  <div className="text-xs font-black uppercase tracking-widest text-cyan-700">CERTIFICATE OF RECOGNITION</div>
-                  <div className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
-                    {st.student_name}
-                  </div>
-                  <div className="inline-block px-4 py-1 rounded-full bg-blue-50 text-blue-900 font-bold text-xs border border-blue-200">
-                    {st.class_batch} &bull; Roll #{st.roll_no}
-                  </div>
-                  <p className="text-sm text-slate-700 max-w-xl mx-auto leading-relaxed">
-                    Recognized for superior achievement and exemplary performance in <strong className="text-slate-950 font-bold">{eventName}</strong>, achieving the title of <strong className="text-blue-700 font-black">"{awardTitle}"</strong>.
-                  </p>
-                </div>
-                <div className="pt-4 border-t border-slate-200 flex items-end justify-between relative z-10 text-xs">
-                  <div>
-                    <div className="font-mono text-[10px] text-slate-400">AUTH ID: {regNo}</div>
-                    <div className="text-slate-700 font-bold">{issueDate}</div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="font-serif italic font-bold text-sm text-slate-900">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'emerald_excellence_crest':
-          default:
-            return (
-              <div className="bg-white text-slate-900 p-8 sm:p-11 rounded-3xl border-8 border-emerald-800 shadow-2xl relative overflow-hidden font-sans">
-                <div className="absolute top-3 left-3 right-3 bottom-3 border-2 border-emerald-600/40 rounded-2xl pointer-events-none" />
-                <div className="text-center space-y-2 relative z-10">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto border-2 border-emerald-600">
-                    <Medal className="w-8 h-8 text-emerald-700" />
-                  </div>
-                  <h2 className="font-serif font-black text-2xl text-emerald-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <h1 className="text-3xl font-serif italic text-emerald-800 font-bold">Certificate of Commendation</h1>
-                </div>
-                <div className="space-y-4 text-center py-6 text-sm text-slate-800 relative z-10 font-serif">
-                  <p className="italic">Awarded to</p>
-                  <div className="text-3xl font-black text-emerald-950 font-sans">{st.student_name}</div>
-                  <p className="text-xs font-sans text-slate-600">Grade: <strong>{st.class_batch}</strong></p>
-                  <p className="italic max-w-lg mx-auto">
-                    For meritorious distinction as <strong className="text-emerald-800 font-black uppercase">"{awardTitle}"</strong> during <strong className="text-slate-900">{eventName}</strong>.
-                  </p>
-                </div>
-                <div className="pt-6 border-t border-emerald-800/30 flex items-end justify-between px-6 relative z-10 text-xs">
-                  <div>
-                    <div className="font-mono text-emerald-900 font-bold">{issueDate}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">Issued Date</div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="font-serif italic font-bold text-sm text-emerald-950">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">Principal</div>
-                  </div>
-                </div>
-              </div>
-            );
+          case 'modern_navy_gold_badge': return renderModernNavyGoldBadgeAppreciation(st);
+          case 'royal_navy_gold_geometric': return renderRoyalNavyGoldGeometricAppreciation(st);
+          case 'mint_emerald_fluid_waves': return renderMintEmeraldFluidWavesAppreciation(st);
+          case 'cyan_emerald_curved_sweep': return renderCyanEmeraldCurvedSweepAppreciation(st);
+          case 'forest_lime_polygon_mosaic': return renderForestLimePolygonMosaicAppreciation(st);
+          default: return renderModernNavyGoldBadgeAppreciation(st);
         }
       }
 
@@ -3446,7 +3844,12 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={tpl.id}
-                  onClick={() => setAppreciationTemplate(tpl.id)}
+                  onClick={() => {
+                    setAppreciationTemplate(tpl.id);
+                    if (tpl.defaultConfig) {
+                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
@@ -3776,8 +4179,139 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            {/* Event & Appreciation Specific Fields */}
-            {(docType === 'appreciation' || docType === 'participation') && (
+            {/* Full Live Customizer for Certificate of Appreciation */}
+            {docType === 'appreciation' && (
+              <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50/80 to-rose-50/60 rounded-2xl border-2 border-amber-300/80 shadow-sm">
+                <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
+                  <div className="flex items-center gap-1.5 font-black text-[11px] text-amber-950 uppercase tracking-wide">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>🎨 Live Certificate Text &amp; Citation Customizer</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
+                      if (tpl && tpl.defaultConfig) {
+                        setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                      }
+                    }}
+                    className="text-[10px] text-amber-800 hover:text-amber-950 font-bold underline cursor-pointer"
+                  >
+                    Reset Defaults
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Certificate Title</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. CERTIFICATE"
+                      value={certConfig.title}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, title: e.target.value }))}
+                      className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-bold text-slate-900 bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Subtitle / Type</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. OF APPRECIATION"
+                      value={certConfig.subtitle}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, subtitle: e.target.value }))}
+                      className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-bold text-slate-900 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Presentation Line</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. This certificate is presented to"
+                    value={certConfig.presentationLine}
+                    onChange={(e) => setCertConfig(prev => ({ ...prev, presentationLine: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-semibold text-slate-900 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 text-[10px] mb-0.5 flex items-center justify-between">
+                    <span>Recipient Name Override</span>
+                    <span className="text-[9px] text-slate-400 font-normal">Leave blank to use selected candidate ({activeStudent.student_name})</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={activeStudent.student_name || 'Candidate Name'}
+                    value={certConfig.recipientName}
+                    onChange={(e) => setCertConfig(prev => ({ ...prev, recipientName: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-black text-amber-900 bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Citation / Recognition Body Paragraph</label>
+                  <textarea
+                    rows={3}
+                    value={certConfig.bodyText}
+                    onChange={(e) => setCertConfig(prev => ({ ...prev, bodyText: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-medium text-slate-800 bg-white leading-relaxed resize-y"
+                    placeholder="Describe student achievements, contributions, or merit citation..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Award / Presentation Date</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 10th of January, 2026"
+                    value={certConfig.awardDate}
+                    onChange={(e) => setCertConfig(prev => ({ ...prev, awardDate: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-semibold text-slate-900 bg-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-amber-200/50">
+                  <div>
+                    <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Signatory 1 Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Aaron Loeb"
+                      value={certConfig.signatory1Name}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, signatory1Name: e.target.value }))}
+                      className="w-full px-2.5 py-1 rounded-lg border border-amber-200 text-[11px] font-bold text-slate-900 bg-white"
+                    />
+                    <input
+                      type="text"
+                      placeholder="e.g. School Principal"
+                      value={certConfig.signatory1Title}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, signatory1Title: e.target.value }))}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-slate-600 bg-white mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Signatory 2 Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Estelle Darcy"
+                      value={certConfig.signatory2Name}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, signatory2Name: e.target.value }))}
+                      className="w-full px-2.5 py-1 rounded-lg border border-amber-200 text-[11px] font-bold text-slate-900 bg-white"
+                    />
+                    <input
+                      type="text"
+                      placeholder="e.g. Science Dept Head"
+                      value={certConfig.signatory2Title}
+                      onChange={(e) => setCertConfig(prev => ({ ...prev, signatory2Title: e.target.value }))}
+                      className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-slate-600 bg-white mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Event & Participation Specific Fields */}
+            {docType === 'participation' && (
               <div className="space-y-3 p-3 bg-amber-50/60 rounded-2xl border border-amber-200">
                 <div className="text-[11px] font-bold text-amber-900 uppercase">Award &amp; Event Details</div>
                 <div>

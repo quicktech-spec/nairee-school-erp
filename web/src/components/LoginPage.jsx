@@ -294,37 +294,8 @@ export default function LoginPage({ onLoginSuccess, onOpenAdmissionForm }) {
                 </div>
               </form>
 
-              {/* Direct 1-Click Access to Certificates & ID Card Studio */}
-              <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-300 shadow-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-slate-900 block">Certificates &amp; Student ID Card Studio</span>
-                      <span className="text-[10px] text-amber-800 font-semibold">40+ Official Layouts &bull; TC, ID Cards, Merit &amp; Bonafide</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onLoginSuccess({
-                      username: 'admin',
-                      role: 'admin',
-                      full_name: 'Dr. Marcus Vance (Principal)',
-                      email: 'admin@nairee.edu'
-                    }, 'demo-token', 'tc_generator');
-                  }}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-98 cursor-pointer"
-                >
-                  <span>📜 Open Certificate &amp; ID Card Studio (Live Preview) →</span>
-                </button>
-              </div>
-
               {/* Student & Parent Public Admission / Self-Registration Banner */}
-              <div className="mt-3 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 shadow-xs space-y-2">
+              <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 shadow-xs space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">

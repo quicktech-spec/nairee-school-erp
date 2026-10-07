@@ -29,34 +29,11 @@ function MainApp() {
     return false;
   });
 
-  const [activeTab, setActiveTab] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const search = window.location.search || '';
-      const hash = window.location.hash || '';
-      if (search.includes('tab=tc_generator') || search.includes('mode=certificates') || hash.includes('certificates')) {
-        return 'tc_generator';
-      }
-    }
-    return 'dashboard';
-  });
-
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('nairee_user');
-      if (saved) return JSON.parse(saved);
-      if (typeof window !== 'undefined') {
-        const search = window.location.search || '';
-        const hash = window.location.hash || '';
-        if (search.includes('tab=tc_generator') || search.includes('mode=certificates') || hash.includes('certificates')) {
-          return {
-            username: 'admin',
-            role: 'admin',
-            full_name: 'Dr. Marcus Vance (Admin Demo)',
-            email: 'admin@nairee.edu'
-          };
-        }
-      }
-      return null;
+      return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
     }
@@ -75,9 +52,9 @@ function MainApp() {
     };
   }, []);
 
-  const handleLoginSuccess = (user, token, defaultTab = 'dashboard') => {
+  const handleLoginSuccess = (user, token) => {
     setCurrentUser(user);
-    setActiveTab(defaultTab);
+    setActiveTab('dashboard');
     setIsAdmissionPublicMode(false);
     try {
       localStorage.setItem('nairee_user', JSON.stringify(user));
