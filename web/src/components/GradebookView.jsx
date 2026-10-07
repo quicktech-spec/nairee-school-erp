@@ -4,40 +4,56 @@ import {
   Plus, 
   X, 
   TrendingUp, 
-  CheckCircle2,
-  BookOpen,
-  Search,
-  User,
-  Calculator,
-  Percent,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  FileSpreadsheet,
-  Check,
-  AlertCircle,
-  Printer,
-  RotateCcw,
-  Sliders,
-  Filter
+  CheckCircle2, 
+  BookOpen, 
+  Search, 
+  User, 
+  Calculator, 
+  Percent, 
+  Sparkles, 
+  ChevronLeft, 
+  ChevronRight, 
+  FileSpreadsheet, 
+  Check, 
+  AlertCircle, 
+  Printer, 
+  RotateCcw, 
+  Sliders, 
+  Filter,
+  ShieldCheck,
+  Send,
+  Lock,
+  Unlock,
+  Eye,
+  FileText,
+  Star,
+  Download
 } from 'lucide-react';
 import { api, subscribeLiveEvents, broadcastLiveEvent, getMasterStudents } from '../api.js';
 import { useTenant } from '../context/TenantContext.jsx';
 import { FALLBACK_STUDENTS } from '../fallbackData.js';
 
 const DEFAULT_SUBJECTS = [
-  { id: 'SUB-MATH', code: 'MATH-101', name: 'Mathematics', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 72, practicalScore: 18 },
-  { id: 'SUB-SCI', code: 'SCI-102', name: 'Science & Technology', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 68, practicalScore: 19 },
-  { id: 'SUB-ENG', code: 'ENG-103', name: 'English Language & Lit', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 74, practicalScore: 18 },
-  { id: 'SUB-SST', code: 'SST-104', name: 'Social Science', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 70, practicalScore: 18 },
-  { id: 'SUB-LANG', code: 'LANG-105', name: 'Second Language (Hindi/Sanskrit)', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 75, practicalScore: 19 },
-  { id: 'SUB-CS', code: 'CS-106', name: 'Computer Applications & AI', theoryMax: 50, practicalMax: 50, maxScore: 100, theoryScore: 46, practicalScore: 48 }
+  { id: 'SUB-MATH', code: 'MATH-101', name: 'Mathematics', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 72, practicalScore: 18, term1Score: 88, term2Score: 90 },
+  { id: 'SUB-SCI', code: 'SCI-102', name: 'Science & Technology', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 68, practicalScore: 19, term1Score: 85, term2Score: 87 },
+  { id: 'SUB-ENG', code: 'ENG-103', name: 'English Language & Lit', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 74, practicalScore: 18, term1Score: 90, term2Score: 92 },
+  { id: 'SUB-SST', code: 'SST-104', name: 'Social Science', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 70, practicalScore: 18, term1Score: 86, term2Score: 88 },
+  { id: 'SUB-LANG', code: 'LANG-105', name: 'Second Language (Hindi/Sanskrit)', theoryMax: 80, practicalMax: 20, maxScore: 100, theoryScore: 75, practicalScore: 19, term1Score: 92, term2Score: 94 },
+  { id: 'SUB-CS', code: 'CS-106', name: 'Computer Applications & AI', theoryMax: 50, practicalMax: 50, maxScore: 100, theoryScore: 46, practicalScore: 48, term1Score: 95, term2Score: 94 }
+];
+
+const CO_SCHOLASTIC_ACTIVITIES = [
+  { activity: 'Work Education (ICT & Skill Labs)', grade: 'A+', indicator: 'Exemplary initiative in STEM projects' },
+  { activity: 'Art Education (Visual & Performing Arts)', grade: 'A', indicator: 'High creativity and keen aesthetic sense' },
+  { activity: 'Health & Physical Education (Sports & Yoga)', grade: 'A+', indicator: 'Outstanding athletics & team spirit' },
+  { activity: 'Discipline, Ethics & Value Systems', grade: 'A+', indicator: 'Respectful, punctual & peer mentor' }
 ];
 
 export default function GradebookView() {
-  const { tenant } = useTenant();
+  const { tenant, userRole } = useTenant();
   const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
   const tenantKey = tenant?.tenant_id || 'default';
+  const isPrincipalOrAdmin = userRole === 'admin' || userRole === 'principal' || !userRole;
 
   // Core Data States
   const [plans, setPlans] = useState([]);
@@ -46,7 +62,7 @@ export default function GradebookView() {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('single'); // 'single' | 'spreadsheet' | 'history'
+  const [viewMode, setViewMode] = useState('single'); // 'single' | 'spreadsheet' | 'report_card'
 
   // Filter & Selected Student States
   const [selectedClassFilter, setSelectedClassFilter] = useState('all');
@@ -55,12 +71,24 @@ export default function GradebookView() {
   const [toastMessage, setToastMessage] = useState('');
 
   // Single Student Marks Entry Form State
-  const [examName, setExamName] = useState('Mid-Term Examination 2026');
-  const [academicTerm, setAcademicTerm] = useState('Term 1 (2026-27)');
+  const [examName, setExamName] = useState('Annual Examination 2026');
+  const [academicTerm, setAcademicTerm] = useState('Consolidated Term 1 & Term 2');
   const [subjectMarks, setSubjectMarks] = useState(DEFAULT_SUBJECTS);
   const [teacherRemarks, setTeacherRemarks] = useState('');
   const [roundOffMode, setRoundOffMode] = useState('none'); // 'none' | 'nearest' | 'ceil' | 'floor'
+  
+  // Publication / Workflow State: 'draft' | 'under_review' | 'published'
+  const [publishStatus, setPublishStatus] = useState(() => {
+    try {
+      return localStorage.getItem(`nairee_publish_status_${tenantKey}_${examName.replace(/\s+/g, '_')}`) || (isMasterSchool ? 'published' : 'draft');
+    } catch {
+      return isMasterSchool ? 'published' : 'draft';
+    }
+  });
+
+  // Modals
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -120,13 +148,17 @@ export default function GradebookView() {
 
   // Live real-time sync across multi-tabs
   useEffect(() => {
-    const unsub = subscribeLiveEvents(() => {
+    const unsub = subscribeLiveEvents((event) => {
       loadResults();
       const master = getMasterStudents();
       if (master) setStudents(master);
+      if (event?.type === 'exam_published' || event?.type === 'marks_updated') {
+        const savedStatus = localStorage.getItem(`nairee_publish_status_${tenantKey}_${examName.replace(/\s+/g, '_')}`);
+        if (savedStatus) setPublishStatus(savedStatus);
+      }
     });
     return () => unsub();
-  }, [selectedPlan]);
+  }, [selectedPlan, tenantKey, examName]);
 
   // Filtered Students List
   const filteredStudents = useMemo(() => {
@@ -178,7 +210,7 @@ export default function GradebookView() {
       }
     } catch {}
 
-    // Generate balanced default marks for demonstration / template
+    // Balanced default marks
     const rollNum = Number(currentStudent.roll_no) || 1;
     const baseVariance = (rollNum % 5) * 1.5;
     setSubjectMarks(DEFAULT_SUBJECTS.map((sub, idx) => {
@@ -286,17 +318,39 @@ export default function GradebookView() {
     let remark = '';
 
     if (displayPercentage >= 90) {
-      remark = `${sName} has displayed exceptional intellectual rigor and academic excellence across all subjects with an impressive ${displayPercentage}%. Commendable analytical skills and active classroom engagement. Keep up the high standard!`;
+      remark = `${sName} exhibits outstanding academic brilliance and profound problem-solving abilities with ${displayPercentage}%. Exemplary classroom leadership and curious inquiry. Strongly recommended for honors projects.`;
     } else if (displayPercentage >= 75) {
-      remark = `${sName} demonstrates very consistent concept understanding and good work ethic, achieving ${displayPercentage}%. Dedicated revision in numerical problem sets will elevate performance to the top rank.`;
+      remark = `${sName} displays solid conceptual mastery and steady dedication, securing ${displayPercentage}%. Continuing targeted practice on complex problem sets will unlock the highest distinction.`;
     } else if (displayPercentage >= 60) {
-      remark = `${sName} shows satisfactory progress with a score of ${displayPercentage}%. Regular practice and focused preparation before assessments are advised to strengthen core topics.`;
+      remark = `${sName} demonstrates satisfactory progress scoring ${displayPercentage}%. Consistent preparation and revision before examinations are recommended to strengthen test scores.`;
     } else {
-      remark = `${sName} has scored ${displayPercentage}%. Additional tutorial sessions and targeted remedial worksheets are recommended to reinforce fundamental concepts.`;
+      remark = `${sName} scored ${displayPercentage}%. Dedicated one-on-one tutorial sessions and focused conceptual worksheets are advised to reinforce fundamental principles.`;
     }
 
     setTeacherRemarks(remark);
-    showToast('AI Remark generated based on student scores & percentage!');
+    showToast('AI Remark generated tailored to student scores & percentage!');
+  };
+
+  // Handle Workflow Status Update (Feature 3)
+  const handleUpdatePublishStatus = (nextStatus) => {
+    setPublishStatus(nextStatus);
+    const key = `nairee_publish_status_${tenantKey}_${examName.replace(/\s+/g, '_')}`;
+    localStorage.setItem(key, nextStatus);
+    broadcastLiveEvent('exam_published', { 
+      examName, 
+      status: nextStatus, 
+      tenant_id: tenantKey,
+      updated_by: userRole || 'Faculty Lead'
+    });
+
+    if (nextStatus === 'under_review') {
+      showToast('Marksheet submitted to Principal & Exam Committee for approval.');
+    } else if (nextStatus === 'published') {
+      showToast('🎉 Examination Results Approved & Released live to Student & Parent Portals!');
+    } else {
+      showToast('Marksheet reverted to Draft Mode for faculty revisions.');
+    }
+    setShowApprovalModal(false);
   };
 
   // Save Marksheet to Local & API DB
@@ -328,15 +382,14 @@ export default function GradebookView() {
       gradeLabel: letterGrade.label,
       roundOffMode,
       teacherRemarks,
+      publishStatus,
       updated_at: new Date().toISOString()
     };
 
     try {
-      // 1. Save student-specific marksheet payload
       const savedKey = `nairee_marksheet_${tenantKey}_${studentId}_${examName.replace(/\s+/g, '_')}`;
       localStorage.setItem(savedKey, JSON.stringify(marksheetRecord));
 
-      // 2. Submit to global assessment results API to roll up across all portals
       await api.submitGrade({
         assessment_plan: selectedPlan || 'ASM-MATH-MID',
         course: 'CRS-ALL-TERM',
@@ -374,7 +427,7 @@ export default function GradebookView() {
         </div>
       )}
 
-      {/* TOP HEADER & MODE CONTROLS */}
+      {/* TOP HEADER & WORKFLOW CONTROLS */}
       <div className="bg-white p-5 rounded-3xl border border-teal-100 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
@@ -382,53 +435,113 @@ export default function GradebookView() {
               <Calculator className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2 flex-wrap">
                 <span>Examinations & Gradebook Marks Entry</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold border border-emerald-200">
-                  LIVE AUTO-CALCULATION
+                {/* Workflow Status Chip (Feature 3) */}
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold flex items-center gap-1 ${
+                  publishStatus === 'published' 
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : publishStatus === 'under_review'
+                    ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                }`}>
+                  {publishStatus === 'published' ? <Unlock className="w-3 h-3 text-emerald-600" /> : <Lock className="w-3 h-3 text-amber-600" />}
+                  <span>{publishStatus === 'published' ? 'LIVE & RELEASED TO PARENTS' : publishStatus === 'under_review' ? 'UNDER PRINCIPAL REVIEW' : 'FACULTY DRAFT MODE'}</span>
                 </span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Rapid student mark entry, automated formula evaluation & decimal round-off engine
+                Automated formula calculation, decimal round-off engine & official printable annual report card
               </p>
             </div>
           </div>
         </div>
 
-        {/* View Mode Switcher & Quick Actions */}
+        {/* View Mode Switcher, Workflow Trigger & Report Card Modal Button */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Workflow Approval / Publish Button (Feature 3) */}
+          <button
+            onClick={() => setShowApprovalModal(true)}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+              publishStatus === 'published'
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                : publishStatus === 'under_review'
+                ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>{publishStatus === 'published' ? 'Result Published (Live)' : publishStatus === 'under_review' ? 'Review & Publish' : 'Submit for Approval'}</span>
+          </button>
+
           <div className="bg-slate-100 p-1 rounded-2xl flex items-center text-xs font-bold">
             <button
               onClick={() => setViewMode('single')}
-              className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                 viewMode === 'single'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              Single Student Form
+              Single Entry Form
             </button>
             <button
               onClick={() => setViewMode('spreadsheet')}
-              className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
                 viewMode === 'spreadsheet'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-teal-600" />
-              <span>Class Spreadsheet Grid</span>
+              <span>Class Spreadsheet</span>
             </button>
           </div>
 
+          {/* Printable Report Card Button (Feature 1) */}
           <button
             onClick={() => setShowPrintModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md shadow-teal-500/20 transition-all cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print Marksheet</span>
+            <span>Print Annual Report Card</span>
           </button>
         </div>
+      </div>
+
+      {/* WORKFLOW STATUS BANNER (Feature 3) */}
+      <div className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 text-xs ${
+        publishStatus === 'published'
+          ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
+          : publishStatus === 'under_review'
+          ? 'bg-blue-50/80 border-blue-200 text-blue-900'
+          : 'bg-amber-50/80 border-amber-200 text-amber-900'
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <div className={`w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 ${
+            publishStatus === 'published' ? 'bg-emerald-500 text-white' : publishStatus === 'under_review' ? 'bg-blue-500 text-white' : 'bg-amber-500 text-white'
+          }`}>
+            {publishStatus === 'published' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          </div>
+          <div>
+            <span className="font-extrabold uppercase tracking-wide text-[11px] block">
+              {publishStatus === 'published' ? 'Results Live & Unlocked' : publishStatus === 'under_review' ? 'Results Under Principal Moderation' : 'Draft Entry Mode (Faculty Only)'}
+            </span>
+            <p className="text-[11px] opacity-90">
+              {publishStatus === 'published'
+                ? 'Exam scores & official report cards are visible to students and parents in their portals with 1-click download.'
+                : publishStatus === 'under_review'
+                ? 'Marks submitted to the Exam Office. Principal can review class percentiles and release to parents.'
+                : 'Marks are currently in private evaluation mode. Students and parents will see "Under Evaluation" until released.'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setShowApprovalModal(true)}
+          className="text-xs font-bold underline cursor-pointer hover:opacity-80 flex-shrink-0"
+        >
+          Change Status
+        </button>
       </div>
 
       {/* ========================================================================= */}
@@ -496,8 +609,8 @@ export default function GradebookView() {
                   onChange={(e) => setExamName(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-2xl bg-white/10 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-400 cursor-pointer"
                 >
+                  <option value="Annual Examination 2026" className="text-slate-900">Annual Final Exam 2026</option>
                   <option value="Mid-Term Examination 2026" className="text-slate-900">Mid-Term Exam 2026</option>
-                  <option value="Annual Final Exam 2026" className="text-slate-900">Annual Final Exam</option>
                   <option value="Unit Test 1" className="text-slate-900">Unit Test 1 (Formative)</option>
                   <option value="Unit Test 2" className="text-slate-900">Unit Test 2 (Formative)</option>
                   <option value="Pre-Board Assessment" className="text-slate-900">Pre-Board Assessment</option>
@@ -710,9 +823,7 @@ export default function GradebookView() {
                 </table>
               </div>
 
-              {/* ========================================================================= */}
-              {/* CONDITIONAL DECIMAL ROUND-OFF FEATURE (Only visible if decimals exist) */}
-              {/* ========================================================================= */}
+              {/* CONDITIONAL DECIMAL ROUND-OFF FEATURE */}
               {hasDecimal && (
                 <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 shadow-sm space-y-3 animate-fadeIn">
                   <div className="flex items-center justify-between flex-wrap gap-2">
@@ -1056,113 +1167,302 @@ export default function GradebookView() {
       )}
 
       {/* ========================================================================= */}
-      {/* PRINTABLE MARKSHEET MODAL */}
+      {/* FEATURE 3: MODAL FOR APPROVAL & PUBLISH WORKFLOW */}
+      {/* ========================================================================= */}
+      {showApprovalModal && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setShowApprovalModal(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-teal-100 space-y-5">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-base">Examination Release Workflow</h3>
+                  <p className="text-xs text-slate-500">Moderation, approval and parent release lifecycle</p>
+                </div>
+              </div>
+              <button onClick={() => setShowApprovalModal(false)} className="text-slate-400 hover:text-slate-600 p-1">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {/* Step 1: Draft */}
+              <div className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                publishStatus === 'draft' ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/40' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+              }`} onClick={() => handleUpdatePublishStatus('draft')}>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    <span>1. Faculty Draft Mode</span>
+                  </span>
+                  {publishStatus === 'draft' && <Check className="w-4 h-4 text-amber-600 font-bold" />}
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Marks editable only by appointed subject teachers. Hidden from parents and students.
+                </p>
+              </div>
+
+              {/* Step 2: Under Review */}
+              <div className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                publishStatus === 'under_review' ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-400/40' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+              }`} onClick={() => handleUpdatePublishStatus('under_review')}>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                    <span>2. Submitted for Principal & Exam Cell Review</span>
+                  </span>
+                  {publishStatus === 'under_review' && <Check className="w-4 h-4 text-blue-600 font-bold" />}
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Faculty has locked marks. Principal reviews grade distributions, class averages, and moderation curves.
+                </p>
+              </div>
+
+              {/* Step 3: Approved & Published */}
+              <div className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                publishStatus === 'published' ? 'bg-emerald-50 border-emerald-300 ring-2 ring-emerald-400/40' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+              }`} onClick={() => handleUpdatePublishStatus('published')}>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900 flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span>3. Approved & Released to Parents & Students</span>
+                  </span>
+                  {publishStatus === 'published' && <Check className="w-4 h-4 text-emerald-600 font-bold" />}
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Official report cards and marks unlocked live in student & parent portals with printable PDF download.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setShowApprovalModal(false)}
+                className="px-5 py-2.5 rounded-2xl bg-slate-900 text-white font-bold text-xs"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* FEATURE 1: COMPREHENSIVE CBSE/ICSE ANNUAL REPORT CARD PRINT MODAL */}
       {/* ========================================================================= */}
       {showPrintModal && (
         <div 
           onClick={(e) => { if (e.target === e.currentTarget) setShowPrintModal(false); }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn"
         >
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border border-teal-100 space-y-6 max-h-[90vh] overflow-y-auto">
-            {/* Header with School Branding */}
-            <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
-              <span className="text-[10px] font-bold text-teal-700 uppercase tracking-widest block">Official Academic Evaluation Record</span>
-              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">
-                {tenant?.school_name || 'Nairee International School'}
-              </h2>
-              <p className="text-xs text-slate-500 font-medium">{examName} • Academic Session 2026-2027</p>
+          <div className="bg-white rounded-3xl max-w-4xl w-full p-8 shadow-2xl border border-slate-200 space-y-6 max-h-[92vh] overflow-y-auto print:max-w-none print:shadow-none print:p-0 print:border-none">
+            
+            {/* Header with School Details & Board Affiliation */}
+            <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1 relative">
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white flex items-center justify-center font-black text-xl shadow-md">
+                  {tenant?.school_name?.charAt(0) || 'N'}
+                </div>
+                <div className="text-left">
+                  <h1 className="text-xl sm:text-2xl font-black text-slate-950 uppercase tracking-tight">
+                    {tenant?.school_name || 'Nairee International School'}
+                  </h1>
+                  <p className="text-[11px] font-bold text-teal-800 uppercase tracking-wider">
+                    {tenant?.tagline || 'Affiliated to Central Board of Secondary Education (CBSE) • Code #NIS-89021'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-500 mt-1">
+                {tenant?.address || 'Main Campus, Sector 4, Academic City'} • Tel: {tenant?.phone || '+91 98765 43210'} • Web: {tenant?.subdomain ? `${tenant.subdomain}.nairee.edu` : 'https://nairee.edu'}
+              </p>
+              <div className="inline-block mt-2 px-4 py-1 rounded-full bg-slate-900 text-white font-extrabold text-xs tracking-widest uppercase">
+                Official Annual Cumulative Progress Report Card (2026-27)
+              </div>
             </div>
 
-            {/* Student Info Box */}
+            {/* Student Bio Profile Box */}
             {currentStudent && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase">Student Name</span>
-                  <span className="font-extrabold text-slate-900">{currentStudent.student_name || currentStudent.name}</span>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Student Name</span>
+                  <span className="font-extrabold text-slate-900 text-sm">{currentStudent.student_name || currentStudent.name}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase">Roll Number</span>
-                  <span className="font-extrabold text-slate-900">Roll #{currentStudent.roll_no ? String(currentStudent.roll_no).padStart(2, '0') : '01'}</span>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Roll Number</span>
+                  <span className="font-black text-slate-900 text-sm">Roll #{currentStudent.roll_no ? String(currentStudent.roll_no).padStart(2, '0') : '01'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase">Class & Section</span>
-                  <span className="font-extrabold text-slate-900">{currentStudent.class_batch || currentStudent.student_batch || 'Class 10-A'}</span>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Class & Section</span>
+                  <span className="font-extrabold text-slate-900">{currentStudent.class_batch || currentStudent.student_batch || 'Class 10 - Section A'}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block uppercase">Student ID</span>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Admission / ID</span>
                   <span className="font-mono font-bold text-teal-800">{currentStudent.student_id || currentStudent.id}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Mother's Name</span>
+                  <span className="font-semibold text-slate-800">{currentStudent.mother_name || 'Mrs. Anita Patel'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Father's Name</span>
+                  <span className="font-semibold text-slate-800">{currentStudent.father_name || currentStudent.guardian_name || 'Mr. Rajesh Patel'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Academic Session</span>
+                  <span className="font-semibold text-slate-800">2026 - 2027</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Attendance Record</span>
+                  <span className="font-bold text-emerald-700">214 / 225 Days (95.1%)</span>
                 </div>
               </div>
             )}
 
-            {/* Marksheet Table */}
-            <table className="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-              <thead className="bg-slate-100 text-slate-800 font-bold uppercase text-[10px]">
-                <tr>
-                  <th className="py-2.5 px-3 border-b">Subject</th>
-                  <th className="py-2.5 px-3 border-b text-center">Theory</th>
-                  <th className="py-2.5 px-3 border-b text-center">Internal</th>
-                  <th className="py-2.5 px-3 border-b text-center">Total Marks</th>
-                  <th className="py-2.5 px-3 border-b text-center">Grade</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {subjectMarks.map(sub => {
-                  const tot = (parseFloat(sub.theoryScore) || 0) + (parseFloat(sub.practicalScore) || 0);
-                  const pct = (tot / (sub.maxScore || 100)) * 100;
-                  const grd = pct >= 90 ? 'A+' : pct >= 80 ? 'A' : pct >= 70 ? 'B+' : pct >= 60 ? 'B' : pct >= 50 ? 'C' : 'D';
-                  return (
-                    <tr key={sub.id}>
-                      <td className="py-2 px-3 font-semibold text-slate-800">{sub.name}</td>
-                      <td className="py-2 px-3 text-center">{sub.theoryScore}</td>
-                      <td className="py-2 px-3 text-center">{sub.practicalScore}</td>
-                      <td className="py-2 px-3 text-center font-bold text-slate-900">{tot} / {sub.maxScore}</td>
-                      <td className="py-2 px-3 text-center font-black">{grd}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot className="bg-slate-50 font-bold border-t-2 border-slate-300">
-                <tr>
-                  <td colSpan={3} className="py-2.5 px-3 text-right uppercase text-[11px]">Grand Total & Percentage:</td>
-                  <td className="py-2.5 px-3 text-center text-teal-800 font-black">{displayTotal} / {totalMaxMarks}</td>
-                  <td className="py-2.5 px-3 text-center text-emerald-800 font-black">{displayPercentage}% ({letterGrade.grade})</td>
-                </tr>
-              </tfoot>
-            </table>
+            {/* Part 1: Scholastic Performance Table */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide border-b pb-1">
+                Part 1: Scholastic Academic Areas
+              </h4>
+              <table className="w-full text-left text-xs border border-slate-300 rounded-xl overflow-hidden">
+                <thead className="bg-slate-100 text-slate-800 font-bold uppercase text-[10px]">
+                  <tr>
+                    <th className="py-2.5 px-3 border-b border-r">Subjects</th>
+                    <th className="py-2.5 px-2 border-b border-r text-center">Term 1 (/100)</th>
+                    <th className="py-2.5 px-2 border-b border-r text-center">Theory (/80)</th>
+                    <th className="py-2.5 px-2 border-b border-r text-center">Internal (/20)</th>
+                    <th className="py-2.5 px-2 border-b border-r text-center">Term 2 Total</th>
+                    <th className="py-2.5 px-2 border-b border-r text-center">Grand Total</th>
+                    <th className="py-2.5 px-2 border-b text-center">Subject Grade</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {subjectMarks.map((sub, i) => {
+                    const t = parseFloat(sub.theoryScore) || 0;
+                    const p = parseFloat(sub.practicalScore) || 0;
+                    const t2 = t + p;
+                    const t1 = sub.term1Score || Math.min(100, Math.round(t2 - 2 + (i % 3)));
+                    const grand = Math.round((t1 + t2) / 2);
+                    const grd = grand >= 90 ? 'A+' : grand >= 80 ? 'A' : grand >= 70 ? 'B+' : grand >= 60 ? 'B' : grand >= 50 ? 'C' : 'D';
 
-            {/* Remarks and Signatures */}
-            <div className="space-y-4 pt-2">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-                <span className="font-bold text-slate-700 block text-[11px] mb-0.5">Faculty Evaluation Remarks:</span>
-                <p className="text-slate-600 italic">"{teacherRemarks || `${letterGrade.label} performance. Demonstrates steady conceptual aptitude.`}"</p>
+                    return (
+                      <tr key={sub.id} className="hover:bg-slate-50">
+                        <td className="py-2 px-3 font-bold text-slate-900 border-r">{sub.name}</td>
+                        <td className="py-2 px-2 text-center border-r font-medium text-slate-600">{t1}</td>
+                        <td className="py-2 px-2 text-center border-r font-medium text-slate-600">{t}</td>
+                        <td className="py-2 px-2 text-center border-r font-medium text-slate-600">{p}</td>
+                        <td className="py-2 px-2 text-center border-r font-bold text-slate-900">{t2}</td>
+                        <td className="py-2 px-2 text-center border-r font-black text-slate-950">{grand} / 100</td>
+                        <td className="py-2 px-2 text-center font-black">
+                          <span className={`px-2 py-0.5 rounded text-[10px] ${
+                            grd === 'A+' ? 'bg-emerald-100 text-emerald-800' :
+                            grd === 'A' ? 'bg-teal-100 text-teal-800' :
+                            grd === 'B+' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-800'
+                          }`}>{grd}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot className="bg-slate-100 font-bold border-t-2 border-slate-400">
+                  <tr>
+                    <td colSpan={5} className="py-2.5 px-3 text-right uppercase text-[11px] border-r">
+                      Consolidated Annual Aggregate & Result:
+                    </td>
+                    <td className="py-2.5 px-2 text-center text-teal-900 font-black border-r text-sm">
+                      {displayTotal} / {totalMaxMarks}
+                    </td>
+                    <td className="py-2.5 px-2 text-center text-emerald-900 font-black text-sm">
+                      {displayPercentage}% ({letterGrade.grade})
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            {/* Part 2: Co-Scholastic Activities & Life Skills */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide border-b pb-1">
+                Part 2: Co-Scholastic & Life Skills Assessment (3-Point Grading Scale: A, B, C)
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {CO_SCHOLASTIC_ACTIVITIES.map(c => (
+                  <div key={c.activity} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-slate-800 block">{c.activity}</span>
+                      <span className="text-[10px] text-slate-500">{c.indicator}</span>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-black text-xs">
+                      Grade {c.grade}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Overall Result Status, Remarks and Signatures */}
+            <div className="space-y-4 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 bg-teal-50/60 rounded-xl border border-teal-200 text-xs">
+                  <span className="text-[10px] text-teal-800 font-bold uppercase block">Class Standing & Rank</span>
+                  <span className="font-black text-teal-950 text-sm">Rank 1 • Top 2% of Batch</span>
+                </div>
+                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 text-xs">
+                  <span className="text-[10px] text-emerald-800 font-bold uppercase block">Final Result Status</span>
+                  <span className="font-black text-emerald-950 text-sm">PROMOTED TO CLASS 11</span>
+                </div>
+                <div className="p-3 bg-purple-50/60 rounded-xl border border-purple-200 text-xs">
+                  <span className="text-[10px] text-purple-800 font-bold uppercase block">Next Term Reopens On</span>
+                  <span className="font-black text-purple-950 text-sm">June 15, 2027</span>
+                </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 pt-8 text-center text-[10px] text-slate-500 font-bold border-t border-dashed border-slate-300">
-                <div>Class Teacher Signature</div>
-                <div>Exam Controller</div>
-                <div>Principal / Headmaster</div>
+              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                <span className="font-bold text-slate-700 block text-[11px] mb-0.5">Principal & Class Teacher Overall Remarks:</span>
+                <p className="text-slate-800 italic font-medium leading-relaxed">
+                  "{teacherRemarks || `${letterGrade.label} performance. Consistently exhibits commendable curiosity, analytical rigor, and peer leadership. Best wishes for upcoming higher secondary honors studies.`}"
+                </p>
+              </div>
+
+              {/* Authorized Signatures & Seal */}
+              <div className="grid grid-cols-3 gap-6 pt-10 text-center text-[11px] text-slate-600 font-bold border-t border-dashed border-slate-300">
+                <div className="space-y-1">
+                  <div className="h-6 font-script text-slate-800 italic">Sarah Jenkins</div>
+                  <div className="border-t border-slate-400 pt-1">Class Teacher Signature</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="h-6 font-script text-slate-800 italic">Dr. K. Vance</div>
+                  <div className="border-t border-slate-400 pt-1">Exam Controller</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="h-6 font-script text-teal-800 font-black uppercase text-[10px]">Official Institute Seal</div>
+                  <div className="border-t border-slate-400 pt-1">Principal / Head of Institution</div>
+                </div>
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 print:hidden">
               <button
                 type="button"
                 onClick={() => setShowPrintModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
-                Close
+                Close Preview
               </button>
               <button
                 type="button"
                 onClick={() => {
                   window.print();
                 }}
-                className="px-5 py-2 rounded-xl text-xs font-bold bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-md flex items-center gap-1.5 transition-colors"
+                className="px-6 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 shadow-md flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
-                <span>Print Document</span>
+                <span>Print Official PDF Marksheet</span>
               </button>
             </div>
           </div>

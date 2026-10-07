@@ -25,6 +25,8 @@ import {
 import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
+import FeesView from './FeesView.jsx';
+import { useTenant } from '../context/TenantContext.jsx';
 
 export default function ParentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab, onPaymentCompleted }) {
   const [internalTab, setInternalTab] = useState('dashboard');
@@ -621,71 +623,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
 
       {/* TAB 4: FEE STRUCTURE & PAYMENTS */}
       {activeTab === 'fees' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Term Billed Fee</span>
-              <div className="text-2xl font-black text-slate-800 mt-2">
-                ₹{childSummary?.fees?.[0]?.grand_total ? Number(childSummary.fees[0].grand_total).toLocaleString('en-IN') : '35,000'}
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Outstanding Dues</span>
-              <div className="text-2xl font-black text-rose-600 mt-2">
-                ₹{childSummary?.fees?.[0]?.outstanding_amount ? Number(childSummary.fees[0].outstanding_amount).toLocaleString('en-IN') : '0'}
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Payment Status</span>
-              <div className="mt-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                  (childSummary?.fees?.[0]?.outstanding_amount || 0) === 0
-                    ? 'bg-emerald-100 text-emerald-800'
-                    : 'bg-amber-100 text-amber-800'
-                }`}>
-                  {childSummary?.fees?.[0]?.status || 'Paid'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h3 className="font-bold text-slate-800 text-sm">Fee Breakdown & Payment Action</h3>
-              {(childSummary?.fees?.[0]?.outstanding_amount || 0) > 0 ? (
-                <button
-                  onClick={() => {
-                    setSelectedFee(childSummary.fees[0]);
-                    setShowPaymentModal(true);
-                  }}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white font-bold text-xs shadow-md shadow-teal-500/25 flex items-center space-x-1.5 transition-all"
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Pay Online (₹{childSummary.fees[0].outstanding_amount})</span>
-                </button>
-              ) : (
-                <span className="text-xs font-bold text-emerald-600 flex items-center space-x-1">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Paid in Full &bull; Receipt: {childSummary?.fees?.[0]?.receipt_no || 'REC-2026-90412'}</span>
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              {childSummary?.fees?.[0]?.components?.map((c) => (
-                <div key={c.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-slate-800">{c.fee_category}</span>
-                    <p className="text-slate-500 text-[11px]">{c.description}</p>
-                  </div>
-                  <span className="font-mono font-bold text-slate-800">₹{Number(c.amount).toLocaleString('en-IN')}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <FeesView onPaymentCompleted={() => loadChildData(selectedChildId)} />
       )}
 
       {/* TAB 5: SYLLABUS PROGRESS */}
