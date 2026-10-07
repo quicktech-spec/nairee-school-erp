@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
+import TransferCertificateView from './TransferCertificateView.jsx';
 
 export default function StudentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const [internalTab, setInternalTab] = useState('dashboard');
@@ -326,6 +327,11 @@ export default function StudentPortalView({ user, activeTab: propTab, setActiveT
           </div>
         </div>
       </div>
+
+      {/* CERTIFICATES & AWARDS TAB */}
+      {activeTab === 'tc_generator' && (
+        <TransferCertificateView />
+      )}
 
       {/* TAB 1: DASHBOARD (Matches media_1790863408009.png) */}
       {activeTab === 'dashboard' && (

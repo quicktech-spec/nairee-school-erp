@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
+import TransferCertificateView from './TransferCertificateView.jsx';
 
 export default function ParentPortalView({ user, activeTab: propTab, setActiveTab: propSetTab, onPaymentCompleted }) {
   const [internalTab, setInternalTab] = useState('dashboard');
@@ -286,6 +287,7 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
                 { id: 'dashboard', label: 'Child Snapshot', icon: LayoutDashboard },
                 { id: 'calendar', label: 'School Calendar', icon: Calendar },
                 { id: 'progress', label: 'Academic Grades', icon: GraduationCap, count: childSummary?.results?.length || 0 },
+                { id: 'tc_generator', label: 'Child Certificates', icon: Award },
                 { id: 'attendance', label: 'Attendance Tracking', icon: UserCheck, count: `${childSummary?.attendance?.percentage || 100}%` },
                 { id: 'fees', label: 'Fees & Payment', icon: CreditCard },
                 { id: 'syllabus', label: 'Live Syllabus Progress', icon: CheckCircle2 },
@@ -335,6 +337,11 @@ export default function ParentPortalView({ user, activeTab: propTab, setActiveTa
 
         {/* RIGHT SIDE MAIN SCREEN (Displays data for the selected option) */}
         <div className="flex-1 w-full min-w-0 space-y-6">
+
+      {/* CERTIFICATES & AWARDS TAB */}
+      {activeTab === 'tc_generator' && (
+        <TransferCertificateView />
+      )}
 
       {/* TAB 1: CHILD SNAPSHOT */}
       {activeTab === 'dashboard' && (
