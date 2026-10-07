@@ -46,6 +46,7 @@ import OnlineAdmissionView from './OnlineAdmissionView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const { tenant } = useTenant();
+  const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
   const [internalTab, setInternalTab] = useState('overview');
   const activeTabRaw = propTab !== undefined ? propTab : internalTab;
   const activeTab = activeTabRaw === 'dashboard' ? 'overview' : activeTabRaw;
@@ -65,7 +66,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   const [showOutstandingModal, setShowOutstandingModal] = useState(false);
   const [outstandingFilter, setOutstandingFilter] = useState('all');
   const [outstandingSearch, setOutstandingSearch] = useState('');
-  const [outstandingExpenses, setOutstandingExpenses] = useState([
+  const [outstandingExpenses, setOutstandingExpenses] = useState(() => isMasterSchool ? [
     {
       id: 'EXP-OUT-001',
       name: 'Student Tuition & Academic Term Fee — Diya Gupta (Roll #103, Class 10-A)',
@@ -137,7 +138,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
       amount: 46500,
       status: 'Paid'
     }
-  ]);
+  ] : []);
 
   // Modals
   const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
@@ -341,6 +342,15 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
 
   const atRiskStudents = studentPerf.filter(s => s.isAtRisk);
 
+  const studentCount = stats?.students !== undefined ? stats.students : (stats?.total_students !== undefined ? stats.total_students : (isMasterSchool ? 7 : 0));
+  const teacherCount = stats?.teachers !== undefined ? stats.teachers : (stats?.faculty !== undefined ? stats.faculty : (isMasterSchool ? 4 : 0));
+  const attendanceRateVal = stats?.attendance_rate ? stats.attendance_rate.replace('%', '') : (stats?.attendanceRate !== undefined ? stats.attendanceRate : (isMasterSchool ? '95' : '0'));
+  
+  const totalBilledVal = stats?.finance?.totalBilled !== undefined ? Number(stats.finance.totalBilled) : (isMasterSchool ? 210000 : 0);
+  const totalCollectedVal = stats?.finance?.totalCollected !== undefined ? Number(stats.finance.totalCollected) : (isMasterSchool ? 140000 : 0);
+  const totalOutstandingVal = stats?.finance?.totalOutstanding !== undefined ? Number(stats.finance.totalOutstanding) : (isMasterSchool ? 70000 : 0);
+  const collectionRateVal = stats?.finance?.collectionRate !== undefined ? stats.finance.collectionRate : (totalBilledVal > 0 ? Math.round((totalCollectedVal / totalBilledVal) * 100) : (isMasterSchool ? 22 : 0));
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -394,10 +404,10 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 </div>
               </div>
               <div className="mt-2.5 sm:mt-3 min-w-0">
-                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{stats?.students || 7}</div>
+                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{studentCount}</div>
                 <div className="text-[11px] text-teal-600 font-medium mt-0.5 flex items-center space-x-1 truncate">
                   <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate">100% Active Enrollment</span>
+                  <span className="truncate">{studentCount > 0 ? '100% Active Enrollment' : '0 Active Enrollments'}</span>
                 </div>
               </div>
             </div>
@@ -410,8 +420,8 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 </div>
               </div>
               <div className="mt-2.5 sm:mt-3 min-w-0">
-                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{stats?.faculty || 4}</div>
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">Across 4 Departments</div>
+                <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">{teacherCount}</div>
+                <div className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">{teacherCount > 0 ? `Across ${Math.min(teacherCount, 4)} Departments` : 'No Faculty Assigned'}</div>
               </div>
             </div>
 
@@ -423,7 +433,7 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 </div>
               </div>
               <div className="mt-2.5 sm:mt-3 min-w-0">
-                <div className="text-xl sm:text-2xl font-black text-emerald-600 truncate">{stats?.attendanceRate || 95}%</div>
+                <div className="text-xl sm:text-2xl font-black text-emerald-600 truncate">{attendanceRateVal}%</div>
                 <div className="text-[11px] text-emerald-600 font-medium mt-0.5 truncate">Today's Campus Average</div>
               </div>
             </div>
@@ -437,10 +447,10 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
               </div>
               <div className="mt-2.5 sm:mt-3 min-w-0">
                 <div className="text-xl sm:text-2xl font-black text-slate-800 truncate">
-                  ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '35,000'}
+                  ₹{totalCollectedVal.toLocaleString('en-IN')}
                 </div>
                 <div className="text-[11px] text-purple-600 font-medium mt-0.5 truncate">
-                  {stats?.finance?.collectionRate || 22}% Collected This Term
+                  {collectionRateVal}% Collected This Term
                 </div>
               </div>
             </div>
@@ -889,17 +899,21 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Billed This Term</span>
               <div className="text-2xl font-black text-slate-800 mt-2">
-                ₹{stats?.finance?.totalBilled ? Number(stats.finance.totalBilled).toLocaleString('en-IN') : '2,10,000'}
+                ₹{totalBilledVal.toLocaleString('en-IN')}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1 font-medium">6 Enrolled Students &times; ₹35,000 / term</div>
+              <div className="text-[11px] text-slate-400 mt-1 font-medium">
+                {studentCount > 0 ? `${studentCount} Enrolled Students × ₹35,000 / term` : '0 Enrolled Students (₹0 / term)'}
+              </div>
             </div>
 
             <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-sm">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Received</span>
               <div className="text-2xl font-black text-emerald-600 mt-2">
-                ₹{stats?.finance?.totalCollected ? Number(stats.finance.totalCollected).toLocaleString('en-IN') : '1,40,000'}
+                ₹{totalCollectedVal.toLocaleString('en-IN')}
               </div>
-              <div className="text-[11px] text-emerald-600 font-medium mt-1">4 Student Accounts Cleared (67%)</div>
+              <div className="text-[11px] text-emerald-600 font-medium mt-1">
+                {studentCount > 0 ? `${Math.round((totalCollectedVal / (totalBilledVal || 1)) * 100)}% Accounts Cleared` : '0 Student Accounts Cleared (0%)'}
+              </div>
             </div>
 
             <div 
@@ -913,10 +927,14 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
                 </span>
               </div>
               <div className="text-2xl font-black text-rose-600 mt-2">
-                ₹{stats?.finance?.totalOutstanding ? Number(stats.finance.totalOutstanding).toLocaleString('en-IN') : '70,000'}
+                ₹{totalOutstandingVal.toLocaleString('en-IN')}
               </div>
               <div className="text-[11px] text-rose-600/90 mt-1 font-semibold flex items-center gap-1">
-                <span>2 Pending Student Accounts &bull; Click for 4-column ledger</span>
+                <span>
+                  {totalOutstandingVal > 0 
+                    ? `${outstandingExpenses.filter(e => e.status === 'Unpaid').length} Pending Student Accounts • Click for 4-column ledger`
+                    : '0 Pending Student Accounts • All dues cleared (₹0)'}
+                </span>
               </div>
             </div>
           </div>
