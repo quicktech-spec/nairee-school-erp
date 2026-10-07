@@ -42,6 +42,7 @@ import FinancialPnLView from './FinancialPnLView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
 import InventoryAssetsView from './InventoryAssetsView.jsx';
 import AlumniNetworkView from './AlumniNetworkView.jsx';
+import OnlineAdmissionView from './OnlineAdmissionView.jsx';
 
 export default function AdminPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const { tenant } = useTenant();
@@ -373,6 +374,11 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
       {/* ALUMNI CAREER & MENTORSHIP HUB TAB */}
       {activeTab === 'alumni_mgmt' && (
         <AlumniNetworkView />
+      )}
+
+      {/* ONLINE STUDENT ADMISSIONS & SELF-REGISTRATION TAB */}
+      {activeTab === 'admissions' && (
+        <OnlineAdmissionView onBackToLogin={() => setActiveTab('overview')} />
       )}
 
       {/* TAB 1: OVERVIEW */}

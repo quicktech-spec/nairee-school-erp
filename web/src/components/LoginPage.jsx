@@ -22,7 +22,7 @@ import loginCartoon from '../assets/login-cartoon.png';
 import TenantOnboardingModal from './TenantOnboardingModal.jsx';
 import TenantSwitchModal from './TenantSwitchModal.jsx';
 
-export default function LoginPage({ onLoginSuccess }) {
+export default function LoginPage({ onLoginSuccess, onOpenAdmissionForm }) {
   const { 
     tenant, 
     isMasterTenant, 
@@ -282,20 +282,42 @@ export default function LoginPage({ onLoginSuccess }) {
                 {/* Don't have an account footer link */}
                 <div className="text-center pt-2">
                   <p className="text-xs text-slate-600 font-medium">
-                    Don't have an account? Let's{' '}
+                    New student or parent?{' '}
                     <button
                       type="button"
-                      onClick={() => setErrorMessage('Student & Parent accounts are issued by the School Admissions Office.')}
-                      className="text-[#3b82f6] hover:underline font-bold cursor-pointer"
+                      onClick={onOpenAdmissionForm}
+                      className="text-emerald-700 hover:text-emerald-800 hover:underline font-extrabold cursor-pointer"
                     >
-                      Get Started For Free
+                      Fill Online Admission Form →
                     </button>
                   </p>
                 </div>
               </form>
 
+              {/* Student & Parent Public Admission / Self-Registration Banner */}
+              <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border border-emerald-200/80 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-black text-slate-900 block">Student Online Self-Registration</span>
+                      <span className="text-[10px] text-emerald-800 font-medium">For new admissions &amp; student onboarding</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={onOpenAdmissionForm}
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-98 cursor-pointer"
+                >
+                  <span>Open Admission Registration Form →</span>
+                </button>
+              </div>
+
               {/* 1-Click Quick Demo Accounts Drawer */}
-              <div className="mt-8 pt-5 border-t border-slate-100">
+              <div className="mt-6 pt-5 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                     Quick Demo Credentials (1-Click Fill)

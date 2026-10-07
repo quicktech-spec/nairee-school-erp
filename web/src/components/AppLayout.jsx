@@ -82,6 +82,7 @@ const NAV_CONFIG = {
   ],
   teacher: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'admissions', label: 'Admissions & Leads', icon: GraduationCap },
     { id: 'attendance', label: 'Attendance', icon: UserCheck },
     { id: 'homework', label: 'Multi-Class HW', icon: BookOpen },
     { id: 'syllabus', label: 'Syllabus', icon: CheckCircle2 },
@@ -92,6 +93,7 @@ const NAV_CONFIG = {
   ],
   admin: [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'admissions', label: 'Admissions & Leads', icon: GraduationCap },
     { id: 'database', label: 'School Records', icon: Database },
     { id: 'fees', label: 'Fee Governance', icon: CreditCard },
     { id: 'class_manager', label: 'Class & Staff Manager', icon: School },
@@ -674,6 +676,20 @@ export default function AppLayout({
                   </button>
                 )}
               </>
+            )}
+
+            {/* Quick Admission Link Dispatcher Button (For Admin and Teacher) */}
+            {(normalizedRole === 'admin' || normalizedRole === 'teacher') && (
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('nairee_open_admission_dispatcher'))}
+                className="px-3 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-emerald-500/20 cursor-pointer animate-pulse hover:animate-none"
+                title="Send Admission Form Link to Parent via WhatsApp"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">📲 Send Admission Link</span>
+                <span className="sm:hidden">📲 Link</span>
+              </button>
             )}
 
             {/* Quick School Records Button (ADMIN ONLY) */}

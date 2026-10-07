@@ -28,6 +28,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { getMasterStudents, saveMasterStudents, getMasterTeachers, transferStudentClass, subscribeLiveEvents, getStoredDb, saveStoredDb, generateStudentId, generateTeacherId, isIdUnique, getGuaranteedUniqueStudentId, getGuaranteedUniqueTeacherId, normalizeBatchAndClass } from '../api.js';
+import AdmissionLeadDispatcherModal from './AdmissionLeadDispatcherModal.jsx';
 
 function mapMasterToMgmtStudents(masterList) {
   return masterList.map((s, idx) => {
@@ -107,6 +108,7 @@ export default function ClassStaffManagerView() {
   const [showAppointTeacherModal, setShowAppointTeacherModal] = useState(null); // class obj
   const [showCollectFeeModal, setShowCollectFeeModal] = useState(null); // student obj
   const [showSalaryModal, setShowSalaryModal] = useState(null); // teacher obj
+  const [showAdmissionModal, setShowAdmissionModal] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
 
   // Form States
@@ -495,10 +497,10 @@ export default function ClassStaffManagerView() {
         </div>
 
         {/* Action Pills */}
-        <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md">
+        <div className="flex flex-wrap items-center gap-2 bg-black/20 p-1.5 rounded-2xl backdrop-blur-md">
           <button
             onClick={() => setActiveSubTab('classes')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'classes' ? 'bg-white text-teal-900 shadow-md' : 'text-white hover:bg-white/10'
             }`}
           >
@@ -507,7 +509,7 @@ export default function ClassStaffManagerView() {
           </button>
           <button
             onClick={() => setActiveSubTab('students')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'students' ? 'bg-white text-teal-900 shadow-md' : 'text-white hover:bg-white/10'
             }`}
           >
@@ -516,15 +518,29 @@ export default function ClassStaffManagerView() {
           </button>
           <button
             onClick={() => setActiveSubTab('payroll')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeSubTab === 'payroll' ? 'bg-white text-teal-900 shadow-md' : 'text-white hover:bg-white/10'
             }`}
           >
             <CreditCard className="w-4 h-4" />
             <span>Teacher Payroll</span>
           </button>
+          <button
+            onClick={() => setShowAdmissionModal(true)}
+            className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-transform hover:scale-105 flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-500/20"
+          >
+            <Send className="w-3.5 h-3.5" />
+            <span>📲 Send Admission Link (WhatsApp)</span>
+          </button>
         </div>
       </div>
+
+      {/* Admission Quick-Lead Dispatcher Modal */}
+      <AdmissionLeadDispatcherModal
+        isOpen={showAdmissionModal}
+        onClose={() => setShowAdmissionModal(false)}
+        defaultClass={classes[0]?.name || 'Class 10 - Section A'}
+      />
 
       {/* SUBTAB 1: CLASSES & APPOINTED TEACHERS */}
       {activeSubTab === 'classes' && (

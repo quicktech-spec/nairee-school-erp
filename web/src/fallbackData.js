@@ -1424,10 +1424,94 @@ export const INITIAL_DB_STORE = {
       { subscription_id: 'SUB-2026-001', tenant_id: 'tenant-default', plan_tier: 'Enterprise', start_date: '2026-01-01', end_date: '2026-12-31', amount_paid: 120000, payment_status: 'Paid', invoice_ref: 'INV-SaaS-9021' },
       { subscription_id: 'SUB-2026-002', tenant_id: 'dps-ranchi', plan_tier: 'Enterprise', start_date: '2026-01-01', end_date: '2026-12-31', amount_paid: 120000, payment_status: 'Paid', invoice_ref: 'INV-SaaS-9022' }
     ]
+  },
+
+  'Admission Applications & Leads': {
+    columns: [
+      { name: 'application_id', type: 'VARCHAR(50)', pk: 1 },
+      { name: 'student_name', type: 'VARCHAR(150)', pk: 0 },
+      { name: 'age', type: 'VARCHAR(20)', pk: 0 },
+      { name: 'dob', type: 'DATE', pk: 0 },
+      { name: 'target_class', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'guardian_name', type: 'VARCHAR(150)', pk: 0 },
+      { name: 'guardian_phone', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'guardian_email', type: 'VARCHAR(200)', pk: 0 },
+      { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'dispatched_by', type: 'VARCHAR(150)', pk: 0 },
+      { name: 'dispatched_at', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'submitted_at', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'tenant_id', type: 'VARCHAR(50)', pk: 0 },
+      { name: 'stream', type: 'VARCHAR(100)', pk: 0 },
+      { name: 'previous_school', type: 'VARCHAR(200)', pk: 0 },
+      { name: 'residential_address', type: 'TEXT', pk: 0 },
+      { name: 'bus_required', type: 'VARCHAR(20)', pk: 0 }
+    ],
+    rows: [
+      {
+        application_id: 'APP-2026-8801',
+        student_name: 'Ananya Deshmukh',
+        age: '14 Years',
+        dob: '2012-04-18',
+        target_class: 'Class 9 - Section A',
+        guardian_name: 'Mr. Arvind Deshmukh',
+        guardian_phone: '+91 98765 43230',
+        guardian_email: 'arvind.deshmukh@gmail.com',
+        status: 'Submitted by Parent',
+        dispatched_by: 'Prof. Sarah Jenkins (Tutor)',
+        dispatched_at: '2026-10-06 10:15 AM',
+        submitted_at: '2026-10-06 02:40 PM',
+        tenant_id: 'tenant-default',
+        stream: 'Foundation STEM & Advanced Maths',
+        previous_school: 'Bishop Cotton Boys School',
+        residential_address: '42, Prestige Palms, Whitefield, Bengaluru - 560066',
+        bus_required: 'Yes (Route 14)'
+      },
+      {
+        application_id: 'APP-2026-8802',
+        student_name: 'Rohan Mehra',
+        age: '15 Years',
+        dob: '2011-09-05',
+        target_class: 'Class 10 - Section A',
+        guardian_name: 'Mrs. Deepa Mehra',
+        guardian_phone: '+91 98765 43231',
+        guardian_email: 'deepa.mehra@yahoo.com',
+        status: 'Link Dispatched',
+        dispatched_by: 'Office of Admissions',
+        dispatched_at: '2026-10-07 08:30 AM',
+        submitted_at: '',
+        tenant_id: 'tenant-default',
+        stream: 'Science & Computer Applications',
+        previous_school: 'St. Joseph Academy',
+        residential_address: '15/B, Palm Meadows, Indiranagar, Bengaluru - 560038',
+        bus_required: 'No'
+      },
+      {
+        application_id: 'APP-2026-8803',
+        student_name: 'Ishaan Verma',
+        age: '6 Years',
+        dob: '2020-03-12',
+        target_class: 'Class 1 - Section A',
+        guardian_name: 'Dr. Sameer Verma',
+        guardian_phone: '+91 98765 43232',
+        guardian_email: 'dr.verma@health.org',
+        status: 'Enrolled & Approved',
+        dispatched_by: 'Admissions Desk',
+        dispatched_at: '2026-10-05 09:00 AM',
+        submitted_at: '2026-10-05 11:30 AM',
+        tenant_id: 'tenant-default',
+        stream: 'Primary Foundational Learning',
+        previous_school: 'EuroKids Preschool',
+        residential_address: 'Flat 304, Green Glen Layout, Bellandur, Bengaluru - 560103',
+        bus_required: 'Yes (Route 08)'
+      }
+    ]
   }
 };
 
 // Aliases for compatibility
+INITIAL_DB_STORE['tabAdmissionApplication'] = INITIAL_DB_STORE['Admission Applications & Leads'];
+INITIAL_DB_STORE['tabAdmissionLead'] = INITIAL_DB_STORE['Admission Applications & Leads'];
+INITIAL_DB_STORE['admissions'] = INITIAL_DB_STORE['Admission Applications & Leads'];
 INITIAL_DB_STORE['tabStudent'] = INITIAL_DB_STORE['Student List'];
 INITIAL_DB_STORE['tabTeacher'] = INITIAL_DB_STORE['Teacher List'];
 INITIAL_DB_STORE['tabFaculty'] = INITIAL_DB_STORE['Teacher List'];

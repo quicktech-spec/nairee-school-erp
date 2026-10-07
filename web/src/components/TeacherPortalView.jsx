@@ -31,6 +31,7 @@ import {
 import { api, subscribeLiveEvents } from '../api.js';
 import SchoolCalendarView from './SchoolCalendarView.jsx';
 import TransferCertificateView from './TransferCertificateView.jsx';
+import OnlineAdmissionView from './OnlineAdmissionView.jsx';
 
 export default function TeacherPortalView({ user, activeTab: propTab, setActiveTab: propSetTab }) {
   const [internalTab, setInternalTab] = useState('dashboard');
@@ -432,6 +433,11 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
           <CheckCircle2 className="w-5 h-5 text-teal-400 flex-shrink-0" />
           <span>{toastMessage}</span>
         </div>
+      )}
+
+      {/* ONLINE ADMISSION PORTAL & LEADS */}
+      {activeTab === 'admissions' && (
+        <OnlineAdmissionView onBackToLogin={() => setActiveTab('dashboard')} />
       )}
 
       {/* CERTIFICATES & AWARDS GENERATOR */}

@@ -2794,5 +2794,284 @@ export const api = {
     }
     const db = getStoredDb();
     return db['Parents & Guardians']?.rows || [];
+  },
+
+  // -------------------------------------------------------------
+  // ADMISSION LEADS & STUDENT SELF-REGISTRATION LINK SYSTEM
+  // -------------------------------------------------------------
+  async getAdmissionApplications(tenantId = 'all') {
+    const db = getStoredDb();
+    const rows = db['Admission Applications & Leads']?.rows || [];
+    if (!tenantId || tenantId === 'all') return rows;
+    return rows.filter(r => !r.tenant_id || r.tenant_id === tenantId || r.tenant_id === 'tenant-default');
+  },
+
+  async dispatchAdmissionLead(leadData) {
+    const db = getStoredDb();
+    if (!db['Admission Applications & Leads']) {
+      db['Admission Applications & Leads'] = {
+        columns: [
+          { name: 'application_id', type: 'VARCHAR(50)', pk: 1 },
+          { name: 'student_name', type: 'VARCHAR(150)', pk: 0 },
+          { name: 'age', type: 'VARCHAR(20)', pk: 0 },
+          { name: 'dob', type: 'DATE', pk: 0 },
+          { name: 'target_class', type: 'VARCHAR(100)', pk: 0 },
+          { name: 'guardian_name', type: 'VARCHAR(150)', pk: 0 },
+          { name: 'guardian_phone', type: 'VARCHAR(50)', pk: 0 },
+          { name: 'guardian_email', type: 'VARCHAR(200)', pk: 0 },
+          { name: 'status', type: 'VARCHAR(50)', pk: 0 },
+          { name: 'dispatched_by', type: 'VARCHAR(150)', pk: 0 },
+          { name: 'dispatched_at', type: 'VARCHAR(50)', pk: 0 },
+          { name: 'submitted_at', type: 'VARCHAR(50)', pk: 0 },
+          { name: 'tenant_id', type: 'VARCHAR(50)', pk: 0 },
+          { name: 'stream', type: 'VARCHAR(100)', pk: 0 },
+          { name: 'previous_school', type: 'VARCHAR(200)', pk: 0 },
+          { name: 'residential_address', type: 'TEXT', pk: 0 },
+          { name: 'bus_required', type: 'VARCHAR(20)', pk: 0 }
+        ],
+        rows: []
+      };
+    }
+
+    const appId = leadData.application_id || `APP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const nowStr = new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+    
+    const newLead = {
+      application_id: appId,
+      student_name: leadData.student_name || 'Prospective Student',
+      age: leadData.age ? String(leadData.age).includes('Year') ? leadData.age : `${leadData.age} Years` : '14 Years',
+      dob: leadData.dob || '2012-05-15',
+      target_class: leadData.target_class || leadData.class_batch || 'Class 10 - Section A',
+      guardian_name: leadData.guardian_name || 'Parent / Guardian',
+      guardian_phone: leadData.guardian_phone || leadData.phone || '',
+      guardian_email: leadData.guardian_email || leadData.email || '',
+      status: leadData.status || 'Link Dispatched',
+      dispatched_by: leadData.dispatched_by || 'Office of Admissions',
+      dispatched_at: nowStr,
+      submitted_at: '',
+      tenant_id: leadData.tenant_id || 'tenant-default',
+      stream: leadData.stream || 'General Academics & Foundational STEM',
+      previous_school: leadData.previous_school || '',
+      residential_address: leadData.residential_address || '',
+      bus_required: leadData.bus_required || 'No'
+    };
+
+    // Remove existing if duplicate application_id
+    db['Admission Applications & Leads'].rows = db['Admission Applications & Leads'].rows.filter(r => r.application_id !== appId);
+    db['Admission Applications & Leads'].rows.unshift(newLead);
+    saveStoredDb(db);
+
+    // Build the shareable direct link
+    let origin = typeof window !== 'undefined' ? window.location.origin : 'https://quicktech-spec.github.io';
+    let pathname = typeof window !== 'undefined' ? window.location.pathname : '/nairee-school-erp/';
+    if (!pathname.endsWith('/')) pathname += '/';
+    
+    const params = new URLSearchParams({
+      mode: 'admission',
+      appId: newLead.application_id,
+      name: newLead.student_name,
+      age: newLead.age,
+      dob: newLead.dob,
+      class: newLead.target_class,
+      parent: newLead.guardian_name,
+      phone: newLead.guardian_phone,
+      tenant: newLead.tenant_id
+    });
+
+    const directLink = `${origin}${pathname}?${params.toString()}`;
+    const cleanPhone = (newLead.guardian_phone || '').replace(/\D/g, '');
+    const schoolName = leadData.school_name || 'Nairee International School';
+    
+    const whatsappText = `Dear ${newLead.guardian_name},\n\nGreetings from *${schoolName}*!\n\nWe have initiated the official Student Admission & Enrollment application for *${newLead.student_name}* for *${newLead.target_class}*.\n\nPlease complete the brief admission registration form by clicking your direct link below:\n👉 ${directLink}\n\nOnce submitted, our academic board will confirm the admission and release the student portal credentials.\n\nFor any queries, please reply directly or call our admissions office.\n\nWarm regards,\n*Admissions Directorate*\n${schoolName}`;
+    
+    const whatsappUrl = `https://wa.me/${cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone}?text=${encodeURIComponent(whatsappText)}`;
+
+    broadcastLiveEvent('admission_lead_dispatched', { lead: newLead, directLink, whatsappUrl });
+
+    return {
+      success: true,
+      lead: newLead,
+      directLink,
+      whatsappUrl,
+      whatsappText
+    };
+  },
+
+  async submitAdmissionApplication(appData) {
+    const db = getStoredDb();
+    const appId = appData.application_id || `APP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const nowStr = new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+    const targetClass = appData.target_class || appData.class_batch || 'Class 10 - Section A';
+    const norm = normalizeBatchAndClass(targetClass);
+
+    // 1. Update/Add Admission Lead Record
+    if (!db['Admission Applications & Leads']) {
+      db['Admission Applications & Leads'] = { columns: [], rows: [] };
+    }
+    
+    const updatedLead = {
+      application_id: appId,
+      student_name: appData.student_name,
+      age: appData.age || '14 Years',
+      dob: appData.dob || '2012-05-15',
+      target_class: norm.class_batch,
+      guardian_name: appData.father_name || appData.guardian_name || 'Parent',
+      guardian_phone: appData.father_phone || appData.guardian_phone || appData.phone || '',
+      guardian_email: appData.father_email || appData.guardian_email || appData.email || '',
+      status: 'Submitted by Parent',
+      dispatched_by: appData.dispatched_by || 'Online Self-Registration',
+      dispatched_at: appData.dispatched_at || nowStr,
+      submitted_at: nowStr,
+      tenant_id: appData.tenant_id || 'tenant-default',
+      stream: appData.stream || 'Science & Advanced Mathematics',
+      previous_school: appData.previous_school || '',
+      residential_address: appData.residential_address || '',
+      bus_required: appData.bus_required || 'No'
+    };
+
+    db['Admission Applications & Leads'].rows = db['Admission Applications & Leads'].rows.filter(r => r.application_id !== appId);
+    db['Admission Applications & Leads'].rows.unshift(updatedLead);
+
+    // 2. Generate and Register Official Student into Student Directory
+    const existingStudents = db['Student Master Directory']?.rows || db['Student List']?.rows || [];
+    const seq = existingStudents.length + 1;
+    const studentId = appData.student_id || generateStudentId({
+      schoolCode: 'NIS',
+      year: new Date().getFullYear(),
+      classNum: norm.grade.replace(/\D/g, '') || '10',
+      sequence: seq
+    });
+
+    const rollNo = String(seq).padStart(2, '0');
+    const studentUsername = appData.student_name.toLowerCase().replace(/[^a-z0-9]/g, '') || `student_${seq}`;
+    const studentPassword = `${studentUsername}123`;
+
+    const newStudentMaster = {
+      student_id: studentId,
+      name: appData.student_name,
+      student_name: appData.student_name,
+      roll_no: rollNo,
+      class: norm.grade,
+      section: `Section ${norm.section}`,
+      class_batch: norm.class_batch,
+      batch_id: norm.batch_id,
+      stream: appData.stream || 'Science & Mathematics',
+      photo: appData.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      dob: appData.dob || '2012-05-15',
+      gender: appData.gender || 'Male',
+      blood_group: appData.blood_group || 'O+',
+      aadhaar_no: appData.aadhaar_no || '9876 5432 1099',
+      religion: appData.religion || 'General',
+      nationality: appData.nationality || 'Indian',
+      admission_date: new Date().toISOString().split('T')[0],
+      phone: appData.phone || appData.father_phone || '+91 98765 00000',
+      email: `${studentUsername}@student.nairee.edu`,
+      residential_address: appData.residential_address || 'Bengaluru, India',
+      permanent_address: appData.residential_address || 'Bengaluru, India',
+      father_name: appData.father_name || appData.guardian_name || 'Father',
+      father_phone: appData.father_phone || appData.guardian_phone || '+91 98765 43210',
+      father_occupation: appData.father_occupation || 'Business / Professional',
+      mother_name: appData.mother_name || 'Mother',
+      mother_phone: appData.mother_phone || '+91 98765 43211',
+      mother_occupation: appData.mother_occupation || 'Homemaker / Professional',
+      fee_status: 'Paid',
+      feeDues: 0,
+      status: 'Active'
+    };
+
+    if (db['Student Master Directory']) {
+      db['Student Master Directory'].rows = db['Student Master Directory'].rows.filter(s => s.student_id !== studentId);
+      db['Student Master Directory'].rows.push(newStudentMaster);
+    }
+    if (db['Student List']) {
+      db['Student List'].rows = db['Student List'].rows.filter(s => s.student_id !== studentId);
+      db['Student List'].rows.push(newStudentMaster);
+    }
+
+    // 3. Register Parent in Parent List
+    const parentId = `PAR-${String(seq).padStart(3, '0')}`;
+    const parentUsername = `parent_${studentUsername}`;
+    const parentPassword = `${parentUsername}123`;
+    if (db['Parent List']) {
+      db['Parent List'].rows = db['Parent List'].rows.filter(p => p.parent_id !== parentId);
+      db['Parent List'].rows.push({
+        parent_id: parentId,
+        father_name: newStudentMaster.father_name,
+        mother_name: newStudentMaster.mother_name,
+        email: appData.father_email || `${parentUsername}@family.com`,
+        phone: newStudentMaster.father_phone,
+        child: studentId,
+        child_name: newStudentMaster.name,
+        residential_address: newStudentMaster.residential_address
+      });
+    }
+
+    // 4. Create Login Credentials for both Student and Parent
+    if (db['User Logins & Credentials']) {
+      db['User Logins & Credentials'].rows.push({
+        name: studentId,
+        username: studentUsername,
+        full_name: newStudentMaster.name,
+        role: 'student',
+        email: newStudentMaster.email,
+        phone: newStudentMaster.phone,
+        status: 'Active',
+        linked_id: studentId,
+        password: studentPassword
+      });
+      db['User Logins & Credentials'].rows.push({
+        name: parentId,
+        username: parentUsername,
+        full_name: newStudentMaster.father_name,
+        role: 'parent',
+        email: appData.father_email || `${parentUsername}@family.com`,
+        phone: newStudentMaster.father_phone,
+        status: 'Active',
+        linked_id: parentId,
+        password: parentPassword
+      });
+    }
+
+    // 5. Trigger Database Trigger Cascade across Classes & Attendance
+    triggerStudentCascadeTriggers(db, [newStudentMaster]);
+    saveStoredDb(db);
+
+    broadcastLiveEvent('student_registered', {
+      application_id: appId,
+      student_id: studentId,
+      student: newStudentMaster,
+      credentials: {
+        student: { username: studentUsername, password: studentPassword },
+        parent: { username: parentUsername, password: parentPassword }
+      }
+    });
+
+    return {
+      success: true,
+      application_id: appId,
+      student_id: studentId,
+      student: newStudentMaster,
+      credentials: {
+        student: { username: studentUsername, password: studentPassword },
+        parent: { username: parentUsername, password: parentPassword }
+      },
+      message: `Admission application #${appId} submitted successfully for ${newStudentMaster.name}!`
+    };
+  },
+
+  async approveAndEnrollStudent(appId) {
+    const db = getStoredDb();
+    if (db['Admission Applications & Leads']) {
+      db['Admission Applications & Leads'].rows = db['Admission Applications & Leads'].rows.map(a => {
+        if (a.application_id === appId) {
+          return { ...a, status: 'Enrolled & Approved' };
+        }
+        return a;
+      });
+      saveStoredDb(db);
+      broadcastLiveEvent('student_enrolled', { application_id: appId });
+      return { success: true, message: `Application #${appId} has been officially approved & enrolled.` };
+    }
+    return { success: false };
   }
 };
