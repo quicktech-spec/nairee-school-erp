@@ -50,7 +50,7 @@ export default function TeacherPortalView({ user, activeTab: propTab, setActiveT
   const [assessmentPlans, setAssessmentPlans] = useState([]);
   const [students, setStudents] = useState([]);
   const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [selectedBatch, setSelectedBatch] = useState(isMasterSchool ? 'CLS-10A' : '');
+  const [selectedBatch, setSelectedBatch] = useState('all');
   const [attendanceRecords, setAttendanceRecords] = useState({});
   const [batches, setBatches] = useState(() => {
     if (isMasterSchool) {

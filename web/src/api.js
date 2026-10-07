@@ -437,12 +437,23 @@ export function getStoredDb(explicitTenantId = null) {
       if (parsed && typeof parsed === 'object') {
         const merged = { ...baseTemplate };
         
+        // If the saved store has 0 students or 0 teachers (e.g. stale empty store from previous session),
+        // re-populate with the 10 students and 2 teachers seed
+        const savedStudents = parsed['Student List']?.rows || [];
+        const savedTeachers = parsed['Teacher List']?.rows || [];
+        if (savedStudents.length === 0 && savedTeachers.length === 0 && baseTemplate['Student List']?.rows?.length > 0) {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(baseTemplate));
+          } catch (e) {}
+          return baseTemplate;
+        }
+
         // Use user saved tables as authoritative single source of truth
         Object.keys(baseTemplate).forEach(tableName => {
           const initTable = baseTemplate[tableName];
           const savedTable = parsed[tableName];
 
-          if (savedTable && Array.isArray(savedTable.rows)) {
+          if (savedTable && Array.isArray(savedTable.rows) && savedTable.rows.length > 0) {
             merged[tableName] = {
               ...initTable,
               columns: savedTable.columns || initTable?.columns || [],

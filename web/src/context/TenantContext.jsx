@@ -464,14 +464,19 @@ export function TenantProvider({ children }) {
       await teardownRealtimeAndSession();
       setActiveTenant(match);
       loadBrandingForSubdomain(match.subdomain);
+      try {
+        localStorage.setItem('nairee_active_tenant_id', match.tenant_id);
+      } catch (e) {}
 
       const url = new URL(window.location.href);
-      if (match.tenant_id === 'tenant-default') {
+      if (match.tenant_id === 'tenant-default' || match.subdomain === 'demo') {
         url.searchParams.delete('tenant');
       } else {
         url.searchParams.set('tenant', match.subdomain || match.tenant_id);
       }
       window.history.replaceState({}, '', url.toString());
+
+      broadcastLiveEvent('tenant_switched', { tenant: match });
     }
   };
 

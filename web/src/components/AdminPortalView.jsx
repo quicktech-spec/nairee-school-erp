@@ -240,12 +240,16 @@ export default function AdminPortalView({ user, activeTab: propTab, setActiveTab
   // Real-time synchronization across admin dashboard, P&L fee settlements, and notice broadcasts
   useEffect(() => {
     const unsub = subscribeLiveEvents((event) => {
-      if (event?.type === 'fee_updated' || event?.type === 'announcement_created' || event?.type === 'attendance_updated') {
-        const currentTenantId = tenant?.tenant_id || 'tenant-default';
-        const eventTenantId = event?.payload?.tenant_id || 'tenant-default';
-        if (eventTenantId === currentTenantId || eventTenantId === 'all_tenants') {
-          loadAllData();
-        }
+      if (
+        event?.type === 'fee_updated' || 
+        event?.type === 'announcement_created' || 
+        event?.type === 'attendance_updated' ||
+        event?.type === 'tenant_switched' ||
+        event?.type === 'tenant_created' ||
+        event?.type === 'student_created' ||
+        event?.type === 'teacher_punched'
+      ) {
+        loadAllData();
       }
     });
     return () => unsub();
