@@ -146,8 +146,8 @@ export default function TransferCertificateView() {
   // 5 Student ID Card Templates
   const [idCardTemplate, setIdCardTemplate] = useState('navy_chevron');
 
-  // 5 Character & Migration Templates
-  const [migrationTemplate, setMigrationTemplate] = useState('cbse_official_migration');
+  // 5 Character & Migration Templates (Matching uploaded reference designs)
+  const [migrationTemplate, setMigrationTemplate] = useState('cbse_bilingual_migration');
 
   // 5 Domicile & Bonafide Templates
   const [domicileTemplate, setDomicileTemplate] = useState('statutory_residence_formal');
@@ -624,44 +624,114 @@ export default function TransferCertificateView() {
 
   const migrationTemplatesList = [
     {
-      id: 'cbse_official_migration',
-      title: 'Statutory Board Clearance',
-      tag: 'Portrait • CBSE/ICSE Standard',
-      desc: 'Statutory numbered clauses, watermark emblem, double principal & exam in-charge seal',
+      id: 'cbse_bilingual_migration',
+      title: 'CBSE Statutory Bilingual (Central Board)',
+      tag: 'Portrait • Bilingual Hindi & English Micro-Text',
+      desc: 'Official CBSE bilingual migration certificate with central emblem watermark, S.No. Mig/2026, and statutory No-Objection clause',
       orientation: 'portrait',
-      activeBg: 'from-emerald-700/30 to-teal-700/20 border-emerald-400 text-emerald-200'
+      activeBg: 'from-blue-900/40 to-slate-900 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'केन्द्रीय माध्यमिक शिक्षा बोर्ड',
+        subtitle: 'CENTRAL BOARD OF SECONDARY EDUCATION',
+        presentationLine: 'प्रवास प्रमाण पत्र / MIGRATION CERTIFICATE',
+        recipientName: '',
+        eventTitle: 'ALL INDIA SR. SCHOOL CERTIFICATE EXAMINATION (AISSCE)',
+        bodyText: 'उसके द्वारा किसी भी मान्यता प्राप्त महाविद्यालय/संस्था में प्रवेश लेने अथवा विधि द्वारा मान्य किसी भी विश्वविद्यालय या अन्य बोर्ड की परीक्षा देने में बोर्ड को कोई आपत्ति नहीं है।\nThis Board has no objection in his/her joining any recognised College/Institute or taking examination of any University or Board established by law.',
+        awardDate: '15 June 2026',
+        signatory1Name: 'Dr. Sanyam Bhardwaj',
+        signatory1Title: 'Controller of Examinations',
+        signatory2Name: 'Anurag Tripathi, IRPS',
+        signatory2Title: 'Secretary',
+        organizationName: 'CENTRAL BOARD OF SECONDARY EDUCATION'
+      }
     },
     {
-      id: 'heritage_gold_seal',
-      title: 'Heritage Golden Conduct Seal',
-      tag: 'Portrait • Classical Filigree',
-      desc: 'Formal serif typography, golden embossed crest, institutional good-conduct verdict',
+      id: 'ptu_state_technical_migration',
+      title: 'State Technical University (PTU Standard)',
+      tag: 'Portrait • Gurmukhi/English & 4-Tier Verification',
+      desc: 'Punjabi + English university title, colored emblem, top EDP serial no., 2D QR barcode block, and 4-column signature row',
       orientation: 'portrait',
-      activeBg: 'from-amber-700/30 to-yellow-700/20 border-amber-400 text-amber-200'
+      activeBg: 'from-red-950/40 to-slate-900 border-red-400 text-red-200',
+      defaultConfig: {
+        title: 'ਆਈ.ਕੇ.ਗੁਜਰਾਲ ਪੰਜਾਬ ਟੈਕਨੀਕਲ ਯੂਨੀਵਰਸਿਟੀ',
+        subtitle: 'I.K. Gujral Punjab Technical University',
+        presentationLine: 'Migration Certificate',
+        recipientName: 'Ratnesh Kumar',
+        eventTitle: 'Bachelor of Technology (Computer Science & AI)',
+        bodyText: 'has passed degree in the discipline of Computer Science & Engineering in the examination held under University Registration No. as a student of this affiliated institute.\nThis University has \'No Objection\', whatsoever, to his/her migration/admission to pursue further studies.',
+        awardDate: '22/06/2026',
+        signatory1Name: 'Prof. Harpreet Singh',
+        signatory1Title: 'Officer Incharge',
+        signatory2Name: 'Dr. Ranbir Sharma',
+        signatory2Title: 'Controller of Examinations',
+        organizationName: 'I.K. GUJRAL PUNJAB TECHNICAL UNIVERSITY'
+      }
     },
     {
-      id: 'modern_security_qr',
-      title: 'Modern High-Security Digital QR',
-      tag: 'Landscape • QR Cryptographic',
-      desc: 'Security anti-tamper guilloche borders, dynamic QR verification token, clearance checklist',
+      id: 'delhi_univ_central_migration',
+      title: 'Central University (University of Delhi Standard)',
+      tag: 'Portrait • Purple Crest & Digital QR Code',
+      desc: 'Clean central university layout with royal purple emblem, security verification QR code box, and statutory character clearance',
+      orientation: 'portrait',
+      activeBg: 'from-purple-950/40 to-slate-900 border-purple-400 text-purple-200',
+      defaultConfig: {
+        title: 'UNIVERSITY OF DELHI',
+        subtitle: 'दिल्ली विश्वविद्यालय • DELHI - 110007',
+        presentationLine: 'Migration Certificate',
+        recipientName: 'SUNDER GOUTAM',
+        eventTitle: 'Faculty of Inter-Disciplinary & Applied Sciences',
+        bodyText: 'is informed that this University / Institution has no objection to his/her joining any other University. The Institution is not aware of anything against his/her character or conduct which should be bar to his/her admission to another University.',
+        awardDate: '19/Oct/2026',
+        signatory1Name: 'Prof. Ajay Kumar Arora',
+        signatory1Title: 'Authorized Signatory',
+        signatory2Name: 'Dr. Vikas Gupta',
+        signatory2Title: 'Registrar',
+        organizationName: 'UNIVERSITY OF DELHI'
+      }
+    },
+    {
+      id: 'statutory_board_character_migration',
+      title: 'National Statutory Character & Conduct Clear-Pass',
+      tag: 'Portrait • Board Conduct & Disciplinary Record',
+      desc: 'Formal double-border character clearance certificate with institutional conduct endorsement, attendance grade, and gold seal',
+      orientation: 'portrait',
+      activeBg: 'from-emerald-900/40 to-slate-900 border-emerald-400 text-emerald-200',
+      defaultConfig: {
+        title: 'STATUTORY BOARD OF SECONDARY EDUCATION',
+        subtitle: 'OFFICIAL CHARACTER & MIGRATION CLEARANCE',
+        presentationLine: 'To Whomsoever It May Concern',
+        recipientName: '',
+        eventTitle: 'Senior Secondary Academic Clearance',
+        bodyText: 'This is to certify that the student has completed their prescribed curriculum with exemplary moral conduct and discipline. This institution has NO OBJECTION to their migration or admission to any institution in India or abroad.',
+        awardDate: '15 June 2026',
+        signatory1Name: 'Dr. Marcus Vance',
+        signatory1Title: 'Principal / Head of Institution',
+        signatory2Name: 'Office Registrar',
+        signatory2Title: 'Director of Admissions',
+        organizationName: 'International Model Academy'
+      }
+    },
+    {
+      id: 'modern_cryptographic_qr_migration',
+      title: 'Modern Cryptographic Digital QR Migration Pass',
+      tag: 'Landscape • High-Security Anti-Tamper & Cryptographic QR',
+      desc: 'Security anti-tamper guilloche borders, cryptographic QR verification token, clearance checklist, and barcode tracking',
       orientation: 'landscape',
-      activeBg: 'from-cyan-700/30 to-teal-700/20 border-cyan-400 text-cyan-200'
-    },
-    {
-      id: 'classic_blue_parchment',
-      title: 'Executive Navy & Ivory Leaving',
-      tag: 'Portrait • Formal Parchment',
-      desc: 'Navy formal headers, detailed disciplinary clearance checklist & character remarks',
-      orientation: 'portrait',
-      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
-    },
-    {
-      id: 'tri_color_statutory',
-      title: 'National Statutory Clear-Pass',
-      tag: 'Portrait • Interstate Transfer',
-      desc: 'Formal bordered interstate migration certificate with registrar seal and character grade',
-      orientation: 'portrait',
-      activeBg: 'from-slate-700/30 to-slate-800/20 border-slate-400 text-slate-200'
+      activeBg: 'from-cyan-900/40 to-slate-900 border-cyan-400 text-cyan-200',
+      defaultConfig: {
+        title: 'DEPARTMENT OF SCHOOL EDUCATION',
+        subtitle: 'CRYPTOGRAPHIC MIGRATION & IDENTITY RECORD',
+        presentationLine: 'OFFICIAL DIGITAL CLEARANCE PASS',
+        recipientName: '',
+        eventTitle: 'Secondary & Higher Secondary Board Standard',
+        bodyText: 'Verified digital migration record. The student has satisfied all statutory, financial, and disciplinary requirements and is cleared for nationwide academic migration.',
+        awardDate: '2026-06-15',
+        signatory1Name: 'Chief Controller',
+        signatory1Title: 'Digital Examination Wing',
+        signatory2Name: 'Director General',
+        signatory2Title: 'Statutory Education Council',
+        organizationName: 'NATIONAL COUNCIL OF SECONDARY EDUCATION'
+      }
     }
   ];
 
@@ -1138,6 +1208,80 @@ export default function TransferCertificateView() {
           ))}
         </g>
         <polygon points="50,38 53,46 61,46 55,51 57,59 50,54 43,59 45,51 39,46 47,46" fill="#fef08a" stroke="#b45309" strokeWidth="0.5" />
+      </svg>
+    </div>
+  );
+
+  // 9. Central Board Bilingual Emblem (for CBSE Migration Design)
+  const CentralBoardSeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+        <circle cx="50" cy="50" r="46" fill="#1e3a8a" stroke="#d97706" strokeWidth="2.5" />
+        <circle cx="50" cy="50" r="41" fill="#ffffff" stroke="#1e3a8a" strokeWidth="1" />
+        <circle cx="50" cy="50" r="35" fill="#f8fafc" stroke="#d97706" strokeWidth="1.2" strokeDasharray="3 1.5" />
+        {/* Central Radiant Sun / Torch / Knowledge Book */}
+        <path d="M 38,55 L 50,46 L 62,55 L 50,51 Z" fill="#1e3a8a" />
+        <path d="M 42,62 Q 50,56 58,62 L 58,60 Q 50,54 42,60 Z" fill="#d97706" />
+        {/* Radiating Rays */}
+        <g stroke="#d97706" strokeWidth="1.2">
+          {[220, 240, 260, 280, 300, 320].map(deg => (
+            <line key={deg} x1="50" y1="36" x2="50" y2="44" transform={`rotate(${deg} 50 50)`} />
+          ))}
+        </g>
+        {/* Micro Emblem Text */}
+        <text x="50" y="32" textAnchor="middle" className="text-[5px] font-black fill-blue-950 uppercase tracking-tighter font-sans">
+          केन्द्रीय माध्यमिक शिक्षा बोर्ड
+        </text>
+        <text x="50" y="72" textAnchor="middle" className="text-[4.5px] font-black fill-blue-900 uppercase tracking-tighter font-sans">
+          असतो मा सद्गमय
+        </text>
+        <text x="50" y="78" textAnchor="middle" className="text-[4px] font-bold fill-amber-700 uppercase tracking-widest font-sans">
+          भारत &bull; INDIA
+        </text>
+      </svg>
+    </div>
+  );
+
+  // 10. University of Delhi Purple Seal (for DU Migration Design)
+  const DelhiUniversitySeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+        <circle cx="50" cy="50" r="46" fill="#701a75" stroke="#fde047" strokeWidth="2.5" />
+        <circle cx="50" cy="50" r="41" fill="#fdf4ff" stroke="#701a75" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="34" fill="#a21caf" stroke="#fde047" strokeWidth="1" strokeDasharray="3 1" />
+        {/* Royal Elephant Crest & Lotus */}
+        <g fill="#fef08a" transform="translate(32, 34) scale(0.36)">
+          <path d="M 20,40 Q 10,20 30,10 Q 60,5 75,25 Q 90,30 95,50 Q 80,60 70,55 L 70,75 L 55,75 L 55,60 L 40,60 L 40,75 L 25,75 Z" />
+          <circle cx="78" cy="28" r="4" fill="#701a75" />
+        </g>
+        <text x="50" y="27" textAnchor="middle" className="text-[4.5px] font-black fill-purple-950 uppercase tracking-wider font-sans">
+          UNIVERSITY OF DELHI
+        </text>
+        <text x="50" y="72" textAnchor="middle" className="text-[4.5px] font-bold fill-white uppercase tracking-wider font-sans">
+          निष्ठा धृतिः सत्यम्
+        </text>
+      </svg>
+    </div>
+  );
+
+  // 11. State Technical University Emblem (for PTU Migration Design)
+  const PunjabTechUnivSeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+        <circle cx="50" cy="50" r="46" fill="#dc2626" stroke="#fbbf24" strokeWidth="2" />
+        <circle cx="50" cy="50" r="41" fill="#1e3a8a" stroke="#ffffff" strokeWidth="1" />
+        <circle cx="50" cy="50" r="34" fill="#ffffff" stroke="#f59e0b" strokeWidth="1.5" />
+        {/* Gear Cog & Sunburst */}
+        <circle cx="50" cy="48" r="18" fill="#fef08a" stroke="#b45309" strokeWidth="1.5" />
+        <circle cx="50" cy="48" r="10" fill="#dc2626" />
+        <g stroke="#dc2626" strokeWidth="1.5">
+          {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+            <line key={deg} x1="50" y1="26" x2="50" y2="32" transform={`rotate(${deg} 50 48)`} />
+          ))}
+        </g>
+        <text x="50" y="78" textAnchor="middle" className="text-[4.5px] font-black fill-white uppercase tracking-wider font-sans">
+          KAPURTHALA
+        </text>
       </svg>
     </div>
   );
@@ -2910,6 +3054,442 @@ export default function TransferCertificateView() {
     );
   };
 
+  // =========================================================================
+  // MIGRATION TEMPLATE 1: CBSE Statutory Bilingual (Central Board Standard - Image 1)
+  // =========================================================================
+  const renderCbseBilingualMigration = (st) => {
+    const regNo = getDocRegNo(st, 'migration');
+    const certRecipient = certConfig.recipientName || st.student_name || 'STUDENT NAME';
+    const certTitle = certConfig.title || 'केन्द्रीय माध्यमिक शिक्षा बोर्ड';
+    const certSubtitle = certConfig.subtitle || 'CENTRAL BOARD OF SECONDARY EDUCATION';
+    const certPresentation = certConfig.presentationLine || 'प्रवास प्रमाण पत्र / MIGRATION CERTIFICATE';
+    const certExam = certConfig.eventTitle || examName || 'ALL INDIA SR. SCHOOL CERTIFICATE EXAMINATION 2026';
+    const certDate = certConfig.awardDate || issueDate || '15 June 2026';
+    const certSig1Name = certConfig.signatory1Name || 'Dr. Sanyam Bhardwaj';
+    const certSig1Title = certConfig.signatory1Title || 'Controller of Examinations';
+    const certSig2Name = certConfig.signatory2Name || 'Anurag Tripathi, IRPS';
+    const certSig2Title = certConfig.signatory2Title || 'Secretary';
+
+    return (
+      <div className="bg-[#fcfbf7] p-6 sm:p-10 rounded-2xl border-4 border-slate-400 text-slate-900 space-y-5 shadow-2xl relative overflow-hidden font-serif max-w-4xl mx-auto">
+        {/* Security Microtext Watermark Background Pattern */}
+        <div className="absolute inset-0 opacity-[0.06] pointer-events-none select-none overflow-hidden flex flex-col justify-around leading-none text-[8px] font-sans font-bold tracking-widest text-slate-900">
+          {[...Array(24)].map((_, i) => (
+            <div key={i} className="whitespace-nowrap -rotate-6">
+              CENTRAL BOARD OF SECONDARY EDUCATION &bull; केन्द्रीय माध्यमिक शिक्षा बोर्ड &bull; MIGRATION CERTIFICATE &bull; OFFICIAL RECORD &bull; CENTRAL BOARD OF SECONDARY EDUCATION
+            </div>
+          ))}
+        </div>
+
+        {/* Top Header with CBSE Emblem */}
+        <div className="text-center relative z-10 space-y-1">
+          <div className="flex justify-center mb-1">
+            <CentralBoardSeal size={76} />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-wide font-sans">
+            {certTitle}
+          </h2>
+          <h1 className="text-base sm:text-lg font-black text-slate-800 tracking-wider font-sans uppercase">
+            {certSubtitle}
+          </h1>
+          
+          <div className="flex justify-between items-center text-[11px] font-sans font-bold text-slate-700 pt-2 border-b border-slate-300 pb-1">
+            <span>क्रम सं. प्रवास / S.No. Mig/2026/<strong className="text-blue-900 font-mono">{regNo}</strong></span>
+            <span>बोर्ड कोड / Board Code: <strong className="font-mono text-slate-900">{schoolInfo.schoolCode}</strong></span>
+          </div>
+
+          <div className="py-2">
+            <div className="text-sm font-bold text-slate-800 font-sans">प्रवास प्रमाण पत्र</div>
+            <div className="text-xl sm:text-2xl font-black text-slate-950 uppercase tracking-widest font-sans underline underline-offset-4 decoration-2">
+              {certPresentation.includes('/') ? certPresentation.split('/')[1]?.trim() : certPresentation}
+            </div>
+          </div>
+        </div>
+
+        {/* Candidate & Academic Prose */}
+        <div className="relative z-10 space-y-4 text-xs sm:text-[13px] leading-relaxed text-slate-800 font-sans">
+          <div className="flex flex-wrap items-baseline gap-1.5">
+            <span className="font-bold text-slate-700">प्रमाणित किया जाता है कि / This is to certify that:</span>
+            <span className="font-black text-slate-950 text-sm sm:text-base border-b-2 border-blue-900 pb-0.5 px-2 bg-blue-50/60 uppercase">
+              {certRecipient}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <div className="flex items-baseline gap-2">
+              <span className="text-slate-600 font-medium">अनुक्रमांक / Roll No.:</span>
+              <strong className="font-mono text-slate-900 font-bold border-b border-slate-400 pb-0.5 px-1">{st.roll_no}</strong>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-slate-600 font-medium">पंजीकरण सं / Reg. ID:</span>
+              <strong className="font-mono text-slate-900 font-bold border-b border-slate-400 pb-0.5 px-1">{st.id}</strong>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-slate-600 font-medium">आत्मज / आत्मजा श्रीमती / Son / Daughter of Smt.:</span>
+              <strong className="text-slate-900 border-b border-slate-400 pb-0.5 px-1">{st.mother_name}</strong>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-slate-600 font-medium">एवं श्री / and Shri:</span>
+              <strong className="text-slate-900 border-b border-slate-400 pb-0.5 px-1">{st.father_name}</strong>
+            </div>
+          </div>
+
+          <div className="pt-1">
+            <span className="text-slate-600 font-medium">Student of: </span>
+            <strong className="text-slate-900 font-bold uppercase">{schoolInfo.schoolName}</strong>, an institution affiliated with the Board has been registered in the <strong className="text-blue-950 underline">{certExam}</strong> of the Board.
+          </div>
+
+          {/* Bilingual Statutory Clause */}
+          <div className="p-3.5 bg-white rounded-xl border border-slate-300 text-justify text-xs leading-relaxed space-y-2">
+            <p className="font-medium text-slate-900">
+              उसके द्वारा किसी भी मान्यता प्राप्त महाविद्यालय/संस्था में प्रवेश लेने अथवा विधि द्वारा मान्य किसी भी विश्वविद्यालय या अन्य बोर्ड की परीक्षा देने में बोर्ड को कोई आपत्ति नहीं है।
+            </p>
+            <p className="italic text-slate-700 font-serif">
+              This Board has no objection in his/her joining any recognised College/Institute or taking examination of any University or Board established by law.
+            </p>
+          </div>
+        </div>
+
+        {/* Signatures & Location */}
+        <div className="pt-6 border-t border-slate-300 flex items-end justify-between relative z-10 px-2 sm:px-6">
+          <div className="space-y-1 text-xs font-sans">
+            <div className="font-bold text-slate-800">दिल्ली / Delhi</div>
+            <div className="text-[11px] text-slate-600 font-mono">दिनांक / Date: <strong>{certDate}</strong></div>
+          </div>
+
+          <div className="text-center space-y-1">
+            <HandWrittenSignature name={certSig2Name} color="#1e3a8a" />
+            <div className="w-36 border-b border-slate-700 pb-0.5 font-bold text-slate-900 text-xs">{certSig2Name}</div>
+            <div className="text-[10px] text-slate-600 font-sans">{certSig2Title}</div>
+          </div>
+
+          <div className="text-center space-y-1">
+            <HandWrittenSignature name={certSig1Name} color="#1e3a8a" />
+            <div className="w-40 border-b-2 border-slate-900 pb-0.5 font-bold text-slate-900 text-xs">{certSig1Name}</div>
+            <div className="text-[10px] font-black text-slate-900 uppercase font-sans">{certSig1Title}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // MIGRATION TEMPLATE 2: State Technical University (PTU Standard - Image 2)
+  // =========================================================================
+  const renderPtuStateTechnicalMigration = (st) => {
+    const regNo = getDocRegNo(st, 'migration');
+    const certRecipient = certConfig.recipientName || st.student_name || 'Ratnesh Kumar';
+    const certTitle = certConfig.title || 'ਆਈ.ਕੇ.ਗੁਜਰਾਲ ਪੰਜਾਬ ਟੈਕਨੀਕਲ ਯੂਨੀਵਰਸਿਟੀ';
+    const certSubtitle = certConfig.subtitle || 'I.K. Gujral Punjab Technical University';
+    const certPresentation = certConfig.presentationLine || 'Migration Certificate';
+    const certExam = certConfig.eventTitle || 'Bachelor of Technology (Computer Science & AI)';
+    const certDate = certConfig.awardDate || issueDate || '22/06/2026';
+    const certSig1Name = certConfig.signatory1Name || 'Prof. Harpreet Singh';
+    const certSig1Title = certConfig.signatory1Title || 'Officer Incharge';
+    const certSig2Name = certConfig.signatory2Name || 'Dr. Ranbir Sharma';
+    const certSig2Title = certConfig.signatory2Title || 'Controller of Examinations';
+
+    return (
+      <div className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-300 text-slate-900 space-y-6 shadow-xl relative overflow-hidden font-serif max-w-4xl mx-auto">
+        {/* Top University Header with Gurmukhi Punjabi Script & English */}
+        <div className="text-center border-b border-slate-200 pb-4">
+          <h3 className="text-lg sm:text-xl font-serif text-slate-800 tracking-wide font-normal">
+            {certTitle}
+          </h3>
+          <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-950 tracking-wider">
+            {certSubtitle}
+          </h2>
+          <div className="text-[11px] text-slate-500 font-sans italic">Formerly Punjab Technical University</div>
+        </div>
+
+        {/* Top Row: EDP Serial No, University Emblem, and 2D QR Code */}
+        <div className="flex items-center justify-between px-2 sm:px-6">
+          <div className="text-left font-sans">
+            <div className="text-[10px] font-bold text-slate-600 uppercase">EDP S. No.:</div>
+            <div className="text-sm font-black font-mono text-slate-900">{regNo.replace(/\D/g, '') || '9255219'}</div>
+          </div>
+
+          <div className="text-center">
+            <PunjabTechUnivSeal size={72} />
+          </div>
+
+          <div className="text-right">
+            <div className="w-16 h-16 p-1 bg-white border border-slate-300 rounded flex items-center justify-center ml-auto">
+              <QrCode className="w-14 h-14 text-slate-900" />
+            </div>
+            <div className="text-[8px] font-mono text-slate-400 mt-0.5">2D SECURITY QR</div>
+          </div>
+        </div>
+
+        {/* Main Certificate Calligraphic Heading */}
+        <div className="text-center py-1">
+          <h1 className="text-3xl sm:text-4xl font-serif italic text-slate-900 font-normal tracking-wide" style={{ fontFamily: 'Playfair Display, "Brush Script MT", Georgia, serif' }}>
+            {certPresentation}
+          </h1>
+        </div>
+
+        {/* Body Paragraph */}
+        <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-justify px-2 sm:px-6 font-sans">
+          <p>
+            This is to certify that Mr./Ms. <strong className="text-slate-950 font-bold underline px-1 text-[15px]">{certRecipient}</strong> son/daughter of <strong className="text-slate-950 font-bold px-1">{st.father_name}</strong> has passed <strong className="text-slate-950 font-bold">{st.class_batch}</strong> in the discipline of <strong className="text-slate-950 font-bold">{certExam}</strong> in the examination held in <strong className="text-slate-950 font-bold">{academicSession}</strong> under University Registration No. <strong className="font-mono font-bold text-slate-950">{st.id}</strong> as a student of <strong className="text-slate-950 font-bold">{schoolInfo.schoolName}</strong>.
+          </p>
+          <p className="pt-2 font-medium text-slate-800">
+            This University has 'No Objection', whatsoever, to his/her migration/admission to pursue further studies.
+          </p>
+        </div>
+
+        {/* 4-Tier Signatory Column Row */}
+        <div className="pt-8 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 px-2 sm:px-4 text-center font-sans text-xs">
+          <div className="space-y-1">
+            <div className="font-bold text-slate-900 text-[11px]">E.D.P. CELL</div>
+            <div className="text-[10px] text-slate-500">Prepared by</div>
+          </div>
+
+          <div className="space-y-1">
+            <HandWrittenSignature name="Verifier" color="#475569" />
+            <div className="text-[10px] text-slate-500">Checked by</div>
+          </div>
+
+          <div className="space-y-1">
+            <HandWrittenSignature name={certSig1Name} color="#1e293b" />
+            <strong className="block text-[11px] font-bold text-slate-900">{certSig1Name}</strong>
+            <div className="text-[10px] text-slate-500">{certSig1Title}</div>
+          </div>
+
+          <div className="space-y-1">
+            <HandWrittenSignature name={certSig2Name} color="#1e293b" />
+            <strong className="block text-[11px] font-bold text-slate-900">{certSig2Name}</strong>
+            <div className="text-[10px] text-slate-500 font-bold">{certSig2Title}</div>
+          </div>
+        </div>
+
+        {/* Footer Notes & Security Instructions */}
+        <div className="pt-3 border-t border-slate-100 text-[9px] text-slate-500 font-sans space-y-1 px-2">
+          <div><strong>Date of issue:</strong> {certDate}</div>
+          <div>Note: 1. This document is issued through the student portal and verified against central registry records.</div>
+          <div>2. This document can be verified online by scanning 2D bar-code (top right corner) using internet verification.</div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // MIGRATION TEMPLATE 3: Central University (University of Delhi Standard - Image 3)
+  // =========================================================================
+  const renderDelhiUnivCentralMigration = (st) => {
+    const regNo = getDocRegNo(st, 'migration');
+    const certRecipient = certConfig.recipientName || st.student_name || 'SUNDER GOUTAM';
+    const certTitle = certConfig.title || 'UNIVERSITY OF DELHI';
+    const certSubtitle = certConfig.subtitle || 'दिल्ली विश्वविद्यालय • DELHI - 110007';
+    const certPresentation = certConfig.presentationLine || 'Migration Certificate';
+    const certDate = certConfig.awardDate || issueDate || '19/Oct/2026';
+    const certSig1Name = certConfig.signatory1Name || 'Prof. Ajay Kumar Arora';
+    const certSig1Title = certConfig.signatory1Title || 'Authorized Signatory';
+
+    return (
+      <div className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-300 text-slate-900 space-y-6 shadow-xl relative overflow-hidden font-serif max-w-4xl mx-auto">
+        {/* Top Header */}
+        <div className="text-center border-b border-slate-200 pb-3">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-wider font-sans uppercase">
+            {certTitle}
+          </h1>
+          <h2 className="text-sm sm:text-base font-bold text-slate-700 tracking-wide font-sans">
+            {certSubtitle}
+          </h2>
+        </div>
+
+        {/* Certificate No & Date Metadata Bar */}
+        <div className="flex justify-between items-center text-xs font-sans text-slate-700 border-b border-slate-100 pb-2">
+          <div>Certificate No.: <strong className="text-slate-900 font-mono">MIC-{regNo}</strong></div>
+          <div>Date: <strong className="text-slate-900">{certDate}</strong></div>
+        </div>
+
+        <div className="text-xs font-sans text-slate-700">
+          Enrollment No.: <strong className="text-slate-900 font-mono">{st.id}</strong>
+        </div>
+
+        {/* University Crest & QR Verification Box */}
+        <div className="flex items-center justify-between px-4 sm:px-8 py-1">
+          <div>
+            <DelhiUniversitySeal size={74} />
+          </div>
+
+          <div>
+            <div className="w-16 h-16 p-1 bg-white border border-slate-300 rounded flex items-center justify-center">
+              <QrCode className="w-14 h-14 text-slate-900" />
+            </div>
+            <div className="text-[8px] font-mono text-slate-400 text-center mt-0.5">VERIFIED</div>
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center py-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-sans tracking-wide">
+            {certPresentation}
+          </h2>
+        </div>
+
+        {/* Official Statutory Proclamation */}
+        <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-justify px-2 sm:px-8 font-sans">
+          <p>
+            Sh./Smt./Km. <strong className="text-slate-950 uppercase font-black underline">{certRecipient}</strong> Son/Daughter of Sh./Smt./Ms. <strong className="text-slate-900">{st.father_name}</strong> student of <strong className="text-slate-900 font-bold">{schoolInfo.schoolName}</strong> University Enrolment No <strong className="font-mono text-slate-900 font-bold">{st.id}</strong> is informed that this University has no objection to his/her joining any other University.
+          </p>
+          <p>
+            The University is not aware of anything against his/her character or conduct which should be bar to his/her admission to another University.
+          </p>
+        </div>
+
+        {/* Authorized Signatory */}
+        <div className="pt-8 flex justify-end px-4 sm:px-12 font-sans">
+          <div className="text-center space-y-1 min-w-[160px]">
+            <HandWrittenSignature name={certSig1Name} color="#4a044e" />
+            <div className="w-36 border-b border-slate-900 pb-0.5 mx-auto text-xs font-bold text-slate-900">{certSig1Name}</div>
+            <div className="text-[10px] text-slate-600 font-bold uppercase">{certSig1Title}</div>
+          </div>
+        </div>
+
+        {/* Footer Note */}
+        <div className="pt-4 border-t border-slate-200 text-[10px] text-slate-500 font-sans px-2">
+          <strong>Note:</strong> This is an official digital migration certificate and is valid for all statutory purposes.
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // MIGRATION TEMPLATE 4: National Statutory Character & Conduct Clear-Pass
+  // =========================================================================
+  const renderStatutoryBoardCharacterMigration = (st) => {
+    const regNo = getDocRegNo(st, 'migration');
+    const certRecipient = certConfig.recipientName || st.student_name || 'Candidate Name';
+    const certTitle = certConfig.title || 'STATUTORY BOARD OF SECONDARY EDUCATION';
+    const certSubtitle = certConfig.subtitle || 'OFFICIAL CHARACTER & MIGRATION CLEARANCE';
+    const certPresentation = certConfig.presentationLine || 'To Whomsoever It May Concern';
+    const certBody = certConfig.bodyText || 'This is to certify that the student has completed their prescribed curriculum with exemplary moral conduct and discipline. This institution has NO OBJECTION to their migration or admission to any institution in India or abroad.';
+    const certDate = certConfig.awardDate || issueDate || '15 June 2026';
+    const certSig1Name = certConfig.signatory1Name || 'Dr. Marcus Vance';
+    const certSig1Title = certConfig.signatory1Title || 'Principal / Head of Institution';
+    const certSig2Name = certConfig.signatory2Name || 'Office Registrar';
+    const certSig2Title = certConfig.signatory2Title || 'Director of Admissions';
+
+    return (
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-emerald-500 text-slate-800 space-y-5 shadow-xl text-xs relative overflow-hidden font-sans max-w-4xl mx-auto">
+        <div className="text-center space-y-1 border-b-2 border-emerald-900 pb-4">
+          <div className="text-[10px] font-bold tracking-widest text-emerald-800 uppercase">
+            {certTitle}
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase font-serif">
+            {schoolInfo.schoolName}
+          </h2>
+          <div className="inline-block mt-2 px-4 py-1 rounded-full bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider">
+            {certSubtitle}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
+          <span>Migration No: <strong className="text-emerald-900">{regNo}</strong></span>
+          <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
+          <span>Issue Date: <strong className="text-slate-900">{certDate}</strong></span>
+        </div>
+
+        <div className="p-4 bg-emerald-50/40 rounded-xl border border-emerald-100 text-justify text-xs leading-relaxed space-y-3">
+          <div className="text-center font-bold text-emerald-900 uppercase tracking-wider">{certPresentation}</div>
+          <p>
+            This is to certify that <strong className="text-slate-900 underline text-sm">{certRecipient}</strong>, 
+            Student ID: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
+            Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
+            has been a regular student of this institution in <strong className="text-slate-900">{customClassSection || st.class_batch}</strong>.
+          </p>
+          <p>
+            During his/her tenure at {schoolInfo.schoolName}, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>.
+          </p>
+          <p className="font-medium text-slate-900">
+            {certBody}
+          </p>
+        </div>
+
+        <div className="pt-6 border-t border-slate-200 flex items-end justify-between px-4">
+          <div className="text-center space-y-1">
+            <HandWrittenSignature name={certSig2Name} color="#065f46" />
+            <div className="w-36 border-b border-emerald-900 pb-0.5 font-bold text-slate-900 text-xs">{certSig2Name}</div>
+            <div className="text-[10px] text-slate-600 uppercase">{certSig2Title}</div>
+          </div>
+
+          <div className="text-center">
+            <GoldenSchoolSeal size={70} />
+          </div>
+
+          <div className="text-center space-y-1">
+            <HandWrittenSignature name={certSig1Name} color="#065f46" />
+            <div className="w-36 border-b-2 border-emerald-900 pb-0.5 font-serif italic text-emerald-900 font-bold text-sm">
+              {certSig1Name}
+            </div>
+            <div className="font-black text-[10px] text-slate-900 uppercase">{certSig1Title}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // MIGRATION TEMPLATE 5: Modern Cryptographic Digital QR Migration Pass
+  // =========================================================================
+  const renderModernCryptographicQrMigration = (st) => {
+    const regNo = getDocRegNo(st, 'migration');
+    const certRecipient = certConfig.recipientName || st.student_name || 'Candidate Name';
+    const certTitle = certConfig.title || 'DEPARTMENT OF SCHOOL EDUCATION';
+    const certSubtitle = certConfig.subtitle || 'CRYPTOGRAPHIC MIGRATION & IDENTITY RECORD';
+    const certPresentation = certConfig.presentationLine || 'OFFICIAL DIGITAL CLEARANCE PASS';
+    const certBody = certConfig.bodyText || 'Verified digital migration record. The student has satisfied all statutory, financial, and disciplinary requirements and is cleared for nationwide academic migration.';
+    const certDate = certConfig.awardDate || issueDate || '2026-06-15';
+    const certSig1Name = certConfig.signatory1Name || 'Chief Controller';
+    const certSig1Title = certConfig.signatory1Title || 'Digital Examination Wing';
+
+    return (
+      <div className="bg-slate-900 text-white p-6 sm:p-8 rounded-3xl border-4 border-cyan-500 shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto">
+        <div className="flex justify-between items-center border-b border-cyan-800 pb-3">
+          <div>
+            <div className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest">{certTitle}</div>
+            <h2 className="font-black text-xl text-white uppercase tracking-wider">{schoolInfo.schoolName}</h2>
+            <div className="text-xs text-amber-300 font-bold">{certSubtitle}</div>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold text-xs">
+            NO OBJECTION ISSUED
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs font-mono my-3">
+          <div>Candidate: <strong className="block text-cyan-300 font-sans text-sm">{certRecipient}</strong></div>
+          <div>Scholar ID / Roll: <strong className="block text-white">{st.id} / #{st.roll_no}</strong></div>
+          <div>Class / Batch: <strong className="block text-white">{customClassSection || st.class_batch}</strong></div>
+        </div>
+
+        <p className="text-xs text-slate-300 leading-relaxed font-sans">{certBody}</p>
+
+        <div className="pt-4 border-t border-slate-800 flex justify-between items-end">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
+              <QrCode className="w-10 h-10 text-slate-900" />
+            </div>
+            <div>
+              <div className="font-mono text-[10px] text-cyan-400">HASH: SHA256:{regNo}</div>
+              <div className="text-[9px] text-slate-400">Verified Timestamp: {certDate}</div>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <HandWrittenSignature name={certSig1Name} color="#38bdf8" />
+            <div className="font-bold text-white text-xs">{certSig1Name}</div>
+            <div className="text-[9px] text-slate-400 uppercase font-mono">{certSig1Title}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
@@ -3099,124 +3679,15 @@ export default function TransferCertificateView() {
         }
       }
 
-      // 5. CHARACTER & CONDUCT MIGRATION CERTIFICATE (5 Master Design Layouts)
+      // 5. CHARACTER & CONDUCT MIGRATION CERTIFICATE (5 Master Design Layouts from User Upload)
       case 'migration': {
         switch (migrationTemplate) {
-          case 'cbse_official_migration':
-            return (
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border-4 border-double border-emerald-300 text-slate-800 space-y-5 shadow-sm text-xs relative overflow-hidden">
-                <div className="text-center space-y-1 border-b-2 border-emerald-900 pb-4">
-                  <div className="text-[10px] font-bold tracking-widest text-emerald-800 uppercase">
-                    Board of Secondary &amp; Senior Secondary Education
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
-                    {schoolInfo.schoolName}
-                  </h2>
-                  <div className="inline-block mt-2 px-4 py-1 rounded-full bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider">
-                    Official Character &amp; Inter-State Migration Clearance
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
-                  <span>Migration No: <strong className="text-emerald-900">{regNo}</strong></span>
-                  <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
-                  <span>Issue Date: <strong className="text-slate-900">{issueDate}</strong></span>
-                </div>
-
-                <div className="p-4 bg-emerald-50/40 rounded-xl border border-emerald-100 text-justify text-xs leading-relaxed space-y-3">
-                  <p>
-                    This is to certify that <strong className="text-slate-900 underline text-sm">{st.student_name}</strong>, 
-                    Student ID: <strong className="text-slate-900 font-mono">{st.id}</strong>, Roll No: <strong className="text-slate-900 font-mono">{st.roll_no}</strong>, 
-                    has been a student of this school from <strong className="text-slate-900">{st.admission_date}</strong> to <strong className="text-slate-900">{issueDate}</strong>.
-                  </p>
-                  <p>
-                    During his/her tenure at {schoolInfo.schoolName}, his/her character and conduct have been <strong className="text-emerald-800 font-bold">{conduct}</strong>. 
-                    He/She actively participated in academic workshops, sports, and institutional co-curricular events.
-                  </p>
-                  <p>
-                    This institution has <strong>NO OBJECTION</strong> to his/her admission to any authorized board, university, or college across India or abroad.
-                  </p>
-                </div>
-
-                <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border mx-auto mb-1">
-                      <QrCode className="w-8 h-8 text-slate-800" />
-                    </div>
-                    <span className="text-[9px] text-slate-400 font-mono">Digital Signature</span>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="w-36 border-b-2 border-emerald-900 pb-1 font-serif italic text-emerald-900 font-bold text-sm">
-                      {schoolInfo.principalName}
-                    </div>
-                    <div className="font-black text-[10px] text-slate-900 uppercase">Authorized Signatory</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'heritage_gold_seal':
-            return (
-              <div className="bg-[#faf8f0] p-8 rounded-3xl border-4 border-amber-700 shadow-xl space-y-4 text-xs font-serif">
-                <div className="text-center border-b-2 border-amber-800 pb-3">
-                  <h2 className="text-2xl font-black text-amber-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <h1 className="text-lg font-bold text-amber-900 italic">Conduct &amp; Character Certificate</h1>
-                </div>
-                <p className="text-sm leading-loose text-justify">
-                  This certifies that <strong>{st.student_name}</strong> of <strong>{st.class_batch}</strong> has maintained an impeccable disciplinary record and exemplary moral character during their education at this institution.
-                </p>
-                <div className="pt-4 border-t border-amber-800/30 flex justify-between items-end">
-                  <GoldenSchoolSeal size={74} />
-                  <div className="text-center italic font-bold text-amber-950 text-sm">{schoolInfo.principalName}</div>
-                </div>
-              </div>
-            );
-
-          case 'modern_security_qr':
-            return (
-              <div className="bg-white p-7 rounded-3xl border-2 border-slate-400 shadow-xl space-y-4 text-xs font-sans">
-                <div className="flex justify-between items-center border-b pb-3">
-                  <h2 className="font-black text-lg text-slate-900 uppercase">{schoolInfo.schoolName}</h2>
-                  <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">NO OBJECTION ISSUED</span>
-                </div>
-                <p>Candidate <strong>{st.student_name}</strong> ({st.id}) is granted full migration clearance with conduct: <strong>{conduct}</strong>.</p>
-                <div className="pt-3 border-t flex justify-between items-end">
-                  <div className="font-mono text-[10px] text-slate-400">HASH: {regNo}</div>
-                  <div className="font-bold text-slate-900">{schoolInfo.principalName}</div>
-                </div>
-              </div>
-            );
-
-          case 'classic_blue_parchment':
-            return (
-              <div className="bg-slate-50 p-8 rounded-3xl border-4 border-blue-900 text-slate-900 space-y-4 text-xs font-sans">
-                <div className="text-center border-b border-blue-200 pb-3">
-                  <h2 className="text-xl font-black text-blue-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-xs font-bold text-blue-800">DISCIPLINARY &amp; CHARACTER ENDORSEMENT</div>
-                </div>
-                <p className="leading-relaxed">Student <strong>{st.student_name}</strong> has cleared all institutional obligations and bears conduct: <strong>{conduct}</strong>.</p>
-                <div className="pt-4 border-t flex justify-between items-end">
-                  <span>Session: {academicSession}</span>
-                  <strong>{schoolInfo.principalName}</strong>
-                </div>
-              </div>
-            );
-
-          case 'tri_color_statutory':
-          default:
-            return (
-              <div className="bg-white p-7 rounded-2xl border-2 border-slate-300 text-slate-900 space-y-4 text-xs font-sans">
-                <div className="text-center border-b pb-2">
-                  <h2 className="font-black text-base uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-[10px] text-slate-500 uppercase">National Board Clearance Certificate</div>
-                </div>
-                <p>Certified that <strong>{st.student_name}</strong> ({st.class_batch}) is cleared for inter-state educational migration.</p>
-                <div className="pt-3 border-t flex justify-between text-xs">
-                  <span>Dated: {issueDate}</span>
-                  <strong>{schoolInfo.principalName}</strong>
-                </div>
-              </div>
-            );
+          case 'cbse_bilingual_migration': return renderCbseBilingualMigration(st);
+          case 'ptu_state_technical_migration': return renderPtuStateTechnicalMigration(st);
+          case 'delhi_univ_central_migration': return renderDelhiUnivCentralMigration(st);
+          case 'statutory_board_character_migration': return renderStatutoryBoardCharacterMigration(st);
+          case 'modern_cryptographic_qr_migration': return renderModernCryptographicQrMigration(st);
+          default: return renderCbseBilingualMigration(st);
         }
       }
 
@@ -4560,7 +5031,12 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={tpl.id}
-                  onClick={() => setMigrationTemplate(tpl.id)}
+                  onClick={() => {
+                    setMigrationTemplate(tpl.id);
+                    if (tpl.defaultConfig) {
+                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
@@ -4752,8 +5228,8 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            {/* Full Live Customizer for Certificate of Appreciation & Participation */}
-            {(docType === 'appreciation' || docType === 'participation') && (
+            {/* Full Live Customizer for Certificate of Appreciation, Participation & Migration */}
+            {(docType === 'appreciation' || docType === 'participation' || docType === 'migration') && (
               <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50/80 to-rose-50/60 rounded-2xl border-2 border-amber-300/80 shadow-sm">
                 <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
                   <div className="flex items-center gap-1.5 font-black text-[11px] text-amber-950 uppercase tracking-wide">
@@ -4770,6 +5246,11 @@ export default function TransferCertificateView() {
                         }
                       } else if (docType === 'participation') {
                         const tpl = participationTemplatesList.find(t => t.id === participationTemplate);
+                        if (tpl && tpl.defaultConfig) {
+                          setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                        }
+                      } else if (docType === 'migration') {
+                        const tpl = migrationTemplatesList.find(t => t.id === migrationTemplate);
                         if (tpl && tpl.defaultConfig) {
                           setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
                         }
