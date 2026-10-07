@@ -1,4 +1,4 @@
-import { FALLBACK_DATA, INITIAL_DB_STORE } from './fallbackData.js';
+import { FALLBACK_DATA, INITIAL_DB_STORE, generateSeedDbForSchool } from './fallbackData.js';
 import { supabase } from './supabaseClient.js';
 
 const API_BASE = ((typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) || '/api').replace(/\/$/, '');
@@ -372,6 +372,42 @@ export function isMasterOrDemoTenant(tenantId) {
   return tid === 'tenant-default' || tid === 'demo';
 }
 
+export function getTenantMeta(tenantId) {
+  const codeMap = {
+    'tenant-default': { code: 'NIS', name: 'Nairee International School' },
+    'demo': { code: 'NIS', name: 'Nairee International School' },
+    'dps-ranchi': { code: 'DPS', name: 'Delhi Public School, Ranchi' },
+    'st-xaviers': { code: 'SXA', name: "St. Xavier's Senior Academy" },
+    'greenfield-global': { code: 'GGS', name: 'Greenfield Global School' },
+    'bishop-cotton': { code: 'BCS', name: "Bishop Cotton Boys' School" },
+    'doon-school': { code: 'TDS', name: 'The Doon School, Dehradun' },
+    'oakridge-intl': { code: 'OIS', name: 'Oakridge International School' },
+    'ryan-intl': { code: 'RIS', name: 'Ryan International Academy' },
+    'mayo-college': { code: 'MCA', name: 'Mayo College, Ajmer' }
+  };
+
+  if (tenantId && codeMap[tenantId]) return codeMap[tenantId];
+
+  try {
+    const saved = localStorage.getItem('nairee_tenants_store');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        const found = parsed.find(t => t?.tenant_id === tenantId || t?.subdomain === tenantId);
+        if (found) {
+          return {
+            code: found.school_code || (found.subdomain || 'SCH').slice(0, 4).toUpperCase(),
+            name: found.school_name || `${tenantId} School`
+          };
+        }
+      }
+    }
+  } catch (e) {}
+
+  const clean = String(tenantId || 'SCH').replace(/^tenant-/, '').slice(0, 4).toUpperCase();
+  return { code: clean || 'SCH', name: `${clean} Academy` };
+}
+
 export function createEmptyTenantDbStore() {
   const emptyStore = {};
   Object.keys(INITIAL_DB_STORE).forEach(tableName => {
@@ -387,9 +423,11 @@ export function getStoredDb(explicitTenantId = null) {
   const tenantId = explicitTenantId || getActiveTenantId();
   const isDemo = isMasterOrDemoTenant(tenantId);
   const storageKey = isDemo ? 'nairee_db_store' : `nairee_db_store_${tenantId}`;
+  const meta = getTenantMeta(tenantId);
+  const baseTemplate = isDemo ? INITIAL_DB_STORE : generateSeedDbForSchool(tenantId, meta.code, meta.name);
 
   if (typeof localStorage === 'undefined') {
-    return isDemo ? INITIAL_DB_STORE : createEmptyTenantDbStore();
+    return baseTemplate;
   }
 
   try {
@@ -397,7 +435,6 @@ export function getStoredDb(explicitTenantId = null) {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed && typeof parsed === 'object') {
-        const baseTemplate = isDemo ? INITIAL_DB_STORE : createEmptyTenantDbStore();
         const merged = { ...baseTemplate };
         
         // Use user saved tables as authoritative single source of truth
@@ -430,15 +467,10 @@ export function getStoredDb(explicitTenantId = null) {
     console.warn('Error reading tenant db store:', e);
   }
 
-  if (isDemo) {
-    return INITIAL_DB_STORE;
-  } else {
-    const freshEmpty = createEmptyTenantDbStore();
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(freshEmpty));
-    } catch (e) {}
-    return freshEmpty;
-  }
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(baseTemplate));
+  } catch (e) {}
+  return baseTemplate;
 }
 
 export function saveStoredDb(newDbStore, shouldBroadcast = true, explicitTenantId = null) {

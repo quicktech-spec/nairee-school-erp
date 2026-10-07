@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase, teardownRealtimeAndSession } from '../supabaseClient.js';
 import { subscribeLiveEvents, broadcastLiveEvent, createEmptyTenantDbStore } from '../api.js';
+import { generateSeedDbForSchool } from '../fallbackData.js';
 
 const TenantContext = createContext(null);
 
@@ -518,15 +519,15 @@ export function TenantProvider({ children }) {
     const updatedList = [...(tenantsList || []).filter(t => t?.tenant_id !== newTenant.tenant_id), newTenant];
     setTenantsList(updatedList);
     try {
-      const emptyDb = createEmptyTenantDbStore();
-      localStorage.setItem('nairee_db_store_' + newTenant.tenant_id, JSON.stringify(emptyDb));
+      const seedDb = generateSeedDbForSchool(newTenant.tenant_id, newTenant.school_code, newTenant.school_name);
+      localStorage.setItem('nairee_db_store_' + newTenant.tenant_id, JSON.stringify(seedDb));
       if (newTenant.subdomain) {
-        localStorage.setItem('nairee_db_store_' + newTenant.subdomain, JSON.stringify(emptyDb));
+        localStorage.setItem('nairee_db_store_' + newTenant.subdomain, JSON.stringify(seedDb));
       }
       localStorage.setItem('nairee_petty_cash_imprest_' + newTenant.tenant_id, '0');
       localStorage.setItem('nairee_petty_cash_ledger_' + newTenant.tenant_id, JSON.stringify([]));
       localStorage.setItem('nairee_tenants_store', JSON.stringify(updatedList));
-      broadcastLiveEvent('tenant_created', { tenantsList: updatedList, newTenant, dbStore: emptyDb });
+      broadcastLiveEvent('tenant_created', { tenantsList: updatedList, newTenant, dbStore: seedDb });
     } catch (e) {}
 
     setActiveTenant(newTenant);

@@ -1637,3 +1637,507 @@ export const FALLBACK_BATCHES = INITIAL_DB_STORE['Class & Batch List'].rows.map(
   class_teacher: b.class_teacher,
   room_no: b.room_no
 }));
+
+// Generates an isolated relational database seeded with 10 students and 2 teachers customized per school
+export function generateSeedDbForSchool(tenantId, schoolCode = 'SCH', schoolName = 'Academy') {
+  const code = (schoolCode || 'SCH').toUpperCase().trim();
+  const tId = tenantId || `tenant-${code.toLowerCase()}`;
+  const sName = schoolName || `${code} International Academy`;
+
+  const students = [
+    {
+      student_id: `${code}-2024-091-001`,
+      name: 'Nairee Patel',
+      roll_no: '01',
+      class: 'Class 10',
+      section: 'Section A',
+      class_batch: 'Class 10 - Section A',
+      batch_id: 'CLS-10A',
+      parent_id: 'PAR-001',
+      stream: 'Computer Applications & Advanced Math',
+      gender: 'Female',
+      dob: '2011-04-12',
+      blood_group: 'O+',
+      aadhaar_no: '9876 5432 1091',
+      phone: '+91 98765 00001',
+      email: `nairee.patel@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Flat 402, Green Meadows Residency, Bengaluru',
+      permanent_address: 'Flat 402, Green Meadows Residency, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Rajesh Patel',
+      father_phone: '+91 98765 43212',
+      father_occupation: 'Senior Software Director',
+      mother_name: 'Meera Patel',
+      mother_phone: '+91 98765 43213',
+      mother_occupation: 'Professor of Economics',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-092-002`,
+      name: 'Aarav Sharma',
+      roll_no: '02',
+      class: 'Class 10',
+      section: 'Section A',
+      class_batch: 'Class 10 - Section A',
+      batch_id: 'CLS-10A',
+      parent_id: 'PAR-002',
+      stream: 'Hindi & Applied Science',
+      gender: 'Male',
+      dob: '2011-08-25',
+      blood_group: 'B+',
+      aadhaar_no: '9876 5432 1092',
+      phone: '+91 98765 00002',
+      email: `aarav.sharma@student.${code.toLowerCase()}.edu`,
+      residential_address: 'House #22, Palm Grove Enclave, Bengaluru',
+      permanent_address: 'House #22, Palm Grove Enclave, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Suresh Sharma',
+      father_phone: '+91 98765 43214',
+      father_occupation: 'Chartered Accountant',
+      mother_name: 'Sunita Sharma',
+      mother_phone: '+91 98765 43215',
+      mother_occupation: 'Senior Bank Manager',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-093-003`,
+      name: 'Diya Gupta',
+      roll_no: '03',
+      class: 'Class 10',
+      section: 'Section A',
+      class_batch: 'Class 10 - Section A',
+      batch_id: 'CLS-10A',
+      parent_id: 'PAR-003',
+      stream: 'Sanskrit & Pure Science',
+      gender: 'Female',
+      dob: '2011-11-10',
+      blood_group: 'A+',
+      aadhaar_no: '9876 5432 1093',
+      phone: '+91 98765 00003',
+      email: `diya.gupta@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Villa 12, Sobha City Heritage, Bengaluru',
+      permanent_address: 'Villa 12, Sobha City Heritage, Bengaluru',
+      fee_status: 'Pending',
+      father_name: 'Vikram Gupta',
+      father_phone: '+91 98765 43216',
+      father_occupation: 'Civil Infrastructure Engineer',
+      mother_name: 'Pooja Gupta',
+      mother_phone: '+91 98765 43217',
+      mother_occupation: 'Interior Architect',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-094-004`,
+      name: 'Rohan Mehta',
+      roll_no: '04',
+      class: 'Class 10',
+      section: 'Section A',
+      class_batch: 'Class 10 - Section A',
+      batch_id: 'CLS-10A',
+      parent_id: 'PAR-004',
+      stream: 'Computer Applications & Advanced Math',
+      gender: 'Male',
+      dob: '2011-02-18',
+      blood_group: 'AB+',
+      aadhaar_no: '9876 5432 1094',
+      phone: '+91 98765 00004',
+      email: `rohan.mehta@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Apartment 5A, Embassy Springs, Bengaluru',
+      permanent_address: 'Apartment 5A, Embassy Springs, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Alok Mehta',
+      father_phone: '+91 98765 43218',
+      father_occupation: 'Managing Director, Tech Ventures',
+      mother_name: 'Neelam Mehta',
+      mother_phone: '+91 98765 43219',
+      mother_occupation: 'Corporate Lawyer',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-095-005`,
+      name: 'Ananya Iyer',
+      roll_no: '05',
+      class: 'Class 10',
+      section: 'Section A',
+      class_batch: 'Class 10 - Section A',
+      batch_id: 'CLS-10A',
+      parent_id: 'PAR-005',
+      stream: 'French & Natural Sciences',
+      gender: 'Female',
+      dob: '2011-09-05',
+      blood_group: 'O-',
+      aadhaar_no: '9876 5432 1095',
+      phone: '+91 98765 00005',
+      email: `ananya.iyer@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Tower C, Apt 1102, Godrej Woodsman, Bengaluru',
+      permanent_address: 'Tower C, Apt 1102, Godrej Woodsman, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Karthik Iyer',
+      father_phone: '+91 98765 43220',
+      father_occupation: 'Principal Architect',
+      mother_name: 'Deepa Iyer',
+      mother_phone: '+91 98765 43221',
+      mother_occupation: 'Classical Dance Guru',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-096-006`,
+      name: 'Kabir Singh',
+      roll_no: '06',
+      class: 'Class 10',
+      section: 'Section B',
+      class_batch: 'Class 10 - Section B',
+      batch_id: 'CLS-10B',
+      parent_id: 'PAR-006',
+      stream: 'Automobile Tech & Mathematics',
+      gender: 'Male',
+      dob: '2011-07-22',
+      blood_group: 'B+',
+      aadhaar_no: '9876 5432 1096',
+      phone: '+91 98765 00006',
+      email: `kabir.singh@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Villa 88, Adarsh Palm Retreat, Bengaluru',
+      permanent_address: 'Villa 88, Adarsh Palm Retreat, Bengaluru',
+      fee_status: 'Pending',
+      father_name: 'Harpreet Singh',
+      father_phone: '+91 98765 43222',
+      father_occupation: 'Automotive Logistics Business',
+      mother_name: 'Jasleen Singh',
+      mother_phone: '+91 98765 43223',
+      mother_occupation: 'Nutritionist',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-097-007`,
+      name: 'Sameer Kulkarni',
+      roll_no: '07',
+      class: 'Class 10',
+      section: 'Section B',
+      class_batch: 'Class 10 - Section B',
+      batch_id: 'CLS-10B',
+      parent_id: 'PAR-007',
+      stream: 'Robotics & Information Tech',
+      gender: 'Male',
+      dob: '2011-12-30',
+      blood_group: 'A-',
+      aadhaar_no: '9876 5432 1097',
+      phone: '+91 98765 00007',
+      email: `sameer.kulkarni@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Plot 31, Defence Colony, Indiranagar, Bengaluru',
+      permanent_address: 'Plot 31, Defence Colony, Indiranagar, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Anil Kulkarni',
+      father_phone: '+91 98765 43224',
+      father_occupation: 'Defense Research Scientist',
+      mother_name: 'Radhika Kulkarni',
+      mother_phone: '+91 98765 43225',
+      mother_occupation: 'Mathematics Lecturer',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-098-008`,
+      name: 'Riya Patel',
+      roll_no: '08',
+      class: 'Class 6',
+      section: 'Section A',
+      class_batch: 'Class 6 - Section A',
+      batch_id: 'CLS-06A',
+      parent_id: 'PAR-001',
+      stream: 'Foundational STEM & Sanskrit',
+      gender: 'Female',
+      dob: '2018-05-19',
+      blood_group: 'O+',
+      aadhaar_no: '9876 5432 1098',
+      phone: '+91 98765 00008',
+      email: `riya.patel@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Flat 402, Green Meadows Residency, Bengaluru',
+      permanent_address: 'Flat 402, Green Meadows Residency, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Rajesh Patel',
+      father_phone: '+91 98765 43212',
+      father_occupation: 'Senior Software Director',
+      mother_name: 'Meera Patel',
+      mother_phone: '+91 98765 43213',
+      mother_occupation: 'Professor of Economics',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-099-009`,
+      name: 'Kavya Gupta',
+      roll_no: '09',
+      class: 'Class 8',
+      section: 'Section A',
+      class_batch: 'Class 8 - Section A',
+      batch_id: 'CLS-08A',
+      parent_id: 'PAR-003',
+      stream: 'Foundational STEM & Sanskrit',
+      gender: 'Female',
+      dob: '2016-06-14',
+      blood_group: 'A+',
+      aadhaar_no: '9876 5432 1099',
+      phone: '+91 98765 43216',
+      email: `kavya.gupta@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Villa 12, Sobha City Heritage, Bengaluru',
+      permanent_address: 'Villa 12, Sobha City Heritage, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Vikram Gupta',
+      father_phone: '+91 98765 43216',
+      father_occupation: 'Civil Infrastructure Engineer',
+      mother_name: 'Pooja Gupta',
+      mother_phone: '+91 98765 43217',
+      mother_occupation: 'Interior Architect',
+      status: 'Active'
+    },
+    {
+      student_id: `${code}-2024-100-010`,
+      name: 'Vihaan Reddy',
+      roll_no: '10',
+      class: 'Class 11',
+      section: 'Section A',
+      class_batch: 'Class 11 - Section A',
+      batch_id: 'CLS-11A',
+      parent_id: 'PAR-010',
+      stream: 'Pure Science & Artificial Intelligence',
+      gender: 'Male',
+      dob: '2010-01-20',
+      blood_group: 'O+',
+      aadhaar_no: '9876 5432 1100',
+      phone: '+91 98765 00010',
+      email: `vihaan.reddy@student.${code.toLowerCase()}.edu`,
+      residential_address: 'Penthouse 14, Total Environment, Bengaluru',
+      permanent_address: 'Penthouse 14, Total Environment, Bengaluru',
+      fee_status: 'Paid',
+      father_name: 'Venkat Reddy',
+      father_phone: '+91 98765 43226',
+      father_occupation: 'Fintech Founder & Angel Investor',
+      mother_name: 'Lakshmi Reddy',
+      mother_phone: '+91 98765 43227',
+      mother_occupation: 'Pediatric Surgeon',
+      status: 'Active'
+    }
+  ];
+
+  const teachers = [
+    {
+      teacher_number: `${code}-2020-811-001`,
+      name: 'Prof. Sarah Jenkins',
+      gender: 'Female',
+      dob: '1988-03-14',
+      blood_group: 'A+',
+      aadhaar_no: '5421 8890 1234',
+      email: `sjenkins@${code.toLowerCase()}.edu`,
+      phone: '+91 98765 43211',
+      department: 'Mathematics & Science',
+      designation: 'Senior Faculty Lead',
+      qualification: 'M.Sc. Mathematics, B.Ed, NET Qualified',
+      workload_hours: 24,
+      monthly_salary: 68000,
+      joining_date: '2020-07-01',
+      residential_address: 'Flat 304, Palm Heights, 12th Cross, Bengaluru',
+      permanent_address: 'Flat 304, Palm Heights, 12th Cross, Bengaluru',
+      father_name: 'Arthur Jenkins',
+      father_occupation: 'Retired Civil Architect',
+      mother_name: 'Martha Jenkins',
+      mother_occupation: 'Senior Academician',
+      emergency_contact_phone: '+91 98765 43299',
+      bank_name: 'State Bank of India',
+      bank_account_no: '30492817462',
+      bank_ifsc: 'SBIN0004512',
+      bank_holder_name: 'Sarah Jenkins',
+      pan_no: 'ABCDE1234F',
+      status: 'Active'
+    },
+    {
+      teacher_number: `${code}-2021-812-002`,
+      name: 'Dr. Evelyn Reed',
+      gender: 'Female',
+      dob: '1985-09-22',
+      blood_group: 'O+',
+      aadhaar_no: '6341 9920 4455',
+      email: `ereed@${code.toLowerCase()}.edu`,
+      phone: '+91 98765 34567',
+      department: 'STEM & Computer Science',
+      designation: 'Head of STEM Academics',
+      qualification: 'Ph.D in Computer Science & Applied Robotics',
+      workload_hours: 18,
+      monthly_salary: 75000,
+      joining_date: '2021-04-15',
+      residential_address: 'Villa 45, Greenfield Enclave, Bengaluru',
+      permanent_address: 'House #12, Riverside Colony, Pune',
+      father_name: 'David Reed',
+      father_occupation: 'Aerospace Systems Consultant',
+      mother_name: 'Clara Reed',
+      mother_occupation: 'Clinical Research Director',
+      emergency_contact_phone: '+91 98765 34599',
+      bank_name: 'HDFC Bank',
+      bank_account_no: '50100239485123',
+      bank_ifsc: 'HDFC0001042',
+      bank_holder_name: 'Evelyn Reed',
+      pan_no: 'EFGHI5678K',
+      status: 'Active'
+    }
+  ];
+
+  const classes = [
+    { batch_id: 'CLS-10A', batch_name: 'Class 10 - Section A', class_teacher: `${code}-2020-811-001`, room_no: 'Room 204', capacity: 35 },
+    { batch_id: 'CLS-10B', batch_name: 'Class 10 - Section B', class_teacher: `${code}-2021-812-002`, room_no: 'Room 205', capacity: 35 },
+    { batch_id: 'CLS-11A', batch_name: 'Class 11 - Section A', class_teacher: `${code}-2020-811-001`, room_no: 'Room 301', capacity: 30 },
+    { batch_id: 'CLS-12A', batch_name: 'Class 12 - Section A', class_teacher: `${code}-2021-812-002`, room_no: 'Room 303', capacity: 30 },
+    { batch_id: 'CLS-08A', batch_name: 'Class 8 - Section A', class_teacher: `${code}-2020-811-001`, room_no: 'Room 102', capacity: 35 }
+  ];
+
+  const subjects = [
+    { subject_id: 'SUB-041', subject_name: 'MATHEMATICS', subject_code: '041', teacher: `${code}-2020-811-001`, credit_hours: 4, department: 'Mathematics & Science' },
+    { subject_id: 'SUB-086', subject_name: 'SCIENCE-THEORY', subject_code: '086', teacher: `${code}-2020-811-001`, credit_hours: 4, department: 'Mathematics & Science' },
+    { subject_id: 'SUB-165', subject_name: 'FOUNDATION OF I T', subject_code: '165', teacher: `${code}-2021-812-002`, credit_hours: 3, department: 'STEM & Computer Science' },
+    { subject_id: 'SUB-184', subject_name: 'ENGLISH LNG & LIT.', subject_code: '184', teacher: `${code}-2021-812-002`, credit_hours: 4, department: 'STEM & Computer Science' },
+    { subject_id: 'SUB-002', subject_name: 'HINDI COURSE-A', subject_code: '002', teacher: `${code}-2020-811-001`, credit_hours: 4, department: 'Mathematics & Science' },
+    { subject_id: 'SUB-087', subject_name: 'SOCIAL SCIENCE', subject_code: '087', teacher: `${code}-2021-812-002`, credit_hours: 4, department: 'STEM & Computer Science' }
+  ];
+
+  const plans = [
+    { plan_id: 'PLAN-001', assessment_name: 'Mid-Term Examinations 2026', course_name: 'MATHEMATICS', subject: 'SUB-041', maximum_score: 100, date: '2026-10-15', class_batch: 'CLS-10A' },
+    { plan_id: 'PLAN-002', assessment_name: 'Lab Practical Evaluation 2026', course_name: 'SCIENCE-THEORY', subject: 'SUB-086', maximum_score: 50, date: '2026-10-20', class_batch: 'CLS-10A' }
+  ];
+
+  const results = students.map((s, idx) => ({
+    result_id: `RES-${String(idx + 1).padStart(3, '0')}`,
+    student_id: s.student_id,
+    student_name: s.name,
+    roll_no: s.roll_no,
+    class_batch: s.class_batch,
+    plan_id: 'PLAN-001',
+    assessment_plan: 'Mid-Term Examinations 2026',
+    course: 'Mathematics & Science',
+    score: 85 + (idx % 14),
+    maximum_score: 100,
+    percentage: 85 + (idx % 14),
+    grade: idx % 3 === 0 ? 'A+' : 'A',
+    comment: 'Consistent academic dedication and solid practical fundamentals.'
+  }));
+
+  const attendance = students.map((s, idx) => ({
+    attendance_id: `ATT-${String(idx + 1).padStart(3, '0')}`,
+    student_id: s.student_id,
+    student_name: s.name,
+    roll_no: s.roll_no,
+    class_batch: s.class_batch,
+    date: '2026-10-05',
+    status: idx === 2 || idx === 5 ? 'Absent' : 'Present'
+  }));
+
+  const teacherAttendance = teachers.map((t, idx) => ({
+    punch_id: `PUNCH-${String(idx + 1).padStart(3, '0')}`,
+    teacher_number: t.teacher_number,
+    name: t.name,
+    date: '2026-10-05',
+    punch_in: '07:45 AM',
+    punch_out: '04:15 PM',
+    status: 'Present',
+    hours_recorded: 8.5
+  }));
+
+  const feeInvoices = students.map((s, idx) => ({
+    invoice_id: `INV-${code}-${String(idx + 1).padStart(3, '0')}`,
+    student_id: s.student_id,
+    student_name: s.name,
+    class_batch: s.class_batch,
+    term: 'Term 1 (2026-27)',
+    grand_total: 35000,
+    outstanding_amount: s.fee_status === 'Paid' ? 0 : 35000,
+    status: s.fee_status,
+    receipt_no: s.fee_status === 'Paid' ? `REC-2026-${80000 + idx}` : '',
+    components: [
+      { id: 'FC-01', fee_category: 'Tuition Fee', amount: 25000, description: 'Academic Core Instruction' },
+      { id: 'FC-02', fee_category: 'Science & Computer Lab', amount: 5000, description: 'Lab Equipment & Consumables' },
+      { id: 'FC-03', fee_category: 'Sports & Extra-Curricular', amount: 3000, description: 'Sports Complex & Athletic Training' },
+      { id: 'FC-04', fee_category: 'Library & Exam Fee', amount: 2000, description: 'Digital Library & Assessment' }
+    ]
+  }));
+
+  const parents = students.map((s, idx) => ({
+    parent_id: s.parent_id,
+    guardian_name: s.father_name || s.mother_name,
+    relation: 'Father',
+    phone: s.father_phone || s.phone,
+    email: `parent.${s.roll_no}@${code.toLowerCase()}.edu`,
+    student_id: s.student_id,
+    student_name: s.name,
+    class_batch: s.class_batch,
+    occupation: s.father_occupation || 'Professional',
+    address: s.residential_address
+  }));
+
+  const expenses = [
+    {
+      expense_id: `EXP-${code}-001`,
+      category: 'Faculty & Staff Payroll',
+      description: `Monthly Salary Disbursement - Faculty Lead (${teachers[0].name})`,
+      amount: 68000,
+      payment_date: '2026-10-01',
+      payment_method: 'Direct Bank NEFT',
+      recipient_vendor: teachers[0].name,
+      status: 'Paid',
+      receipt_voucher_no: `VCH-${code}-001`
+    },
+    {
+      expense_id: `EXP-${code}-002`,
+      category: 'Faculty & Staff Payroll',
+      description: `Monthly Salary Disbursement - STEM Head (${teachers[1].name})`,
+      amount: 75000,
+      payment_date: '2026-10-01',
+      payment_method: 'Direct Bank NEFT',
+      recipient_vendor: teachers[1].name,
+      status: 'Paid',
+      receipt_voucher_no: `VCH-${code}-002`
+    }
+  ];
+
+  const homework = [
+    {
+      homework_id: `HW-${code}-001`,
+      title: 'Quadratic Equations & Polynomial Proofs',
+      subject: 'MATHEMATICS',
+      class_batch: 'CLS-10A',
+      faculty_name: teachers[0].name,
+      teacher_number: teachers[0].teacher_number,
+      assigned_date: '2026-10-03',
+      due_date: '2026-10-10',
+      status: 'Active'
+    },
+    {
+      homework_id: `HW-${code}-002`,
+      title: 'Python Object-Oriented Programming Derivations',
+      subject: 'FOUNDATION OF I T',
+      class_batch: 'CLS-10A',
+      faculty_name: teachers[1].name,
+      teacher_number: teachers[1].teacher_number,
+      assigned_date: '2026-10-04',
+      due_date: '2026-10-12',
+      status: 'Active'
+    }
+  ];
+
+  const store = {};
+  Object.keys(INITIAL_DB_STORE).forEach(tableName => {
+    store[tableName] = {
+      columns: INITIAL_DB_STORE[tableName].columns || [],
+      rows: []
+    };
+  });
+
+  store['Student List'].rows = students;
+  store['Teacher List'].rows = teachers;
+  store['Class & Batch List'].rows = classes;
+  store['Subjects List'].rows = subjects;
+  store['Assessment Plans'].rows = plans;
+  store['Assessment Results'].rows = results;
+  store['Attendance Records'].rows = attendance;
+  store['Teacher Attendance'].rows = teacherAttendance;
+  store['Fee Invoices & Ledger'].rows = feeInvoices;
+  store['Parent List'].rows = parents;
+  store['Operational Expenses (P&L)'].rows = expenses;
+  store['Homework List'].rows = homework;
+
+  return store;
+}
