@@ -140,8 +140,8 @@ export default function TransferCertificateView() {
     organizationName: 'Liceria & Co.'
   });
 
-  // 5 Participation / Event Templates
-  const [participationTemplate, setParticipationTemplate] = useState('modern_teal_geometric');
+  // 5 Participation Templates (Matching uploaded reference designs)
+  const [participationTemplate, setParticipationTemplate] = useState('classic_gold_filigree_frame');
 
   // 5 Student ID Card Templates
   const [idCardTemplate, setIdCardTemplate] = useState('navy_chevron');
@@ -516,44 +516,109 @@ export default function TransferCertificateView() {
 
   const participationTemplatesList = [
     {
-      id: 'modern_teal_geometric',
-      title: 'Modern Teal Geometric',
-      tag: 'Portrait • Polygonal Header',
-      desc: 'Cyan/teal polygonal angled headers & footers, multi-ring hologram seal',
-      orientation: 'portrait',
-      activeBg: 'from-teal-700/30 to-cyan-700/20 border-teal-400 text-teal-200'
-    },
-    {
-      id: 'olympic_gold_laurel',
-      title: 'Olympic Gold Laurel Athletics',
-      tag: 'Landscape • Sports & Athletics',
-      desc: 'Golden laurel branch framing, stadium ribbon medal icon, vibrant athletics design',
+      id: 'classic_gold_filigree_frame',
+      title: 'Classic Gold Filigree Frame (Benjamin Shah)',
+      tag: 'Landscape • Ornate Baroque Frame & Bronze Seal',
+      desc: 'Double thin gold border, dark navy/slate corner triangles with intricate baroque scrollwork, bronze-blue rosette seal',
       orientation: 'landscape',
-      activeBg: 'from-amber-600/30 to-orange-600/20 border-amber-400 text-amber-200'
+      activeBg: 'from-amber-900/40 to-slate-900 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE OF',
+        subtitle: 'PARTICIPATION',
+        presentationLine: 'THIS IS PROUDLY PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Inter-School Art Competition',
+        bodyText: 'for participating in the Inter-School Art Competition and demonstrating exceptional creative talent and artistic commitment.',
+        awardDate: '14 August 2024',
+        signatory1Name: 'Juliana Silva',
+        signatory1Title: 'Art Coordinator',
+        signatory2Name: 'Marceline Anderson',
+        signatory2Title: 'School Principal'
+      }
     },
     {
-      id: 'cyber_neon_hackathon',
-      title: 'Cyber Cobalt STEM & Coding',
-      tag: 'Landscape • Tech & Hackathon',
-      desc: 'Futuristic digital grid accents, microchip tech emblem, hackathon/quiz layout',
+      id: 'modern_crystal_navy_angle',
+      title: 'Modern Crystal & Navy Angle (Bartholomew Henderson)',
+      tag: 'Landscape • Polygonal Facets & 3D Gold Medal',
+      desc: 'Clean geometric crystal facets, navy diagonal wedge with double gold stripes, 3D gold rosette medal, and dual gold signatures',
       orientation: 'landscape',
-      activeBg: 'from-blue-700/30 to-indigo-700/20 border-blue-400 text-blue-200'
+      activeBg: 'from-blue-900/40 to-slate-900 border-amber-300 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF PARTICIPATION',
+        presentationLine: 'THIS CERTIFICATE IS PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Annual Science Fair 2024',
+        bodyText: 'in recognition of their dedication, enthusiasm, and active participation in the Annual Science Fair 2024. Your curiosity and scientific acumen are truly commendable.',
+        awardDate: '25 October 2024',
+        signatory1Name: 'MUHAMMAD PATEL',
+        signatory1Title: 'Event Organizer',
+        signatory2Name: 'MORGAN MAXWELL',
+        signatory2Title: 'Principal'
+      }
     },
     {
-      id: 'classic_crimson_contest',
-      title: 'Classic Crimson Arts & Debate',
-      tag: 'Portrait • Cultural Contest',
-      desc: 'Formal double-ruled crimson borders, bronze contest seal, arts citation',
-      orientation: 'portrait',
-      activeBg: 'from-rose-700/30 to-pink-700/20 border-rose-400 text-rose-200'
-    },
-    {
-      id: 'solar_amber_symposium',
-      title: 'Solar Amber Youth Leadership',
-      tag: 'Landscape • Symposium & MUN',
-      desc: 'Warm sunset gradient waves, star compass rosette, conference/symposium format',
+      id: 'royal_purple_gold_arch',
+      title: 'Royal Purple & Gold Arch (Henrietta Mitchell)',
+      tag: 'Landscape • Scalloped Arch & Mandala Sunburst',
+      desc: 'Royal purple Islamic scalloped arch & mandala crescent with gold trim, gold cursive calligraphy, and 3D gold sunburst medallion',
       orientation: 'landscape',
-      activeBg: 'from-yellow-600/30 to-amber-600/20 border-yellow-400 text-yellow-200'
+      activeBg: 'from-purple-900/40 to-slate-950 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE OF',
+        subtitle: 'APPRECIATION',
+        presentationLine: 'PROUDLY PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Youth Leadership Summit 2024',
+        bodyText: 'in recognition of active participation and meaningful contribution to the Youth Leadership Summit. Your dedication and vision have inspired our entire community.',
+        awardDate: '12 November 2024',
+        signatory1Name: 'AVERY DAVIS',
+        signatory1Title: 'Director',
+        signatory2Name: 'YANIS PETROS',
+        signatory2Title: 'Program Coordinator'
+      }
+    },
+    {
+      id: 'lavender_sunset_wave',
+      title: 'Lavender & Sunset Waves (Estelle Darcy)',
+      tag: 'Landscape • Fluid Waves & Amber Calligraphy',
+      desc: 'Pastel lavender & violet fluid wave borders with warm sunset glow, vibrant amber cursive calligraphy, and signature lines',
+      orientation: 'landscape',
+      activeBg: 'from-purple-900/40 to-rose-950 border-purple-400 text-purple-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF PARTICIPATION',
+        presentationLine: 'THIS CERTIFICATE IS PROUDLY PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Creative Writing Workshop',
+        bodyText: 'for her enthusiastic participation and valuable contribution to the Creative Writing Workshop. Your passion for words and storytelling has enriched our sessions.',
+        awardDate: '08 September 2024',
+        signatory1Name: 'Daniel Gallego',
+        signatory1Title: 'Workshop Mentor',
+        signatory2Name: 'Sacha Dubois',
+        signatory2Title: 'Department Head'
+      }
+    },
+    {
+      id: 'imperial_baroque_gold_crest',
+      title: 'Imperial Baroque Gold Crest (Muhammad Patel)',
+      tag: 'Landscape • Full Baroque Filigree Frame & Crown',
+      desc: 'Antique warm ivory parchment framed in complete royal baroque gold scrollwork, crown top motif, and scalloped gold seal',
+      orientation: 'landscape',
+      activeBg: 'from-amber-950 to-stone-900 border-amber-400 text-amber-200',
+      defaultConfig: {
+        title: 'CERTIFICATE',
+        subtitle: 'OF PARTICIPATION',
+        presentationLine: 'THIS IS PROUDLY PRESENTED TO',
+        recipientName: '',
+        eventTitle: 'Community Service Initiative',
+        bodyText: 'for their active involvement, dedication, and valuable contributions in the Community Service Initiative. Your tireless efforts made a profound positive difference.',
+        awardDate: '20 December 2024',
+        signatory1Name: 'Samira Hadid',
+        signatory1Title: 'Project Lead',
+        signatory2Name: 'Morgan Maxwell',
+        signatory2Title: 'Managing Director'
+      }
     }
   ];
 
@@ -1013,6 +1078,68 @@ export default function TransferCertificateView() {
         strokeLinecap="round"
       />
     </svg>
+  );
+
+  // 7. Bronze-Blue Rosette Seal (for Benjamin Shah Classic Filigree Design)
+  const BronzeBlueRosetteSeal = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size * 1.2 }}>
+      <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-xl">
+        <defs>
+          <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#d97706" />
+            <stop offset="40%" stopColor="#b45309" />
+            <stop offset="80%" stopColor="#78350f" />
+            <stop offset="100%" stopColor="#451a03" />
+          </linearGradient>
+          <linearGradient id="deepNavySealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#1e3a8a" />
+            <stop offset="60%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+        </defs>
+        {/* Ribbon Tails */}
+        <polygon points="34,60 34,115 45,102 45,60" fill="#1e3a8a" stroke="#d97706" strokeWidth="1" />
+        <polygon points="66,60 66,115 55,102 55,60" fill="#1e3a8a" stroke="#d97706" strokeWidth="1" />
+        {/* Bronze Starburst Rosette */}
+        <polygon
+          points="50,4 55,12 65,8 68,18 78,16 79,26 89,27 87,37 95,41 90,50 96,57 88,63 90,73 80,76 78,86 68,84 64,93 55,88 50,96 45,88 36,93 32,84 22,86 20,76 10,73 12,63 4,57 10,50 5,41 13,37 11,27 21,26 22,16 32,18 35,8 45,12"
+          fill="url(#bronzeGrad)"
+          stroke="#451a03"
+          strokeWidth="0.8"
+        />
+        <circle cx="50" cy="48" r="38" fill="url(#bronzeGrad)" stroke="#fef08a" strokeWidth="1" />
+        <circle cx="50" cy="48" r="32" fill="url(#deepNavySealGrad)" stroke="#d97706" strokeWidth="1.5" />
+        <circle cx="50" cy="48" r="28" fill="none" stroke="#fef08a" strokeWidth="0.8" strokeDasharray="3 1.5" />
+        <polygon points="50,36 53,44 61,44 55,49 57,57 50,52 43,57 45,49 39,44 47,44" fill="#fef08a" stroke="#b45309" strokeWidth="0.5" />
+      </svg>
+    </div>
+  );
+
+  // 8. Scalloped Royal Gold Medallion (for Imperial Baroque & Royal Purple Designs)
+  const ScallopedGoldMedallion = ({ size = 80 }) => (
+    <div className="relative inline-flex items-center justify-center select-none" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
+        <defs>
+          <linearGradient id="scallopGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fffbeb" />
+            <stop offset="25%" stopColor="#fde047" />
+            <stop offset="50%" stopColor="#d97706" />
+            <stop offset="85%" stopColor="#92400e" />
+            <stop offset="100%" stopColor="#78350f" />
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46" fill="url(#scallopGoldGrad)" stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="40" fill="#fffbeb" stroke="#b45309" strokeWidth="1" />
+        <circle cx="50" cy="50" r="36" fill="url(#scallopGoldGrad)" stroke="#fef08a" strokeWidth="1" />
+        <circle cx="50" cy="50" r="28" fill="#1e293b" />
+        <g stroke="#fef08a" strokeWidth="1" opacity="0.8">
+          {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+            <line key={deg} x1="50" y1="24" x2="50" y2="50" transform={`rotate(${deg} 50 50)`} />
+          ))}
+        </g>
+        <polygon points="50,38 53,46 61,46 55,51 57,59 50,54 43,59 45,51 39,46 47,46" fill="#fef08a" stroke="#b45309" strokeWidth="0.5" />
+      </svg>
+    </div>
   );
 
   // ==========================================
@@ -2235,6 +2362,554 @@ export default function TransferCertificateView() {
     );
   };
 
+  // =========================================================================
+  // TEMPLATE 1 (Participation): Classic Gold Filigree Frame (Benjamin Shah)
+  // =========================================================================
+  const renderClassicGoldFiligreeFrameParticipation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Benjamin Shah';
+    const certTitle = certConfig.title || 'CERTIFICATE OF';
+    const certSubtitle = certConfig.subtitle || 'PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'THIS IS PROUDLY PRESENTED TO';
+    const certBody = certConfig.bodyText || 'for participating in the Inter-School Art Competition and demonstrating exceptional creative talent and artistic commitment.';
+    const certDate = certConfig.awardDate || '14 August 2024';
+    const certSig1Name = certConfig.signatory1Name || 'Juliana Silva';
+    const certSig1Title = certConfig.signatory1Title || 'Art Coordinator';
+    const certSig2Name = certConfig.signatory2Name || 'Marceline Anderson';
+    const certSig2Title = certConfig.signatory2Title || 'School Principal';
+
+    return (
+      <div className="bg-[#faf8f5] p-5 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden font-serif max-w-4xl mx-auto border-4 border-amber-600/40">
+        {/* Navy Triangular Corner Wedges with Gold Filigree */}
+        <div className="absolute top-0 left-0 w-32 h-32 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="0,0 100,0 0,100" fill="#0f172a" />
+            <polygon points="0,0 70,0 0,70" fill="#1e293b" />
+            <line x1="0" y1="100" x2="100" y2="0" stroke="#d97706" strokeWidth="2.5" />
+            <line x1="0" y1="70" x2="70" y2="0" stroke="#fde047" strokeWidth="1" />
+          </svg>
+          <div className="absolute top-2 left-2 text-amber-300 w-12 h-12">
+            <CornerBaroqueFiligree className="w-full h-full text-amber-300" />
+          </div>
+        </div>
+
+        <div className="absolute top-0 right-0 w-32 h-32 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="100,0 0,0 100,100" fill="#0f172a" />
+            <polygon points="100,0 30,0 100,70" fill="#1e293b" />
+            <line x1="100" y1="100" x2="0" y2="0" stroke="#d97706" strokeWidth="2.5" />
+            <line x1="100" y1="70" x2="30" y2="0" stroke="#fde047" strokeWidth="1" />
+          </svg>
+          <div className="absolute top-2 right-2 text-amber-300 w-12 h-12 rotate-90">
+            <CornerBaroqueFiligree className="w-full h-full text-amber-300" />
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 w-32 h-32 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="0,100 100,100 0,0" fill="#0f172a" />
+            <polygon points="0,100 70,100 0,30" fill="#1e293b" />
+            <line x1="0" y1="0" x2="100" y2="100" stroke="#d97706" strokeWidth="2.5" />
+            <line x1="0" y1="30" x2="70" y2="100" stroke="#fde047" strokeWidth="1" />
+          </svg>
+          <div className="absolute bottom-2 left-2 text-amber-300 w-12 h-12 -rotate-90">
+            <CornerBaroqueFiligree className="w-full h-full text-amber-300" />
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <polygon points="100,100 0,100 100,0" fill="#0f172a" />
+            <polygon points="100,100 30,100 100,30" fill="#1e293b" />
+            <line x1="100" y1="0" x2="0" y2="100" stroke="#d97706" strokeWidth="2.5" />
+            <line x1="100" y1="30" x2="30" y2="100" stroke="#fde047" strokeWidth="1" />
+          </svg>
+          <div className="absolute bottom-2 right-2 text-amber-300 w-12 h-12 rotate-180">
+            <CornerBaroqueFiligree className="w-full h-full text-amber-300" />
+          </div>
+        </div>
+
+        {/* Double Inner Gold Border */}
+        <div className="border-2 border-amber-600/70 p-1.5 rounded-2xl relative z-10">
+          <div className="border border-amber-500/50 p-6 sm:p-10 rounded-xl text-center space-y-3 relative">
+            {/* Header / Title */}
+            <div>
+              <div className="text-xs sm:text-sm font-serif font-black tracking-[0.3em] text-slate-800 uppercase">
+                {certTitle}
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-wider text-[#b45309] uppercase drop-shadow-sm mt-0.5">
+                {certSubtitle}
+              </h1>
+              <div className="flex items-center justify-center gap-2 text-amber-600 my-2">
+                <span className="w-16 h-0.5 bg-gradient-to-r from-transparent to-amber-600" />
+                <span className="text-xs font-bold">★ ✦ ★</span>
+                <span className="w-16 h-0.5 bg-gradient-to-l from-transparent to-amber-600" />
+              </div>
+            </div>
+
+            {/* Presentation Line */}
+            <p className="text-[11px] sm:text-xs font-sans font-bold tracking-widest text-slate-500 uppercase pt-1">
+              {certPresentation}
+            </p>
+
+            {/* Recipient Name in Refined Serif */}
+            <div className="my-2 max-w-lg mx-auto">
+              <h2 className="text-3xl sm:text-4xl font-serif italic text-slate-900 font-bold tracking-wide">
+                {certRecipient}
+              </h2>
+              <div className="w-64 h-0.5 bg-amber-600/60 mx-auto mt-1" />
+            </div>
+
+            {/* Class / Batch Indicator */}
+            {st.class_batch && (
+              <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">
+                Class &amp; Section: <span className="text-slate-900 font-extrabold">{customClassSection || st.class_batch}</span>
+              </div>
+            )}
+
+            {/* Citation Body Text */}
+            <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed max-w-xl mx-auto px-4 font-serif italic">
+              {certBody}
+            </p>
+
+            {/* Date & Signatures with Bronze Rosette Seal */}
+            <div className="pt-6 sm:pt-8 flex items-end justify-between px-2 sm:px-8">
+              <div className="text-center min-w-[120px]">
+                <HandWrittenSignature name={certSig1Name} color="#0f172a" />
+                <div className="w-32 sm:w-36 h-0.5 bg-slate-800 mx-auto mt-1 mb-1" />
+                <strong className="text-xs font-bold text-slate-900 block">{certSig1Name}</strong>
+                <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+              </div>
+
+              <div className="text-center -mb-2">
+                <BronzeBlueRosetteSeal size={74} />
+                <div className="text-[9px] font-mono text-slate-600 font-bold mt-0.5">{certDate}</div>
+              </div>
+
+              <div className="text-center min-w-[120px]">
+                <HandWrittenSignature name={certSig2Name} color="#0f172a" />
+                <div className="w-32 sm:w-36 h-0.5 bg-slate-800 mx-auto mt-1 mb-1" />
+                <strong className="text-xs font-bold text-slate-900 block">{certSig2Name}</strong>
+                <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 2 (Participation): Modern Crystal Facets & Navy Angle (Bartholomew Henderson)
+  // =========================================================================
+  const renderModernCrystalNavyAngleParticipation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Bartholomew Henderson';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'THIS CERTIFICATE IS PRESENTED TO';
+    const certBody = certConfig.bodyText || 'in recognition of their dedication, enthusiasm, and active participation in the Annual Science Fair 2024. Your curiosity and scientific acumen are truly commendable.';
+    const certDate = certConfig.awardDate || '25 October 2024';
+    const certSig1Name = certConfig.signatory1Name || 'MUHAMMAD PATEL';
+    const certSig1Title = certConfig.signatory1Title || 'Event Organizer';
+    const certSig2Name = certConfig.signatory2Name || 'MORGAN MAXWELL';
+    const certSig2Title = certConfig.signatory2Title || 'Principal';
+
+    return (
+      <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-2 border-slate-200">
+        {/* Polygonal Crystal Facets / Low-Poly Corner Accents */}
+        <div className="absolute top-0 left-0 w-64 h-64 pointer-events-none opacity-25">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <polygon points="0,0 120,0 60,80 0,60" fill="#94a3b8" />
+            <polygon points="120,0 200,0 150,90 60,80" fill="#cbd5e1" />
+            <polygon points="0,60 60,80 30,160 0,140" fill="#cbd5e1" />
+            <polygon points="60,80 150,90 110,170 30,160" fill="#e2e8f0" />
+            <polygon points="0,140 30,160 0,200" fill="#94a3b8" />
+          </svg>
+        </div>
+
+        {/* Right-Angled Navy & Gold Diagonal Wedge */}
+        <div className="absolute top-0 right-0 w-64 h-64 pointer-events-none">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <polygon points="60,0 200,0 200,160" fill="#0f172a" />
+            <polygon points="90,0 200,0 200,130" fill="#1e293b" />
+            <line x1="50" y1="0" x2="200" y2="170" stroke="#f59e0b" strokeWidth="3" />
+            <line x1="40" y1="0" x2="200" y2="180" stroke="#d97706" strokeWidth="1.5" />
+          </svg>
+        </div>
+
+        <div className="absolute bottom-0 left-0 w-52 h-52 pointer-events-none">
+          <svg viewBox="0 0 200 200" className="w-full h-full">
+            <polygon points="0,60 0,200 160,200" fill="#0f172a" />
+            <line x1="0" y1="50" x2="170" y2="200" stroke="#f59e0b" strokeWidth="3" />
+            <line x1="0" y1="40" x2="180" y2="200" stroke="#d97706" strokeWidth="1.5" />
+          </svg>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-4 sm:px-12 py-2">
+          {/* Top Logo / School header */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-left">
+              <span className="text-[10px] font-mono font-black text-amber-600 uppercase tracking-widest block">
+                {schoolInfo.schoolName}
+              </span>
+              <span className="text-[9px] text-slate-400 font-mono">EST. 2012 &bull; AFFILIATION #{schoolInfo.affiliationNo}</span>
+            </div>
+            {schoolInfo.customLogoUrl && (
+              <img src={schoolInfo.customLogoUrl} alt="Logo" className="w-10 h-10 object-contain" />
+            )}
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-sans font-black text-[#0f172a] tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-bold text-amber-600 tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </div>
+
+          <p className="text-xs font-sans text-slate-500 mt-4 tracking-wide uppercase">
+            {certPresentation}
+          </p>
+
+          {/* Recipient Name in Strong Navy Font */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif text-[#0f172a] font-black tracking-wide uppercase">
+              {certRecipient}
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-amber-500 my-1">
+              <span className="w-24 h-0.5 bg-amber-500" />
+              <span className="text-xs">◆</span>
+              <span className="w-24 h-0.5 bg-amber-500" />
+            </div>
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-amber-800 font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-sans font-medium">
+            {certBody}
+          </p>
+
+          {/* Medal & Signatures */}
+          <div className="pt-6 sm:pt-8 flex items-end justify-between px-4 sm:px-12">
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig1Name} color="#d97706" />
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-300 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block uppercase">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center -mb-2">
+              <GoldMedallionRosette size={78} />
+              <div className="text-[9px] font-mono text-slate-600 font-bold mt-0.5">{certDate}</div>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig2Name} color="#d97706" />
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-300 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block uppercase">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 3 (Participation): Royal Purple & Gold Arch (Henrietta Mitchell)
+  // =========================================================================
+  const renderRoyalPurpleGoldArchParticipation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Henrietta Mitchell';
+    const certTitle = certConfig.title || 'CERTIFICATE OF';
+    const certSubtitle = certConfig.subtitle || 'APPRECIATION';
+    const certPresentation = certConfig.presentationLine || 'PROUDLY PRESENTED TO';
+    const certBody = certConfig.bodyText || 'in recognition of active participation and meaningful contribution to the Youth Leadership Summit. Your dedication and vision have inspired our entire community.';
+    const certDate = certConfig.awardDate || '12 November 2024';
+    const certSig1Name = certConfig.signatory1Name || 'AVERY DAVIS';
+    const certSig1Title = certConfig.signatory1Title || 'Director';
+    const certSig2Name = certConfig.signatory2Name || 'YANIS PETROS';
+    const certSig2Title = certConfig.signatory2Title || 'Program Coordinator';
+
+    return (
+      <div className="bg-[#24133b] p-5 sm:p-8 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-4 border-amber-400/80">
+        {/* Royal Purple Scalloped Islamic Arch & Gold Mandala Top Accent */}
+        <div className="absolute top-0 left-0 right-0 h-28 pointer-events-none">
+          <svg viewBox="0 0 500 100" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M 0,0 L 500,0 L 500,40 C 400,80 300,30 250,90 C 200,30 100,80 0,40 Z" fill="#3b1d60" />
+            <path d="M 0,0 L 500,0 L 500,35 C 400,75 300,25 250,85 C 200,25 100,75 0,35 Z" fill="#4c1d95" opacity="0.6" />
+            <path d="M 0,40 C 100,80 200,30 250,90 C 300,30 400,80 500,40" fill="none" stroke="#f59e0b" strokeWidth="3" />
+          </svg>
+        </div>
+
+        {/* Inner Parchment Card */}
+        <div className="bg-[#fffdfa] rounded-2xl p-6 sm:p-10 relative z-10 text-center shadow-lg border border-amber-200 mt-6">
+          {/* Top Sunburst Medallion */}
+          <div className="flex justify-center -mt-14 mb-2">
+            <ScallopedGoldMedallion size={84} />
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-[#2e1065] tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-bold text-amber-700 tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </div>
+
+          <p className="text-xs font-serif italic text-slate-500 mt-4">
+            {certPresentation}
+          </p>
+
+          {/* Recipient in Flowing Gold/Purple Cursive Calligraphy */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif italic text-[#3b0764] font-bold tracking-wide" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-amber-600 my-1">
+              <span className="w-20 h-0.5 bg-amber-500" />
+              <span className="text-xs">✦ ❖ ✦</span>
+              <span className="w-20 h-0.5 bg-amber-500" />
+            </div>
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-purple-900 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-amber-800 font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-serif">
+            {certBody}
+          </p>
+
+          {/* Award Date */}
+          <div className="text-xs font-bold text-purple-950 mt-3 font-mono">
+            {certDate}
+          </div>
+
+          {/* Signatories */}
+          <div className="pt-6 sm:pt-8 flex items-end justify-between px-6 sm:px-14">
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig1Name} color="#4c1d95" />
+              <div className="w-32 sm:w-36 h-0.5 bg-purple-900 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig2Name} color="#4c1d95" />
+              <div className="w-32 sm:w-36 h-0.5 bg-purple-900 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 4 (Participation): Lavender & Sunset Waves (Estelle Darcy)
+  // =========================================================================
+  const renderLavenderSunsetWaveParticipation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Estelle Darcy';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'THIS CERTIFICATE IS PROUDLY PRESENTED TO';
+    const certBody = certConfig.bodyText || 'for her enthusiastic participation and valuable contribution to the Creative Writing Workshop. Your passion for words and storytelling has enriched our sessions.';
+    const certDate = certConfig.awardDate || '08 September 2024';
+    const certSig1Name = certConfig.signatory1Name || 'Daniel Gallego';
+    const certSig1Title = certConfig.signatory1Title || 'Workshop Mentor';
+    const certSig2Name = certConfig.signatory2Name || 'Sacha Dubois';
+    const certSig2Title = certConfig.signatory2Title || 'Department Head';
+
+    return (
+      <div className="bg-[#faf5ff] p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans max-w-4xl mx-auto border-2 border-purple-200">
+        {/* Lavender & Warm Sunset Fluid Wave Top Ribbon */}
+        <div className="absolute top-0 left-0 right-0 h-32 pointer-events-none opacity-90">
+          <svg viewBox="0 0 600 120" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M 0,0 L 600,0 L 600,40 C 450,110 350,20 200,80 C 100,110 50,30 0,60 Z" fill="#c084fc" opacity="0.4" />
+            <path d="M 0,0 L 600,0 L 600,20 C 480,90 320,10 180,60 C 80,90 30,20 0,40 Z" fill="#fb923c" opacity="0.6" />
+            <path d="M 0,0 L 600,0 L 600,10 C 500,60 380,0 240,40 C 120,60 60,10 0,25 Z" fill="#7e22ce" opacity="0.7" />
+          </svg>
+        </div>
+
+        {/* Bottom Lavender & Sunset Wave Ribbon */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none opacity-90">
+          <svg viewBox="0 0 600 120" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M 0,120 L 600,120 L 600,80 C 450,10 350,100 200,40 C 100,10 50,90 0,60 Z" fill="#c084fc" opacity="0.4" />
+            <path d="M 0,120 L 600,120 L 600,100 C 480,30 320,110 180,60 C 80,30 30,100 0,80 Z" fill="#fb923c" opacity="0.6" />
+            <path d="M 0,120 L 600,120 L 600,110 C 500,60 380,120 240,80 C 120,60 60,110 0,95 Z" fill="#7e22ce" opacity="0.7" />
+          </svg>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 text-center px-4 sm:px-12 py-4">
+          <h1 className="text-3xl sm:text-4xl font-sans font-black text-[#581c87] tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-bold text-[#ea580c] tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </div>
+
+          <p className="text-xs font-sans font-semibold text-slate-500 mt-4 tracking-wide uppercase">
+            {certPresentation}
+          </p>
+
+          {/* Recipient in Vibrant Amber Cursive Calligraphy */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif italic text-[#c2410c] font-bold tracking-wide" style={{ fontFamily: 'Playfair Display, "Brush Script MT", cursive, serif' }}>
+              {certRecipient}
+            </h2>
+            <div className="w-64 h-0.5 bg-[#a855f7] mx-auto mt-1" />
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-purple-900 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-[#c2410c] font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-sans font-medium">
+            {certBody}
+          </p>
+
+          {/* Award Date */}
+          <div className="text-xs font-bold text-purple-950 mt-4">
+            Date: <span className="font-mono text-slate-700">{certDate}</span>
+          </div>
+
+          {/* Dual Signatures */}
+          <div className="pt-6 sm:pt-8 flex items-end justify-between px-6 sm:px-16">
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig1Name} color="#7e22ce" />
+              <div className="w-32 sm:w-36 h-0.5 bg-purple-700 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig2Name} color="#7e22ce" />
+              <div className="w-32 sm:w-36 h-0.5 bg-purple-700 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =========================================================================
+  // TEMPLATE 5 (Participation): Imperial Baroque Gold Crest (Muhammad Patel)
+  // =========================================================================
+  const renderImperialBaroqueGoldCrestParticipation = (st) => {
+    const certRecipient = certConfig.recipientName || st.student_name || 'Muhammad Patel';
+    const certTitle = certConfig.title || 'CERTIFICATE';
+    const certSubtitle = certConfig.subtitle || 'OF PARTICIPATION';
+    const certPresentation = certConfig.presentationLine || 'THIS IS PROUDLY PRESENTED TO';
+    const certBody = certConfig.bodyText || 'for their active involvement, dedication, and valuable contributions in the Community Service Initiative. Your tireless efforts made a profound positive difference.';
+    const certDate = certConfig.awardDate || '20 December 2024';
+    const certSig1Name = certConfig.signatory1Name || 'Samira Hadid';
+    const certSig1Title = certConfig.signatory1Title || 'Project Lead';
+    const certSig2Name = certConfig.signatory2Name || 'Morgan Maxwell';
+    const certSig2Title = certConfig.signatory2Title || 'Managing Director';
+
+    return (
+      <div className="bg-[#fffdf8] p-6 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-serif max-w-4xl mx-auto border-8 border-double border-amber-600/70">
+        {/* Full Baroque Gold Corner Flourishes */}
+        <div className="absolute top-2 left-2 w-16 h-16 text-amber-600 pointer-events-none">
+          <CornerBaroqueFiligree className="w-full h-full" />
+        </div>
+        <div className="absolute top-2 right-2 w-16 h-16 text-amber-600 pointer-events-none rotate-90">
+          <CornerBaroqueFiligree className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-2 left-2 w-16 h-16 text-amber-600 pointer-events-none -rotate-90">
+          <CornerBaroqueFiligree className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-2 right-2 w-16 h-16 text-amber-600 pointer-events-none rotate-180">
+          <CornerBaroqueFiligree className="w-full h-full" />
+        </div>
+
+        {/* Top Royal Crown / Crest Emblem */}
+        <div className="relative z-10 text-center px-4 sm:px-12 py-2">
+          <div className="flex justify-center mb-1">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-600 to-amber-800 text-amber-100 flex items-center justify-center font-black text-xl border-2 border-amber-300 shadow-md">
+              <Award className="w-7 h-7 text-amber-100" />
+            </div>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl font-serif font-black text-slate-900 tracking-wider uppercase">
+            {certTitle}
+          </h1>
+          <div className="text-xs sm:text-sm font-bold text-amber-700 tracking-widest uppercase mt-0.5">
+            {certSubtitle}
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-amber-600 my-2">
+            <span className="w-24 h-0.5 bg-gradient-to-r from-transparent to-amber-600" />
+            <span className="text-sm">✦ ❦ ✦</span>
+            <span className="w-24 h-0.5 bg-gradient-to-l from-transparent to-amber-600" />
+          </div>
+
+          <p className="text-xs font-serif italic text-slate-600 mt-2">
+            {certPresentation}
+          </p>
+
+          {/* Recipient in Regal Dark Serif */}
+          <div className="my-2 max-w-lg mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-serif text-slate-950 font-bold tracking-wide">
+              {certRecipient}
+            </h2>
+            <div className="w-64 h-0.5 bg-amber-600/70 mx-auto mt-1" />
+          </div>
+
+          {/* Class / Batch Indicator */}
+          {st.class_batch && (
+            <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider mb-1">
+              Class &amp; Section: <span className="text-slate-900 font-extrabold">{customClassSection || st.class_batch}</span>
+            </div>
+          )}
+
+          {/* Citation Body Text */}
+          <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed max-w-xl mx-auto px-4 mt-2 font-serif italic">
+            {certBody}
+          </p>
+
+          {/* Seal & Signatures */}
+          <div className="pt-6 sm:pt-8 flex items-end justify-between px-4 sm:px-12">
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig1Name} color="#1e293b" />
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-900 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig1Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig1Title}</span>
+            </div>
+
+            <div className="text-center -mb-2">
+              <ScallopedGoldMedallion size={74} />
+              <div className="text-[9px] font-mono text-slate-600 font-bold mt-0.5">{certDate}</div>
+            </div>
+
+            <div className="text-center min-w-[120px]">
+              <HandWrittenSignature name={certSig2Name} color="#1e293b" />
+              <div className="w-32 sm:w-36 h-0.5 bg-slate-900 mx-auto mt-1 mb-1" />
+              <strong className="text-xs font-bold text-slate-900 block">{certSig2Name}</strong>
+              <span className="text-[10px] text-slate-500 font-medium">{certSig2Title}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Helper to render individual printable document
   const renderDocumentContent = (st, type) => {
     const regNo = getDocRegNo(st, type);
@@ -2265,122 +2940,15 @@ export default function TransferCertificateView() {
         }
       }
 
-      // 3. CERTIFICATE OF PARTICIPATION (5 Master Design Layouts)
+      // 3. CERTIFICATE OF PARTICIPATION (5 Master Design Layouts from User Upload)
       case 'participation': {
         switch (participationTemplate) {
-          case 'modern_teal_geometric': return renderModernTealParticipation(st);
-          
-          case 'olympic_gold_laurel':
-            return (
-              <div className="bg-gradient-to-br from-amber-50 via-white to-orange-50 text-slate-900 p-8 sm:p-10 rounded-3xl border-8 border-amber-500 shadow-2xl relative overflow-hidden font-sans">
-                <div className="text-center space-y-2 relative z-10">
-                  <div className="w-16 h-16 rounded-full bg-amber-500 text-white flex items-center justify-center mx-auto shadow-md">
-                    <Trophy className="w-9 h-9 text-white" />
-                  </div>
-                  <h2 className="font-black text-2xl text-amber-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-xs font-bold text-orange-700 tracking-widest uppercase">ANNUAL ATHLETIC &amp; SPORTS MEET</div>
-                  <h1 className="text-3xl sm:text-4xl font-black text-slate-950 uppercase tracking-wider pt-2">
-                    CERTIFICATE OF PARTICIPATION
-                  </h1>
-                </div>
-                <div className="text-center space-y-3 py-6 px-6 relative z-10">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">PROUDLY PRESENTED TO</p>
-                  <div className="text-3xl font-black text-amber-900 border-b-2 border-amber-500 pb-1 max-w-md mx-auto">
-                    {st.student_name}
-                  </div>
-                  <p className="text-xs text-slate-600">Representing <strong>{st.class_batch}</strong></p>
-                  <p className="text-xs text-slate-700 max-w-lg mx-auto leading-relaxed">
-                    For active, enthusiastic participation and sportsmanship in the <strong className="text-amber-900 font-bold">{eventName}</strong>.
-                  </p>
-                </div>
-                <div className="pt-4 border-t border-amber-300 flex items-end justify-between px-6 relative z-10 text-xs">
-                  <div className="text-center space-y-1">
-                    <div className="font-bold text-slate-800">Prof. Sports Director</div>
-                    <div className="text-[10px] text-slate-500 uppercase">Head of Physical Ed.</div>
-                  </div>
-                  <ModernHologramSeal size={74} />
-                  <div className="text-center space-y-1">
-                    <div className="font-bold text-slate-900">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'cyber_neon_hackathon':
-            return (
-              <div className="bg-slate-950 text-white p-8 sm:p-10 rounded-3xl border-4 border-cyan-500 shadow-2xl relative overflow-hidden font-mono">
-                <div className="text-center space-y-2 relative z-10">
-                  <div className="text-xs text-cyan-400 font-bold uppercase tracking-widest">&lt;STEM &amp; AI INNOVATION /&gt;</div>
-                  <h2 className="text-2xl font-black text-white uppercase tracking-wider">{schoolInfo.schoolName}</h2>
-                  <h1 className="text-3xl font-black text-cyan-400 uppercase tracking-widest pt-2">PARTICIPATION BADGE</h1>
-                </div>
-                <div className="text-center space-y-3 py-6 px-6 relative z-10">
-                  <div className="text-xs text-slate-400">AWARDED TO CONTESTANT:</div>
-                  <div className="text-3xl font-black text-cyan-300 border-b border-cyan-500 pb-1 max-w-md mx-auto">{st.student_name}</div>
-                  <div className="text-xs text-slate-300">GRADE: {st.class_batch} &bull; ID: {st.id}</div>
-                  <p className="text-xs text-slate-300 max-w-lg mx-auto font-sans">
-                    Successfully completed and showcased technical proficiency in the <strong className="text-cyan-300">{eventName}</strong>.
-                  </p>
-                </div>
-                <div className="pt-4 border-t border-cyan-900/60 flex items-end justify-between px-6 text-xs">
-                  <div>
-                    <div className="text-cyan-400 font-bold">{issueDate}</div>
-                    <div className="text-[9px] text-slate-500">TIMESTAMP VALIDATED</div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <div className="text-white font-bold">{schoolInfo.principalName}</div>
-                    <div className="text-[9px] text-slate-500 uppercase">Lead Coordinator</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'classic_crimson_contest':
-            return (
-              <div className="bg-white text-slate-900 p-8 sm:p-10 rounded-3xl border-8 border-rose-900 shadow-2xl relative overflow-hidden font-serif">
-                <div className="text-center space-y-2">
-                  <h2 className="text-2xl font-black text-rose-950 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-xs font-bold text-rose-800 uppercase tracking-widest">LITERARY, DEBATES &amp; CULTURAL FORUM</div>
-                  <h1 className="text-3xl font-bold text-rose-900 italic pt-2">Certificate of Participation</h1>
-                </div>
-                <div className="text-center space-y-3 py-6 px-6">
-                  <p className="text-xs font-sans text-slate-500 uppercase">Presented To</p>
-                  <div className="text-3xl font-black text-slate-950 border-b-2 border-rose-900 pb-1 max-w-md mx-auto font-sans">{st.student_name}</div>
-                  <p className="text-xs text-slate-600">Student of <strong>{st.class_batch}</strong></p>
-                  <p className="text-xs font-sans text-slate-700 max-w-lg mx-auto leading-relaxed">
-                    For commendable contribution in the cultural festival <strong className="text-rose-900">{eventName}</strong>.
-                  </p>
-                </div>
-                <div className="pt-4 border-t border-rose-200 flex items-end justify-between px-6 text-xs font-sans">
-                  <div className="text-slate-600">{issueDate}</div>
-                  <div className="text-center space-y-1">
-                    <div className="font-serif italic font-bold text-sm text-slate-900">{schoolInfo.principalName}</div>
-                    <div className="text-[10px] text-slate-500 uppercase">{schoolInfo.principalTitle}</div>
-                  </div>
-                </div>
-              </div>
-            );
-
-          case 'solar_amber_symposium':
-          default:
-            return (
-              <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white p-8 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden font-sans">
-                <div className="bg-slate-950/80 p-6 rounded-2xl border border-white/20 text-center space-y-4">
-                  <h2 className="text-2xl font-black text-amber-300 uppercase">{schoolInfo.schoolName}</h2>
-                  <div className="text-xs text-orange-200 uppercase font-bold tracking-widest">YOUTH LEADERSHIP &amp; MODEL UN SYMPOSIUM</div>
-                  <h1 className="text-3xl font-black text-white uppercase tracking-wider">CERTIFICATE OF PARTICIPATION</h1>
-                  <div className="text-3xl font-black text-amber-200 border-b border-amber-400 pb-1 max-w-md mx-auto">{st.student_name}</div>
-                  <p className="text-xs text-slate-200 max-w-lg mx-auto">
-                    Actively contributed as a student delegate from <strong>{st.class_batch}</strong> at <strong className="text-amber-300">{eventName}</strong>.
-                  </p>
-                  <div className="pt-4 border-t border-white/20 flex items-end justify-between text-xs px-4">
-                    <span className="text-amber-200 font-mono">{issueDate}</span>
-                    <span className="font-serif italic text-white text-sm">{schoolInfo.principalName}</span>
-                  </div>
-                </div>
-              </div>
-            );
+          case 'classic_gold_filigree_frame': return renderClassicGoldFiligreeFrameParticipation(st);
+          case 'modern_crystal_navy_angle': return renderModernCrystalNavyAngleParticipation(st);
+          case 'royal_purple_gold_arch': return renderRoyalPurpleGoldArchParticipation(st);
+          case 'lavender_sunset_wave': return renderLavenderSunsetWaveParticipation(st);
+          case 'imperial_baroque_gold_crest': return renderImperialBaroqueGoldCrestParticipation(st);
+          default: return renderClassicGoldFiligreeFrameParticipation(st);
         }
       }
 
@@ -3895,7 +4463,12 @@ export default function TransferCertificateView() {
               return (
                 <button
                   key={tpl.id}
-                  onClick={() => setParticipationTemplate(tpl.id)}
+                  onClick={() => {
+                    setParticipationTemplate(tpl.id);
+                    if (tpl.defaultConfig) {
+                      setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                    }
+                  }}
                   className={`p-3 rounded-2xl text-left border-2 transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
                       ? `bg-gradient-to-br ${tpl.activeBg} shadow-lg ring-2 ring-white/40 scale-[1.03]`
@@ -4179,8 +4752,8 @@ export default function TransferCertificateView() {
               />
             </div>
 
-            {/* Full Live Customizer for Certificate of Appreciation */}
-            {docType === 'appreciation' && (
+            {/* Full Live Customizer for Certificate of Appreciation & Participation */}
+            {(docType === 'appreciation' || docType === 'participation') && (
               <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50/80 to-rose-50/60 rounded-2xl border-2 border-amber-300/80 shadow-sm">
                 <div className="flex items-center justify-between border-b border-amber-200/60 pb-2">
                   <div className="flex items-center gap-1.5 font-black text-[11px] text-amber-950 uppercase tracking-wide">
@@ -4190,9 +4763,16 @@ export default function TransferCertificateView() {
                   <button
                     type="button"
                     onClick={() => {
-                      const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
-                      if (tpl && tpl.defaultConfig) {
-                        setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                      if (docType === 'appreciation') {
+                        const tpl = appreciationTemplatesList.find(t => t.id === appreciationTemplate);
+                        if (tpl && tpl.defaultConfig) {
+                          setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                        }
+                      } else if (docType === 'participation') {
+                        const tpl = participationTemplatesList.find(t => t.id === participationTemplate);
+                        if (tpl && tpl.defaultConfig) {
+                          setCertConfig(prev => ({ ...prev, ...tpl.defaultConfig }));
+                        }
                       }
                     }}
                     className="text-[10px] text-amber-800 hover:text-amber-950 font-bold underline cursor-pointer"
@@ -4206,7 +4786,7 @@ export default function TransferCertificateView() {
                     <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Certificate Title</label>
                     <input
                       type="text"
-                      placeholder="e.g. CERTIFICATE"
+                      placeholder="e.g. CERTIFICATE or CERTIFICATE OF"
                       value={certConfig.title}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, title: e.target.value }))}
                       className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-bold text-slate-900 bg-white"
@@ -4216,7 +4796,7 @@ export default function TransferCertificateView() {
                     <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Subtitle / Type</label>
                     <input
                       type="text"
-                      placeholder="e.g. OF APPRECIATION"
+                      placeholder="e.g. OF PARTICIPATION / OF APPRECIATION"
                       value={certConfig.subtitle}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, subtitle: e.target.value }))}
                       className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-bold text-slate-900 bg-white"
@@ -4228,7 +4808,7 @@ export default function TransferCertificateView() {
                   <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Presentation Line</label>
                   <input
                     type="text"
-                    placeholder="e.g. This certificate is presented to"
+                    placeholder="e.g. THIS CERTIFICATE IS PROUDLY PRESENTED TO"
                     value={certConfig.presentationLine}
                     onChange={(e) => setCertConfig(prev => ({ ...prev, presentationLine: e.target.value }))}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-semibold text-slate-900 bg-white"
@@ -4256,7 +4836,7 @@ export default function TransferCertificateView() {
                     value={certConfig.bodyText}
                     onChange={(e) => setCertConfig(prev => ({ ...prev, bodyText: e.target.value }))}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-medium text-slate-800 bg-white leading-relaxed resize-y"
-                    placeholder="Describe student achievements, contributions, or merit citation..."
+                    placeholder="Describe student achievements, contributions, or participation citation..."
                   />
                 </div>
 
@@ -4264,7 +4844,7 @@ export default function TransferCertificateView() {
                   <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Award / Presentation Date</label>
                   <input
                     type="text"
-                    placeholder="e.g. 10th of January, 2026"
+                    placeholder="e.g. 14 August 2024"
                     value={certConfig.awardDate}
                     onChange={(e) => setCertConfig(prev => ({ ...prev, awardDate: e.target.value }))}
                     className="w-full px-2.5 py-1.5 rounded-lg border border-amber-200 text-xs font-semibold text-slate-900 bg-white"
@@ -4276,14 +4856,14 @@ export default function TransferCertificateView() {
                     <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Signatory 1 Name</label>
                     <input
                       type="text"
-                      placeholder="e.g. Aaron Loeb"
+                      placeholder="e.g. Juliana Silva"
                       value={certConfig.signatory1Name}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, signatory1Name: e.target.value }))}
                       className="w-full px-2.5 py-1 rounded-lg border border-amber-200 text-[11px] font-bold text-slate-900 bg-white"
                     />
                     <input
                       type="text"
-                      placeholder="e.g. School Principal"
+                      placeholder="e.g. Art Coordinator"
                       value={certConfig.signatory1Title}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, signatory1Title: e.target.value }))}
                       className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-slate-600 bg-white mt-1"
@@ -4293,44 +4873,19 @@ export default function TransferCertificateView() {
                     <label className="block font-bold text-slate-700 text-[10px] mb-0.5">Signatory 2 Name</label>
                     <input
                       type="text"
-                      placeholder="e.g. Estelle Darcy"
+                      placeholder="e.g. Marceline Anderson"
                       value={certConfig.signatory2Name}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, signatory2Name: e.target.value }))}
                       className="w-full px-2.5 py-1 rounded-lg border border-amber-200 text-[11px] font-bold text-slate-900 bg-white"
                     />
                     <input
                       type="text"
-                      placeholder="e.g. Science Dept Head"
+                      placeholder="e.g. School Principal"
                       value={certConfig.signatory2Title}
                       onChange={(e) => setCertConfig(prev => ({ ...prev, signatory2Title: e.target.value }))}
                       className="w-full px-2.5 py-1 rounded-lg border border-slate-200 text-[10px] text-slate-600 bg-white mt-1"
                     />
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* Event & Participation Specific Fields */}
-            {docType === 'participation' && (
-              <div className="space-y-3 p-3 bg-amber-50/60 rounded-2xl border border-amber-200">
-                <div className="text-[11px] font-bold text-amber-900 uppercase">Award &amp; Event Details</div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Award / Honor Title</label>
-                  <input
-                    type="text"
-                    value={awardTitle}
-                    onChange={(e) => setAwardTitle(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Competition / Event Name</label>
-                  <input
-                    type="text"
-                    value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 bg-white"
-                  />
                 </div>
               </div>
             )}
