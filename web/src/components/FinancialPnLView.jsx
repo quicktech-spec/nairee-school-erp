@@ -45,40 +45,49 @@ const INITIAL_PETTY_CASH = [
 
 export default function FinancialPnLView() {
   const { tenant } = useTenant();
+  const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
   const tenantKey = tenant?.tenant_id || 'default';
 
   // Reactive Student Fee Records State from Master DB
   const [studentRecords, setStudentRecords] = useState(() => {
     try {
       const master = getMasterStudents();
-      return master && master.length > 0 ? master : FALLBACK_STUDENTS;
+      if (master && Array.isArray(master)) {
+        return master;
+      }
+      return isMasterSchool ? FALLBACK_STUDENTS : [];
     } catch {
-      return FALLBACK_STUDENTS;
+      return isMasterSchool ? FALLBACK_STUDENTS : [];
     }
   });
 
   // Base constants in Indian Rupees (₹)
   const tuitionPerStudent = 35000;
-  const labTechFees = 45000;
-  const transportFees = 60000;
+  const labTechFees = isMasterSchool ? 45000 : 0;
+  const transportFees = isMasterSchool ? 60000 : 0;
 
   // Faculty Payroll calculation
-  const termPayrollDisbursed = 185000;
+  const termPayrollDisbursed = isMasterSchool ? 185000 : 0;
 
   // Operational Expenses State in INR from Master DB
   const [expenses, setExpenses] = useState(() => {
     try {
       const masterExp = getMasterExpenses();
-      return masterExp && masterExp.length > 0 ? masterExp : [
+      if (masterExp && Array.isArray(masterExp)) {
+        return masterExp;
+      }
+      return isMasterSchool ? [
         { id: 'EXP 001', expense_id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' },
         { id: 'EXP 002', expense_id: 'EXP-002', category: 'Campus Lease & Rent', description: 'Academic Block A & B Lease', amount: 48000, date: '2026-09-01', status: 'Paid', type: 'operational' },
         { id: 'EXP 003', expense_id: 'EXP-003', category: 'Utilities & Power', description: 'Electricity, High Speed Fiber & Water Bill', amount: 14500, date: '2026-10-02', status: 'Pending', type: 'operational' },
         { id: 'EXP 004', expense_id: 'EXP-004', category: 'Annual Function 2026', description: 'Auditorium Lighting, Sound & Stage Decor', amount: 18500, date: '2026-10-03', status: 'Pending', type: 'event' },
         { id: 'EXP 005', expense_id: 'EXP-005', category: 'Sports Day Meet', description: 'Medals, Track Equipment & Refreshments', amount: 9200, date: '2026-10-04', status: 'Pending', type: 'event' },
         { id: 'EXP 006', expense_id: 'EXP-006', category: 'STEM Lab Upgrades', description: 'Robotics Sensors & Microcontroller Kits', amount: 12000, date: '2026-09-25', status: 'Paid', type: 'facility' }
-      ];
+      ] : [];
     } catch {
-      return [];
+      return isMasterSchool ? [
+        { id: 'EXP 001', expense_id: 'EXP-001', category: 'Teacher Payroll', description: 'Term 1 Faculty & Staff Disbursal', amount: termPayrollDisbursed, date: '2026-09-28', status: 'Paid', type: 'operational' }
+      ] : [];
     }
   });
 
@@ -86,9 +95,10 @@ export default function FinancialPnLView() {
   const [pettyCashImprest, setPettyCashImprest] = useState(() => {
     try {
       const saved = localStorage.getItem(`nairee_petty_cash_imprest_${tenantKey}`);
-      return saved ? Number(saved) : 25000;
+      if (saved) return Number(saved);
+      return isMasterSchool ? 25000 : 0;
     } catch {
-      return 25000;
+      return isMasterSchool ? 25000 : 0;
     }
   });
 
@@ -97,7 +107,7 @@ export default function FinancialPnLView() {
       const saved = localStorage.getItem(`nairee_petty_cash_ledger_${tenantKey}`);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return INITIAL_PETTY_CASH;
+    return isMasterSchool ? INITIAL_PETTY_CASH : [];
   });
 
   const [selectedExpenseIds, setSelectedExpenseIds] = useState([]);
@@ -144,11 +154,11 @@ export default function FinancialPnLView() {
   useEffect(() => {
     const unsubscribe = subscribeLiveEvents((event) => {
       const freshStudents = getMasterStudents();
-      if (freshStudents && freshStudents.length > 0) {
+      if (freshStudents) {
         setStudentRecords(freshStudents);
       }
       const freshExpenses = getMasterExpenses();
-      if (freshExpenses && freshExpenses.length > 0) {
+      if (freshExpenses) {
         setExpenses(freshExpenses);
       }
     });

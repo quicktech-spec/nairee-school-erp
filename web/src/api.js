@@ -355,18 +355,54 @@ const PK_MAP = {
   'Alumni Network': 'alumni_id'
 };
 
-export function getStoredDb() {
-  if (typeof localStorage === 'undefined') return INITIAL_DB_STORE;
+export function getActiveTenantId() {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const qTenant = params.get('tenant') || params.get('school') || params.get('subdomain');
+    if (qTenant) return qTenant.toLowerCase();
+    const storedTenant = localStorage.getItem('nairee_active_tenant_id');
+    if (storedTenant) return storedTenant.toLowerCase();
+  }
+  return 'tenant-default';
+}
+
+export function isMasterOrDemoTenant(tenantId) {
+  if (!tenantId) return true;
+  const tid = String(tenantId).toLowerCase();
+  return tid === 'tenant-default' || tid === 'demo';
+}
+
+export function createEmptyTenantDbStore() {
+  const emptyStore = {};
+  Object.keys(INITIAL_DB_STORE).forEach(tableName => {
+    emptyStore[tableName] = {
+      columns: INITIAL_DB_STORE[tableName].columns || [],
+      rows: []
+    };
+  });
+  return emptyStore;
+}
+
+export function getStoredDb(explicitTenantId = null) {
+  const tenantId = explicitTenantId || getActiveTenantId();
+  const isDemo = isMasterOrDemoTenant(tenantId);
+  const storageKey = isDemo ? 'nairee_db_store' : `nairee_db_store_${tenantId}`;
+
+  if (typeof localStorage === 'undefined') {
+    return isDemo ? INITIAL_DB_STORE : createEmptyTenantDbStore();
+  }
+
   try {
-    const saved = localStorage.getItem('nairee_db_store');
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (parsed && typeof parsed === 'object') {
-        const merged = { ...INITIAL_DB_STORE };
+        const baseTemplate = isDemo ? INITIAL_DB_STORE : createEmptyTenantDbStore();
+        const merged = { ...baseTemplate };
         
         // Use user saved tables as authoritative single source of truth
-        Object.keys(INITIAL_DB_STORE).forEach(tableName => {
-          const initTable = INITIAL_DB_STORE[tableName];
+        Object.keys(baseTemplate).forEach(tableName => {
+          const initTable = baseTemplate[tableName];
           const savedTable = parsed[tableName];
 
           if (savedTable && Array.isArray(savedTable.rows)) {
@@ -391,22 +427,35 @@ export function getStoredDb() {
       }
     }
   } catch (e) {
-    console.warn('Error reading nairee_db_store:', e);
+    console.warn('Error reading tenant db store:', e);
   }
-  return INITIAL_DB_STORE;
+
+  if (isDemo) {
+    return INITIAL_DB_STORE;
+  } else {
+    const freshEmpty = createEmptyTenantDbStore();
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(freshEmpty));
+    } catch (e) {}
+    return freshEmpty;
+  }
 }
 
-export function saveStoredDb(newDbStore, shouldBroadcast = true) {
+export function saveStoredDb(newDbStore, shouldBroadcast = true, explicitTenantId = null) {
   if (!newDbStore) return;
+  const tenantId = explicitTenantId || getActiveTenantId();
+  const isDemo = isMasterOrDemoTenant(tenantId);
+  const storageKey = isDemo ? 'nairee_db_store' : `nairee_db_store_${tenantId}`;
+
   try {
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('nairee_db_store', JSON.stringify(newDbStore));
+      localStorage.setItem(storageKey, JSON.stringify(newDbStore));
     }
   } catch (e) {
-    console.warn('Error writing nairee_db_store:', e);
+    console.warn('Error writing tenant db store:', e);
   }
   if (shouldBroadcast) {
-    broadcastLiveEvent('db_store_updated', newDbStore);
+    broadcastLiveEvent('db_store_updated', { newDbStore, tenantId });
   }
 }
 
@@ -616,7 +665,10 @@ export function cascadeStudentUpdates(updatedStudentsList, dbStore) {
 // Master Helpers for Students & Teachers
 export function getMasterStudents() {
   const db = getStoredDb();
-  return db['Student List']?.rows || INITIAL_DB_STORE['Student List'].rows;
+  if (db['Student List'] && Array.isArray(db['Student List'].rows)) {
+    return db['Student List'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Student List'].rows : [];
 }
 
 export function saveMasterStudents(updatedStudentsList) {
@@ -677,7 +729,10 @@ export function syncStudentAcrossAllDatasets(studentIdentifier, studentUpdates =
 
 export function getMasterTeachers() {
   const db = getStoredDb();
-  return db['Teacher List']?.rows || INITIAL_DB_STORE['Teacher List'].rows;
+  if (db['Teacher List'] && Array.isArray(db['Teacher List'].rows)) {
+    return db['Teacher List'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Teacher List'].rows : [];
 }
 
 export function cascadeTeacherUpdates(updatedTeachersList, dbStore) {
@@ -835,7 +890,10 @@ export function syncTeacherAcrossAllDatasets(teacherIdentifier, teacherUpdates =
 // Master Helpers for Non-Teaching Staff & Personnel
 export function getMasterStaff() {
   const db = getStoredDb();
-  return db['Staff & Personnel']?.rows || INITIAL_DB_STORE['Staff & Personnel'].rows;
+  if (db['Staff & Personnel'] && Array.isArray(db['Staff & Personnel'].rows)) {
+    return db['Staff & Personnel'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Staff & Personnel'].rows : [];
 }
 
 export function cascadeStaffUpdates(updatedStaffList, dbStore) {
@@ -864,7 +922,7 @@ export function saveMasterStaff(updatedStaffList) {
 
 export function syncStaffAcrossAllDatasets(staffIdentifier, staffUpdates = {}) {
   let db = getStoredDb();
-  const staffList = [...(db['Staff & Personnel']?.rows || INITIAL_DB_STORE['Staff & Personnel'].rows)];
+  const staffList = [...(db['Staff & Personnel']?.rows || (isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Staff & Personnel'].rows : []))];
   const cleanId = String(staffIdentifier || '').toLowerCase().trim();
 
   let targetStaff = null;
@@ -896,7 +954,10 @@ export function syncStaffAcrossAllDatasets(staffIdentifier, staffUpdates = {}) {
 // Master Helpers for School Administrators
 export function getMasterAdmins() {
   const db = getStoredDb();
-  return db['Admin List']?.rows || INITIAL_DB_STORE['Admin List'].rows;
+  if (db['Admin List'] && Array.isArray(db['Admin List'].rows)) {
+    return db['Admin List'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Admin List'].rows : [];
 }
 
 export function cascadeAdminUpdates(updatedAdminsList, dbStore) {
@@ -922,7 +983,7 @@ export function saveMasterAdmins(updatedAdminsList) {
 
 export function syncAdminAcrossAllDatasets(adminIdentifier, adminUpdates = {}) {
   let db = getStoredDb();
-  const adminList = [...(db['Admin List']?.rows || INITIAL_DB_STORE['Admin List'].rows)];
+  const adminList = [...(db['Admin List']?.rows || (isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Admin List'].rows : []))];
   const cleanId = String(adminIdentifier || '').toLowerCase().trim();
 
   let targetAdmin = null;
@@ -953,7 +1014,10 @@ export function syncAdminAcrossAllDatasets(adminIdentifier, adminUpdates = {}) {
 // Master Helpers for Parents & Guardians
 export function getMasterParents() {
   const db = getStoredDb();
-  return db['Parent List']?.rows || INITIAL_DB_STORE['Parent List'].rows;
+  if (db['Parent List'] && Array.isArray(db['Parent List'].rows)) {
+    return db['Parent List'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Parent List'].rows : [];
 }
 
 export function cascadeParentUpdates(updatedParentsList, dbStore) {
@@ -1017,7 +1081,7 @@ export function saveMasterParents(updatedParentsList) {
 
 export function syncParentAcrossAllDatasets(parentIdentifier, parentUpdates = {}) {
   let db = getStoredDb();
-  const parentList = [...(db['Parent List']?.rows || INITIAL_DB_STORE['Parent List'].rows)];
+  const parentList = [...(db['Parent List']?.rows || (isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Parent List'].rows : []))];
   const cleanId = String(parentIdentifier || '').toLowerCase().trim();
 
   let targetParent = null;
@@ -1049,7 +1113,10 @@ export function syncParentAcrossAllDatasets(parentIdentifier, parentUpdates = {}
 // Master Helpers for Classes & Batches
 export function getMasterClasses() {
   const db = getStoredDb();
-  return db['Class & Batch List']?.rows || INITIAL_DB_STORE['Class & Batch List'].rows;
+  if (db['Class & Batch List'] && Array.isArray(db['Class & Batch List'].rows)) {
+    return db['Class & Batch List'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Class & Batch List'].rows : [];
 }
 
 export function saveMasterClasses(updatedClassesList) {
@@ -1069,7 +1136,7 @@ export function saveMasterClasses(updatedClassesList) {
 
 export function syncClassAcrossAllDatasets(batchIdentifier, classUpdates = {}) {
   let db = getStoredDb();
-  const classesList = [...(db['Class & Batch List']?.rows || INITIAL_DB_STORE['Class & Batch List'].rows)];
+  const classesList = [...(db['Class & Batch List']?.rows || (isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Class & Batch List'].rows : []))];
   const cleanId = String(batchIdentifier || '').toLowerCase().trim();
 
   let targetClass = null;
@@ -1100,7 +1167,10 @@ export function syncClassAcrossAllDatasets(batchIdentifier, classUpdates = {}) {
 // Master Helpers for Operational Expenses & P&L (Profit & Loss)
 export function getMasterExpenses() {
   const db = getStoredDb();
-  return db['Operational Expenses (P&L)']?.rows || INITIAL_DB_STORE['Operational Expenses (P&L)'].rows;
+  if (db['Operational Expenses (P&L)'] && Array.isArray(db['Operational Expenses (P&L)'].rows)) {
+    return db['Operational Expenses (P&L)'].rows;
+  }
+  return isMasterOrDemoTenant(getActiveTenantId()) ? INITIAL_DB_STORE['Operational Expenses (P&L)'].rows : [];
 }
 
 export function saveMasterExpenses(updatedExpensesList) {
@@ -1393,20 +1463,20 @@ export const api = {
     const totalBilled = invoices.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
     const totalCollected = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
     const totalOutstanding = invoices.filter(i => i.status === 'Pending' || i.status === 'Unpaid').reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
-    const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 100;
+    const collectionRate = totalBilled > 0 ? Math.round((totalCollected / totalBilled) * 100) : 0;
 
     const presentAttendance = attendance.filter(a => a.status === 'Present').length;
-    const attendanceRate = attendance.length > 0 ? ((presentAttendance / attendance.length) * 100).toFixed(1) + '%' : '96.4%';
+    const attendanceRate = attendance.length > 0 ? ((presentAttendance / attendance.length) * 100).toFixed(1) + '%' : '0%';
 
     return {
       students: totalStudents,
       teachers: totalTeachers,
-      total_students: 840,
+      total_students: totalStudents,
       total_teachers: totalTeachers,
       attendance_rate: attendanceRate,
       fee_collection_rate: `${collectionRate}%`,
-      active_courses: db['Subjects List']?.rows?.length || 5,
-      pending_homework: db['Homework List']?.rows?.length || 3,
+      active_courses: db['Subjects List']?.rows?.length || 0,
+      pending_homework: db['Homework List']?.rows?.length || 0,
       finance: {
         totalBilled,
         totalCollected,

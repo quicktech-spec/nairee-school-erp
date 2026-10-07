@@ -81,9 +81,9 @@ function dateToWords(dateStr) {
   return `${dayWord} of ${monthWord} ${yearWord}`;
 }
 
-function getSynchronizedStudents() {
+function getSynchronizedStudents(isMasterSchool = true) {
   const master = getMasterStudents();
-  if (master && master.length > 0) {
+  if (master && Array.isArray(master) && master.length > 0) {
     return master.map((s, idx) => ({
       id: s.student_id || s.id || generateStudentId({ sequence: idx + 1 }),
       name: s.name || s.student_name,
@@ -111,11 +111,12 @@ function getSynchronizedStudents() {
       feeDues: (s.fee_status === 'Pending' || s.fee_status === 'Unpaid') ? 35000 : 0
     }));
   }
-  return FALLBACK_STUDENTS;
+  return isMasterSchool ? FALLBACK_STUDENTS : [];
 }
 
 export default function TransferCertificateView() {
   const { tenant, updateTenant } = useTenant();
+  const isMasterSchool = !tenant || tenant.is_master_school || tenant.tenant_id === 'tenant-default' || tenant.subdomain === 'demo';
   
   // Active enabled certificates for this institution (defaults to the 3 chosen: TC, Appreciation, ID Card)
   const [activeCertificates, setActiveCertificates] = useState(() => {
@@ -170,10 +171,10 @@ export default function TransferCertificateView() {
 
   const [customClassSection, setCustomClassSection] = useState('');
   
-  const [studentList, setStudentList] = useState(() => getSynchronizedStudents());
+  const [studentList, setStudentList] = useState(() => getSynchronizedStudents(isMasterSchool));
   const [selectedStudentId, setSelectedStudentId] = useState(() => {
-    const list = getSynchronizedStudents();
-    return list[0]?.id || 'NIS-2024-091-001';
+    const list = getSynchronizedStudents(isMasterSchool);
+    return list[0]?.id || (isMasterSchool ? 'NIS-2024-091-001' : '');
   });
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -251,11 +252,11 @@ export default function TransferCertificateView() {
   // Auto-sync updates across app (transfers, admissions, fee clearances)
   useEffect(() => {
     const unsub = subscribeLiveEvents(() => {
-      const freshList = getSynchronizedStudents();
+      const freshList = getSynchronizedStudents(isMasterSchool);
       setStudentList(freshList);
     });
     return () => unsub();
-  }, []);
+  }, [isMasterSchool]);
 
   const docTypesList = [
     {

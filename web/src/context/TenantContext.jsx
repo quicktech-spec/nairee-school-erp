@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase, teardownRealtimeAndSession } from '../supabaseClient.js';
-import { subscribeLiveEvents, broadcastLiveEvent } from '../api.js';
+import { subscribeLiveEvents, broadcastLiveEvent, createEmptyTenantDbStore } from '../api.js';
 
 const TenantContext = createContext(null);
 
@@ -444,8 +444,15 @@ export function TenantProvider({ children }) {
     const updatedList = [...(tenantsList || []).filter(t => t?.tenant_id !== newTenant.tenant_id), newTenant];
     setTenantsList(updatedList);
     try {
+      const emptyDb = createEmptyTenantDbStore();
+      localStorage.setItem('nairee_db_store_' + newTenant.tenant_id, JSON.stringify(emptyDb));
+      if (newTenant.subdomain) {
+        localStorage.setItem('nairee_db_store_' + newTenant.subdomain, JSON.stringify(emptyDb));
+      }
+      localStorage.setItem('nairee_petty_cash_imprest_' + newTenant.tenant_id, '0');
+      localStorage.setItem('nairee_petty_cash_ledger_' + newTenant.tenant_id, JSON.stringify([]));
       localStorage.setItem('nairee_tenants_store', JSON.stringify(updatedList));
-      broadcastLiveEvent('tenant_created', { tenantsList: updatedList, newTenant });
+      broadcastLiveEvent('tenant_created', { tenantsList: updatedList, newTenant, dbStore: emptyDb });
     } catch (e) {}
 
     setActiveTenant(newTenant);
