@@ -406,7 +406,7 @@ export default function GradebookView() {
       });
 
       broadcastLiveEvent('marks_updated', { student_id: studentId, marksheet: marksheetRecord });
-      showToast(`Marksheet saved successfully for ${studentName} (Roll #${rollNo})!`);
+      showToast(`Marksheet saved successfully for ${studentName} (Roll: ${rollNo})!`);
 
       if (andNext) {
         handleStepStudent(1);
@@ -591,7 +591,7 @@ export default function GradebookView() {
                     ) : (
                       filteredStudents.map(s => (
                         <option key={s.student_id || s.id} value={s.student_id || s.id}>
-                          {s.student_name || s.name} • Roll #{s.roll_no ? String(s.roll_no).padStart(2, '0') : '01'} ({s.class_batch || s.student_batch || 'Class 10-A'})
+                          {s.student_name || s.name} • Roll: {s.roll_no ? String(s.roll_no).padStart(2, '0') : '01'} ({s.class_batch || s.student_batch || 'Class 10-A'})
                         </option>
                       ))
                     )}
@@ -1294,7 +1294,7 @@ export default function GradebookView() {
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block uppercase font-bold">Roll Number</span>
-                  <span className="font-black text-slate-900 text-sm">Roll #{currentStudent.roll_no ? String(currentStudent.roll_no).padStart(2, '0') : '01'}</span>
+                  <span className="font-black text-slate-900 text-sm">{currentStudent.roll_no ? String(currentStudent.roll_no).padStart(2, '0') : '01'}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block uppercase font-bold">Class & Section</span>

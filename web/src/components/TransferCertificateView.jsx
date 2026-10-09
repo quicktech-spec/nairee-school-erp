@@ -105,15 +105,81 @@ function numberToWords(num) {
   return String(num);
 }
 
-// Utility: Convert standard Date string (YYYY-MM-DD) to full English words (e.g. "Twelfth of April Two Thousand Eleven")
-function dateToWords(dateStr) {
-  if (!dateStr) return '';
-  const parts = String(dateStr).split('-');
-  if (parts.length !== 3) return dateStr;
+// Utility: Standardize and format any Date string to DD/MM/YYYY
+export function formatDateDMY(dateInput) {
+  if (!dateInput) return '';
+  const str = String(dateInput).trim();
   
-  const year = parseInt(parts[0], 10);
-  const monthIdx = parseInt(parts[1], 10) - 1;
-  const day = parseInt(parts[2], 10);
+  // If already DD/MM/YYYY
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+    return str;
+  }
+
+  // Format: YYYY-MM-DD or YYYY/MM/DD
+  const isoMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if (isoMatch) {
+    const y = isoMatch[1];
+    const m = isoMatch[2].padStart(2, '0');
+    const d = isoMatch[3].padStart(2, '0');
+    return `${d}/${m}/${y}`;
+  }
+
+  // Format: DD-MM-YYYY or DD/MM/YYYY
+  const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if (dmyMatch) {
+    const d = dmyMatch[1].padStart(2, '0');
+    const m = dmyMatch[2].padStart(2, '0');
+    const y = dmyMatch[3];
+    return `${d}/${m}/${y}`;
+  }
+
+  // Fallback: Date constructor
+  try {
+    const parsed = new Date(str);
+    if (!isNaN(parsed.getTime()) && !/^\d+$/.test(str)) {
+      const day = String(parsed.getDate()).padStart(2, '0');
+      const month = String(parsed.getMonth() + 1).padStart(2, '0');
+      const year = parsed.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  } catch (e) {}
+
+  return str;
+}
+
+// Utility: Convert standard Date string (YYYY-MM-DD or DD/MM/YYYY) to full English words (e.g. "Twelfth of April Two Thousand Eleven")
+export function dateToWords(dateStr) {
+  if (!dateStr) return '';
+  const str = String(dateStr).trim();
+  let year, monthIdx, day;
+
+  if (str.includes('/')) {
+    const parts = str.split('/');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        year = parseInt(parts[0], 10);
+        monthIdx = parseInt(parts[1], 10) - 1;
+        day = parseInt(parts[2], 10);
+      } else {
+        day = parseInt(parts[0], 10);
+        monthIdx = parseInt(parts[1], 10) - 1;
+        year = parseInt(parts[2], 10);
+      }
+    }
+  } else if (str.includes('-')) {
+    const parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        year = parseInt(parts[0], 10);
+        monthIdx = parseInt(parts[1], 10) - 1;
+        day = parseInt(parts[2], 10);
+      } else {
+        day = parseInt(parts[0], 10);
+        monthIdx = parseInt(parts[1], 10) - 1;
+        year = parseInt(parts[2], 10);
+      }
+    }
+  }
   
   if (isNaN(year) || isNaN(monthIdx) || isNaN(day)) return dateStr;
 
@@ -1922,7 +1988,15 @@ export default function TransferCertificateView() {
             <span className="w-36 text-slate-700 font-medium">Admission No.</span>
             <span className="text-slate-400">:</span>
             <span className="flex-1 border-b border-slate-400 pb-0.5 font-mono font-bold text-slate-900">
-              {st.id} &bull; Roll No: #{st.roll_no}
+              {st.id}
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2">
+            <span className="w-36 text-slate-700 font-medium">Roll No.</span>
+            <span className="text-slate-400">:</span>
+            <span className="flex-1 border-b border-slate-400 pb-0.5 font-mono font-bold text-slate-900">
+              {st.roll_no}
             </span>
           </div>
 
@@ -1930,7 +2004,7 @@ export default function TransferCertificateView() {
             <span className="w-36 text-slate-700 font-medium">Date of Birth</span>
             <span className="text-slate-400">:</span>
             <span className="w-40 border-b border-slate-400 pb-0.5 font-bold text-slate-900">
-              {st.dob}
+              {formatDateDMY(st.dob)}
             </span>
             <span className="text-slate-500 italic text-[11px]">(in words)</span>
             <span className="flex-1 border-b border-slate-400 pb-0.5 italic font-serif text-slate-900 text-[11.5px]">
@@ -1950,7 +2024,7 @@ export default function TransferCertificateView() {
             <span className="w-36 text-slate-700 font-medium">Date of Issue</span>
             <span className="text-slate-400">:</span>
             <span className="flex-1 border-b border-slate-400 pb-0.5 font-mono font-bold text-slate-900">
-              {issueDate}
+              {formatDateDMY(issueDate)}
             </span>
           </div>
         </div>
@@ -2035,8 +2109,9 @@ export default function TransferCertificateView() {
         <div className="flex justify-between items-center text-xs font-mono border-b border-amber-200 pb-2 text-slate-700 px-2">
           <span>Certificate No: <strong className="text-amber-900 font-bold">{regNo}</strong></span>
           <span>Admission ID: <strong className="text-slate-900">{st.id}</strong></span>
+          <span>Roll No: <strong className="text-slate-900">{st.roll_no}</strong></span>
           <span>Session: <strong className="text-slate-900">{academicSession}</strong></span>
-          <span>Date: <strong className="text-slate-900">{issueDate}</strong></span>
+          <span>Date: <strong className="text-slate-900">{formatDateDMY(issueDate)}</strong></span>
         </div>
 
         <div className="space-y-4 px-2 font-serif text-sm leading-relaxed text-slate-800">
@@ -2044,11 +2119,11 @@ export default function TransferCertificateView() {
             This is to officially certify that <strong className="text-slate-950 text-base underline underline-offset-4 decoration-amber-500 font-sans font-bold">{st.student_name}</strong>, 
             Son / Daughter of <strong className="text-slate-900">{st.father_name}</strong> and <strong className="text-slate-900">{st.mother_name}</strong>, 
             residing at <span className="text-slate-800 italic">{st.residential_address}</span>, 
-            was admitted to this institution on <strong className="text-slate-900 font-sans">{st.admission_date}</strong> and was a bonafide student of this school.
+            was admitted to this institution on <strong className="text-slate-900 font-sans">{formatDateDMY(st.admission_date)}</strong> and was a bonafide student of this school.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-2 px-4 bg-amber-50/50 rounded-xl border border-amber-200/80 font-sans text-xs">
-            <p>1. Date of Birth (in Figures): <strong className="text-slate-900 font-bold">{st.dob}</strong></p>
+            <p>1. Date of Birth (in Figures): <strong className="text-slate-900 font-bold">{formatDateDMY(st.dob)}</strong></p>
             <p>2. Date of Birth (in Words): <strong className="text-amber-950 italic">{dobWords}</strong></p>
             <p>3. Class in which Last Studied: <strong className="text-slate-900 font-bold">{st.class_batch}</strong></p>
             <p>4. Board / School Annual Result: <strong className="text-emerald-800 font-bold">{examResult}</strong></p>
@@ -2121,7 +2196,7 @@ export default function TransferCertificateView() {
           </div>
           <div className="text-right">
             <div>Book No: <span className="font-mono">{schoolInfo.bookNo}</span></div>
-            <div>Sr. No: <span className="font-mono font-bold text-red-700">{st.roll_no ? String(st.roll_no).padStart(4, '0') : '0101'}</span></div>
+            <div>Roll No: <span className="font-mono font-bold text-red-700">{st.roll_no ? String(st.roll_no).padStart(2, '0') : '01'}</span></div>
           </div>
         </div>
 
@@ -2131,7 +2206,8 @@ export default function TransferCertificateView() {
 
         <div className="flex justify-between items-center text-[11px] font-mono border-b pb-1 text-slate-700">
           <span>TC Number: <strong>{regNo}</strong></span>
-          <span>Admission / General Register No: <strong>{st.id}</strong></span>
+          <span>Admission / GR No: <strong>{st.id}</strong></span>
+          <span>Roll No: <strong>{st.roll_no}</strong></span>
         </div>
 
         <div className="space-y-2 text-[11.5px] leading-relaxed text-slate-800 divide-y divide-slate-100">
@@ -2157,12 +2233,12 @@ export default function TransferCertificateView() {
           </div>
           <div className="flex justify-between pt-1">
             <span className="w-2/3">6. Date of First Admission in School with Class:</span>
-            <strong className="w-1/3 text-right">{st.admission_date} ({st.admission_class || 'Class 9'})</strong>
+            <strong className="w-1/3 text-right">{formatDateDMY(st.admission_date)} ({st.admission_class || 'Class 9'})</strong>
           </div>
           <div className="flex justify-between pt-1">
             <span className="w-1/2">7. Date of Birth according to Admission Register:</span>
             <div className="w-1/2 text-right">
-              <div><strong>{st.dob}</strong> (in figures)</div>
+              <div><strong>{formatDateDMY(st.dob)}</strong> (in figures)</div>
               <div className="text-[10.5px] italic text-slate-600 font-serif">"{dobWords}" (in words)</div>
             </div>
           </div>
@@ -2275,13 +2351,16 @@ export default function TransferCertificateView() {
           </h1>
         </div>
 
-        {/* Sl. No & Admission No bar */}
+        {/* Sl. No, Admission No & Roll No bar */}
         <div className="flex justify-between items-center text-xs font-serif font-bold text-stone-800 border-b border-stone-400 pb-1 px-1">
           <div>
             Sl. No: <span className="font-mono underline text-sm font-black text-stone-950">{regNo}</span>
           </div>
           <div>
             Admission No. <span className="font-mono underline text-sm font-black text-stone-950">{st.id || '2289'}</span>
+          </div>
+          <div>
+            Roll No. <span className="font-mono underline text-sm font-black text-stone-950">{st.roll_no}</span>
           </div>
         </div>
 
@@ -2309,11 +2388,11 @@ export default function TransferCertificateView() {
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">6. Date of first admission in the School with class :</span>
-            <span className="w-1/2 text-right font-semibold border-b border-dotted border-stone-700 pb-0.5">{st.admission_date}, {st.admission_class || 'Class 6'}</span>
+            <span className="w-1/2 text-right font-semibold border-b border-dotted border-stone-700 pb-0.5">{formatDateDMY(st.admission_date)}, {st.admission_class || 'Class 6'}</span>
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">7. Date of birth (in Christian Era) according to Admission Register :</span>
-            <span className="w-1/2 text-right font-bold border-b border-dotted border-stone-700 pb-0.5">{st.dob} ({dobWords})</span>
+            <span className="w-1/2 text-right font-bold border-b border-dotted border-stone-700 pb-0.5">{formatDateDMY(st.dob)} ({dobWords})</span>
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">8. Class in which the student last studied :</span>
@@ -2367,11 +2446,11 @@ export default function TransferCertificateView() {
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">20. Date of application for certificate :</span>
-            <span className="w-1/2 text-right font-mono border-b border-dotted border-stone-700 pb-0.5">{issueDate}</span>
+            <span className="w-1/2 text-right font-mono border-b border-dotted border-stone-700 pb-0.5">{formatDateDMY(issueDate)}</span>
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">21. Date of issue of certificate :</span>
-            <span className="w-1/2 text-right font-mono font-bold border-b border-dotted border-stone-700 pb-0.5">{issueDate}</span>
+            <span className="w-1/2 text-right font-mono font-bold border-b border-dotted border-stone-700 pb-0.5">{formatDateDMY(issueDate)}</span>
           </div>
           <div className="flex items-baseline justify-between pt-1">
             <span className="w-1/2 text-stone-800">22. Reasons for leaving the school :</span>
@@ -2450,11 +2529,14 @@ export default function TransferCertificateView() {
 
         {/* Reference Numbers Bar */}
         <div className="grid grid-cols-12 text-xs font-serif font-bold text-slate-800 border-b border-slate-200 pb-2">
-          <div className="col-span-4">
+          <div className="col-span-3">
             Serial No. : <span className="font-mono text-sm font-black text-emerald-900 underline">{regNo}</span>
           </div>
-          <div className="col-span-5 text-center">
-            Registration No. : <span className="font-mono text-[11px] underline">6/2/23/90089/0023</span>
+          <div className="col-span-3 text-center">
+            Admission No. : <span className="font-mono text-[11px] underline font-bold">{st.id}</span>
+          </div>
+          <div className="col-span-3 text-center">
+            Roll No. : <span className="font-mono text-[11px] underline font-bold">{st.roll_no}</span>
           </div>
           <div className="col-span-3 text-right">
             Symbol No. : <span className="font-mono text-[11px] underline">27604273</span>
@@ -2495,7 +2577,7 @@ export default function TransferCertificateView() {
           </p>
 
           <p>
-            His/her date of birth according to our school register is <strong className="font-mono font-bold underline text-slate-950 px-2">{st.dob}</strong>.
+            His/her date of birth according to our school register is <strong className="font-mono font-bold underline text-slate-950 px-2">{formatDateDMY(st.dob)}</strong>.
           </p>
 
           <p className="italic text-slate-700 pt-1">
@@ -2506,7 +2588,7 @@ export default function TransferCertificateView() {
         {/* Date of Issue & Green Principal Signature + Stamp */}
         <div className="pt-8 border-t border-slate-300 flex items-end justify-between px-4">
           <div className="text-xs font-serif font-bold text-slate-800">
-            Date of Issue : <span className="font-mono underline font-black">{issueDate || '23-05-2023'}</span>
+            Date of Issue : <span className="font-mono underline font-black">{formatDateDMY(issueDate) || '23/05/2023'}</span>
           </div>
 
           <div className="text-center space-y-1">
@@ -2555,7 +2637,8 @@ export default function TransferCertificateView() {
         <div className="flex justify-between items-center text-xs font-mono border-b border-amber-300 pb-2 text-slate-700">
           <span>Certificate ID: <strong className="text-amber-900 font-bold">{regNo}</strong></span>
           <span>Admission ID: <strong>{st.id}</strong></span>
-          <span>Date of Issue: <strong>{issueDate}</strong></span>
+          <span>Roll No: <strong>{st.roll_no}</strong></span>
+          <span>Date of Issue: <strong>{formatDateDMY(issueDate)}</strong></span>
         </div>
 
         <div className="space-y-3 font-serif text-sm leading-relaxed text-slate-800">
@@ -2566,7 +2649,7 @@ export default function TransferCertificateView() {
           </p>
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-2 p-3 bg-amber-100/40 rounded-xl border border-amber-300 text-xs font-sans">
-            <p>Date of Birth: <strong>{st.dob} ({dobWords})</strong></p>
+            <p>Date of Birth: <strong>{formatDateDMY(st.dob)} ({dobWords})</strong></p>
             <p>Annual Examination: <strong className="text-emerald-800">{examResult}</strong></p>
             <p>Promotion Status: <strong className="text-slate-900">{promotedTo}</strong></p>
             <p>Character &amp; Conduct: <strong className="text-amber-950 font-bold">{conduct}</strong></p>
@@ -2656,7 +2739,7 @@ export default function TransferCertificateView() {
           <div className="font-bold text-slate-950">The Principal,</div>
           <div>{schoolInfo.schoolName || '[College Name]'}</div>
           <div>{schoolInfo.address || '[Address]'}</div>
-          <div>Date: <span className="font-mono font-bold">{issueDate || '[Date]'}</span></div>
+          <div>Date: <span className="font-mono font-bold">{formatDateDMY(issueDate) || '[Date]'}</span></div>
         </div>
 
         {/* Subject Line */}
@@ -2669,7 +2752,7 @@ export default function TransferCertificateView() {
           <div className="font-bold text-slate-950">Respected Sir/Madam,</div>
 
           <p className="indent-4">
-            {certConfig.bodyText || `I am the father of ${certRecipient}, a ${studentClass} student (Roll No: #${st.roll_no}) in your esteemed institution. Due to our family relocation (${reasonForLeaving || 'outstation transfer'}), we are unable to continue his/her studies at your institution.`}
+            {certConfig.bodyText || `I am the father of ${certRecipient}, a ${studentClass} student (Roll No: ${st.roll_no}) in your esteemed institution. Due to our family relocation (${reasonForLeaving || 'outstation transfer'}), we are unable to continue his/her studies at your institution.`}
           </p>
 
           <p className="indent-4">
@@ -2700,7 +2783,7 @@ export default function TransferCertificateView() {
             <div className="font-bold text-slate-800">Yours faithfully,</div>
             <div className="font-black text-slate-950 uppercase text-xs">{certConfig.signatory2Name || st.father_name || '[Parents Name]'}</div>
             <div className="text-[11px] text-slate-600">Class: {studentClass}</div>
-            <div className="text-[11px] font-mono text-slate-600">Roll No: #{st.roll_no}</div>
+            <div className="text-[11px] font-mono text-slate-600">Roll No: {st.roll_no}</div>
           </div>
         </div>
       </div>
@@ -4202,9 +4285,10 @@ export default function TransferCertificateView() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs font-mono my-3">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs font-mono my-3">
           <div>Candidate: <strong className="block text-cyan-300 font-sans text-sm">{certRecipient}</strong></div>
-          <div>Scholar ID / Roll: <strong className="block text-white">{st.id} / #{st.roll_no}</strong></div>
+          <div>Scholar ID: <strong className="block text-white">{st.id}</strong></div>
+          <div>Roll No: <strong className="block text-white">{st.roll_no}</strong></div>
           <div>Class / Batch: <strong className="block text-white">{customClassSection || st.class_batch}</strong></div>
         </div>
 
@@ -4217,7 +4301,7 @@ export default function TransferCertificateView() {
             </div>
             <div>
               <div className="font-mono text-[10px] text-cyan-400">HASH: SHA256:{regNo}</div>
-              <div className="text-[9px] text-slate-400">Verified Timestamp: {certDate}</div>
+              <div className="text-[9px] text-slate-400">Verified Timestamp: {formatDateDMY(certDate)}</div>
             </div>
           </div>
 
@@ -4864,7 +4948,7 @@ export default function TransferCertificateView() {
     const certSubtitle = certConfig.subtitle || 'ADMIT CARD – Term End Examination';
     const studentClass = customClassSection || st.class_batch || 'Class 10 - Section A';
     const certProgram = certConfig.presentationLine || (customClassSection ? `CLASS: ${customClassSection}` : (st.class_batch ? `CLASS: ${st.class_batch}` : 'BACHELOR OF ARTS (BAG)'));
-    const certDob = st.dob || '15 Feb 2000';
+    const certDob = formatDateDMY(st.dob) || '15/02/2000';
     const certEnrollment = st.roll_no ? `${st.roll_no}2026` : '2201712401';
     const regNo = getDocRegNo(st, 'admit_card');
 
@@ -4896,6 +4980,10 @@ export default function TransferCertificateView() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
           <div className="md:col-span-8 space-y-1.5 text-xs font-semibold text-slate-800">
             <div className="text-sm">
+              <span className="font-bold text-slate-700">Roll No:</span>{' '}
+              <strong className="font-mono text-base font-black text-slate-950">{st.roll_no || '01'}</strong>
+            </div>
+            <div className="text-sm">
               <span className="font-bold text-slate-700">Enrollment Number:</span>{' '}
               <strong className="font-mono text-base font-black text-slate-950 tracking-wider underline">{certEnrollment}</strong>
             </div>
@@ -4913,7 +5001,7 @@ export default function TransferCertificateView() {
             </div>
             <div>
               <span className="font-bold text-slate-700">Date of Birth:</span>{' '}
-              <span className="font-mono font-bold text-slate-900">{certDob}</span>
+              <span className="font-mono font-bold text-slate-900">{formatDateDMY(st.dob) || certDob}</span>
             </div>
             <div>
               <span className="font-bold text-slate-700">Medium:</span>{' '}
@@ -5022,7 +5110,7 @@ export default function TransferCertificateView() {
 
         {/* Roll Number Bar */}
         <div className="bg-slate-100 border-b border-slate-900 text-center py-1 font-mono font-black text-xs tracking-wider">
-          Roll Number : <span className="underline">{st.id || 'D220171240111'}</span>
+          Roll Number : <span className="underline">{st.roll_no || st.id || 'D220171240111'}</span>
         </div>
 
         {/* Candidate Profile Details & Photo Box */}
@@ -5034,7 +5122,7 @@ export default function TransferCertificateView() {
             <div><strong>Exam Centre Name :</strong> Private Shimla (Dr. Ambedkar Bhawan, H.P. University)</div>
             <div><strong>Candidate's Name :</strong> <strong className="font-black text-slate-950 uppercase">{certRecipient}</strong></div>
             <div className="flex justify-between">
-              <span><strong>Date Of Birth :</strong> {st.dob}</span>
+              <span><strong>Date Of Birth :</strong> {formatDateDMY(st.dob)}</span>
               <span><strong>Capacity :</strong> PRIVATE / REGULAR</span>
             </div>
             <div><strong>College Name :</strong> {schoolInfo.schoolName}</div>
@@ -5181,7 +5269,7 @@ export default function TransferCertificateView() {
               <span className="col-span-7 font-bold text-slate-900">{certPost}</span>
             </div>
             <div className="grid grid-cols-12 p-2">
-              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">Candidate's Roll. No</span>
+              <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">Candidate's Roll No</span>
               <strong className="col-span-7 font-mono font-bold text-slate-900">{st.roll_no || '12130101449'}</strong>
             </div>
             <div className="grid grid-cols-12 p-2">
@@ -5194,7 +5282,7 @@ export default function TransferCertificateView() {
             </div>
             <div className="grid grid-cols-12 p-2">
               <span className="col-span-5 font-bold uppercase text-[10px] text-slate-600">D.O.B. &bull; Gender</span>
-              <span className="col-span-7 font-bold text-slate-900">{st.dob} &bull; {st.gender || 'Male'}</span>
+              <span className="col-span-7 font-bold text-slate-900">{formatDateDMY(st.dob)} &bull; {st.gender || 'Male'}</span>
             </div>
             <div className="p-2 space-y-0.5">
               <span className="font-bold uppercase text-[10px] text-slate-600 block">NAME &amp; ADDRESS OF EXAMINATION CENTRE</span>
@@ -5284,7 +5372,7 @@ export default function TransferCertificateView() {
           <div className="grid grid-cols-12 border-b border-slate-900 font-bold text-xs bg-slate-50 divide-x divide-slate-900">
             <div className="col-span-3 p-2">Center Number: <span className="font-mono font-black">752883</span></div>
             <div className="col-span-5 p-2 text-center text-blue-950">{certPaper}</div>
-            <div className="col-span-4 p-2 text-right">Roll Number: <strong className="font-mono text-base font-black underline text-slate-950">{st.roll_no ? `${st.roll_no}7520147` : '75201475'}</strong></div>
+            <div className="col-span-4 p-2 text-right">Roll Number: <strong className="font-mono text-base font-black underline text-slate-950">{st.roll_no || '75201475'}</strong></div>
           </div>
 
           <div className="grid grid-cols-12 divide-x divide-slate-900">
@@ -5309,7 +5397,7 @@ export default function TransferCertificateView() {
               </div>
               <div className="grid grid-cols-3 p-2 text-[10px]">
                 <div>Medium: <strong>ENGLISH</strong></div>
-                <div>DOB: <strong>{st.dob}</strong></div>
+                <div>DOB: <strong>{formatDateDMY(st.dob)}</strong></div>
                 <div>App No: <strong className="font-mono">{st.id}</strong></div>
               </div>
             </div>
@@ -5378,7 +5466,7 @@ export default function TransferCertificateView() {
           <img src={st.photo} alt={certRecipient} className="w-20 h-24 rounded-xl object-cover border border-teal-400/50 shadow-md" />
           <div className="md:col-span-8 space-y-1 text-xs">
             <div className="text-sm font-black text-white uppercase">{certRecipient}</div>
-            <div className="text-teal-300 font-semibold">{studentClass} &bull; Roll #{st.roll_no}</div>
+            <div className="text-teal-300 font-semibold">{studentClass} &bull; Roll: {st.roll_no}</div>
             <div className="text-slate-400 font-mono">Exam Center: Central Main Auditorium &bull; Slot: Morning Session</div>
           </div>
           <div className="md:col-span-3 flex justify-end">
@@ -5393,7 +5481,7 @@ export default function TransferCertificateView() {
         <div className="pt-4 border-t border-white/10 flex justify-between items-end text-xs">
           <div>
             <div className="font-mono text-teal-400 text-[10px]">VERIFIED SECURITY HASH</div>
-            <div className="text-slate-400 text-[9px]">Timestamp: {certConfig.awardDate || issueDate}</div>
+            <div className="text-slate-400 text-[9px]">Timestamp: {formatDateDMY(certConfig.awardDate || issueDate)}</div>
           </div>
           <div className="text-right">
             <HandWrittenSignature name={certConfig.signatory1Name || 'Chief Controller'} color="#2dd4bf" />
@@ -5468,7 +5556,7 @@ export default function TransferCertificateView() {
                 <div className="flex justify-between items-center text-xs font-mono border-b pb-2 text-slate-600">
                   <span>Certificate No: <strong className="text-blue-900">{regNo}</strong></span>
                   <span>Academic Year: <strong className="text-slate-900">{academicSession}</strong></span>
-                  <span>Date: <strong className="text-slate-900">{issueDate}</strong></span>
+                  <span>Date: <strong className="text-slate-900">{formatDateDMY(issueDate)}</strong></span>
                 </div>
 
                 <div className="p-4 bg-blue-50/40 rounded-xl border border-blue-100 text-justify text-xs leading-relaxed space-y-3">
@@ -5485,7 +5573,7 @@ export default function TransferCertificateView() {
                     {st.residential_address}
                   </div>
                   <p>
-                    According to the admission register, the date of birth recorded is <strong className="text-slate-900">{st.dob}</strong>. 
+                    According to the admission register, the date of birth recorded is <strong className="text-slate-900">{formatDateDMY(st.dob)}</strong>. 
                     His/Her Aadhaar Identification number on record is <strong className="text-slate-900 font-mono">{st.aadhaar_no}</strong>. 
                     To the best of our knowledge and belief, he/she bears an exemplary moral character.
                   </p>
@@ -5518,7 +5606,7 @@ export default function TransferCertificateView() {
                 </div>
                 <div className="space-y-3 leading-relaxed text-sm text-justify">
                   <p>
-                    Certified that <strong className="text-amber-950 underline">{st.student_name}</strong> (Roll #{st.roll_no}) is duly enrolled in <strong className="text-amber-950">{st.class_batch}</strong> for session {academicSession}.
+                    Certified that <strong className="text-amber-950 underline">{st.student_name}</strong> (Roll No: {st.roll_no}) is duly enrolled in <strong className="text-amber-950">{st.class_batch}</strong> for session {academicSession}.
                   </p>
                   <p>Permanent Address on School Records: <strong>{st.residential_address}</strong>.</p>
                 </div>
@@ -5539,9 +5627,10 @@ export default function TransferCertificateView() {
                   </div>
                   <div className="font-mono text-teal-800 font-bold">{regNo}</div>
                 </div>
-                <div className="grid grid-cols-3 gap-3 p-3 bg-teal-50/50 rounded-xl border border-teal-100">
+                <div className="grid grid-cols-4 gap-3 p-3 bg-teal-50/50 rounded-xl border border-teal-100">
                   <div>Candidate: <strong className="block text-slate-900">{st.student_name}</strong></div>
                   <div>Class: <strong className="block text-teal-800">{st.class_batch}</strong></div>
+                  <div>Roll No: <strong className="block text-teal-800">{st.roll_no}</strong></div>
                   <div>Resident Status: <strong className="block text-emerald-700">Verified Permanent</strong></div>
                 </div>
                 <p className="text-slate-700 text-xs">Resident Address: {st.residential_address}</p>
@@ -5560,7 +5649,7 @@ export default function TransferCertificateView() {
                   <div className="text-[10px] text-slate-300 uppercase">CAMPUS BONAFIDE &amp; IDENTITY ENDORSEMENT</div>
                 </div>
                 <p className="text-sm text-center leading-relaxed">
-                  This document certifies that <strong className="text-amber-300 text-base">{st.student_name}</strong> is a registered student in <strong className="text-white">{st.class_batch}</strong>.
+                  This document certifies that <strong className="text-amber-300 text-base">{st.student_name}</strong> (Roll No: {st.roll_no}) is a registered student in <strong className="text-white">{st.class_batch}</strong>.
                 </p>
                 <div className="p-3 bg-white/10 rounded-xl border border-white/10 text-center">
                   Address: {st.residential_address}
@@ -5583,10 +5672,10 @@ export default function TransferCertificateView() {
                   <h2 className="font-bold text-sm uppercase">{schoolInfo.schoolName}</h2>
                   <span className="font-mono text-[10px] text-slate-500">REF: {regNo}</span>
                 </div>
-                <p>Candidate <strong>{st.student_name}</strong> is an active bonafide student in <strong>{st.class_batch}</strong>.</p>
+                <p>Candidate <strong>{st.student_name}</strong> (Roll No: <strong>{st.roll_no}</strong>) is an active bonafide student in <strong>{st.class_batch}</strong>.</p>
                 <div className="p-2 bg-slate-50 border rounded text-[11px]">{st.residential_address}</div>
                 <div className="pt-3 border-t flex justify-between text-[11px]">
-                  <span>Date: {issueDate}</span>
+                  <span>Date: {formatDateDMY(issueDate)}</span>
                   <strong>{schoolInfo.principalName}</strong>
                 </div>
               </div>
@@ -5706,8 +5795,12 @@ export default function TransferCertificateView() {
                         </span>
                       </div>
                       <div className="flex items-center">
+                        <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">ROLL NO :</span>
+                        <span className="font-mono font-bold text-[#1a2e5a] text-xs sm:text-sm">{st.roll_no}</span>
+                      </div>
+                      <div className="flex items-center">
                         <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs">BIRTH :</span>
-                        <span className="font-bold text-[#1a2e5a] text-xs sm:text-sm">{st.dob}</span>
+                        <span className="font-bold text-[#1a2e5a] text-xs sm:text-sm">{formatDateDMY(st.dob)}</span>
                       </div>
                       <div className="flex items-start">
                         <span className="w-20 font-black text-[#1a2e5a] uppercase text-[11px] sm:text-xs shrink-0">ADRESS :</span>
@@ -5821,6 +5914,11 @@ export default function TransferCertificateView() {
                         </span>
                       </div>
                       <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-[#706e48]">Roll No</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-mono font-bold text-[#2e2d1d]">{st.roll_no}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-[#706e48]">Student ID</span>
                         <span className="col-span-1 text-center font-bold">:</span>
                         <span className="col-span-7 font-mono font-bold text-[#2e2d1d]">{st.id}</span>
@@ -5828,7 +5926,7 @@ export default function TransferCertificateView() {
                       <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-[#706e48]">D.O.B</span>
                         <span className="col-span-1 text-center font-bold">:</span>
-                        <span className="col-span-7 font-semibold text-[#2e2d1d]">{st.dob}</span>
+                        <span className="col-span-7 font-semibold text-[#2e2d1d]">{formatDateDMY(st.dob)}</span>
                       </div>
                       <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-[#706e48]">Address</span>
@@ -5903,7 +6001,11 @@ export default function TransferCertificateView() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[10px] sm:text-xs">
                       <div>
                         <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">DATE OF BIRTH</span>
-                        <span className="font-extrabold text-slate-800">{st.dob}</span>
+                        <span className="font-extrabold text-slate-800">{formatDateDMY(st.dob)}</span>
+                      </div>
+                      <div>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">ROLL NO</span>
+                        <span className="font-black font-mono text-slate-800">{st.roll_no}</span>
                       </div>
                       <div>
                         <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">STUDENT ID</span>
@@ -5919,7 +6021,7 @@ export default function TransferCertificateView() {
                         <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">PHONE</span>
                         <span className="font-bold text-slate-800">{st.father_phone || st.phone || '+91 98765 00000'}</span>
                       </div>
-                      <div className="col-span-2">
+                      <div>
                         <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">ADDRESS</span>
                         <span className="font-bold text-slate-700 text-[9.5px] leading-tight line-clamp-1">
                           {st.residential_address || '123 Anywhere St., Any City'}
@@ -6001,6 +6103,11 @@ export default function TransferCertificateView() {
                         </span>
                       </div>
                       <div className="grid grid-cols-12">
+                        <span className="col-span-4 font-bold text-teal-900">Roll No</span>
+                        <span className="col-span-1 text-center font-bold">:</span>
+                        <span className="col-span-7 font-mono font-bold text-slate-900">{st.roll_no}</span>
+                      </div>
+                      <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-teal-900">Student ID</span>
                         <span className="col-span-1 text-center font-bold">:</span>
                         <span className="col-span-7 font-mono font-bold text-slate-900">{st.id}</span>
@@ -6008,7 +6115,7 @@ export default function TransferCertificateView() {
                       <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-teal-900">D.O.B</span>
                         <span className="col-span-1 text-center font-bold">:</span>
-                        <span className="col-span-7 font-semibold text-slate-800">{st.dob}</span>
+                        <span className="col-span-7 font-semibold text-slate-800">{formatDateDMY(st.dob)}</span>
                       </div>
                       <div className="grid grid-cols-12">
                         <span className="col-span-4 font-bold text-teal-900">Address</span>
@@ -6086,9 +6193,19 @@ export default function TransferCertificateView() {
                     </span>
                   </div>
                   <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">Roll No</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-mono font-bold text-[#4a2211]">{st.roll_no}</span>
+                  </div>
+                  <div className="grid grid-cols-12">
                     <span className="col-span-3 font-bold text-[#9a4b27]">ID</span>
                     <span className="col-span-1 text-center">:</span>
                     <span className="col-span-8 font-mono font-bold text-[#4a2211]">{st.id}</span>
+                  </div>
+                  <div className="grid grid-cols-12">
+                    <span className="col-span-3 font-bold text-[#9a4b27]">D.O.B</span>
+                    <span className="col-span-1 text-center">:</span>
+                    <span className="col-span-8 font-semibold text-[#4a2211]">{formatDateDMY(st.dob)}</span>
                   </div>
                   <div className="grid grid-cols-12">
                     <span className="col-span-3 font-bold text-[#9a4b27]">Email</span>
@@ -6698,7 +6815,7 @@ export default function TransferCertificateView() {
                 >
                   {filteredStudents.map(s => (
                     <option key={s.id} value={s.id}>
-                      Roll #{s.roll_no} &bull; {s.student_name} ({s.fee_status === 'Paid' ? 'Fee Cleared' : 'Fee Pending'})
+                      Roll: {s.roll_no} &bull; {s.student_name} ({s.fee_status === 'Paid' ? 'Fee Cleared' : 'Fee Pending'})
                     </option>
                   ))}
                 </select>
@@ -6711,8 +6828,8 @@ export default function TransferCertificateView() {
                 <img src={activeStudent.photo} alt={activeStudent.student_name} className="w-12 h-12 rounded-xl object-cover border border-slate-300 shadow-sm" />
                 <div>
                   <div className="font-bold text-slate-900 text-xs">{activeStudent.student_name}</div>
-                  <div className="text-[11px] text-slate-500">{activeStudent.class_batch} &bull; Roll #{activeStudent.roll_no}</div>
-                  <div className="text-[10px] text-slate-400 font-mono">DOB: {activeStudent.dob} &bull; Category: {activeStudent.caste_category || 'General'}</div>
+                  <div className="text-[11px] text-slate-500">{activeStudent.class_batch} &bull; Roll: {activeStudent.roll_no}</div>
+                  <div className="text-[10px] text-slate-400 font-mono">DOB: {formatDateDMY(activeStudent.dob)} &bull; Category: {activeStudent.caste_category || 'General'}</div>
                 </div>
               </div>
               <div>
@@ -7068,7 +7185,7 @@ export default function TransferCertificateView() {
                   </div>
 
                   <div className="text-[10px] text-slate-400 font-mono">
-                    Candidate ID: {activeStudent.id} &bull; Roll #{activeStudent.roll_no}
+                    Candidate ID: {activeStudent.id} &bull; Roll: {activeStudent.roll_no}
                   </div>
                 </div>
               </div>

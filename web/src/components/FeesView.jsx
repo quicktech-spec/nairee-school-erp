@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { api, formatDbError, subscribeLiveEvents, broadcastLiveEvent, getStoredDb, saveStoredDb } from '../api.js';
 import { useTenant } from '../context/TenantContext.jsx';
+import { formatDateDMY } from './TransferCertificateView.jsx';
 
 export default function FeesView({ onPaymentCompleted }) {
   const { tenant, isAdmin, userRole } = useTenant();
@@ -296,7 +297,7 @@ export default function FeesView({ onPaymentCompleted }) {
                         <span>{fee.student_name}</span>
                         {fee.roll_no && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
-                            Roll #{fee.roll_no}
+                            Roll: {fee.roll_no}
                           </span>
                         )}
                       </p>
@@ -401,7 +402,7 @@ export default function FeesView({ onPaymentCompleted }) {
             <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <span className="text-[10px] text-slate-400 uppercase font-bold block">Paying For</span>
-                <span className="font-extrabold text-slate-900 text-xs">{payingFee.student_name} (Roll #{payingFee.roll_no || '01'})</span>
+                <span className="font-extrabold text-slate-900 text-xs">{payingFee.student_name} (Roll: {payingFee.roll_no || '01'})</span>
                 <span className="text-[10px] text-slate-500 block">{payingFee.class_batch || 'Class 10 - Section A'} • {payingFee.academic_term || 'Term 1'}</span>
               </div>
               <div className="text-right">
@@ -671,7 +672,7 @@ export default function FeesView({ onPaymentCompleted }) {
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 block uppercase font-bold">Payment Date</span>
-                <span className="font-extrabold text-slate-900">{receiptModal.payment_date || new Date().toISOString().split('T')[0]}</span>
+                <span className="font-extrabold text-slate-900">{formatDateDMY(receiptModal.payment_date) || formatDateDMY(new Date())}</span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 block uppercase font-bold">Payment Method</span>
@@ -687,7 +688,7 @@ export default function FeesView({ onPaymentCompleted }) {
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 block uppercase font-bold">Roll & Batch</span>
-                <span className="font-bold text-slate-900">Roll #{receiptModal.roll_no || '01'} ({receiptModal.class_batch || receiptModal.student_batch || 'Class 10-A'})</span>
+                <span className="font-bold text-slate-900">Roll: {receiptModal.roll_no || '01'} ({receiptModal.class_batch || receiptModal.student_batch || 'Class 10-A'})</span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 block uppercase font-bold">Student ID</span>
