@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   FileText,
   Printer,
@@ -41,6 +41,56 @@ import {
 import { FALLBACK_STUDENTS } from '../fallbackData.js';
 import { getMasterStudents, subscribeLiveEvents, generateStudentId } from '../api.js';
 import { useTenant } from '../context/TenantContext.jsx';
+
+// Helper: Parse student Class and Section reliably across all schemas
+export function parseStudentClassAndSection(student) {
+  if (!student) return { className: 'Class 10', sectionName: 'Section A', raw: '' };
+  const raw = String(student.class_batch || student.student_batch || student.admission_class || '').trim();
+  
+  if (!raw) return { className: 'Class 10', sectionName: 'Section A', raw: '' };
+
+  // Format 1: "Class 10 - Section A", "Grade 10 - Section B"
+  if (raw.includes(' - ')) {
+    const parts = raw.split(' - ');
+    return {
+      className: parts[0].trim() || 'Class 10',
+      sectionName: parts[1].trim() || 'Section A',
+      raw
+    };
+  }
+
+  // Format 2: "CLS-10A", "CLS-06A", "CLS-11B"
+  const clsMatch = raw.match(/CLS-0*(\d+)\s*([A-Z])?/i);
+  if (clsMatch) {
+    return {
+      className: `Class ${parseInt(clsMatch[1], 10)}`,
+      sectionName: clsMatch[2] ? `Section ${clsMatch[2].toUpperCase()}` : 'Section A',
+      raw
+    };
+  }
+
+  // Format 3: "Class 10 A", "Grade 10 Section A"
+  const fullWordMatch = raw.match(/(?:Class|Grade)\s*0*(\d+)\s*(?:Section\s*)?([A-Z])?/i);
+  if (fullWordMatch) {
+    return {
+      className: `Class ${parseInt(fullWordMatch[1], 10)}`,
+      sectionName: fullWordMatch[2] ? `Section ${fullWordMatch[2].toUpperCase()}` : 'Section A',
+      raw
+    };
+  }
+
+  // Format 4: "10-A", "10A", "6A", "8-A"
+  const altMatch = raw.match(/^0*(\d+)\s*[-/]?\s*([A-Z])?$/i);
+  if (altMatch) {
+    return {
+      className: `Class ${parseInt(altMatch[1], 10)}`,
+      sectionName: altMatch[2] ? `Section ${altMatch[2].toUpperCase()}` : 'Section A',
+      raw
+    };
+  }
+
+  return { className: raw, sectionName: 'Section A', raw };
+}
 
 // Utility: Convert number to English words
 function numberToWords(num) {
@@ -176,6 +226,116 @@ export default function TransferCertificateView() {
     const list = getSynchronizedStudents(isMasterSchool);
     return list[0]?.id || (isMasterSchool ? 'NIS-2024-091-001' : '');
   });
+
+  // Extract all unique classes present in studentList, sorted logically
+  const uniqueClasses = useMemo(() => {
+    const set = new Set();
+    studentList.forEach(s => {
+      const { className } = parseStudentClassAndSection(s);
+      if (className) set.add(className);
+    });
+    const arr = Array.from(set);
+    if (arr.length === 0) return ['Class 10', 'Class 11', 'Class 12', 'Class 8', 'Class 6'];
+    return arr.sort((a, b) => {
+      const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+      const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
+      return numA - numB;
+    });
+  }, [studentList]);
+
+  // Initial Class and Section derived from the currently selected or first student
+  const [selectedClass, setSelectedClass] = useState(() => {
+    const list = getSynchronizedStudents(isMasterSchool);
+    return parseStudentClassAndSection(list[0]).className || 'Class 10';
+  });
+
+  const [selectedSection, setSelectedSection] = useState(() => {
+    const list = getSynchronizedStudents(isMasterSchool);
+    return parseStudentClassAndSection(list[0]).sectionName || 'Section A';
+  });
+
+  // Available sections for the currently selected class
+  const availableSections = useMemo(() => {
+    const set = new Set();
+    studentList.forEach(s => {
+      const { className, sectionName } = parseStudentClassAndSection(s);
+      if (className === selectedClass && sectionName) {
+        set.add(sectionName);
+      }
+    });
+    const arr = Array.from(set);
+    if (arr.length === 0) return ['Section A', 'Section B'];
+    return arr.sort();
+  }, [studentList, selectedClass]);
+
+  // Candidates matching chosen Class and Section
+  const filteredStudents = useMemo(() => {
+    const list = studentList.filter(s => {
+      const { className, sectionName } = parseStudentClassAndSection(s);
+      const matchClass = !selectedClass || className === selectedClass;
+      const matchSection = !selectedSection || sectionName === selectedSection;
+      return matchClass && matchSection;
+    });
+    if (list.length > 0) return list;
+    const classOnly = studentList.filter(s => parseStudentClassAndSection(s).className === selectedClass);
+    return classOnly.length > 0 ? classOnly : studentList;
+  }, [studentList, selectedClass, selectedSection]);
+
+  // Handler 1: When user switches Class (1) -> Auto-switches Section and auto-fills 1st candidate (3)
+  const handleClassChange = (newClass) => {
+    setSelectedClass(newClass);
+    const sectionsForClass = Array.from(new Set(
+      studentList
+        .filter(s => parseStudentClassAndSection(s).className === newClass)
+        .map(s => parseStudentClassAndSection(s).sectionName)
+    )).sort();
+
+    const targetSection = sectionsForClass.includes(selectedSection) 
+      ? selectedSection 
+      : (sectionsForClass[0] || 'Section A');
+    
+    setSelectedSection(targetSection);
+
+    // Auto-select 1st candidate matching new Class and Section
+    const matching = studentList.find(s => {
+      const { className, sectionName } = parseStudentClassAndSection(s);
+      return className === newClass && sectionName === targetSection;
+    }) || studentList.find(s => parseStudentClassAndSection(s).className === newClass) || studentList[0];
+
+    if (matching) {
+      setSelectedStudentId(matching.id);
+      setCustomClassSection(matching.class_batch || `${newClass} - ${targetSection}`);
+    }
+  };
+
+  // Handler 2: When user switches Section (2) -> Auto-fills 1st candidate (3)
+  const handleSectionChange = (newSection) => {
+    setSelectedSection(newSection);
+
+    // Auto-select 1st candidate matching selected Class and new Section
+    const matching = studentList.find(s => {
+      const { className, sectionName } = parseStudentClassAndSection(s);
+      return className === selectedClass && sectionName === newSection;
+    }) || studentList.find(s => parseStudentClassAndSection(s).sectionName === newSection) || studentList[0];
+
+    if (matching) {
+      setSelectedStudentId(matching.id);
+      setCustomClassSection(matching.class_batch || `${selectedClass} - ${newSection}`);
+    }
+  };
+
+  // Handler 3: When user selects specific candidate Roll No - Name (3)
+  const handleStudentSelect = (studentId) => {
+    setSelectedStudentId(studentId);
+    const found = studentList.find(s => s.id === studentId);
+    if (found) {
+      const { className, sectionName } = parseStudentClassAndSection(found);
+      if (className) setSelectedClass(className);
+      if (sectionName) setSelectedSection(sectionName);
+      setCustomClassSection(found.class_batch || `${className} - ${sectionName}`);
+    }
+  };
+
   const [viewMode, setViewMode] = useState('single'); // 'single' or 'all'
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showCustomizer, setShowCustomizer] = useState(false);
@@ -6457,24 +6617,92 @@ export default function TransferCertificateView() {
           </div>
 
           <div className="space-y-4 text-xs">
-            {/* Student Selector */}
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Select Candidate / Student</label>
-              <select
-                value={selectedStudentId}
-                onChange={(e) => {
-                  setSelectedStudentId(e.target.value);
-                  const found = studentList.find(s => s.id === e.target.value);
-                  if (found) setCustomClassSection(found.class_batch || '');
-                }}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer bg-slate-50/50"
-              >
-                {studentList.map(s => (
-                  <option key={s.id} value={s.id}>
-                    {s.student_name} ({s.class_batch}) &bull; Roll #{s.roll_no} &bull; {s.fee_status === 'Paid' ? 'Fee Cleared' : 'Fee Pending'}
-                  </option>
-                ))}
-              </select>
+            {/* 3-Part Student Selector: 1. Class, 2. Section, 3. Roll No - Name (Auto-filled) */}
+            <div className="space-y-3 p-3.5 bg-gradient-to-br from-slate-50 to-teal-50/40 rounded-2xl border border-teal-200/80 shadow-xs">
+              <div className="flex items-center justify-between pb-1 border-b border-teal-100">
+                <span className="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5 uppercase tracking-wide">
+                  <GraduationCap className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Select Candidate / Student</span>
+                </span>
+                <span className="text-[10px] text-teal-700 bg-teal-100/80 px-2 py-0.5 rounded-full font-bold border border-teal-200 flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-teal-600" />
+                  <span>Auto-Fills Record</span>
+                </span>
+              </div>
+
+              {/* 2-Column Grid: Part 1 (Class) and Part 2 (Section) */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {/* 1. Class */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-teal-600 text-white text-[9px] font-black inline-flex items-center justify-center shrink-0">1</span>
+                    <span>Class / Grade</span>
+                  </label>
+                  <select
+                    value={selectedClass}
+                    onChange={(e) => handleClassChange(e.target.value)}
+                    className="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer bg-white shadow-xs transition-all hover:border-teal-400"
+                  >
+                    {uniqueClasses.map(cls => {
+                      const count = studentList.filter(s => parseStudentClassAndSection(s).className === cls).length;
+                      return (
+                        <option key={cls} value={cls}>
+                          {cls} ({count} {count === 1 ? 'Student' : 'Students'})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                {/* 2. Section */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-teal-600 text-white text-[9px] font-black inline-flex items-center justify-center shrink-0">2</span>
+                    <span>Section</span>
+                  </label>
+                  <select
+                    value={selectedSection}
+                    onChange={(e) => handleSectionChange(e.target.value)}
+                    className="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer bg-white shadow-xs transition-all hover:border-teal-400"
+                  >
+                    {availableSections.map(sec => {
+                      const count = studentList.filter(s => {
+                        const parsed = parseStudentClassAndSection(s);
+                        return parsed.className === selectedClass && parsed.sectionName === sec;
+                      }).length;
+                      return (
+                        <option key={sec} value={sec}>
+                          {sec} ({count} {count === 1 ? 'Student' : 'Students'})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              {/* Part 3: Roll No - Name (Auto-filled after selecting Class & Section) */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-4 h-4 rounded-full bg-teal-600 text-white text-[9px] font-black inline-flex items-center justify-center shrink-0">3</span>
+                    <span>Roll No &bull; Student Name</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-teal-700 bg-white px-2 py-0.5 rounded-md border border-teal-200">
+                    {filteredStudents.length} candidate{filteredStudents.length !== 1 ? 's' : ''} in {selectedClass} ({selectedSection})
+                  </span>
+                </label>
+                <select
+                  value={selectedStudentId}
+                  onChange={(e) => handleStudentSelect(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border-2 border-teal-500 text-xs font-black text-slate-900 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer bg-white shadow-xs"
+                >
+                  {filteredStudents.map(s => (
+                    <option key={s.id} value={s.id}>
+                      Roll #{s.roll_no} &bull; {s.student_name} ({s.fee_status === 'Paid' ? 'Fee Cleared' : 'Fee Pending'})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Quick Candidate Profile Card */}
